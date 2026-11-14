@@ -8,7 +8,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-<link rel="icon" href="assets/shinobi-cover.webp"><title>REA 遊戲館｜每日動態新作・赤焰忍傳</title>
+<link rel="icon" href="assets/abyss-sub-0.svg"><title>REA 遊戲館｜每日動態新作・深潛重裝：斷層突圍</title>
 
 <style>
 
@@ -319,7 +319,9 @@
 #tab-indigo{border-radius:7px}.stage-tab.active-indigo{background:#103d76;color:#fff;border:1px solid #8aa4b8;box-shadow:none;}
 
 #tab-fossil{border-radius:7px}.stage-tab.active-fossil{background:#344e51;color:#fff;border:1px solid #8e9c9d;box-shadow:none}#tab-weave{border-radius:7px}.stage-tab.active-weave{background:#ead5dd;color:#422a40;border:1px solid #ad839d;box-shadow:none}
-#tab-shinobi{border-radius:7px}.stage-tab.active-shinobi{background:#991b1b;color:#fef3c7;border:1px solid #eab308;box-shadow:none;}</style>
+#tab-shinobi{border-radius:7px}.stage-tab.active-shinobi{background:#991b1b;color:#fef3c7;border:1px solid #eab308;box-shadow:none;}
+#tab-abyss{border-radius:7px}.stage-tab.active-abyss{background:#102d2b;color:#eee4c8;border:1px solid #c98050;box-shadow:none}
+</style>
 
 <link rel="stylesheet" href="visuals/portal.css?v=20261107-art1">
 
@@ -341,7 +343,8 @@
 
     <div class="tabs" id="portal-tabs">
 
-      <button type="button" class="stage-tab active-shinobi" id="tab-shinobi" onclick="selectStage('shinobi')">🥷 赤焰忍傳</button>
+      <button type="button" class="stage-tab active-abyss" id="tab-abyss" onclick="selectStage('abyss')">深潛重裝</button>
+      <button type="button" class="stage-tab" id="tab-shinobi" onclick="selectStage('shinobi')">🥷 赤焰忍傳</button>
       <button type="button" class="stage-tab" id="tab-weave" onclick="selectStage('weave')">霜桃織坊</button>
       <button type="button" class="stage-tab" id="tab-fossil" onclick="selectStage('fossil')">霧銀標本室</button>
       <button type="button" class="stage-tab" id="tab-indigo" onclick="selectStage('indigo')">靛藍暗房</button>
@@ -378,7 +381,7 @@
 
       <button type="button" class="fs-btn" id="standalone-link" onclick="togglePortalFullscreen()">⛶ 全螢幕</button>
 
-      <span class="ver-pill" id="portal-version">2026.11.13</span>
+      <span class="ver-pill" id="portal-version">2026.11.15</span>
 
     </div>
 
@@ -388,7 +391,7 @@
 
   <main id="stage-viewport">
 
-    <iframe id="game-frame" src="./shinobi.html?embed=1&v=v_20261113_shinobi_1" title="赤焰忍傳：疾風手裏劍" allow="autoplay; fullscreen"></iframe>
+    <iframe id="game-frame" src="./abyss.html?embed=1&v=v_20261115_abyss_1" title="深潛重裝：斷層突圍" allow="autoplay; fullscreen"></iframe>
 
   </main>
 
@@ -422,7 +425,7 @@
 
   <script>
 
-    const VERSION_STAMP = "v_20261113_shinobi_1";
+    const VERSION_STAMP = "v_20261115_abyss_1";
 
     const frame = document.getElementById("game-frame");
 
@@ -495,6 +498,9 @@
 
 
     function selectStage(stage){
+      document.getElementById('tab-abyss').className='stage-tab';
+      if(stage==='abyss'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./abyss.html?embed=1&v='+VERSION_STAMP;frame.title='深潛重裝：斷層突圍';const tab=document.getElementById('tab-abyss');tab.className='stage-tab active-abyss';tab.scrollIntoView({block:'nearest',inline:'nearest'});toggleCatalog(false);setTimeout(()=>frame.focus(),120);return;}
+
       const tabShinobi = document.getElementById('tab-shinobi');
       if(tabShinobi) tabShinobi.className='stage-tab';
       if(stage==='shinobi'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./shinobi.html?embed=1&v='+VERSION_STAMP;frame.title='赤焰忍傳：疾風手裏劍';if(tabShinobi){tabShinobi.className='stage-tab active-shinobi';tabShinobi.scrollIntoView({block:'nearest',inline:'nearest'});}toggleCatalog(false);setTimeout(()=>{try{frame.focus();}catch(e){}},120);return;}
@@ -661,7 +667,7 @@
 
     const st = params.get("stage") || location.hash.replace("#", "");
 
-    if(!st || st==='shinobi'){ selectStage('shinobi'); } else
+    if(!st || st==='abyss'){ selectStage('abyss'); } else if(st==='shinobi'){ selectStage('shinobi'); } else
     if(st==='weave')selectStage('weave'); else
     if(st==='fossil')selectStage('fossil'); else
     if(st==='indigo')selectStage('indigo'); else
