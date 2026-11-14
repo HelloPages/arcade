@@ -1,0 +1,229 @@
+/* Japanese pop arcade — saturated ink, halftone and hard-edged comic UI. */
+html,body {
+  background:#36205e;
+  color:#f9ebff;
+  font-family:"Arial Black","Microsoft JhengHei",sans-serif
+}
+.game-layout {
+  max-width:540px;
+  border-inline:3px solid #1b102d;
+  background:#6434a5
+}
+.canvas-wrap {
+  background:#4b287a
+}
+.topbar {
+  background:#be287f;
+  border-bottom:3px solid #211030
+}
+.brand {
+  color:#fff
+}
+.badge {
+  background:#d3f948;
+  color:#261330;
+  border:1px solid #261330
+}
+.top-btn {
+  border-radius:0;
+  background:#ebdafa;
+  color:#38205c;
+  border:2px solid #21132f;
+  box-shadow:2px 2px 0 #21132f
+}
+.top-btn.gold,.top-btn.fs-btn {
+  background:#d0ee42;
+  color:#352251
+}
+.stage-capsule,.res-pill,.combo-pill,.boss-hud-card {
+  backdrop-filter:none;
+  border-radius:3px;
+  background:#fff0f8;
+  border:2px solid #21102d;
+  box-shadow:3px 3px 0 #21102d;
+  color:#40225c
+}
+.stage-capsule {
+  padding:7px;
+  transform:rotate(-1deg)
+}
+.island-badge {
+  border-radius:0;
+  background:#c4f445;
+  color:#37214b;
+  font-family:monospace;
+  letter-spacing:1px
+}
+.wave-label {
+  color:#4f2865;
+  font-size:10px
+}
+.res-pill {
+  background:#ee81b3;
+  min-height:30px
+}
+.res-val {
+  color:#351c50;
+  font-family:monospace
+}
+.wave-bar-bg,.boss-hp-track {
+  border-radius:0;
+  background:#e0c4e7
+}
+.wave-bar-fill {
+  background:repeating-linear-gradient(90deg,#bb3388 0 12px,#e3f35d 12px 15px)
+}
+.boss-hp-fill {
+  background:#ba2d78
+}
+.combo-pill {
+  border-radius:0;
+  background:#d5ef4c;
+  color:#4a2060;
+  transform:rotate(-4deg)
+}
+.boss-avatar-ring {
+  border-radius:0;
+  border-color:#3b2058
+}
+.boss-name {
+  color:#5a255b
+}
+.boss-hp-text {
+  color:#a5276a
+}
+.hud-dock {
+  background:#f5cfeb;
+  border-top:5px solid #271336;
+  border-radius:0;
+  box-shadow:none;
+  padding:9px 9px 7px
+}
+.skill-bar {
+  gap:5px
+}
+.skill-btn {
+  background:#eee7ff;
+  border:2px solid #352040;
+  border-radius:1px;
+  box-shadow:2px 3px 0 #352040;
+  min-height:70px;
+  color:#472664
+}
+.skill-btn.ready {
+  border-color:#352040
+}
+.skill-btn.active-mode {
+  background:#ccf243;
+  border-color:#352040
+}
+.sk-name {
+  color:#42205a;
+  font-size:10px
+}
+.sk-sub {
+  font-family:monospace;
+  color:#7d337a
+}
+.sk-img {
+  display:none!important
+}
+.sk-icon {
+  display:block!important;
+  font:900 25px monospace;
+  color:#ab2479;
+  text-shadow:none
+}
+.tab-row {
+  gap:3px;
+  margin-top:9px
+}
+.tab-btn {
+  border-radius:0;
+  border:1px solid #38204c;
+  background:#d3b5e3;
+  color:#4b2862;
+  font-size:10px
+}
+.tab-btn.active {
+  background:#742ea3;
+  color:white
+}
+.upgrade-card {
+  border-radius:0;
+  background:#fff0f7;
+  border:1px solid #9960a5;
+  box-shadow:none
+}
+.up-name,.up-level {
+  color:#55245f
+}
+.up-desc {
+  color:#745079
+}
+.up-buy {
+  border-radius:0;
+  background:#b93481;
+  color:white
+}
+.celebrate-ribbon {
+  border-radius:0;
+  border:4px solid #261332;
+  background:#d1f14e;
+  transform:rotate(-4deg);
+  box-shadow:8px 8px 0 #a72b78
+}
+.celebrate-title {
+  color:#602079;
+  text-shadow:none
+}
+.celebrate-sub {
+  color:#52215b
+}
+.welcome-card {
+  border-radius:0;
+  background:#f5d5eb;
+  border:4px solid #382044
+}
+.welcome-title {
+  color:#692c80
+}
+.welcome-claim {
+  border-radius:0;
+  background:#b93382
+}
+.boss-cutin {
+  background:#b1348c!important;
+  transform:rotate(-4deg)
+}
+.up-card {
+  border-radius:0;
+  background:#fff1f9;
+  border:2px solid #6a3980;
+  box-shadow:2px 2px 0 #9d53a66b;
+  min-height:48px
+}
+.up-title {
+  color:#562166;
+  font-weight:900
+}
+.up-desc {
+  color:#75517c
+}
+.lv-pill {
+  border-radius:0;
+  background:#d8b6e5;
+  color:#582b68
+}
+.up-buy {
+  border-radius:0!important;
+  background:#ad2c7e!important;
+  color:#fff!important;
+  min-height:28px
+}
+.tab-btn {
+  min-height:36px
+}
+.wave-label {
+  font-weight:900
+}

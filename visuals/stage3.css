@@ -1,0 +1,33 @@
+html,body {
+  background:#151a20;
+  font-family:Georgia,"PMingLiU",serif
+}
+#wrap {
+  background:#151a20
+}
+#topbar {
+  background:#23282e;
+  border-bottom:2px solid #8a493f;
+  box-shadow:none
+}
+.nav-pill,.ver-tag {
+  border-radius:1px;
+  background:#32373d;
+  border:1px solid #66635d;
+  color:#d4ccc0
+}
+.nav-pill.home,.nav-pill.s3.active {
+  background:#79382f;
+  color:#f4dfc5;
+  border-color:#ad7662;
+  box-shadow:none
+}
+canvas {
+  border-radius:0;
+  image-rendering:auto;
+  box-shadow:0 0 0 1px #56534e,0 20px 80px #000
+}
+#crt {
+  opacity:.12;
+  mix-blend-mode:soft-light
+}

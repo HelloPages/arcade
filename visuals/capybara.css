@@ -1,0 +1,178 @@
+/* Printed travel ephemera — itinerary cards, ticket stubs and luggage labels. */
+:root {
+  color:#214c4d;
+  background:#f5dfb0;
+  font-family:"Trebuchet MS","Microsoft JhengHei",sans-serif
+}
+.topbar {
+  background:#e9d5a5;
+  border-bottom:2px solid #be6c57
+}
+.topbar a {
+  color:#285a59
+}
+.topbar button,.exit-fs-pill {
+  border-radius:2px;
+  background:#d5725b;
+  color:#fff9e7
+}
+#world {
+  background:#f3d4a2
+}
+.hud {
+  left:14px;
+  right:14px;
+  gap:0;
+  transform:rotate(-.3deg)
+}
+.hud-line {
+  gap:0;
+  background:#fff3d9;
+  border-inline:1px solid #936f4f
+}
+.hud-line:first-child {
+  border-top:4px solid #d77c61;
+  padding:7px 9px
+}
+.hud-line:first-child .pill:first-child {
+  background:transparent;
+  color:#2e5a59
+}
+.pill {
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  backdrop-filter:none;
+  background:transparent;
+  color:#315b59;
+  letter-spacing:1px;
+  font-weight:800
+}
+.hud-line:nth-child(2) {
+  padding:0 9px 6px;
+  border-bottom:1px dashed #947952
+}
+.hud-line:nth-child(2) .pill {
+  font-size:11px;
+  padding:5px 8px;
+  border-right:1px solid #d7c7a6
+}
+.progress {
+  height:6px;
+  margin:0;
+  border-radius:0;
+  background:#e1c89c
+}
+.progress>div {
+  background:repeating-linear-gradient(90deg,#d7785f 0 18px,#e9b18a 18px 20px)
+}
+.controls p {
+  background:#fff3d9;
+  color:#345b57;
+  border:1px dashed #a58c66;
+  transform:rotate(-1deg);
+  font-size:11px
+}
+.actions button {
+  backdrop-filter:none;
+  background:#fcf0cc;
+  border:2px solid #376665;
+  box-shadow:3px 3px 0 #376665
+}
+.actions #freeze {
+  border-radius:2px;
+  background:#dd7d65;
+  color:#fff9e9;
+  border-color:#a65445
+}
+.dpad {
+  gap:5px
+}
+.dpad button {
+  background:#f2dea9;
+  border-radius:50%;
+  color:#2d6262
+}
+.overlay {
+  background:#345c5944;
+  backdrop-filter:blur(3px)
+}
+.sheet {
+  border-radius:0;
+  background:#fff0cd;
+  border:8px solid #fff2d5;
+  box-shadow:0 16px 40px #213f4033;
+  transform:rotate(1deg);
+  outline:1px solid #976843
+}
+.cover {
+  height:clamp(155px,28vh,235px);
+  filter:none;
+  object-position:50% 46%
+}
+.sheet-content {
+  padding:19px 22px
+}
+.eyebrow {
+  font-family:monospace;
+  letter-spacing:3px;
+  color:#a45c47
+}
+h1 {
+  color:#235b5b;
+  font-size:34px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:1px
+}
+h1 span {
+  font-size:21px;
+  color:#c96d56;
+  letter-spacing:4px
+}
+#description {
+  color:#6c634c;
+  line-height:1.8
+}
+#start {
+  border-radius:0;
+  background:#d4775f;
+  border:2px solid #a55041;
+  box-shadow:4px 4px 0 #e2bd83;
+  letter-spacing:3px;
+  color:#fff7dc
+}
+#load-status,#best {
+  color:#6c694e
+}
+#cutin {
+  background:#fae4b7;
+  border-block:3px dashed #c57259;
+  transform:rotate(-2deg);
+  box-shadow:3px 6px 0 #4c786b33;
+  color:#2d625c
+}
+.popup {
+  font-family:monospace;
+  background:none;
+  color:#b9543f;
+  filter:none;
+  animation:travel-stamp 1.2s both
+}
+@keyframes travel-stamp {
+  0% {
+    opacity:0;
+    transform:translate(-50%,0) rotate(-14deg) scale(1.6)
+  }
+  15% {
+    opacity:1;
+    transform:translate(-50%,0) rotate(-14deg) scale(1)
+  }
+  80% {
+    opacity:1
+  }
+  100% {
+    opacity:0;
+    transform:translate(-50%,-20px) rotate(-14deg)
+  }
+}

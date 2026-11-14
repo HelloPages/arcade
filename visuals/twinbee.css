@@ -1,0 +1,189 @@
+/* Cel-anime toy mecha cockpit — local uncommitted candidate only. */
+html,body {
+  background:#173fa3;
+  color:#1c3472;
+  font-family:"Arial Black","Microsoft JhengHei",sans-serif
+}
+.game-layout {
+  max-width:550px;
+  border-inline:5px solid #204297
+}
+.topbar {
+  background:#1742a9;
+  border-bottom:4px solid #f9cc37
+}
+.brand {
+  color:#fff
+}
+.badge {
+  background:#f7c632;
+  color:#173a91
+}
+.canvas-wrap {
+  background:#3266cb
+}
+.modern-hud-overlay {
+  gap:4px
+}
+.stage-capsule {
+  background:#f8f8ea;
+  border:3px solid #1d3986;
+  border-left:10px solid #e84f3c;
+  border-radius:9px 9px 3px 3px;
+  backdrop-filter:none;
+  box-shadow:0 3px 0 #143181
+}
+.sky-badge {
+  border-radius:3px;
+  background:#2557b7;
+  color:#fff
+}
+.res-pill {
+  border-radius:3px;
+  background:#f9ce3c;
+  color:#1d3c82;
+  border:2px solid #183777;
+  backdrop-filter:none;
+  box-shadow:0 3px 0 #193477
+}
+.res-val {
+  color:#193b8e;
+  font-family:monospace
+}
+.wave-label {
+  color:#284782
+}
+.wave-bar-bg {
+  border-radius:1px;
+  background:#c7cdd6
+}
+.wave-bar-fill {
+  background:#eb5944;
+  border-radius:1px
+}
+.bell-buff-strip {
+  background:#2148a1;
+  border:2px solid #f2ca42;
+  border-radius:0;
+  padding:6px
+}
+.b-pill {
+  border-radius:2px;
+  background:#e7eafa;
+  color:#273b76;
+  border:1px solid #153378;
+  font-family:monospace
+}
+.boss-hud-card {
+  background:#193674;
+  border:3px solid #f5cc42;
+  border-radius:3px;
+  backdrop-filter:none;
+  color:white
+}
+.boss-name,.boss-hp-text {
+  color:#fff0aa
+}
+.hud-dock {
+  background:#ecedef;
+  border-top:8px solid #234697;
+  border-radius:0;
+  padding:8px
+}
+.skill-btn {
+  border-radius:5px 5px 2px 2px;
+  background:#234b9d;
+  border:2px solid #173778;
+  border-bottom:5px solid #132c66;
+  box-shadow:none;
+  color:white;
+  min-height:67px
+}
+.skill-btn.active-mode {
+  background:#de503f;
+  border-color:#963c36
+}
+.sk-name,.sk-sub {
+  color:#fff8d8
+}
+.sk-img {
+  display:none!important
+}
+.skill-btn::before {
+  display:block;
+  font:900 20px monospace;
+  color:#f9d64d;
+  content:'01'
+}
+.skill-btn:nth-child(2)::before {
+  content:'02'
+}
+.skill-btn:nth-child(3)::before {
+  content:'03'
+}
+.skill-btn:nth-child(4)::before {
+  content:'04'
+}
+.skill-btn:nth-child(5)::before {
+  content:'05'
+}
+.tab-btn {
+  border-radius:1px;
+  background:#d6deef;
+  color:#234b93;
+  border:1px solid #234b93
+}
+.tab-btn.active {
+  background:#f5cf4c;
+  color:#17387e
+}
+.upgrade-card {
+  border-radius:3px;
+  background:#fff;
+  border:2px solid #7794c5;
+  box-shadow:none
+}
+.up-name {
+  color:#204796
+}
+.up-buy {
+  border-radius:2px;
+  background:#e4513e
+}
+.celebrate-ribbon {
+  background:#f7cd42;
+  color:#194092;
+  border:6px solid #254a9e;
+  border-radius:4px;
+  box-shadow:6px 6px 0 #e15140
+}
+.celebrate-title {
+  color:#183f94;
+  text-shadow:none
+}
+.up-card {
+  border-radius:3px;
+  background:#fff;
+  border:2px solid #718bc0;
+  box-shadow:0 3px 0 #284a91;
+  min-height:48px
+}
+.up-title {
+  color:#183e8a
+}
+.up-desc {
+  color:#4b6084
+}
+.lv-pill {
+  border-radius:2px;
+  background:#d7e0f5;
+  color:#21428b
+}
+.up-buy {
+  border-radius:2px!important;
+  background:#cc4639!important;
+  color:white!important
+}
+.tab-btn {
+  min-height:34px
+}

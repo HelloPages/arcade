@@ -1,0 +1,230 @@
+/* Action-comic containment dossier. */
+:root {
+  color:#eee8d5;
+  background:#193c3f;
+  font-family:"Arial Black","Microsoft JhengHei",sans-serif
+}
+.topbar {
+  background:#1a3539;
+  color:#f0e8d0;
+  border-bottom:3px solid #b85040
+}
+.topbar a {
+  color:#f4e8cf
+}
+.topbar button,.exit-fs-pill {
+  border-radius:0;
+  background:#bb5040;
+  color:#fff8e2
+}
+#game {
+  background:#b7654d
+}
+.hud {
+  left:12px;
+  right:12px;
+  top:12px
+}
+.hud-row {
+  gap:6px
+}
+.pill {
+  border-radius:0;
+  border:2px solid #1b3336;
+  background:#f4ecd7;
+  box-shadow:3px 3px 0 #192e31;
+  backdrop-filter:none;
+  color:#263f40;
+  transform:skew(-3deg)
+}
+.chapter,.score {
+  padding:7px 10px;
+  min-width:93px
+}
+.chapter small,.score small {
+  font-family:monospace;
+  color:#8f493c;
+  letter-spacing:1px
+}
+.chapter strong,.score strong {
+  font-size:22px;
+  color:#1c5555;
+  font-weight:900
+}
+.icon {
+  background:#ad4638;
+  color:white
+}
+.vitality,.best {
+  font-family:monospace;
+  font-size:11px;
+  padding:7px
+}
+.heart {
+  color:#b7493c
+}
+.boss-meter {
+  background:#ad493c;
+  border:2px solid #20383b;
+  border-radius:0;
+  backdrop-filter:none;
+  box-shadow:3px 3px 0 #1b3032;
+  color:#fff0d8
+}
+.track {
+  background:#263d3b;
+  border-radius:0;
+  height:9px
+}
+.track span {
+  background:#e5c783;
+  border-radius:0
+}
+.dock {
+  background:#efe4c7;
+  border:3px solid #213d40;
+  border-radius:0;
+  backdrop-filter:none;
+  box-shadow:5px 5px 0 #20383b;
+  left:10px;
+  right:14px;
+  bottom:12px
+}
+.dock-meta {
+  color:#375759
+}
+.dock-meta button {
+  border-radius:0;
+  background:#284e50;
+  color:#f6ebcf;
+  padding:6px
+}
+.controls button {
+  border-radius:0;
+  box-shadow:2px 3px 0 #233b3d;
+  border:1px solid #233b3d
+}
+.move {
+  background:#f8eac7;
+  color:#25494b
+}
+.fire {
+  background:#b54c3e;
+  color:#fff1d4;
+  letter-spacing:1px
+}
+.skill {
+  background:#275e60;
+  color:#fff1d4
+}
+.footer-note {
+  color:#5c6658
+}
+.island-label {
+  display:none
+}
+.overlay {
+  background:#17363d99;
+  backdrop-filter:none
+}
+.panel {
+  border-radius:0;
+  border:4px solid #1c3437;
+  background:#efe4cb;
+  box-shadow:9px 10px 0 #b64d3d;
+  transform:rotate(-1deg);
+  color:#2c4545
+}
+.cover {
+  height:clamp(170px,29vh,235px);
+  background-position:50% 45%;
+  border-bottom:4px solid #22393b
+}
+.edition {
+  border-radius:0;
+  background:#b44c3d;
+  color:#fff6dc;
+  border:2px solid #22393b;
+  transform:rotate(-3deg)
+}
+.cover-caption {
+  background:#243c3b;
+  color:#f5e5bf
+}
+.panel-body {
+  padding:20px 21px
+}
+.eyebrow {
+  color:#a74939;
+  letter-spacing:4px
+}
+h1 {
+  color:#263d3d;
+  font-size:29px;
+  font-weight:1000;
+  letter-spacing:-1px
+}
+.description {
+  color:#58645a
+}
+.tags span {
+  border-radius:0;
+  background:#cad5b9;
+  color:#2c514b
+}
+.primary {
+  border-radius:0;
+  background:#b54c3e;
+  border:2px solid #243b3c;
+  box-shadow:3px 4px 0 #223b3c;
+  color:#fff1d4;
+  letter-spacing:2px
+}
+.load-status,.keyboard,.quiet {
+  color:#5b6656
+}
+.cutin {
+  background:#b84d3e;
+  border-block:5px solid #233c3e;
+  box-shadow:8px 8px 0 #20373a;
+  transform:rotate(-4deg);
+  color:#fae8bb
+}
+.cutin small,.cutin strong,.cutin>span {
+  color:#fff0cd
+}
+.damage {
+  background:none;
+  color:#ffe0a0;
+  -webkit-text-fill-color:#ffe0a0;
+  -webkit-text-stroke:1px #223b3b;
+  filter:drop-shadow(3px 3px 0 #233b3c);
+  animation:comic-hit .65s both;
+  font-style:italic
+}
+@keyframes comic-hit {
+  0% {
+    opacity:0;
+    transform:translate(-50%,0) rotate(-15deg) scale(1.9)
+  }
+  12% {
+    opacity:1;
+    transform:translate(-50%,-8px) rotate(-9deg) scale(1.1)
+  }
+  85% {
+    opacity:1
+  }
+  100% {
+    opacity:0;
+    transform:translate(-50%,-38px) rotate(-9deg)
+  }
+}
+@media(min-width:700px) {
+  .dock {
+    left:50%;
+    right:auto
+  }
+}
+.cover {
+  background-image:url('../assets/redesign-pang-cover.webp')
+}

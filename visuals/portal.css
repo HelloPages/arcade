@@ -1,0 +1,80 @@
+html,body {
+  background:#171a21;
+  color:#f4eee3
+}
+#arcade-bar {
+  background:#242731;
+  border-bottom:1px solid #5f6067;
+  box-shadow:none
+}
+.stage-tab {
+  background:#363945;
+  border-color:#636570;
+  color:#e7e3dd;
+  border-radius:3px;
+  box-shadow:none
+}
+.stage-tab[class*=active] {
+  background:#ece5d7;
+  color:#292d36;
+  border-color:#e6d5b5;
+  box-shadow:none
+}
+.catalog-btn,.fs-btn {
+  border-radius:3px;
+  background:#e8d8b9;
+  color:#292e37;
+  border:1px solid #cbb68e;
+  box-shadow:none
+}
+.ver-pill {
+  background:#333942;
+  color:#d8d5cf;
+  border-color:#71717a;
+  border-radius:0
+}
+.catalog-card {
+  background:#f3eee4;
+  border:1px solid #797266;
+  border-radius:4px;
+  color:#353a40;
+  box-shadow:0 25px 100px #0008;
+  max-width:1100px
+}
+.cat-header {
+  border-bottom:1px solid #c6bcaa;
+  padding-bottom:15px
+}
+.cat-title {
+  font-family:Georgia,"PMingLiU",serif;
+  font-size:24px;
+  color:#333b40
+}
+.cat-close {
+  border-radius:0;
+  background:#353c43;
+  color:white
+}
+.cat-item {
+  border-radius:2px;
+  border:1px solid #d4ccbf;
+  background:#fffcf5;
+  box-shadow:0 3px 12px #332e2412
+}
+.cat-thumb {
+  border-radius:0;
+  object-fit:cover
+}
+.cat-name {
+  color:#343c42
+}
+.cat-genre {
+  color:#6d6555
+}
+#exit-fs-btn {
+  border-radius:2px;
+  background:#343b44;
+  border:1px solid #d9bc8e;
+  color:#f3e9d6;
+  box-shadow:none
+}

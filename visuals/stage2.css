@@ -1,0 +1,63 @@
+html,body {
+  background:#192a31;
+  font-family:Consolas,"Microsoft JhengHei",monospace
+}
+#wrap {
+  background:repeating-linear-gradient(0deg,#182b33 0 31px,#284047 32px),repeating-linear-gradient(90deg,transparent 0 31px,#284047 32px)
+}
+#topbar {
+  background:#d6c9a4;
+  border-bottom:3px solid #7f785b;
+  box-shadow:none
+}
+.nav-pill,.ver-tag {
+  border-radius:0;
+  background:#d8cca9;
+  color:#34464b;
+  border:1px solid #6c7464
+}
+.nav-pill.home,.nav-pill.s2.active,.nav-pill.s3 {
+  background:#374c50;
+  color:#ecdfba;
+  border-color:#6b806f;
+  box-shadow:none
+}
+canvas {
+  image-rendering:auto;
+  border-radius:0;
+  box-shadow:0 0 0 5px #8b8a6c,0 0 0 7px #273e43
+}
+#crt {
+  opacity:.07;
+  background:repeating-linear-gradient(0deg,#b5a57520 0 1px,transparent 1px 4px)
+}
+#wrap {
+  background:linear-gradient(#132e3b22,#132e3b22),url('../assets/redesign-stage2-scene.webp') center/cover
+}
+#wrap::before {
+  content:'NAVAL AIR OPERATIONS / 1943';
+  position:absolute;
+  top:24px;
+  left:20px;
+  right:20px;
+  text-align:center;
+  font:12px Consolas,monospace;
+  letter-spacing:3px;
+  color:#e2d1aa;
+  pointer-events:none
+}
+#wrap::after {
+  content:'拉包爾航空戰・作戰航海圖';
+  position:absolute;
+  bottom:24px;
+  left:20px;
+  right:20px;
+  text-align:center;
+  font:13px "Microsoft JhengHei";
+  letter-spacing:3px;
+  color:#e2d1aa;
+  pointer-events:none
+}
+canvas {
+  z-index:1
+}
