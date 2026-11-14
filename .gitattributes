@@ -1,0 +1,2 @@
+# Keep exported static artifacts byte-exact; do not convert line endings.
+* -text
