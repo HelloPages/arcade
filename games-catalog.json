@@ -1,0 +1,252 @@
+{
+  "portalTitle": "REA 經典街機與放置成長逆向重製中心",
+  "version": "v_20261113_shinobi_1",
+  "updatedAt": "2026-11-13T11:20:00+08:00",
+  "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向，在時代、色彩、材質、字體、HUD、構圖與動效上明顯區分；禁止全館陽光海島、共用玻璃膠囊或換色模板。每日新作優先動態精細動作遊戲（禁止偷懶靜態格子益智），以實際封面與遊戲畫面比對驗收。",
+  "dailySchedule": {
+    "generateCron": "每日 04:00 自動生成具獨立美術風格、與其他館藏可明顯區分的直式手機 REA 經典動態動作復刻遊戲",
+    "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
+  },
+  "games": [
+    {
+      "id": "shinobi",
+      "title": "《赤焰忍傳：疾風手裏劍》",
+      "shortTab": "赤焰忍傳",
+      "path": "./shinobi.html",
+      "genre": "浮世繪夜戰 × 60fps 動態動作跑酷斬擊",
+      "addedDate": "2026-11-13",
+      "thumbnail": "assets/shinobi-cover.webp",
+      "reaSource": "Sega Shinobi 經典屋簷疾走與空中二段翻滾手裏劍機制（原創 60fps 動態動作引擎與浮世繪美術）",
+      "highlights": [
+        "浮世繪金月夜色、和紙朱印捲軸 HUD 與真實 RGBA 透明 PNG 動態忍者／武士／羅剎鎧精靈",
+        "60fps 屋簷跑酷、二段翻滾手裏劍、無敵幀瞬身斬殘影、急降滑鏟與三階段首領羅剎鎧決戰"
+      ],
+      "artDirection": "戰國浮世繪金月夜色與和紙朱印卷軸；靛青夜空、緋紅圍巾、銀杏燙金，無玻璃膠囊、強調高張力打擊頓幀與殘影動效"
+    },
+    {
+      "id": "weave",
+      "title": "《霜桃織坊：暗結尋蹤》",
+      "shortTab": "霜桃織坊",
+      "path": "./weave.html",
+      "genre": "提花織品攝影 × 經典掃雷",
+      "addedDate": "2026-11-13",
+      "thumbnail": "assets/weave-cover.webp",
+      "reaSource": "aymanbagabas/jsminesweeper@27eb1d09 公開 MIT JavaScript；REA 靜態分析八鄰格、空白展開、標記與勝敗，原創手機引擎與織品美術",
+      "highlights": [
+        "霧桃粉、深梅紫與提花織線；專屬攝影美術、經緯刻度與織樣工作台",
+        "三段織樣、首步安全、拆線／標記切換、可選安全提示、暫停與續玩；無倒數"
+      ],
+      "artDirection": "當代織品設計稿與高訂提花微距攝影；霧桃粉／梅紫／米白，無襯線字、平面經緯紀錄、拆線淡入，非玻璃或彈跳模板"
+    },
+    {
+      "id": "fossil",
+      "title": "《霧銀標本室：化石配對》",
+      "shortTab": "霧銀標本室",
+      "path": "./fossil.html",
+      "genre": "自然史標本攝影 × 經典記憶配對",
+      "addedDate": "2026-11-12",
+      "thumbnail": "assets/fossil-cover.webp",
+      "reaSource": "Tania Rascia Memory 公開 MIT 發布 script.babel.js；REA 靜態分析雙卡選取、相等配對與重置，原創引擎及化石美術",
+      "highlights": [
+        "冷灰石材、專屬化石攝影與標本抽屜；平面編目資訊、無玻璃膠囊",
+        "4／6／8 對展櫃，翻牌筆記、手動收回、暫停與續玩；無倒數"
+      ],
+      "artDirection": "當代自然史博物館的冷灰礦物微距攝影；霧白石材、墨灰編目字、抽屜把手與垂直揭示，無卡通與霓虹"
+    },
+    {
+      "id": "indigo",
+      "title": "《靛藍暗房：星圖顯影》",
+      "shortTab": "靛藍暗房",
+      "path": "./indigo.html",
+      "genre": "藍曬天文攝影 × 十字翻燈解謎",
+      "addedDate": "2026-11-11",
+      "thumbnail": "assets/indigo-cover.webp",
+      "reaSource": "Simon Tatham 官方 Flip／Crosses 規則；REA 僅靜態分析 flip.js 瀏覽器膠水，核心 WASM 未分析，原創 JavaScript 引擎",
+      "highlights": [
+        "19 世紀藍曬天文盤、普魯士藍與紙白；專屬星圖底片、曝光紀錄與平面排版",
+        "三段可解底片，翻轉十字範圍讓星圖全亮；悔步、最短解提示、暫停與續玩，沒有倒數"
+      ],
+      "artDirection": "19 世紀藍曬天文攝影：普魯士藍／紙白，刻線星圖與棉紙、宋體標題、平面曝光紀錄、逐格顯影淡入，非天空／玻璃／霓虹模板"
+    },
+    {
+      "id": "amber",
+      "title": "《琥珀電台：訊號接線員》",
+      "shortTab": "琥珀電台",
+      "path": "./amber.html",
+      "genre": "電木維修工坊 × 經典旋轉接線",
+      "addedDate": "2026-11-10",
+      "thumbnail": "assets/amber-cover.webp",
+      "reaSource": "Simon Tatham 官方 Net 規則與公開發布 net.js（REA 僅靜態分析瀏覽器膠水；WASM 核心未分析，原創 JavaScript 網路引擎）",
+      "highlights": [
+        "1960 年代電木、銅線與奶油面板；指針訊號表、工單版面與精細原創向量零件",
+        "4×4／5×5／6×6 可解線路；鎖定防誤觸、悔步、線頭提示、暫停與續玩，沒有倒數"
+      ],
+      "artDirection": "1960 年代類比電台維修台：煙草棕、琥珀銅、暖象牙與石墨；電木材質、等寬數字、非對稱工單與旋轉線路，無玻璃膠囊"
+    },
+    {
+      "id": "lacquer",
+      "title": "《赤漆棋室：黑白之間》",
+      "shortTab": "赤漆棋室",
+      "path": "./lacquer.html",
+      "genre": "朱漆靜物攝影 × 經典黑白棋",
+      "addedDate": "2026-11-09",
+      "thumbnail": "assets/lacquer-cover.webp",
+      "reaSource": "ninegua/reversi@77077eee 公開 MIT game.js（REA 靜態分析方向掃描與翻子；原創引擎依官方規則實作，不沿用參考計步缺陷）",
+      "highlights": [
+        "朱漆、墨黑與瓷白的靜物美術；棋譜資訊列、材質棋子與翻面動效",
+        "入門／深思電腦、同機雙人、提點、悔棋、暫停與續玩；無倒數，無步自動讓手"
+      ],
+      "artDirection": "當代日式漆器靜物攝影；朱漆、深酒紅、墨黑與瓷白，宋體棋室標題、平面棋譜資訊列、低幅度翻面"
+    },
+    {
+      "id": "midnight",
+      "title": "《午夜特快：月台拼圖》",
+      "shortTab": "午夜特快",
+      "path": "./midnight.html",
+      "genre": "裝飾藝術版畫 × 經典空格滑塊",
+      "addedDate": "2026-11-08",
+      "thumbnail": "assets/midnight-cover.webp",
+      "reaSource": "Xpaid/Sliding-Puzzle 公開 MIT 版本 c406982（REA 靜態分析相鄰空格交換、歸位判定；3×3 引擎、旅程與美術原創）",
+      "highlights": [
+        "黑墨、銀白與琥珀的 1930 年代鐵道版畫；車票式紀錄、宋體標題與實體滑塊",
+        "三段難度、可解局面、原圖對照、逐步提示與無限復原；無倒數，進度保存在此瀏覽器"
+      ],
+      "artDirection": "1930 年代裝飾藝術鐵道版畫；黑墨／銀白／琥珀，精細雕刻線、車票記錄與沉靜滑動"
+    },
+    {
+      "id": "garden",
+      "title": "《晴空花園：花盆推推樂》",
+      "shortTab": "晴空花園",
+      "path": "./garden.html",
+      "genre": "水彩植物繪本 × 紙雕花園解謎",
+      "addedDate": "2026-11-07",
+      "thumbnail": "assets/redesign-garden-cover.webp",
+      "reaSource": "paskhaver/sokoban 公開 JavaScript 版本（REA 靜態分析單盆推移、阻擋與全目標完成；關卡與美術原創）",
+      "highlights": [
+        "鼠尾草水彩、陶土花盆與植物手帳；紙張 HUD、木質方向鍵與獨立園丁插畫",
+        "五座花園、單指滑動、無限復原與逐步花語提示；無倒數，可隨時暫停重來"
+      ],
+      "artDirection": "鼠尾草水彩、陶土花盆與植物手帳；紙張 HUD、木質方向鍵與獨立園丁插畫"
+    },
+    {
+      "id": "capybara",
+      "title": "《水豚晴旅：海島跳跳渡假》",
+      "shortTab": "水豚晴旅",
+      "path": "./capybara.html",
+      "genre": "復古旅行海報 × 水豚海島穿越",
+      "addedDate": "2026-11-06",
+      "thumbnail": "assets/redesign-capybara-cover.webp",
+      "reaSource": "elharony/FEND-Arcade-Game 公開 MIT JavaScript 版（REA 靜態分析格移、時間步進、AABB 碰撞及重置；原創擴充漂浮海龜）",
+      "highlights": [
+        "珊瑚旅行版畫、奶油色行程卡與湖水綠河道；票券 HUD、渡假貼紙與水豚旅人",
+        "三段旅程、滑動逐格閃車與搭乘漂浮海龜；安全岸邊、海風暫停與金冠鵜鶘登場"
+      ],
+      "artDirection": "珊瑚旅行版畫、奶油色行程卡與湖水綠河道；票券 HUD、渡假貼紙與水豚旅人"
+    },
+    {
+      "id": "twinbee",
+      "title": "《兵蜂：晴空鈴鐺幻想曲 ULTRA》",
+      "shortTab": "🔔 兵蜂・鈴鐺幻想",
+      "path": "./twinbee.html",
+      "genre": "機甲賽璐璐 × 五色鈴鐺空戰",
+      "addedDate": "2026-11-05",
+      "thumbnail": "assets/redesign-twinbee-cover.webp",
+      "reaSource": "Konami TwinBee / Yahhoo! (五色鈴鐺連擊狀態轉移表：黃高分→藍加速→白雙連砲→綠殘影分身→粉薔薇護盾，與三機合體齊射系統)",
+      "highlights": [
+        "寶藍發射基地、亮紅玩具機甲與明黃警示板；機隊儀表與編號技能鍵，本機候選",
+        "內建 4 大招牌必殺技（🔔 五色神鈴雨、✈️ 三機合體砲、💥 紅拳星光彈、👑 梅蘿菈聖歌）與 8 項鈴鐺機隊養成"
+      ],
+      "artDirection": "寶藍發射基地、亮紅玩具機甲與明黃警示板；機隊儀表與編號技能鍵，本機候選"
+    },
+    {
+      "id": "rainbow",
+      "title": "《彩虹泡泡龍：晴空浮空島物語 ULTRA》",
+      "shortTab": "🌈 彩虹泡泡龍",
+      "path": "./rainbow.html",
+      "genre": "90 年代街機普普 × 泡泡龍養成",
+      "addedDate": "2026-11-03",
+      "thumbnail": "assets/redesign-rainbow-cover.webp",
+      "reaSource": "Taito Bubble Bobble & Rainbow Islands (氣泡困怪上升浮力流場 vy=-95+sin(t)、七彩雙虹橋貫穿與連鎖破泡水果權重表)",
+      "highlights": [
+        "亮紫、桃紅與酸橙綠街機；漫畫角色、半色調場景、硬邊連擊與街機控制列",
+        "支援全自動射泡巡航 (Auto-Idle) 與 4 大經典必殺技（🌈 七彩雙虹橋、🫧 滿天泡泡雨、💥 全屏連鎖爆、☀️ 晴空聖光砲）"
+      ],
+      "artDirection": "亮紫、桃紅與酸橙綠街機；漫畫角色、半色調場景、硬邊連擊與街機控制列"
+    },
+    {
+      "id": "orchard",
+      "title": "《晴空果園：彈彈守護隊》",
+      "shortTab": "☀ 晴空果園",
+      "path": "./orchard.html",
+      "genre": "民俗拼貼剪紙 × 果園打磚塊",
+      "addedDate": "2026-11-05",
+      "thumbnail": "assets/redesign-orchard-cover.webp",
+      "reaSource": "jakesgordon/javascript-breakout 公開 JavaScript 版本（REA 靜態分析球拍落點反射、碰撞與掉球）",
+      "highlights": [
+        "杏橘紙纖維、橄欖樹葉與葡萄紫布藝；剪紙果實、縫線標籤與採收進度",
+        "左右滑動葉片球拍、三關採收與八段血條鳳梨國王；晴光護盾與晴光導引"
+      ],
+      "artDirection": "杏橘紙纖維、橄欖樹葉與葡萄紫布藝；剪紙果實、縫線標籤與採收進度"
+    },
+    {
+      "id": "pang",
+      "title": "《晴空海島：晶獸彈跳祭》",
+      "shortTab": "☀ 晴空海島",
+      "path": "./pang.html",
+      "genre": "科幻動作漫畫 × 晶獸分裂消除",
+      "addedDate": "2026-11-04",
+      "thumbnail": "assets/redesign-pang-cover.webp",
+      "reaSource": "Pang 公開 JavaScript 重製版 mkmik/pang（靜態分析魚叉碰撞、晶獸分裂與彈跳）",
+      "highlights": [
+        "磚紅異星研究基地、青綠晶獸與象牙白紙張；粗墨線分鏡 HUD、漫畫命中與異獸圖鑑",
+        "左右滑動閃避、自動晶光魚叉、潮汐凍結；三關闖關與金冠晶獸首領"
+      ],
+      "artDirection": "磚紅異星研究基地、青綠晶獸與象牙白紙張；粗墨線分鏡 HUD、漫畫命中與異獸圖鑑"
+    },
+    {
+      "id": "pinball",
+      "title": "《3D 太空彈珠台：星際軍校生 ULTRA》",
+      "shortTab": "🌌 太空彈珠台",
+      "path": "./pinball.html",
+      "genre": "夜色機械科幻 × 太空彈珠物理",
+      "addedDate": "2026-10-30",
+      "thumbnail": "assets/redesign-pinball-cover.webp",
+      "reaSource": "Maxis/Cinematronics SpaceCadetPinball.exe (720Hz 子步進剛體碰撞、9 大晉升軍階與 6 大原作密技)",
+      "highlights": [
+        "深海軍藍金屬艦橋、電光青導軌與紫紅反應爐；機械儀表、鋼珠與霓虹玻璃",
+        "已修復全螢幕雙重按鈕問題與下方黑底空白（雙軸 scaleX/scaleY 100% 滿版填滿視窗），並具備黑洞/蟲洞 2.0 秒免疫防卡球保護"
+      ],
+      "artDirection": "深海軍藍金屬艦橋、電光青導軌與紫紅反應爐；機械儀表、鋼珠與霓虹玻璃"
+    },
+    {
+      "id": "stage3",
+      "title": "《1943：第三關・決戰巨型轟炸機亞也子》",
+      "shortTab": "☁️ 1943・亞也子",
+      "path": "./stage3.html",
+      "genre": "戰爭電影 × 亞也子決戰",
+      "addedDate": "2026-10-29",
+      "thumbnail": "assets/redesign-stage3-cover.webp",
+      "reaSource": "Capcom 1943: The Battle of Midway (亞也子多部位破壞判定與雲層視差捲軸)",
+      "highlights": [
+        "石板灰雷暴雲海、暗紅警報與古銅機身；電影字幕、鋼鐵巨翼與多部位首領戰",
+        "手機單指按住任意位置即可飛行並自動連續開火（戰機保持於手指上方 42px 不擋視線），具備雷電必殺與迴旋閃避"
+      ],
+      "artDirection": "石板灰雷暴雲海、暗紅警報與古銅機身；電影字幕、鋼鐵巨翼與多部位首領戰"
+    },
+    {
+      "id": "stage2",
+      "title": "《1943：第二關・拉包爾航空戰》",
+      "shortTab": "🏝️ 1943・拉包爾",
+      "path": "./stage2.html",
+      "genre": "1940 年代作戰地圖 × 拉包爾海戰",
+      "addedDate": "2026-10-28",
+      "thumbnail": "assets/redesign-stage2-cover.webp",
+      "reaSource": "Capcom 1943: The Battle of Midway (艦隊砲塔鎖定與散彈武器強化系統)",
+      "highlights": [
+        "海軍藍航海圖、卡其等高線與沙色任務紙；軍用計分儀表、機艙操作與艦隊作戰",
+        "手機直式滿版單指滑動操控，支援散彈強化與艦隊主砲擊破"
+      ],
+      "artDirection": "海軍藍航海圖、卡其等高線與沙色任務紙；軍用計分儀表、機艙操作與艦隊作戰"
+    }
+  ]
+}

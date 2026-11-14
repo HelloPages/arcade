@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>兵蜂：晴空鈴鐺幻想曲 ULTRA｜REA 經典 KONAMI 兵蜂逆向復刻 × 透明 PNG 精靈放置空戰 (v_10:25:00)</title>
+<style>
+  :root {
+    --sky-top: #0284c7;
+    --sky-mid: #38bdf8;
+    --sky-bot: #fef9c3;
+    --bell-gold: #f59e0b;
+    --winbee-pink: #ec4899;
+    --gwin-green: #10b981;
+    --text-dark: #0f172a;
+    --text-muted: #475569;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0ea5e9 0%, #7dd3fc 58%, #fef08a 100%);
+    color: var(--text-dark);
+    font-family: "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    touch-action: none;
+    display: flex;
+    flex-direction: column;
+  }
+  img:not([src]) { visibility: hidden; }
+
+  /* 頂部明亮陽光導覽列 (內嵌或沉浸式全螢幕時自動隱藏，確保單一全螢幕按鈕) */
+  .topbar {
+    height: 36px;
+    min-height: 36px;
+    background: linear-gradient(90deg, #ffffff 0%, #f0f9ff 50%, #fef9c3 100%);
+    border-bottom: 2px solid #38bdf8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6px;
+    z-index: 30;
+    flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(2, 132, 199, 0.18);
+  }
+  body.embedded .topbar,
+  body.immersive-fs .topbar {
+    display: none !important;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 900;
+    font-size: 12px;
+    color: #0369a1;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .badge {
+    background: linear-gradient(135deg, #f59e0b, #ec4899);
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 5px;
+    font-weight: 900;
+  }
+  .ver-stamp {
+    font-family: monospace;
+    font-size: 10px;
+    color: #047857;
+    background: #d1fae5;
+    border: 1px solid #34d399;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 800;
+  }
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .top-btn {
+    background: #ffffff;
+    color: #0369a1;
+    border: 1.5px solid #7dd3fc;
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(2, 132, 199, 0.12);
+  }
+  .top-btn:active { transform: scale(0.95); }
+  .top-btn.fs-btn {
+    background: linear-gradient(135deg, #0ea5e9, #10b981);
+    border-color: #059669;
+    color: #ffffff;
+  }
+  .top-btn.gold {
+    background: linear-gradient(135deg, #f59e0b, #ec4899);
+    border-color: #d97706;
+    color: #ffffff;
+  }
+  @media (max-width: 420px) {
+    .hide-sm { display: none; }
+  }
+
+  /* 獨立模式退出全螢幕膠囊 */
+  .exit-fs-pill {
+    display: none;
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 8px);
+    right: 8px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #ec4899, #f59e0b);
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  body.immersive-fs:not(.embedded) .exit-fs-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  body.embedded .exit-fs-pill {
+    display: none !important;
+  }
+
+  /* 主遊戲容器 */
+  .game-layout {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .canvas-wrap {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(180deg, #38bdf8 0%, #bae6fd 70%, #fef9c3 100%);
+  }
+  canvas#twinbeeCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+  }
+
+  /* ─── 現代商用手遊級 Glassmorphic 懸浮膠囊 HUD ─── */
+  .modern-hud-overlay {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    z-index: 15;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .hud-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .stage-capsule {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.90) 0%, rgba(224, 242, 254, 0.88) 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
+    border-radius: 999px;
+    padding: 4px 10px 4px 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+  .sky-badge {
+    background: linear-gradient(135deg, #f59e0b, #ec4899);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(236, 72, 153, 0.35);
+    white-space: nowrap;
+  }
+  .wave-track-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 86px;
+  }
+  .wave-label {
+    font-size: 10px;
+    font-weight: 900;
+    color: #0369a1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+  }
+  .wave-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(14, 165, 233, 0.2);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .wave-bar-fill {
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, #f59e0b, #ec4899, #0ea5e9);
+    border-radius: 999px;
+    transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .currency-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .res-pill {
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
+    border-radius: 999px;
+    padding: 3px 8px 3px 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12), inset 0 1px 0 #ffffff;
+  }
+  .res-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+  .res-icon img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: block;
+  }
+  .res-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  /* 鈴鐺色階狀態膠囊列 (Yellow / Blue / White / Pink / Green) */
+  .bell-buff-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+  }
+  .bell-tier-pills {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+  }
+  .b-pill {
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid #bae6fd;
+    border-radius: 999px;
+    padding: 2px 7px;
+    font-size: 9.5px;
+    font-weight: 900;
+    color: #0369a1;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.12);
+  }
+  .b-pill.active {
+    background: linear-gradient(135deg, #f59e0b, #ec4899);
+    color: #ffffff;
+    border-color: #ffffff;
+  }
+
+  .combo-pill {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(236, 72, 153, 0.95));
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 900;
+    box-shadow: 0 6px 16px rgba(236, 72, 153, 0.42);
+    transform: scale(0);
+    transform-origin: right center;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .combo-pill.show {
+    transform: scale(1);
+  }
+
+  /* 斜切動漫風 BOSS 登場 Cut-In 血條橫幅 */
+  .boss-hud-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.86) 0%, rgba(2, 132, 199, 0.90) 58%, rgba(236, 72, 153, 0.90) 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 7px 12px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 26px rgba(236, 72, 153, 0.38);
+    color: #ffffff;
+    animation: cutInSlide 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .boss-hud-card.active {
+    display: flex;
+  }
+  @keyframes cutInSlide {
+    from { opacity: 0; transform: translateY(-12px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .boss-avatar-ring {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    border: 2px solid #facc15;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: radial-gradient(circle, #fef9c3, #bae6fd);
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .boss-avatar-ring img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    display: block;
+  }
+  .boss-meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .boss-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .boss-name {
+    font-size: 12px;
+    font-weight: 900;
+    color: #fef08a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  }
+  .boss-hp-text {
+    font-family: monospace;
+    font-size: 10.5px;
+    font-weight: 900;
+    color: #ffffff;
+  }
+  .boss-hp-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(15, 23, 42, 0.65);
+    border-radius: 999px;
+    padding: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    overflow: hidden;
+  }
+  .boss-hp-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f43f5e, #f59e0b, #fef08a);
+    transition: width 0.18s ease-out;
+  }
+
+  /* ─── 下方現代商用手遊玻璃養成底座 (Sleek Glass Dock) ─── */
+  .hud-dock {
+    width: 100%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 249, 255, 0.99) 100%);
+    backdrop-filter: blur(16px);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.95);
+    border-radius: 18px 18px 0 0;
+    margin-top: -10px;
+    padding: 7px 8px calc(env(safe-area-inset-bottom, 0px) + 6px);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 20;
+    flex-shrink: 0;
+    box-shadow: 0 -8px 24px rgba(2, 132, 199, 0.18);
+  }
+  .skill-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+  }
+  .skill-btn {
+    background: linear-gradient(160deg, #ffffff 0%, #e0f2fe 100%);
+    border: 1.5px solid #bae6fd;
+    border-radius: 12px;
+    padding: 4px 2px;
+    color: #0369a1;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(14, 165, 233, 0.14), inset 0 1px 0 #ffffff;
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .skill-btn:active { transform: translateY(1px) scale(0.96); }
+  .skill-btn.active-mode {
+    background: linear-gradient(160deg, #ecfdf5 0%, #a7f3d0 100%);
+    border-color: #10b981;
+    color: #065f46;
+  }
+  .skill-btn .sk-img {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 2px 3px rgba(2, 132, 199, 0.28));
+  }
+  .skill-btn .sk-name { font-size: 10px; font-weight: 900; margin-top: 1px; white-space: nowrap; }
+  .skill-btn .sk-sub {
+    font-size: 8.5px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #f59e0b, #ec4899);
+    padding: 0 5px;
+    border-radius: 999px;
+    font-family: monospace;
+    font-weight: 900;
+    margin-top: 1px;
+  }
+  .skill-btn.active-mode .sk-sub {
+    background: linear-gradient(135deg, #059669, #10b981);
+  }
+
+  .tab-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    background: #e2e8f0;
+    padding: 3px;
+    border-radius: 11px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 2px;
+    font-size: 11px;
+    font-weight: 900;
+    color: #475569;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.35);
+  }
+
+  .upgrade-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    height: 92px;
+    overflow-y: auto;
+  }
+  .up-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1.5px solid #cbd5e1;
+    border-radius: 11px;
+    padding: 5px 7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+  }
+  .up-card:active { transform: scale(0.97); }
+  .up-card.can-buy {
+    border-color: #38bdf8;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+    box-shadow: 0 3px 10px rgba(14, 165, 233, 0.14);
+  }
+  .up-left {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+  }
+  .up-ico {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 3px rgba(2, 132, 199, 0.2));
+  }
+  .up-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
+  }
+  .up-title {
+    font-size: 10.5px;
+    font-weight: 900;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .lv-pill {
+    background: #e0f2fe;
+    color: #0284c7;
+    border-radius: 999px;
+    padding: 0 5px;
+    font-size: 9px;
+    font-weight: 900;
+    font-family: monospace;
+  }
+  .up-desc {
+    font-size: 9px;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .up-buy {
+    background: #94a3b8;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-size: 10px;
+    font-weight: 900;
+    font-family: monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .up-card.can-buy .up-buy {
+    background: linear-gradient(135deg, #f59e0b, #ec4899);
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(236, 72, 153, 0.35);
+  }
+</style>
+<link rel="stylesheet" href="visuals/twinbee.css?v=20261107-art1">
+<script src="visuals/scene-cover.js?v=20261107-art1"></script>
+</head>
+<body>
+
+<button class="exit-fs-pill" id="btnExitFs" type="button">✕ 退出全螢幕</button>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="badge">REA</span>
+    <span>🔔 兵蜂<span class="hide-sm">：晴空鈴鐺幻想曲</span></span>
+    <span class="ver-stamp" id="verStamp">v_10:25:00</span>
+  </div>
+  <div class="top-actions">
+    <button class="top-btn fs-btn" id="btnFullscreen" type="button">⛶ 全螢幕</button>
+    <button class="top-btn gold" id="btnSuperCheat" type="button">🔔<span class="hide-sm"> 奇蹟</span>密技</button>
+    <button class="top-btn" id="btnSound" type="button">🔊</button>
+    <a class="top-btn" href="index.html">🕹️<span class="hide-sm"> 大廳</span></a>
+  </div>
+</div>
+
+<div class="game-layout">
+  <div class="canvas-wrap">
+    <!-- 現代商用手遊級 Glassmorphic 懸浮膠囊 HUD -->
+    <div class="modern-hud-overlay">
+      <div class="hud-top-row">
+        <div class="stage-capsule">
+          <span class="sky-badge" id="hudStageBadge">STAGE 1</span>
+          <div class="wave-track-wrap">
+            <div class="wave-label">
+              <span id="hudWaveText">丼物浮空島 W1/5</span>
+              <span style="color:#d97706;" id="hudBellCount">🔔0</span>
+            </div>
+            <div class="wave-bar-bg">
+              <div class="wave-bar-fill" id="hudWaveFill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="currency-group">
+          <div class="res-pill">
+            <span class="res-icon"><img id="hudCoinImg" alt="Coin"></span>
+            <span class="res-val" id="hudCoins">500</span>
+          </div>
+          <div class="res-pill">
+            <span class="res-icon"><img id="hudStarImg" alt="Star"></span>
+            <span class="res-val" id="hudStars">150</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bell-buff-strip">
+        <div class="bell-tier-pills">
+          <span class="b-pill active" id="bpBlue">🔵 疾風 Lv.1</span>
+          <span class="b-pill active" id="bpWhite">⚪ 雙連砲 Lv.1</span>
+          <span class="b-pill active" id="bpGreen">🟢 分身 Lv.1</span>
+          <span class="b-pill active" id="bpPink">🩷 護盾 Lv.1</span>
+        </div>
+        <div class="combo-pill" id="hudComboPill">🔔 8X BELL FEVER!</div>
+      </div>
+
+      <div class="boss-hud-card" id="hudBossCard">
+        <div class="boss-avatar-ring">
+          <img id="hudBossImg" alt="Boss">
+        </div>
+        <div class="boss-meta">
+          <div class="boss-title-row">
+            <span class="boss-name" id="hudBossName">👑 香料大王・黃金飛空艇</span>
+            <span class="boss-hp-text" id="hudBossHpText">100%</span>
+          </div>
+          <div class="boss-hp-track">
+            <div class="boss-hp-fill" id="hudBossHpFill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="twinbeeCanvas" width="430" height="580"></canvas>
+  </div>
+
+  <div class="hud-dock">
+    <!-- 5 顆商用級透明 PNG 圓章必殺列 -->
+    <div class="skill-bar">
+      <button class="skill-btn active-mode" id="btnAutoPilot" type="button">
+        <img class="sk-img" id="tbSk0" alt="">
+        <span class="sk-name">自動巡航</span>
+        <span class="sk-sub" id="autoPilotSub">ON 擊鈴</span>
+      </button>
+      <button class="skill-btn" id="btnSkillBellFever" type="button">
+        <img class="sk-img" id="tbSk1" alt="">
+        <span class="sk-name">五色神鈴雨</span>
+        <span class="sk-sub" id="cdFever">READY</span>
+      </button>
+      <button class="skill-btn" id="btnSkillThreeWay" type="button">
+        <img class="sk-img" id="tbSk2" alt="">
+        <span class="sk-name">三機合體砲</span>
+        <span class="sk-sub" id="cdThree">READY</span>
+      </button>
+      <button class="skill-btn" id="btnSkillStarBomb" type="button">
+        <img class="sk-img" id="tbSk3" alt="">
+        <span class="sk-name">紅拳星光彈</span>
+        <span class="sk-sub" id="cdBomb">READY</span>
+      </button>
+      <button class="skill-btn" id="btnSkillMelora" type="button">
+        <img class="sk-img" id="tbSk4" alt="">
+        <span class="sk-name">梅蘿菈聖歌</span>
+        <span class="sk-sub" id="cdMelora">READY</span>
+      </button>
+    </div>
+
+    <!-- 4 大養成與首領分頁 -->
+    <div class="tab-row">
+      <button class="tab-btn active" data-tab="bells" type="button">🔔 五色鈴鐺</button>
+      <button class="tab-btn" data-tab="squad" type="button">✈️ 兵蜂機隊</button>
+      <button class="tab-btn" data-tab="bosses" type="button">👑 飛空艇王</button>
+      <button class="tab-btn" data-tab="rea" type="button">🔬 REA 密技</button>
+    </div>
+
+    <div class="upgrade-grid" id="upgradeGrid"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const VERSION_STAMP = 'v_10:25:00';
+  if (new URLSearchParams(window.location.search).get('embed') === '1') {
+    document.body.classList.add('embedded');
+  }
+
+  const canvas = document.getElementById('twinbeeCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 430, H = 580;
+
+  // ─── 載入高解析晴空背景與真實 RGBA 透明去背 PNG 精靈圖集 (0% 純向量火柴人！100% 生圖去背精靈！) ───
+  const ASSETS = {
+    bg: new Image(),
+    unitSheet: new Image(),
+    bellBossSheet: new Image(),
+    itemSheet: new Image(),
+    skillSheet: new Image()
+  };
+
+  const SPRITES = {
+    twinbee: null,
+    winbee: null,
+    gwinbee: null,
+    melora: null,
+    bellsCluster: null,
+    appleMob: null,
+    kingSpice: null,
+    queenParfait: null,
+    items: [],
+    itemUrls: [],
+    skillUrls: []
+  };
+
+  function sliceCell(img, col, row, cols, rows) {
+    const cw = Math.floor(img.naturalWidth / cols);
+    const ch = Math.floor(img.naturalHeight / rows);
+    const pad = Math.floor(cw * 0.03);
+    const sw = cw - pad * 2;
+    const sh = ch - pad * 2;
+    const off = document.createElement('canvas');
+    off.width = sw;
+    off.height = sh;
+    off.getContext('2d').drawImage(img, col * cw + pad, row * ch + pad, sw, sh, 0, 0, sw, sh);
+    return off;
+  }
+
+  ASSETS.bg.src = 'assets/redesign-twinbee-scene.webp';
+
+  ASSETS.unitSheet.onload = () => {
+    try {
+      SPRITES.twinbee = sliceCell(ASSETS.unitSheet, 0, 0, 2, 2);
+      SPRITES.winbee  = sliceCell(ASSETS.unitSheet, 1, 0, 2, 2);
+      SPRITES.gwinbee = sliceCell(ASSETS.unitSheet, 0, 1, 2, 2);
+      SPRITES.melora  = sliceCell(ASSETS.unitSheet, 1, 1, 2, 2);
+      SPRITES.unitUrls = {
+        twinbee: SPRITES.twinbee.toDataURL('image/png'),
+        winbee:  SPRITES.winbee.toDataURL('image/png'),
+        gwinbee: SPRITES.gwinbee.toDataURL('image/png'),
+        melora:  SPRITES.melora.toDataURL('image/png')
+      };
+      renderUpgrades();
+    } catch (_) {}
+  };
+  ASSETS.unitSheet.src = 'assets/redesign-twinbee-sprites.png';
+
+  ASSETS.bellBossSheet.onload = () => {
+    try {
+      SPRITES.bellsCluster = sliceCell(ASSETS.bellBossSheet, 0, 0, 2, 2);
+      SPRITES.appleMob     = sliceCell(ASSETS.bellBossSheet, 1, 0, 2, 2);
+      SPRITES.kingSpice    = sliceCell(ASSETS.bellBossSheet, 0, 1, 2, 2);
+      SPRITES.queenParfait = sliceCell(ASSETS.bellBossSheet, 1, 1, 2, 2);
+      SPRITES.bossUrls = {
+        bellsCluster: SPRITES.bellsCluster.toDataURL('image/png'),
+        kingSpice:    SPRITES.kingSpice.toDataURL('image/png'),
+        queenParfait: SPRITES.queenParfait.toDataURL('image/png')
+      };
+      const bi = document.getElementById('hudBossImg');
+      if (bi) bi.src = SPRITES.bossUrls.kingSpice;
+      renderUpgrades();
+    } catch (_) {}
+  };
+  ASSETS.bellBossSheet.src = 'assets/twinbee_sprites_bells_bosses.png';
+
+  ASSETS.itemSheet.onload = () => {
+    try {
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const cell = sliceCell(ASSETS.itemSheet, c, r, 3, 3);
+          SPRITES.items.push(cell);
+          SPRITES.itemUrls.push(cell.toDataURL('image/png'));
+        }
+      }
+      const ci = document.getElementById('hudCoinImg');
+      const si = document.getElementById('hudStarImg');
+      if (ci && SPRITES.itemUrls[7]) ci.src = SPRITES.itemUrls[7];
+      if (si && SPRITES.itemUrls[8]) si.src = SPRITES.itemUrls[8];
+      renderUpgrades();
+    } catch (_) {}
+  };
+  ASSETS.itemSheet.src = 'assets/rainbow_items_3x3.png';
+
+  ASSETS.skillSheet.onload = () => {
+    try {
+      for (let r = 0; r < 2; r++) {
+        for (let c = 0; c < 3; c++) {
+          const cell = sliceCell(ASSETS.skillSheet, c, r, 3, 2);
+          SPRITES.skillUrls.push(cell.toDataURL('image/png'));
+        }
+      }
+      for (let i = 0; i < 5; i++) {
+        const el = document.getElementById('tbSk' + i);
+        if (el && SPRITES.skillUrls[i]) el.src = SPRITES.skillUrls[i];
+      }
+    } catch (_) {}
+  };
+  ASSETS.skillSheet.src = 'assets/rainbow_skills_3x2.png';
+
+  // ─── 沉浸式全螢幕切換 ───
+  function toggleImmersiveFullscreen(forceState) {
+    const nextState = typeof forceState === 'boolean'
+      ? forceState
+      : !document.body.classList.contains('immersive-fs');
+    document.body.classList.toggle('immersive-fs', nextState);
+    try {
+      if (nextState && document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (!nextState && document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    } catch (_) {}
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'TOGGLE_IMMERSIVE_FS', active: nextState, value: nextState }, '*');
+      }
+    } catch (_) {}
+  }
+  document.getElementById('btnFullscreen').addEventListener('click', () => toggleImmersiveFullscreen());
+  document.getElementById('btnExitFs').addEventListener('click', () => toggleImmersiveFullscreen(false));
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'PARENT_FS_STATE') {
+      document.body.classList.toggle('immersive-fs', Boolean(e.data.value));
+    }
+  });
+
+  // ─── 歡快街機鈴鐺與射擊音效合成器 ───
+  let audioCtx = null;
+  let soundEnabled = true;
+  function ensureAudio() {
+    if (!soundEnabled) return;
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+  }
+  function playSfx(type, pitch = 1) {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      if (type === 'bell') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880 * pitch, now);
+        osc.frequency.exponentialRampToValueAtTime(1760 * pitch, now + 0.14);
+        gain.gain.setValueAtTime(0.11, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        osc.start(now); osc.stop(now + 0.15);
+      } else if (type === 'shot') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(620, now);
+        osc.frequency.exponentialRampToValueAtTime(280, now + 0.06);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.start(now); osc.stop(now + 0.06);
+      } else if (type === 'fanfare') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, now);
+        osc.frequency.setValueAtTime(783.99, now + 0.07);
+        osc.frequency.setValueAtTime(987.77, now + 0.14);
+        osc.frequency.setValueAtTime(1174.66, now + 0.21);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
+        osc.start(now); osc.stop(now + 0.34);
+      }
+    } catch (_) {}
+  }
+  document.getElementById('btnSound').addEventListener('click', (e) => {
+    soundEnabled = !soundEnabled;
+    e.currentTarget.textContent = soundEnabled ? '🔊' : '🔇';
+  });
+
+  // ─── 遊戲狀態與存檔 (KONAMI 兵蜂五色鈴鐺系統 × 放置機隊養成) ───
+  const SAVE_KEY = 'REA_TWINBEE_SUNNY_BELL_ULTRA_V1';
+  const BELL_COLORS = [
+    { id: 'yellow', name: '🟡 黃金高分鈴', tint: '#facc15', glow: '#f59e0b' },
+    { id: 'blue',   name: '🔵 疾風音速鈴', tint: '#38bdf8', glow: '#0284c7' },
+    { id: 'white',  name: '⚪ 雙管連射鈴', tint: '#ffffff', glow: '#94a3b8' },
+    { id: 'green',  name: '🟢 幻影分身鈴', tint: '#34d399', glow: '#059669' },
+    { id: 'pink',   name: '🩷 薔薇護盾鈴', tint: '#f472b6', glow: '#db2777' }
+  ];
+
+  const state = {
+    coins: 500,
+    stars: 150,
+    stage: 1,
+    wave: 1,
+    bellsCollected: 0,
+    combo: 0,
+    comboTimer: 0,
+    autoPilot: true,
+    speedMul: 1,
+    meloraTimer: 0,
+    bossBannerTimer: 0,
+    currentBossName: '',
+    currentBossKey: 'kingSpice',
+    activeTab: 'bells',
+    bgScrollY: 0,
+    player: {
+      x: W * 0.5,
+      y: 472,
+      targetX: W * 0.5,
+      targetY: 472,
+      shootTimer: 0,
+      bellShotTimer: 0
+    },
+    upgrades: {
+      yellowBell: { lv: 1, name: '🟡 黃金鈴鐺倍率', desc: '射擊雲朵掉出鈴鐺的分數與金幣大幅提升', baseCost: 55, currency: 'coins', iconType: 'bell' },
+      blueBell:   { lv: 1, name: '🔵 藍鈴疾風引擎', desc: '提升兵蜂巡航速度與主砲連射頻率', baseCost: 85, currency: 'coins', iconType: 'bell' },
+      whiteBell:  { lv: 1, name: '⚪ 白鈴雙管巨砲', desc: '強化雙管星光彈與扇形擴散彈幕傷害', baseCost: 125, currency: 'coins', iconType: 'bell' },
+      pinkShield: { lv: 1, name: '🩷 粉鈴薔薇力場', desc: '提升暴擊率與全機隊鈴鐺共鳴護盾傷害', baseCost: 165, currency: 'coins', iconType: 'bell' },
+      winbeeAlly: { lv: 1, name: '🩷 溫蜂號・WinBee', desc: '粉紅溫蜂號隨行齊射愛心追蹤光束', baseCost: 45, currency: 'stars', iconType: 'winbee' },
+      gwinbeeAlly:{ lv: 1, name: '🟢 格溫蜂・GwinBee', desc: '翠綠格溫蜂自動向上擊打鈴鐺維持變色', baseCost: 75, currency: 'stars', iconType: 'gwinbee' },
+      meloraGrace:{ lv: 1, name: '👑 梅蘿菈公主祝福', desc: '公主聖杖每秒自動產出金幣與彩虹星鑽', baseCost: 110, currency: 'stars', iconType: 'melora' },
+      greenClones:{ lv: 1, name: '✨ 綠鈴殘影分身', desc: '增加環繞機隊同步開火的幻影分身數量', baseCost: 150, currency: 'stars', iconType: 'twinbee' }
+    },
+    cooldowns: {
+      fever: 0,
+      three: 0,
+      bomb: 0,
+      melora: 0
+    }
+  };
+
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (typeof saved.coins === 'number') state.coins = saved.coins;
+      if (typeof saved.stars === 'number') state.stars = saved.stars;
+      if (typeof saved.stage === 'number') state.stage = saved.stage;
+      if (typeof saved.bellsCollected === 'number') state.bellsCollected = saved.bellsCollected;
+      if (saved.upgrades) {
+        for (const k of Object.keys(state.upgrades)) {
+          if (saved.upgrades[k] && typeof saved.upgrades[k].lv === 'number') {
+            state.upgrades[k].lv = saved.upgrades[k].lv;
+          }
+        }
+      }
+    }
+  } catch (_) {}
+
+  function saveGame() {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        coins: Math.floor(state.coins),
+        stars: Math.floor(state.stars),
+        stage: state.stage,
+        bellsCollected: state.bellsCollected,
+        upgrades: state.upgrades,
+        ts: Date.now()
+      }));
+    } catch (_) {}
+  }
+
+  function getStats() {
+    const u = state.upgrades;
+    const baseAtk = 62 * Math.pow(1.27, u.whiteBell.lv - 1) * (1 + u.blueBell.lv * 0.14);
+    const critChance = Math.min(0.80, 0.20 + u.pinkShield.lv * 0.04);
+    const critMul = 2.0 + u.yellowBell.lv * 0.22;
+    const lootMul = 1 + u.yellowBell.lv * 0.28 + u.meloraGrace.lv * 0.25;
+    const cloneCount = Math.min(4, 1 + Math.floor(u.greenClones.lv / 2));
+    return { baseAtk, critChance, critMul, lootMul, cloneCount };
+  }
+
+  function getUpgradeCost(key) {
+    const u = state.upgrades[key];
+    return Math.floor(u.baseCost * Math.pow(1.42, u.lv - 1));
+  }
+
+  // ─── 實體容器：五色跳跳鈴鐺、敵機與飛空艇首領、子彈、水果寶石、跳字、粒子 ───
+  const bells = [];
+  const enemies = [];
+  const bullets = [];
+  const loots = [];
+  const floatTexts = [];
+  const particles = [];
+  let animClock = 0;
+
+  function addFloatText(x, y, text, color = '#d97706', size = 15, isCrit = false) {
+    floatTexts.push({ x, y, vy: -64, text, color, size, life: 0.9, maxLife: 0.9, isCrit });
+  }
+  function addParticles(x, y, color, count = 10, speed = 175) {
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const sp = (0.35 + Math.random() * 0.65) * speed;
+      particles.push({
+        x, y,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp - 25,
+        color,
+        r: 2.5 + Math.random() * 4.0,
+        life: 0.45 + Math.random() * 0.35,
+        star: i % 2 === 0
+      });
+    }
+  }
+
+  // ─── REA 經典 KONAMI 兵蜂「射擊雲端掉出鈴鐺・連擊變換五色」生成與物理 ───
+  function spawnBell(x = 70 + Math.random() * (W - 140), y = 95, initialTier = 0) {
+    bells.push({
+      x,
+      y,
+      vx: (Math.random() - 0.5) * 85,
+      vy: -95 - Math.random() * 40,
+      r: 24,
+      hits: initialTier * 5,
+      tierIdx: initialTier % BELL_COLORS.length,
+      wobble: Math.random() * Math.PI * 2,
+      hitCooldown: 0
+    });
+  }
+
+  function juggledBellHit(b) {
+    if (b.hitCooldown > 0) return;
+    b.hitCooldown = 0.14;
+    b.vy = -195 - Math.random() * 35; // 向上彈起不落地！
+    b.vx = (Math.random() - 0.5) * 130;
+    b.hits++;
+    b.tierIdx = Math.floor(b.hits / 2) % BELL_COLORS.length;
+    const tier = BELL_COLORS[b.tierIdx];
+    playSfx('bell', 1 + b.tierIdx * 0.12);
+    addParticles(b.x, b.y, tier.tint, 8, 140);
+    addFloatText(b.x, b.y - 20, `${tier.name}!`, tier.glow, 13.5, true);
+  }
+
+  function collectBell(b) {
+    state.bellsCollected++;
+    state.combo++;
+    state.comboTimer = 3.5;
+    const st = getStats();
+    const tier = BELL_COLORS[b.tierIdx];
+    playSfx('fanfare');
+    const coinGain = Math.round(42 * (1 + b.tierIdx * 0.6) * Math.pow(1.18, state.stage - 1) * st.lootMul);
+    const starGain = Math.round(14 * (1 + b.tierIdx * 0.5) * Math.pow(1.15, state.stage - 1) * st.lootMul);
+    state.coins += coinGain;
+    state.stars += starGain;
+    addParticles(b.x, b.y, tier.tint, 18, 210);
+    addFloatText(b.x, b.y - 18, `🔔 ${tier.name} +${coinGain}🪙`, '#f59e0b', 15, true);
+
+    // 拾取鈴鐺同時觸發全場共鳴衝擊波
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      damageEnemy(enemies[i], st.baseAtk * (1.2 + b.tierIdx * 0.35));
+    }
+  }
+
+  // ─── 生成晴空海盜萌怪與雙首領 (100% 使用透明去背 PNG 精靈！) ───
+  function spawnEnemy(forceBossKey = null) {
+    const stageScale = Math.pow(1.24, state.stage - 1);
+    const isBossWave = forceBossKey || (state.wave >= 5 && !enemies.some(e => e.isBoss));
+    if (isBossWave) {
+      const bossKey = forceBossKey || (state.stage % 2 === 1 ? 'kingSpice' : 'queenParfait');
+      const isQueen = bossKey === 'queenParfait';
+      const maxHp = Math.round(1250 * stageScale * (isQueen ? 1.3 : 1.0));
+      enemies.push({
+        id: 'boss_' + Date.now(),
+        spriteKey: bossKey,
+        name: isQueen ? '🍨 聖代女皇・帕妃特 (Queen Parfait)' : '👑 香料大王・黃金飛空艇 (King Spice)',
+        isBoss: true,
+        x: W * 0.5,
+        y: 178,
+        baseY: 178,
+        vx: 46,
+        r: 52,
+        hp: maxHp,
+        maxHp,
+        hitFlash: 0,
+        phase: 0,
+        color: isQueen ? '#ec4899' : '#f59e0b'
+      });
+      state.currentBossName = isQueen ? '🍨 聖代女皇・帕妃特' : '👑 香料大王・黃金飛空艇';
+      state.currentBossKey = bossKey;
+      state.bossBannerTimer = 4.0;
+      playSfx('fanfare');
+      return;
+    }
+
+    const x = 55 + Math.random() * (W - 110);
+    const y = 135 + Math.random() * 145;
+    const maxHp = Math.round(150 * stageScale);
+    enemies.push({
+      id: 'mob_' + Math.random(),
+      spriteKey: 'appleMob',
+      name: '蘋果潛艇與哈密瓜章魚隊',
+      isBoss: false,
+      x,
+      y,
+      baseY: y,
+      vx: (Math.random() > 0.5 ? 1 : -1) * (48 + Math.random() * 28),
+      r: 30,
+      hp: maxHp,
+      maxHp,
+      hitFlash: 0,
+      phase: Math.random() * Math.PI * 2,
+      color: '#f43f5e'
+    });
+  }
+
+  function damageEnemy(e, rawDmg) {
+    if (!e) return;
+    const st = getStats();
+    const isCrit = Math.random() < st.critChance;
+    const meloraMul = state.meloraTimer > 0 ? 1.75 : 1.0;
+    const finalDmg = Math.max(1, Math.round(rawDmg * (isCrit ? st.critMul : 1.0) * meloraMul));
+    e.hp -= finalDmg;
+    e.hitFlash = 1.0;
+
+    addFloatText(
+      e.x + (Math.random() - 0.5) * 26,
+      e.y - e.r - 8,
+      isCrit ? `💥${finalDmg.toLocaleString()}!` : `${finalDmg.toLocaleString()}`,
+      isCrit ? '#ec4899' : '#0284c7',
+      isCrit ? 17 : 13.5,
+      isCrit
+    );
+    addParticles(e.x, e.y, isCrit ? '#f472b6' : '#facc15', isCrit ? 8 : 4, 150);
+
+    if (e.hp <= 0) {
+      state.combo++;
+      state.comboTimer = 3.2;
+      playSfx('bell', 1.3);
+      const coinGain = Math.round((e.isBoss ? 260 : 34) * Math.pow(1.18, state.stage - 1) * st.lootMul);
+      const starGain = Math.round((e.isBoss ? 85 : 12) * Math.pow(1.15, state.stage - 1) * st.lootMul);
+
+      // 擊破敵機時掉出五色鈴鐺與 3D 水果寶石！
+      if (bells.length < 4 && (e.isBoss || Math.random() < 0.55)) {
+        spawnBell(e.x, Math.max(90, e.y - 15), Math.floor(Math.random() * BELL_COLORS.length));
+      }
+      const lootCount = e.isBoss ? 6 : 2;
+      for (let i = 0; i < lootCount; i++) {
+        loots.push({
+          x: e.x + (Math.random() - 0.5) * 30,
+          y: e.y,
+          itemIdx: Math.floor(Math.random() * 7),
+          coins: Math.ceil(coinGain / lootCount),
+          stars: Math.ceil(starGain / lootCount)
+        });
+      }
+      addParticles(e.x, e.y, '#facc15', e.isBoss ? 32 : 16, 220);
+
+      if (e.isBoss) {
+        state.stage++;
+        state.wave = 1;
+        addFloatText(W * 0.5, 145, `🌈 突破晴空第 ${state.stage} 空域！`, '#059669', 17, true);
+        saveGame();
+      } else {
+        state.wave = Math.min(5, state.wave + 1);
+      }
+    }
+  }
+
+  // ─── 4 大兵蜂招牌必殺技 ───
+  function triggerBellFever() {
+    if (state.cooldowns.fever > 0) return;
+    ensureAudio();
+    playSfx('fanfare');
+    state.cooldowns.fever = 3.8;
+    for (let i = 0; i < 4; i++) {
+      spawnBell(65 + i * 95, 105 + (i % 2) * 25, (i + 1) % BELL_COLORS.length);
+    }
+    addFloatText(W * 0.5, 185, '🔔 五色奇蹟神鈴雨 BELL FEVER!', '#f59e0b', 16, true);
+  }
+
+  function triggerThreeWayCannon() {
+    if (state.cooldowns.three > 0) return;
+    ensureAudio();
+    playSfx('fanfare');
+    state.cooldowns.three = 3.5;
+    const st = getStats();
+    const p = state.player;
+    for (let i = -4; i <= 4; i++) {
+      const ang = -Math.PI * 0.5 + i * 0.14;
+      bullets.push({
+        x: p.x,
+        y: p.y - 32,
+        vx: Math.cos(ang) * 420,
+        vy: Math.sin(ang) * 420,
+        r: 9,
+        color: i % 2 === 0 ? '#ec4899' : '#38bdf8',
+        dmg: st.baseAtk * 1.65,
+        life: 1.5
+      });
+    }
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      damageEnemy(enemies[i], st.baseAtk * 2.4);
+    }
+    addFloatText(W * 0.5, 215, '✈️ 兵蜂×溫蜂×格溫蜂 三機合體砲!', '#ec4899', 16, true);
+  }
+
+  function triggerStarBomb() {
+    if (state.cooldowns.bomb > 0) return;
+    ensureAudio();
+    playSfx('bell', 1.4);
+    state.cooldowns.bomb = 4.0;
+    const st = getStats();
+    for (const b of bells) juggledBellHit(b);
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      damageEnemy(enemies[i], st.baseAtk * 3.0);
+    }
+    addFloatText(W * 0.5, 195, '💥 紅拳星光震撼彈 STAR PUNCH!', '#0284c7', 16, true);
+  }
+
+  function triggerMeloraAnthem() {
+    if (state.cooldowns.melora > 0) return;
+    ensureAudio();
+    playSfx('fanfare');
+    state.cooldowns.melora = 5.5;
+    state.meloraTimer = 4.0;
+    const st = getStats();
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      damageEnemy(enemies[i], st.baseAtk * 3.2);
+    }
+    addFloatText(W * 0.5, 165, '👑 梅蘿菈公主・七彩鈴鐺聖歌!', '#d97706', 16, true);
+  }
+
+  // ─── 渲染下方 4 分頁養成卡片 (內嵌透明 PNG 精靈圖示) ───
+  const upgradeGridEl = document.getElementById('upgradeGrid');
+  function getUpgradeIconUrl(u) {
+    if (u.iconType === 'bell' && SPRITES.bossUrls && SPRITES.bossUrls.bellsCluster) return SPRITES.bossUrls.bellsCluster;
+    if (SPRITES.unitUrls && SPRITES.unitUrls[u.iconType]) return SPRITES.unitUrls[u.iconType];
+    return '';
+  }
+
+  function renderUpgrades() {
+    const tab = state.activeTab;
+    if (tab === 'bells' || tab === 'squad') {
+      const keys = tab === 'bells'
+        ? ['yellowBell', 'blueBell', 'whiteBell', 'pinkShield']
+        : ['winbeeAlly', 'gwinbeeAlly', 'meloraGrace', 'greenClones'];
+      upgradeGridEl.innerHTML = keys.map(k => {
+        const u = state.upgrades[k];
+        const cost = getUpgradeCost(k);
+        const canBuy = u.currency === 'coins' ? state.coins >= cost : state.stars >= cost;
+        const curEmoji = u.currency === 'coins' ? '🪙' : '🌟';
+        const icoUrl = getUpgradeIconUrl(u);
+        return `
+          <div class="up-card ${canBuy ? 'can-buy' : ''}" data-up="${k}">
+            <div class="up-left">
+              ${icoUrl ? `<img class="up-ico" src="${icoUrl}" alt="">` : ''}
+              <div class="up-info">
+                <div class="up-title">${u.name} <span class="lv-pill">Lv.${u.lv}</span></div>
+                <div class="up-desc">${u.desc}</div>
+              </div>
+            </div>
+            <button class="up-buy" type="button">${curEmoji}${cost}</button>
+          </div>
+        `;
+      }).join('');
+      upgradeGridEl.querySelectorAll('.up-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const key = card.getAttribute('data-up');
+          const u = state.upgrades[key];
+          const cost = getUpgradeCost(key);
+          if (u.currency === 'coins' && state.coins >= cost) {
+            state.coins -= cost;
+            u.lv++;
+            ensureAudio(); playSfx('fanfare');
+            addFloatText(state.player.x, state.player.y - 55, `⬆️ ${u.name} Lv.${u.lv}!`, '#059669', 14, true);
+            saveGame();
+            renderUpgrades();
+          } else if (u.currency === 'stars' && state.stars >= cost) {
+            state.stars -= cost;
+            u.lv++;
+            ensureAudio(); playSfx('fanfare');
+            addFloatText(state.player.x, state.player.y - 55, `🌟 ${u.name} Lv.${u.lv}!`, '#0284c7', 14, true);
+            saveGame();
+            renderUpgrades();
+          }
+        });
+      });
+    } else if (tab === 'bosses') {
+      const ksIco = (SPRITES.bossUrls && SPRITES.bossUrls.kingSpice) || '';
+      const qpIco = (SPRITES.bossUrls && SPRITES.bossUrls.queenParfait) || '';
+      upgradeGridEl.innerHTML = `
+        <div class="up-card can-buy" id="actSummonKingSpice">
+          <div class="up-left">
+            ${ksIco ? `<img class="up-ico" src="${ksIco}" alt="">` : ''}
+            <div class="up-info">
+              <div class="up-title">👑 召喚香料大王・黃金飛空艇</div>
+              <div class="up-desc">迎戰皇家蒸汽飛空艇領取黃金鈴鐺雨</div>
+            </div>
+          </div>
+          <button class="up-buy" type="button">BOSS戰</button>
+        </div>
+        <div class="up-card can-buy" id="actSummonQueenParfait">
+          <div class="up-left">
+            ${qpIco ? `<img class="up-ico" src="${qpIco}" alt="">` : ''}
+            <div class="up-info">
+              <div class="up-title">🍨 召喚聖代女皇・帕妃特</div>
+              <div class="up-desc">挑戰水晶聖代女皇突破新晴空島嶼</div>
+            </div>
+          </div>
+          <button class="up-buy" type="button">女皇BOSS</button>
+        </div>
+        <div class="up-card can-buy" id="actSpeedToggle">
+          <div class="up-info">
+            <div class="up-title">⚡ 兵蜂音速巡航：${state.speedMul}X</div>
+            <div class="up-desc">切換 1X / 2X 高速擊鈴連爆模式</div>
+          </div>
+          <button class="up-buy" type="button">切換倍速</button>
+        </div>
+        <div class="up-card can-buy" id="actClaimBellBox">
+          <div class="up-info">
+            <div class="up-title">🔔 領取梅蘿菈皇家鈴鐺箱</div>
+            <div class="up-desc">立即獲得 +2,500 金幣與 +800 星鑽</div>
+          </div>
+          <button class="up-buy" type="button">免費領取</button>
+        </div>
+      `;
+      document.getElementById('actSummonKingSpice')?.addEventListener('click', () => spawnEnemy('kingSpice'));
+      document.getElementById('actSummonQueenParfait')?.addEventListener('click', () => spawnEnemy('queenParfait'));
+      document.getElementById('actSpeedToggle')?.addEventListener('click', () => {
+        state.speedMul = state.speedMul === 1 ? 2 : 1;
+        renderUpgrades();
+      });
+      document.getElementById('actClaimBellBox')?.addEventListener('click', () => {
+        state.coins += 2500;
+        state.stars += 800;
+        playSfx('fanfare');
+        addFloatText(W * 0.5, 220, '🔔 獲得 +2500 金幣 / +800 星鑽！', '#ec4899', 16, true);
+        saveGame();
+        renderUpgrades();
+      });
+    } else if (tab === 'rea') {
+      upgradeGridEl.innerHTML = `
+        <div class="up-card can-buy" id="actTwinbeeCheat">
+          <div class="up-info">
+            <div class="up-title">🔔 KONAMI 兵蜂五色神鈴全開密技</div>
+            <div class="up-desc">全鈴鐺與機隊等級 +3、滿天五色鈴鐺狂歡</div>
+          </div>
+          <button class="up-buy" type="button">啟動密技</button>
+        </div>
+        <div class="up-card">
+          <div class="up-info">
+            <div class="up-title">🔬 REA 逆向：五色鈴鐺狀態轉移表</div>
+            <div class="up-desc">黃(高分)→藍(加速)→白(雙連砲)→綠(分身)→粉(薔薇護盾)</div>
+          </div>
+        </div>
+      `;
+      document.getElementById('actTwinbeeCheat')?.addEventListener('click', activateMiracleCheat);
+    }
+  }
+
+  function activateMiracleCheat() {
+    ensureAudio();
+    playSfx('fanfare');
+    state.coins += 80000;
+    state.stars += 30000;
+    for (const k of Object.keys(state.upgrades)) {
+      state.upgrades[k].lv += 3;
+    }
+    state.cooldowns.fever = 0;
+    state.cooldowns.three = 0;
+    state.cooldowns.bomb = 0;
+    triggerBellFever();
+    triggerThreeWayCannon();
+    addFloatText(W * 0.5, 150, '🔔 KONAMI 奇蹟密技覺醒！全等級+3！', '#ec4899', 16, true);
+    saveGame();
+    renderUpgrades();
+  }
+
+  document.getElementById('btnSuperCheat').addEventListener('click', activateMiracleCheat);
+  document.getElementById('btnAutoPilot').addEventListener('click', (e) => {
+    state.autoPilot = !state.autoPilot;
+    e.currentTarget.classList.toggle('active-mode', state.autoPilot);
+    document.getElementById('autoPilotSub').textContent = state.autoPilot ? 'ON 擊鈴' : 'OFF 手動';
+  });
+  document.getElementById('btnSkillBellFever').addEventListener('click', triggerBellFever);
+  document.getElementById('btnSkillThreeWay').addEventListener('click', triggerThreeWayCannon);
+  document.getElementById('btnSkillStarBomb').addEventListener('click', triggerStarBomb);
+  document.getElementById('btnSkillMelora').addEventListener('click', triggerMeloraAnthem);
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.activeTab = btn.getAttribute('data-tab');
+      renderUpgrades();
+    });
+  });
+
+  // ─── 手機單指滑動／點擊：戰機跟隨手指上方 42px 並向上擊打鈴鐺與敵機 ───
+  let pointerDown = false;
+  function handleCanvasInput(clientX, clientY, isTap = false) {
+    ensureAudio();
+    const rect = canvas.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * W;
+    const y = ((clientY - rect.top) / rect.height) * H;
+    state.player.targetX = Math.max(52, Math.min(W - 52, x));
+    state.player.targetY = Math.max(330, Math.min(505, y - 42));
+
+    if (isTap) {
+      playSfx('shot');
+      const st = getStats();
+      for (let i = -1; i <= 1; i++) {
+        bullets.push({
+          x: state.player.x + i * 14,
+          y: state.player.y - 34,
+          vx: i * 55,
+          vy: -440,
+          r: 7.5,
+          color: '#38bdf8',
+          dmg: st.baseAtk * 1.25,
+          life: 1.4
+        });
+      }
+      // 點擊鈴鐺可直接向上擊打變色！
+      for (const b of bells) {
+        if (Math.hypot(b.x - x, b.y - y) < b.r + 48) {
+          juggledBellHit(b);
+        }
+      }
+    }
+  }
+  canvas.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    pointerDown = true;
+    handleCanvasInput(e.clientX, e.clientY, true);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!pointerDown) return;
+    e.preventDefault();
+    handleCanvasInput(e.clientX, e.clientY, false);
+  });
+  window.addEventListener('pointerup', () => { pointerDown = false; });
+
+  // ─── 同步現代玻璃擬態 HUD ───
+  const hudStageBadge = document.getElementById('hudStageBadge');
+  const hudWaveText = document.getElementById('hudWaveText');
+  const hudBellCount = document.getElementById('hudBellCount');
+  const hudWaveFill = document.getElementById('hudWaveFill');
+  const hudCoins = document.getElementById('hudCoins');
+  const hudStars = document.getElementById('hudStars');
+  const hudComboPill = document.getElementById('hudComboPill');
+  const hudBossCard = document.getElementById('hudBossCard');
+  const hudBossImg = document.getElementById('hudBossImg');
+  const hudBossName = document.getElementById('hudBossName');
+  const hudBossHpText = document.getElementById('hudBossHpText');
+  const hudBossHpFill = document.getElementById('hudBossHpFill');
+
+  function syncHud() {
+    hudStageBadge.textContent = `STAGE ${state.stage}`;
+    hudWaveText.textContent = `丼物浮空島 W${state.wave}/5`;
+    hudBellCount.textContent = `🔔${state.bellsCollected}`;
+    hudWaveFill.style.width = `${Math.min(100, (state.wave / 5) * 100)}%`;
+    hudCoins.textContent = Math.floor(state.coins).toLocaleString();
+    hudStars.textContent = Math.floor(state.stars).toLocaleString();
+
+    document.getElementById('bpBlue').textContent  = `🔵 疾風 Lv.${state.upgrades.blueBell.lv}`;
+    document.getElementById('bpWhite').textContent = `⚪ 雙連砲 Lv.${state.upgrades.whiteBell.lv}`;
+    document.getElementById('bpGreen').textContent = `🟢 分身 Lv.${state.upgrades.greenClones.lv}`;
+    document.getElementById('bpPink').textContent  = `🩷 護盾 Lv.${state.upgrades.pinkShield.lv}`;
+
+    if (state.combo > 1 && state.comboTimer > 0) {
+      hudComboPill.textContent = `🔔 ${state.combo}X BELL FEVER!`;
+      hudComboPill.classList.add('show');
+    } else {
+      hudComboPill.classList.remove('show');
+    }
+
+    const activeBoss = enemies.find(e => e.isBoss);
+    if (activeBoss || state.bossBannerTimer > 0) {
+      hudBossCard.classList.add('active');
+      const bKey = activeBoss ? activeBoss.spriteKey : state.currentBossKey;
+      if (SPRITES.bossUrls && SPRITES.bossUrls[bKey] && hudBossImg.src !== SPRITES.bossUrls[bKey]) {
+        hudBossImg.src = SPRITES.bossUrls[bKey];
+      }
+      hudBossName.textContent = activeBoss ? activeBoss.name : state.currentBossName;
+      const pct = activeBoss ? Math.max(0, Math.round((activeBoss.hp / activeBoss.maxHp) * 100)) : 100;
+      hudBossHpText.textContent = `${pct}%`;
+      hudBossHpFill.style.width = `${pct}%`;
+    } else {
+      hudBossCard.classList.remove('active');
+    }
+  }
+
+  // ─── 物理與自動擊鈴空戰迴圈 ───
+  let enemySpawnCd = 0.4;
+  let bellSpawnCd = 1.2;
+  let passiveTimer = 1.0;
+
+  function stepGame(rawDt) {
+    const dt = Math.min(0.05, rawDt) * state.speedMul;
+    animClock += dt * 3.0;
+    state.bgScrollY = (state.bgScrollY + dt * 38) % H;
+
+    if (state.meloraTimer > 0) state.meloraTimer = Math.max(0, state.meloraTimer - dt);
+    if (state.bossBannerTimer > 0) state.bossBannerTimer = Math.max(0, state.bossBannerTimer - dt);
+    if (state.comboTimer > 0) {
+      state.comboTimer = Math.max(0, state.comboTimer - dt);
+      if (state.comboTimer <= 0) state.combo = 0;
+    }
+
+    for (const k of ['fever', 'three', 'bomb', 'melora']) {
+      if (state.cooldowns[k] > 0) state.cooldowns[k] = Math.max(0, state.cooldowns[k] - dt);
+    }
+    document.getElementById('cdFever').textContent  = state.cooldowns.fever > 0 ? `${state.cooldowns.fever.toFixed(1)}s` : 'READY';
+    document.getElementById('cdThree').textContent  = state.cooldowns.three > 0 ? `${state.cooldowns.three.toFixed(1)}s` : 'READY';
+    document.getElementById('cdBomb').textContent   = state.cooldowns.bomb > 0 ? `${state.cooldowns.bomb.toFixed(1)}s` : 'READY';
+    document.getElementById('cdMelora').textContent = state.cooldowns.melora > 0 ? `${state.cooldowns.melora.toFixed(1)}s` : 'READY';
+
+    passiveTimer -= dt;
+    if (passiveTimer <= 0) {
+      passiveTimer = 1.0;
+      const mLv = state.upgrades.meloraGrace.lv;
+      state.coins += Math.round(14 * Math.pow(1.24, mLv - 1) * state.stage);
+      state.stars += Math.round(5 * Math.pow(1.22, mLv - 1) * state.stage);
+      document.querySelectorAll('.up-card[data-up]').forEach(card => {
+        const k = card.getAttribute('data-up');
+        const u = state.upgrades[k];
+        const cost = getUpgradeCost(k);
+        const canBuy = u.currency === 'coins' ? state.coins >= cost : state.stars >= cost;
+        card.classList.toggle('can-buy', canBuy);
+      });
+    }
+
+    enemySpawnCd -= dt;
+    if (enemySpawnCd <= 0 && enemies.length < 5) {
+      spawnEnemy();
+      enemySpawnCd = 1.05;
+    }
+
+    bellSpawnCd -= dt;
+    if (bellSpawnCd <= 0 && bells.length < 3) {
+      spawnBell();
+      bellSpawnCd = 2.6;
+    }
+
+    const st = getStats();
+    const p = state.player;
+
+    // 自動擊鈴與空戰巡航 AI
+    if (state.autoPilot && !pointerDown) {
+      let focusX = W * 0.5 + Math.sin(animClock * 0.8) * 95;
+      if (bells.length > 0) {
+        const b = bells[0];
+        focusX = b.x;
+      } else if (enemies.length > 0) {
+        focusX = enemies[0].x;
+      }
+      p.targetX = Math.max(58, Math.min(W - 58, focusX));
+      p.targetY = 468 + Math.cos(animClock * 1.4) * 14;
+
+      if (state.cooldowns.fever <= 0 && bells.length <= 1) triggerBellFever();
+      else if (state.cooldowns.three <= 0 && enemies.length >= 2) triggerThreeWayCannon();
+      else if (state.cooldowns.bomb <= 0 && enemies.some(e => e.isBoss)) triggerStarBomb();
+    }
+
+    p.x += (p.targetX - p.x) * Math.min(1, dt * 8.5);
+    p.y += (p.targetY - p.y) * Math.min(1, dt * 8.5);
+
+    // 兵蜂、溫蜂、格溫蜂三機自動連射
+    p.shootTimer -= dt;
+    if (p.shootTimer <= 0) {
+      p.shootTimer = Math.max(0.14, 0.26 - state.upgrades.blueBell.lv * 0.012);
+      // 主機雙連星光砲
+      bullets.push({ x: p.x - 12, y: p.y - 34, vx: -15, vy: -460, r: 7, color: '#38bdf8', dmg: st.baseAtk, life: 1.4 });
+      bullets.push({ x: p.x + 12, y: p.y - 34, vx:  15, vy: -460, r: 7, color: '#38bdf8', dmg: st.baseAtk, life: 1.4 });
+      // 左翼溫蜂號愛心光束
+      bullets.push({ x: p.x - 56, y: p.y - 16, vx: -28, vy: -430, r: 6.5, color: '#ec4899', dmg: st.baseAtk * 0.75, life: 1.4 });
+      // 右翼格溫蜂號翠綠鈴鐺波
+      bullets.push({ x: p.x + 56, y: p.y - 16, vx:  28, vy: -430, r: 6.5, color: '#10b981', dmg: st.baseAtk * 0.75, life: 1.4 });
+    }
+
+    // 子彈碰撞（擊中鈴鐺會使鈴鐺向上彈跳變色，擊中敵機造成傷害）
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      const bl = bullets[i];
+      bl.life -= dt;
+      bl.x += bl.vx * dt;
+      bl.y += bl.vy * dt;
+      let hit = false;
+
+      for (let bi = 0; bi < bells.length; bi++) {
+        const b = bells[bi];
+        if (b.hits < 8 && Math.hypot(b.x - bl.x, b.y - bl.y) < b.r + bl.r) {
+          juggledBellHit(b);
+          hit = true;
+          break;
+        }
+      }
+      if (!hit) {
+        for (let ei = enemies.length - 1; ei >= 0; ei--) {
+          const e = enemies[ei];
+          if (Math.hypot(e.x - bl.x, e.y - bl.y) < e.r + bl.r) {
+            damageEnemy(e, bl.dmg);
+            hit = true;
+            break;
+          }
+        }
+      }
+      if (hit || bl.life <= 0 || bl.y < -20) {
+        bullets.splice(i, 1);
+      }
+    }
+
+    // 五色鈴鐺重力與拾取判定
+    for (let i = bells.length - 1; i >= 0; i--) {
+      const b = bells[i];
+      if (b.hitCooldown > 0) b.hitCooldown = Math.max(0, b.hitCooldown - dt);
+      b.wobble += dt * 7;
+      b.vy += 210 * dt; // 柔和重力
+      b.x += b.vx * dt;
+      b.y += b.vy * dt;
+      if (b.x < 42) { b.x = 42; b.vx = Math.abs(b.vx); }
+      if (b.x > W - 42) { b.x = W - 42; b.vx = -Math.abs(b.vx); }
+
+      // 當鈴鐺已經變色成熟 (hits >= 4) 或落到機隊高度時自動吸收領獎！
+      if (Math.hypot(b.x - p.x, b.y - p.y) < 58 || b.y > p.y - 10) {
+        collectBell(b);
+        bells.splice(i, 1);
+        continue;
+      }
+      if (b.y > H + 30) bells.splice(i, 1);
+    }
+
+    // 敵機與首領巡航
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      const e = enemies[i];
+      if (e.hp <= 0) {
+        enemies.splice(i, 1);
+        continue;
+      }
+      if (e.hitFlash > 0) e.hitFlash = Math.max(0, e.hitFlash - dt * 5);
+      e.phase += dt * 3.2;
+      e.x += e.vx * dt;
+      e.y = e.baseY + Math.sin(e.phase) * 16;
+      if (e.x < 56) e.vx = Math.abs(e.vx);
+      if (e.x > W - 56) e.vx = -Math.abs(e.vx);
+    }
+
+    // 3D 水果寶石磁吸回收
+    for (let i = loots.length - 1; i >= 0; i--) {
+      const lt = loots[i];
+      const dx = p.x - lt.x;
+      const dy = p.y - lt.y;
+      const d = Math.hypot(dx, dy);
+      lt.x += (dx / Math.max(1, d)) * 360 * dt;
+      lt.y += (dy / Math.max(1, d)) * 360 * dt;
+      if (d < 30) {
+        state.coins += lt.coins;
+        state.stars += lt.stars;
+        loots.splice(i, 1);
+      }
+    }
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const pt = particles[i];
+      pt.life -= dt;
+      pt.x += pt.vx * dt;
+      pt.y += pt.vy * dt;
+      if (pt.life <= 0) particles.splice(i, 1);
+    }
+    for (let i = floatTexts.length - 1; i >= 0; i--) {
+      const ft = floatTexts[i];
+      ft.life -= dt;
+      ft.y += ft.vy * dt;
+      ft.vy *= 0.94;
+      if (ft.life <= 0) floatTexts.splice(i, 1);
+    }
+
+    syncHud();
+  }
+
+  // ─── 商用級去背 PNG 精靈繪製器 (Squash & Stretch + 發光光暈 + 浮空陰影) ───
+  function drawCutoutSprite(spCanvas, x, y, w, h, phase, flipX = 1, glowColor = null, hitFlash = 0) {
+    if (!spCanvas) return;
+    ctx.save();
+    ctx.translate(x, y);
+
+    // Rigid cel-mecha banking with short thruster strokes, no squash animation.
+    ctx.strokeStyle = '#fff1a7';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-w * .14, h * .3);ctx.lineTo(-w * .14, h * (.43 + Math.sin(phase * 3) * .04));
+    ctx.moveTo(w * .14, h * .3);ctx.lineTo(w * .14, h * (.43 + Math.sin(phase * 3) * .04));
+    ctx.stroke();
+    ctx.rotate(Math.sin(phase * .6) * .025);
+    ctx.scale(flipX, 1);
+
+    if (glowColor) {
+      ctx.shadowColor = glowColor;
+      ctx.shadowBlur = 3;
+    } else {
+      ctx.shadowColor = 'rgba(15, 23, 42, 0.25)';
+      ctx.shadowBlur = 1;
+    }
+
+    ctx.drawImage(spCanvas, -w * 0.5, -h * 0.5, w, h);
+
+    if (hitFlash > 0.15) {
+      ctx.globalAlpha = hitFlash * 0.5;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(0, 0, w * 0.34, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawSparkleStar(x, y, r, color) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    for (let i = 0; i < 4; i++) {
+      const a = (i * Math.PI) / 2;
+      ctx.lineTo(Math.cos(a) * r * 1.6, Math.sin(a) * r * 1.6);
+      ctx.lineTo(Math.cos(a + Math.PI / 4) * r * 0.45, Math.sin(a + Math.PI / 4) * r * 0.45);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+
+    // 1. 晴空丼物浮空島高解析生圖背景
+    if (ASSETS.bg.complete && ASSETS.bg.naturalWidth > 0) {
+      drawSceneCover(ctx, ASSETS.bg, 0, 0, W, H);
+    } else {
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, '#0ea5e9');
+      sky.addColorStop(0.6, '#7dd3fc');
+      sky.addColorStop(1, '#fef08a');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // 梅蘿菈聖歌全屏虹光特效
+    if (state.meloraTimer > 0) {
+      ctx.save();
+      const g = ctx.createLinearGradient(0, 0, W, H);
+      g.addColorStop(0, 'rgba(254, 240, 138, 0.48)');
+      g.addColorStop(0.5, 'rgba(56, 189, 248, 0.30)');
+      g.addColorStop(1, 'rgba(244, 114, 182, 0.42)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+      if (SPRITES.melora) {
+        drawCutoutSprite(SPRITES.melora, W * 0.5, 290, 128, 128, animClock * 2, 1, '#facc15', 0);
+      }
+      ctx.restore();
+    }
+
+    // 2. 繪製五色跳跳鈴鐺 (使用透明去背鈴鐺精靈 + 當前色階光環)
+    for (const b of bells) {
+      const tier = BELL_COLORS[b.tierIdx];
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      const aura = ctx.createRadialGradient(0, 0, 6, 0, 0, b.r + 12);
+      aura.addColorStop(0, tier.tint);
+      aura.addColorStop(0.6, tier.glow + '66');
+      aura.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = aura;
+      ctx.beginPath();
+      ctx.arc(0, 0, b.r + 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      drawCutoutSprite(SPRITES.bellsCluster, b.x, b.y, 64, 64, b.wobble, 1, tier.tint, 0);
+    }
+
+    // 3. 繪製敵機與雙首領 (100% 透明去背 PNG 精靈 + 圓角膠囊血條)
+    for (const e of enemies) {
+      const sp = SPRITES[e.spriteKey] || SPRITES.appleMob;
+      const sz = e.isBoss ? 132 : 76;
+      const flip = e.vx > 0 ? -1 : 1;
+      drawCutoutSprite(sp, e.x, e.y, sz, sz, e.phase, flip, e.color, e.hitFlash || 0);
+
+      const bw = e.isBoss ? 92 : 48;
+      const bh = e.isBoss ? 7 : 5.5;
+      const bx = e.x - bw * 0.5;
+      const by = e.y - e.r - (e.isBoss ? 22 : 14);
+      ctx.save();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.65)';
+      ctx.beginPath();
+      ctx.roundRect(bx - 1, by - 1, bw + 2, bh + 2, 999);
+      ctx.fill();
+
+      const hpRatio = Math.max(0, Math.min(1, e.hp / e.maxHp));
+      const hpGrad = ctx.createLinearGradient(bx, by, bx + bw, by);
+      hpGrad.addColorStop(0, e.isBoss ? '#f43f5e' : '#10b981');
+      hpGrad.addColorStop(1, e.isBoss ? '#facc15' : '#38bdf8');
+      ctx.fillStyle = hpGrad;
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw * hpRatio, bh, 999);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 4. 繪製主角「藍耀兵蜂號 TwinBee」、左翼「粉紅溫蜂號 WinBee」、右翼「翠綠格溫蜂號 GwinBee」與「梅蘿菈公主」指揮官
+    const p = state.player;
+    const st = getStats();
+
+    // 粉鈴薔薇共鳴護盾圈
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.strokeStyle = 'rgba(244, 114, 182, 0.65)';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([8, 6]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 48 + Math.sin(animClock * 2) * 3, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // 綠鈴殘影分身 (Phantom Clones)
+    for (let c = 1; c <= st.cloneCount; c++) {
+      const ang = animClock * 1.8 + (c * Math.PI * 2) / st.cloneCount;
+      const cx = p.x + Math.cos(ang) * 42;
+      const cy = p.y + Math.sin(ang) * 18;
+      ctx.save();
+      ctx.globalAlpha = 0.42;
+      if (SPRITES.twinbee) {
+        ctx.drawImage(SPRITES.twinbee, cx - 28, cy - 28, 56, 56);
+      }
+      ctx.restore();
+    }
+
+    // 左翼 WinBee (粉紅溫蜂號)
+    drawCutoutSprite(SPRITES.winbee, p.x - 58, p.y + 10 + Math.sin(animClock * 2.5) * 6, 62, 62, animClock * 2.5, 1, '#ec4899', 0);
+    // 右翼 GwinBee (翠綠格溫蜂號)
+    drawCutoutSprite(SPRITES.gwinbee, p.x + 58, p.y + 10 + Math.cos(animClock * 2.5) * 6, 62, 62, animClock * 2.5 + 1.2, 1, '#10b981', 0);
+    // 右下隨行指揮官 梅蘿菈公主
+    drawCutoutSprite(SPRITES.melora, p.x + 92, p.y + 34 + Math.sin(animClock * 2) * 5, 56, 56, animClock * 2.0, 1, '#facc15', 0);
+    // 中央主機 TwinBee (藍耀兵蜂號)
+    drawCutoutSprite(SPRITES.twinbee, p.x, p.y, 88, 88, animClock * 2.2, 1, '#38bdf8', 0);
+
+    // 5. 繪製星光彈幕
+    for (const bl of bullets) {
+      drawSparkleStar(bl.x, bl.y, bl.r, bl.color);
+      drawSparkleStar(bl.x, bl.y, bl.r * 0.55, '#ffffff');
+    }
+
+    // 6. 繪製 3D 水果與寶石戰利品 (使用 3x3 透明 PNG 圖集)
+    for (const lt of loots) {
+      const spItem = SPRITES.items[lt.itemIdx || 0];
+      if (spItem) {
+        ctx.drawImage(spItem, lt.x - 14, lt.y - 14, 28, 28);
+      }
+    }
+
+    // 7. 粒子與暴擊縮放跳字
+    for (const pt of particles) {
+      if (pt.star) {
+        drawSparkleStar(pt.x, pt.y, pt.r * 1.15, pt.color);
+      } else {
+        ctx.fillStyle = pt.color;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (const ft of floatTexts) {
+      ctx.save();
+      const progress = 1 - ft.life / (ft.maxLife || 0.9);
+      const scalePop = progress < 0.22 ? (0.7 + (progress / 0.22) * 0.55) : (1.25 - (progress - 0.22) * 0.25);
+      ctx.translate(ft.x, ft.y);
+      ctx.scale(scalePop, scalePop);
+      ctx.globalAlpha = Math.min(1, ft.life * 1.6);
+      ctx.font = `900 ${ft.size}px "Segoe UI", "PingFang TC", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(15, 23, 42, 0.35)';
+      ctx.shadowBlur = 6;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 4.0;
+      ctx.strokeText(ft.text, 0, 0);
+
+      if (ft.isCrit) {
+        const tg = ctx.createLinearGradient(0, -ft.size, 0, 4);
+        tg.addColorStop(0, '#fef08a');
+        tg.addColorStop(0.5, '#f59e0b');
+        tg.addColorStop(1, '#ec4899');
+        ctx.fillStyle = tg;
+      } else {
+        ctx.fillStyle = ft.color;
+      }
+      ctx.fillText(ft.text, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  renderUpgrades();
+  spawnBell(140, 120, 0);
+  spawnBell(290, 145, 1);
+  spawnEnemy();
+  spawnEnemy();
+
+  window.__TWINBEE_SUNNY_ULTRA__ = {
+    version: VERSION_STAMP,
+    state,
+    bells,
+    enemies,
+    SPRITES,
+    triggerBellFever,
+    triggerThreeWayCannon,
+    triggerStarBomb,
+    triggerMeloraAnthem,
+    activateMiracleCheat,
+    toggleImmersiveFullscreen,
+    spawnEnemy
+  };
+
+  let lastTime = performance.now();
+  function loop(now) {
+    const dt = (now - lastTime) / 1000;
+    lastTime = now;
+    stepGame(dt);
+    render();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

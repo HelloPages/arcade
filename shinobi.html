@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>赤焰忍傳：疾風手裏劍</title>
+  <link rel="stylesheet" href="./shinobi.css?v=v_20261113_shinobi_1">
+</head>
+<body>
+  <script>
+    if (new URLSearchParams(location.search).get("embed") === "1" || window.self !== window.top) {
+      document.body.classList.add("embedded");
+    }
+  </script>
+
+  <div id="game-shell">
+    <canvas id="game-canvas" width="390" height="844"></canvas>
+
+    <!-- 戰國和紙捲軸 HUD -->
+    <div class="scroll-hud">
+      <div class="hud-plaque">
+        <span class="seal-stamp" id="hud-act">第一幕</span>
+        <div class="stage-info">
+          <div class="stage-name" id="hud-stage-name">月下銀杏屋簷</div>
+          <div class="blade-bar"><div class="blade-fill" id="hud-progress"></div></div>
+        </div>
+      </div>
+
+      <div class="hud-plaque">
+        <div class="stat-group">
+          <div class="magatama-row" id="hud-hp">
+            <span class="magatama"></span>
+            <span class="magatama"></span>
+            <span class="magatama"></span>
+            <span class="magatama"></span>
+          </div>
+          <span id="hud-score">0</span>
+        </div>
+      </div>
+
+      <div class="hud-actions">
+        <button type="button" class="ink-btn" id="btn-pause">暫停</button>
+        <button type="button" class="ink-btn standalone-only" id="btn-fs">全螢幕</button>
+      </div>
+    </div>
+
+    <div class="combo-banner" id="combo-banner">連斬 x0</div>
+
+    <div class="boss-bar-wrap" id="boss-bar">
+      <div class="boss-title-row">
+        <span>👹 機巧大將軍・羅剎鎧</span>
+        <span id="boss-hp-text">100%</span>
+      </div>
+      <div class="boss-hp-track"><div class="boss-hp-fill" id="boss-hp-fill"></div></div>
+    </div>
+
+    <!-- 底部實戰動作鍵 -->
+    <div class="action-dock">
+      <div class="dock-left">
+        <button type="button" class="act-pad" id="pad-slide">
+          急降／滑鏟
+          <span class="sub">↓ / S</span>
+        </button>
+        <button type="button" class="act-pad" id="pad-jump">
+          躍／二段跳
+          <span class="sub">↑ / W</span>
+        </button>
+      </div>
+      <div class="dock-right">
+        <button type="button" class="act-pad" id="pad-shoot">
+          手裏劍
+          <span class="sub">Space</span>
+        </button>
+        <button type="button" class="act-pad dash" id="pad-dash">
+          瞬身斬
+          <span class="sub">Shift</span>
+        </button>
+        <button type="button" class="act-pad ulti locked" id="pad-ulti">
+          奧義 0%
+          <span class="sub">E</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 開始封面捲軸 -->
+    <div class="scroll-modal" id="modal-start">
+      <div class="scroll-card">
+        <img class="cover-hero" src="./assets/shinobi-cover.webp" alt="赤焰忍傳：疾風手裏劍封面">
+        <div class="scroll-title">赤焰忍傳：疾風手裏劍</div>
+        <div class="scroll-sub">60fps 高速屋簷跑酷 × 瞬身斬擊與首領決戰（REA 經典橫向動作重構）</div>
+        <div class="move-list">
+          • <b>上滑 / ↑ / 躍</b>：跳躍與空中<b>二段翻滾飛鏢</b><br>
+          • <b>下滑 / ↓ / 急降</b>：低姿滑鏟躲避飛刀與空中急降<br>
+          • <b>右滑 / Shift / 瞬身斬</b>：無敵殘影突進，劈碎敵彈並雙倍斬擊<br>
+          • <b>點擊 / Space / 手裏劍</b>：連射金色手裏劍；蓄滿施放<b>奧義・千本櫻</b>
+        </div>
+        <div class="modal-btn-row">
+          <button type="button" class="ink-btn primary" id="btn-start">拔刀出陣</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 暫停捲軸 -->
+    <div class="scroll-modal hidden" id="modal-pause">
+      <div class="scroll-card">
+        <div class="scroll-title">暫停整備</div>
+        <div class="scroll-sub" id="pause-stats">目前得分：0｜最高紀錄：0</div>
+        <div class="modal-btn-row">
+          <button type="button" class="ink-btn primary" id="btn-resume">繼續作戰</button>
+          <button type="button" class="ink-btn" id="btn-restart-pause">重新出陣</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 勝負結算捲軸 -->
+    <div class="scroll-modal hidden" id="modal-end">
+      <div class="scroll-card">
+        <div class="scroll-title" id="end-title">大獲全勝！</div>
+        <div class="scroll-sub" id="end-desc">羅剎鎧已擊破！</div>
+        <div class="move-list" id="end-summary"></div>
+        <div class="modal-btn-row">
+          <button type="button" class="ink-btn gold" id="btn-replay">再戰一回</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./shinobi.js?v=v_20261113_shinobi_1"></script>
+</body>
+</html>

@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>彩虹泡泡龍：晴空浮空島物語 ULTRA｜REA 經典太東泡泡龍逆向復刻 × 商用去背精靈放置養成 (v_12:08:00)</title>
+<style>
+  :root {
+    --sky-top: #0284c7;
+    --sky-mid: #38bdf8;
+    --sky-bot: #e0f2fe;
+    --sun-gold: #f59e0b;
+    --pink-pop: #ec4899;
+    --emerald: #10b981;
+    --text-dark: #0f172a;
+    --text-muted: #475569;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0ea5e9 0%, #7dd3fc 55%, #fef08a 100%);
+    color: var(--text-dark);
+    font-family: "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    touch-action: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 明亮陽光頂部導覽列 (嵌入式或沉浸式全螢幕時自動隱藏，避免雙重導覽列) */
+  .topbar {
+    height: 36px;
+    min-height: 36px;
+    background: linear-gradient(90deg, #ffffff 0%, #f0f9ff 50%, #fef9c3 100%);
+    border-bottom: 2px solid #38bdf8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6px;
+    z-index: 30;
+    flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(2, 132, 199, 0.18);
+  }
+  body.embedded .topbar,
+  body.immersive-fs .topbar {
+    display: none !important;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 900;
+    font-size: 12px;
+    color: #0369a1;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .badge {
+    background: linear-gradient(135deg, #f59e0b, #ec4899);
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 5px;
+    font-weight: 900;
+  }
+  .ver-stamp {
+    font-family: monospace;
+    font-size: 10px;
+    color: #047857;
+    background: #d1fae5;
+    border: 1px solid #34d399;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 800;
+  }
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .top-btn {
+    background: #ffffff;
+    color: #0369a1;
+    border: 1.5px solid #7dd3fc;
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(2, 132, 199, 0.12);
+  }
+  .top-btn:active { transform: scale(0.95); }
+  .top-btn.fs-btn {
+    background: linear-gradient(135deg, #0ea5e9, #10b981);
+    border-color: #059669;
+    color: #ffffff;
+  }
+  .top-btn.gold {
+    background: linear-gradient(135deg, #f59e0b, #ec4899);
+    border-color: #d97706;
+    color: #ffffff;
+  }
+  @media (max-width: 420px) {
+    .hide-sm { display: none; }
+  }
+
+  /* 獨立全螢幕退出膠囊 (嵌入式時由父層提供，避免雙按鈕) */
+  .exit-fs-pill {
+    display: none;
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 8px);
+    right: 8px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #ec4899, #f59e0b);
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  body.immersive-fs:not(.embedded) .exit-fs-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  body.embedded .exit-fs-pill {
+    display: none !important;
+  }
+
+  /* 主遊戲容器：明亮晴空畫布 + 現代商用玻璃擬態 HUD + 陽光珍珠白養成底座 */
+  .game-layout {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .canvas-wrap {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(180deg, #38bdf8 0%, #bae6fd 70%, #fef9c3 100%);
+  }
+  canvas#rainbowCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+  }
+
+  /* ─── 現代商用手遊級 Glassmorphism 懸浮膠囊 HUD (徹底淘汰舊式 Canvas 方框！) ─── */
+  .modern-hud-overlay {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    z-index: 15;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .hud-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .stage-capsule {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(224, 242, 254, 0.85) 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
+    border-radius: 999px;
+    padding: 4px 10px 4px 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+  .island-badge {
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.4);
+    white-space: nowrap;
+  }
+  .wave-track-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 78px;
+  }
+  .wave-label {
+    font-size: 10px;
+    font-weight: 900;
+    color: #0369a1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .wave-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(14, 165, 233, 0.2);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .wave-bar-fill {
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, #10b981, #f59e0b, #ec4899);
+    border-radius: 999px;
+    transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* 右側貨幣與破泡膠囊列 */
+  .currency-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .res-pill {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
+    border-radius: 999px;
+    padding: 3px 8px 3px 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12), inset 0 1px 0 #ffffff;
+  }
+  .res-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    background: linear-gradient(135deg, #fef08a, #f59e0b);
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.35);
+  }
+  .res-icon.star {
+    background: linear-gradient(135deg, #bae6fd, #38bdf8);
+    box-shadow: 0 2px 4px rgba(14, 165, 233, 0.35);
+  }
+  .res-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  /* 連爆 Combo 浮動光環徽章 */
+  .combo-pill {
+    align-self: flex-end;
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.92), rgba(245, 158, 11, 0.92));
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: 11.5px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+    box-shadow: 0 6px 16px rgba(236, 72, 153, 0.45);
+    transform: scale(0);
+    transform-origin: right center;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .combo-pill.show {
+    transform: scale(1);
+  }
+
+  /* 現代動漫手遊風斜切 BOSS 登場 Cut-In 橫幅 + 殘影血條 */
+  .boss-hud-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.84) 0%, rgba(3, 105, 161, 0.88) 60%, rgba(236, 72, 153, 0.88) 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255, 255, 255, 0.85);
+    border-radius: 16px;
+    padding: 7px 12px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 26px rgba(236, 72, 153, 0.38);
+    color: #ffffff;
+    animation: cutInSlide 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .boss-hud-card.active {
+    display: flex;
+  }
+  @keyframes cutInSlide {
+    from { opacity: 0; transform: translateY(-12px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .boss-avatar-ring {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 2px solid #facc15;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #ffffff;
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.65);
+  }
+  .boss-avatar-ring img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .boss-meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .boss-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .boss-name {
+    font-size: 12px;
+    font-weight: 900;
+    color: #fef08a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  }
+  .boss-hp-text {
+    font-family: monospace;
+    font-size: 10.5px;
+    font-weight: 900;
+    color: #ffffff;
+  }
+  .boss-hp-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(15, 23, 42, 0.65);
+    border-radius: 999px;
+    padding: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    overflow: hidden;
+  }
+  .boss-hp-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f43f5e, #f59e0b, #fef08a);
+    transition: width 0.18s ease-out;
+  }
+
+  /* ─── 下方現代商用手遊玻璃底座 (Sleek Glass Dock) ─── */
+  .hud-dock {
+    width: 100%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(240, 249, 255, 0.98) 100%);
+    backdrop-filter: blur(16px);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.95);
+    border-radius: 18px 18px 0 0;
+    margin-top: -10px;
+    padding: 7px 8px calc(env(safe-area-inset-bottom, 0px) + 6px);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 20;
+    flex-shrink: 0;
+    box-shadow: 0 -8px 24px rgba(2, 132, 199, 0.18);
+  }
+
+  /* 5 顆商用級立體膠囊技能鍵 */
+  .skill-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+  }
+  .skill-btn {
+    background: linear-gradient(160deg, #ffffff 0%, #e0f2fe 100%);
+    border: 1.5px solid #bae6fd;
+    border-radius: 12px;
+    padding: 4px 2px;
+    color: #0369a1;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(14, 165, 233, 0.14), inset 0 1px 0 #ffffff;
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .skill-btn:active { transform: translateY(1px) scale(0.96); }
+  .skill-btn.active-mode {
+    background: linear-gradient(160deg, #ecfdf5 0%, #a7f3d0 100%);
+    border-color: #10b981;
+    color: #065f46;
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25), inset 0 1px 0 #ffffff;
+  }
+  .skill-btn .sk-icon { font-size: 15px; line-height: 1.1; filter: drop-shadow(0 2px 3px rgba(2, 132, 199, 0.2)); }
+  .skill-btn .sk-name { font-size: 10px; font-weight: 900; margin-top: 1px; white-space: nowrap; }
+  .skill-btn .sk-sub {
+    font-size: 8.5px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #f59e0b, #ec4899);
+    padding: 0 5px;
+    border-radius: 999px;
+    font-family: monospace;
+    font-weight: 900;
+    margin-top: 1px;
+  }
+  .skill-btn.active-mode .sk-sub {
+    background: linear-gradient(135deg, #059669, #10b981);
+  }
+
+  /* 養成與首領分頁切換列 */
+  .tab-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    background: #e2e8f0;
+    padding: 3px;
+    border-radius: 11px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 2px;
+    font-size: 11px;
+    font-weight: 900;
+    color: #475569;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.35);
+  }
+
+  /* 現代手遊升級卡片網格 */
+  .upgrade-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    height: 92px;
+    overflow-y: auto;
+  }
+  .up-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1.5px solid #cbd5e1;
+    border-radius: 11px;
+    padding: 5px 7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+    transition: transform 0.12s, border-color 0.15s;
+  }
+  .up-card:active { transform: scale(0.97); }
+  .up-card.can-buy {
+    border-color: #38bdf8;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+    box-shadow: 0 3px 10px rgba(14, 165, 233, 0.14);
+  }
+  .up-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
+  }
+  .up-title {
+    font-size: 10.5px;
+    font-weight: 900;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .lv-pill {
+    background: #e0f2fe;
+    color: #0284c7;
+    border-radius: 999px;
+    padding: 0 5px;
+    font-size: 9px;
+    font-weight: 900;
+    font-family: monospace;
+  }
+  .up-desc {
+    font-size: 9px;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .up-buy {
+    background: #94a3b8;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-size: 10px;
+    font-weight: 900;
+    font-family: monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(15, 23, 42, 0.15);
+  }
+  .up-card.can-buy .up-buy {
+    background: linear-gradient(135deg, #10b981, #0ea5e9);
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.35);
+  }
+</style>
+</head>
+<body>
+
+<button class="exit-fs-pill" id="btnExitFs" type="button">✕ 退出全螢幕</button>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="badge">REA</span>
+    <span>🌈 泡泡龍<span class="hide-sm">：晴空浮空島</span></span>
+    <span class="ver-stamp" id="verStamp">v_12:08:00</span>
+  </div>
+  <div class="top-actions">
+    <button class="top-btn fs-btn" id="btnFullscreen" type="button">⛶ 全螢幕</button>
+    <button class="top-btn gold" id="btnSuperCheat" type="button">🌟<span class="hide-sm"> 彩虹</span>密技</button>
+    <button class="top-btn" id="btnSound" type="button">🔊</button>
+    <a class="top-btn" href="index.html">🕹️<span class="hide-sm"> 大廳</span></a>
+  </div>
+</div>
+
+<div class="game-layout">
+  <div class="canvas-wrap">
+    <!-- 現代商用手遊級 Glassmorphic 懸浮膠囊 HUD 與動漫斜切 BOSS 橫幅 -->
+    <div class="modern-hud-overlay">
+      <div class="hud-top-row">
+        <div class="stage-capsule">
+          <span class="island-badge" id="hudIslandBadge">ISLAND 1</span>
+          <div class="wave-track-wrap">
+            <div class="wave-label">
+              <span id="hudWaveText">晴空浮空島 W1/5</span>
+              <span style="color:#ec4899;" id="hudPopsText">🫧0</span>
+            </div>
+            <div class="wave-bar-bg">
+              <div class="wave-bar-fill" id="hudWaveFill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="currency-group">
+          <div class="res-pill">
+            <span class="res-icon">🪙</span>
+            <span class="res-val" id="hudCoins">300</span>
+          </div>
+          <div class="res-pill">
+            <span class="res-icon star">🌟</span>
+            <span class="res-val" id="hudStars">100</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="combo-pill" id="hudComboPill">🔥 5X CHAIN COMBO!</div>
+
+      <div class="boss-hud-card" id="hudBossCard">
+        <div class="boss-avatar-ring">
+          <img id="hudBossImg" src="assets/boss_sun_queen.jpg" alt="Boss">
+        </div>
+        <div class="boss-meta">
+          <div class="boss-title-row">
+            <span class="boss-name" id="hudBossName">☀️ 晴空女武神・索爾</span>
+            <span class="boss-hp-text" id="hudBossHpText">100%</span>
+          </div>
+          <div class="boss-hp-track">
+            <div class="boss-hp-fill" id="hudBossHpFill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="rainbowCanvas" width="430" height="580"></canvas>
+  </div>
+
+  <div class="hud-dock">
+    <!-- 5 顆陽光彩虹泡泡必殺快捷列 -->
+    <div class="skill-bar">
+      <button class="skill-btn active-mode" id="btnAutoIdle" type="button">
+        <span class="sk-icon">🤖</span>
+        <span class="sk-name">自動射泡</span>
+        <span class="sk-sub" id="autoIdleSub">ON 巡航</span>
+      </button>
+      <button class="skill-btn" id="btnSkillRainbow" type="button">
+        <span class="sk-icon">🌈</span>
+        <span class="sk-name">七彩雙虹橋</span>
+        <span class="sk-sub" id="cdRainbow">READY</span>
+      </button>
+      <button class="skill-btn" id="btnSkillBubbleStorm" type="button">
+        <span class="sk-icon">🫧</span>
+        <span class="sk-name">滿天泡泡雨</span>
+        <span class="sk-sub" id="cdStorm">READY</span>
+      </button>
+      <button class="skill-btn" id="btnSkillPopAll" type="button">
+        <span class="sk-icon">💥</span>
+        <span class="sk-name">全屏連鎖爆</span>
+        <span class="sk-sub" id="cdPop">READY</span>
+      </button>
+      <button class="skill-btn" id="btnSkillSunbeam" type="button">
+        <span class="sk-icon">☀️</span>
+        <span class="sk-name">晴空聖光砲</span>
+        <span class="sk-sub" id="cdSun">READY</span>
+      </button>
+    </div>
+
+    <!-- 4 大養成與 REA 逆向分頁 -->
+    <div class="tab-row">
+      <button class="tab-btn active" data-tab="bubbles" type="button">🫧 泡泡魔法</button>
+      <button class="tab-btn" data-tab="dragons" type="button">🐲 泡泡龍寵</button>
+      <button class="tab-btn" data-tab="islands" type="button">🏝️ 晴空首領</button>
+      <button class="tab-btn" data-tab="rea" type="button">🔬 REA 密技</button>
+    </div>
+
+    <!-- 動態升級項目容器 -->
+    <div class="upgrade-grid" id="upgradeGrid"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const VERSION_STAMP = 'v_12:08:00';
+  if (new URLSearchParams(window.location.search).get('embed') === '1') {
+    document.body.classList.add('embedded');
+  }
+
+  const canvas = document.getElementById('rainbowCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 430, H = 580;
+  const GROUND_Y = 548;
+
+  // ─── 載入背景與原創圖集，並透過 Flood-Fill 邊緣柔化演算法自動裁切出 8 組透明去背商用動態精靈 ───
+  const ASSETS = {
+    bg: new Image(),
+    heroPortrait: new Image(),
+    sunQueenPortrait: new Image(),
+    crystalDragonPortrait: new Image(),
+    unitSheet: new Image(),
+    monsterSheet: new Image()
+  };
+  const SPRITES = {
+    bubblun: null,
+    bobblun: null,
+    heroine: null,
+    sunQueen: null,
+    slime: null,
+    pixie: null,
+    golem: null,
+    crystalDragon: null
+  };
+
+  // 從四角與邊框進行 BFS Flood-Fill 去背，將純白與淺灰分隔線轉為 100% 透明，同時完整保留角色內部的白色高光與羽翼！
+  function extractQuadrantSprite(sheetImg, qx, qy) {
+    const sw = Math.floor(sheetImg.naturalWidth / 2);
+    const sh = Math.floor(sheetImg.naturalHeight / 2);
+    const pad = Math.floor(sw * 0.035); // 避開中央十字淺灰分隔線
+    const cw = sw - pad * 2;
+    const ch = sh - pad * 2;
+    const sx = qx * sw + pad;
+    const sy = qy * sh + pad;
+
+    const off = document.createElement('canvas');
+    off.width = cw;
+    off.height = ch;
+    const octx = off.getContext('2d');
+    octx.drawImage(sheetImg, sx, sy, cw, ch, 0, 0, cw, ch);
+
+    const imgData = octx.getImageData(0, 0, cw, ch);
+    const data = imgData.data;
+    const visited = new Uint8Array(cw * ch);
+    const queue = new Int32Array(cw * ch);
+    let head = 0, tail = 0;
+
+    function isBgWhite(idx4) {
+      const r = data[idx4], g = data[idx4 + 1], b = data[idx4 + 2];
+      const maxC = Math.max(r, g, b);
+      const minC = Math.min(r, g, b);
+      // 高亮度且低飽和度視為背景白
+      return (r > 232 && g > 232 && b > 232) || (minC > 218 && (maxC - minC) < 18);
+    }
+
+    function pushSeed(x, y) {
+      const p = y * cw + x;
+      if (!visited[p] && isBgWhite(p * 4)) {
+        visited[p] = 1;
+        queue[tail++] = p;
+      }
+    }
+
+    for (let x = 0; x < cw; x++) {
+      pushSeed(x, 0);
+      pushSeed(x, ch - 1);
+    }
+    for (let y = 0; y < ch; y++) {
+      pushSeed(0, y);
+      pushSeed(cw - 1, y);
+    }
+
+    while (head < tail) {
+      const p = queue[head++];
+      const p4 = p * 4;
+      data[p4 + 3] = 0; // 完全透明
+      const x = p % cw;
+      const y = (p / cw) | 0;
+
+      if (x > 0) {
+        const np = p - 1;
+        if (!visited[np] && isBgWhite(np * 4)) { visited[np] = 1; queue[tail++] = np; }
+      }
+      if (x + 1 < cw) {
+        const np = p + 1;
+        if (!visited[np] && isBgWhite(np * 4)) { visited[np] = 1; queue[tail++] = np; }
+      }
+      if (y > 0) {
+        const np = p - cw;
+        if (!visited[np] && isBgWhite(np * 4)) { visited[np] = 1; queue[tail++] = np; }
+      }
+      if (y + 1 < ch) {
+        const np = p + cw;
+        if (!visited[np] && isBgWhite(np * 4)) { visited[np] = 1; queue[tail++] = np; }
+      }
+    }
+
+    // 邊緣柔化抗鋸齒 (Feathering 1px border around transparent pixels)
+    for (let y = 1; y < ch - 1; y++) {
+      for (let x = 1; x < cw - 1; x++) {
+        const p = y * cw + x;
+        if (visited[p]) continue;
+        const nTransparent =
+          visited[p - 1] + visited[p + 1] + visited[p - cw] + visited[p + cw];
+        if (nTransparent > 0) {
+          const p4 = p * 4;
+          const lum = (data[p4] + data[p4 + 1] + data[p4 + 2]) / 3;
+          if (lum > 205) {
+            data[p4 + 3] = Math.max(40, Math.round(255 * (1 - nTransparent * 0.2)));
+          }
+        }
+      }
+    }
+
+    octx.putImageData(imgData, 0, 0);
+    return off;
+  }
+
+  ASSETS.bg.src = 'assets/rainbow_bg.jpg';
+  ASSETS.heroPortrait.src = 'assets/hero_prism.jpg';
+  ASSETS.sunQueenPortrait.src = 'assets/boss_sun_queen.jpg';
+  ASSETS.crystalDragonPortrait.src = 'assets/boss_crystal_dragon.jpg';
+
+  ASSETS.unitSheet.onload = () => {
+    try {
+      SPRITES.bubblun  = extractQuadrantSprite(ASSETS.unitSheet, 0, 0);
+      SPRITES.bobblun  = extractQuadrantSprite(ASSETS.unitSheet, 1, 0);
+      SPRITES.heroine  = extractQuadrantSprite(ASSETS.unitSheet, 0, 1);
+      SPRITES.sunQueen = extractQuadrantSprite(ASSETS.unitSheet, 1, 1);
+    } catch (_) {}
+  };
+  ASSETS.unitSheet.src = 'assets/rainbow_sprites_units.jpg';
+
+  ASSETS.monsterSheet.onload = () => {
+    try {
+      SPRITES.slime         = extractQuadrantSprite(ASSETS.monsterSheet, 0, 0);
+      SPRITES.pixie         = extractQuadrantSprite(ASSETS.monsterSheet, 1, 0);
+      SPRITES.golem         = extractQuadrantSprite(ASSETS.monsterSheet, 0, 1);
+      SPRITES.crystalDragon = extractQuadrantSprite(ASSETS.monsterSheet, 1, 1);
+    } catch (_) {}
+  };
+  ASSETS.monsterSheet.src = 'assets/rainbow_sprites_monsters.jpg';
+
+  // ─── 沉浸式全螢幕切換 (支援 iPhone Safari / LINE / Android / 桌面) ───
+  function toggleImmersiveFullscreen(forceState) {
+    const nextState = typeof forceState === 'boolean'
+      ? forceState
+      : !document.body.classList.contains('immersive-fs');
+    document.body.classList.toggle('immersive-fs', nextState);
+    const fsBtn = document.getElementById('btnFullscreen');
+    if (fsBtn) fsBtn.textContent = nextState ? '✕ 退出' : '⛶ 全螢幕';
+    try {
+      if (nextState && document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (!nextState && document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    } catch (_) {}
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'TOGGLE_IMMERSIVE_FS', active: nextState }, '*');
+      }
+    } catch (_) {}
+  }
+  document.getElementById('btnFullscreen').addEventListener('click', () => toggleImmersiveFullscreen());
+  document.getElementById('btnExitFs').addEventListener('click', () => toggleImmersiveFullscreen(false));
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'PARENT_FS_STATE') {
+      document.body.classList.toggle('immersive-fs', Boolean(e.data.value));
+    }
+  });
+
+  // ─── 歡快街機泡泡音效合成器 ───
+  let audioCtx = null;
+  let soundEnabled = true;
+  function ensureAudio() {
+    if (!soundEnabled) return;
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+  }
+  function playSfx(type) {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      if (type === 'bubble') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(380, now);
+        osc.frequency.exponentialRampToValueAtTime(760, now + 0.08);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.start(now); osc.stop(now + 0.08);
+      } else if (type === 'pop') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.exponentialRampToValueAtTime(1040, now + 0.12);
+        gain.gain.setValueAtTime(0.11, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        osc.start(now); osc.stop(now + 0.12);
+      } else if (type === 'fanfare') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.07);
+        osc.frequency.setValueAtTime(783.99, now + 0.14);
+        osc.frequency.setValueAtTime(1046.5, now + 0.21);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+        osc.start(now); osc.stop(now + 0.32);
+      }
+    } catch (_) {}
+  }
+  document.getElementById('btnSound').addEventListener('click', (e) => {
+    soundEnabled = !soundEnabled;
+    e.currentTarget.textContent = soundEnabled ? '🔊' : '🔇';
+  });
+
+  // ─── 遊戲狀態與存檔 ───
+  const SAVE_KEY = 'REA_RAINBOW_ISLAND_ULTRA_V1';
+  const state = {
+    coins: 300,
+    stars: 100,
+    island: 1,
+    wave: 1,
+    pops: 0,
+    combo: 0,
+    comboTimer: 0,
+    autoIdle: true,
+    speedMul: 1,
+    sunbeamTimer: 0,
+    bossBannerTimer: 0,
+    currentBossName: '',
+    currentBossPortrait: 'sunQueen',
+    activeTab: 'bubbles',
+    hero: {
+      x: 115,
+      y: GROUND_Y,
+      targetX: 215,
+      facing: 1,
+      shootTimer: 0,
+      castAnim: 0
+    },
+    upgrades: {
+      prismBubble:  { lv: 1, name: '🫧 七彩結晶泡', desc: '提升泡泡困怪傷害與連射速度', baseCost: 50, currency: 'coins' },
+      rainbowArc:   { lv: 1, name: '🌈 雙重彩虹橋', desc: '提升彩虹橋貫穿傷害與水果掉落', baseCost: 85, currency: 'coins' },
+      chainPop:     { lv: 1, name: '💥 連鎖破泡', desc: '破泡時自動引爆周圍泡泡並加乘倍率', baseCost: 130, currency: 'coins' },
+      fruitHarvest: { lv: 1, name: '🍓 鑽石水果祭', desc: '提升暴擊率與王冠寶石掉落價值', baseCost: 160, currency: 'coins' },
+      bubblunPet:   { lv: 1, name: '🐲 綠耀泡泡龍', desc: 'Bubblun 自動發射追蹤泡泡困住全場怪物', baseCost: 45, currency: 'stars' },
+      bobblunPet:   { lv: 1, name: '🦕 藍耀水泡龍', desc: 'Bobblun 自動衝撞刺破氣泡觸發連鎖高分', baseCost: 70, currency: 'stars' },
+      starFairy:    { lv: 1, name: '🧚 星光妖精環', desc: '環繞主角旋轉的七彩星光護盾', baseCost: 100, currency: 'stars' },
+      sunTree:      { lv: 1, name: '🌳 陽光果實樹', desc: '每秒自動產出額外金幣與彩虹星鑽', baseCost: 140, currency: 'stars' }
+    },
+    cooldowns: {
+      rainbow: 0,
+      storm: 0,
+      pop: 0,
+      sun: 0
+    }
+  };
+
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (typeof saved.coins === 'number') state.coins = saved.coins;
+      if (typeof saved.stars === 'number') state.stars = saved.stars;
+      if (typeof saved.island === 'number') state.island = saved.island;
+      if (typeof saved.pops === 'number') state.pops = saved.pops;
+      if (saved.upgrades) {
+        for (const k of Object.keys(state.upgrades)) {
+          if (saved.upgrades[k] && typeof saved.upgrades[k].lv === 'number') {
+            state.upgrades[k].lv = saved.upgrades[k].lv;
+          }
+        }
+      }
+    }
+  } catch (_) {}
+
+  function saveGame() {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        coins: Math.floor(state.coins),
+        stars: Math.floor(state.stars),
+        island: state.island,
+        pops: state.pops,
+        upgrades: state.upgrades,
+        ts: Date.now()
+      }));
+    } catch (_) {}
+  }
+
+  function getStats() {
+    const u = state.upgrades;
+    const baseAtk = 55 * Math.pow(1.26, u.prismBubble.lv - 1);
+    const critChance = Math.min(0.78, 0.18 + u.fruitHarvest.lv * 0.04);
+    const critMul = 1.9 + u.chainPop.lv * 0.2;
+    const lootMul = 1 + u.fruitHarvest.lv * 0.25 + u.sunTree.lv * 0.25;
+    const starCount = Math.min(6, 2 + Math.floor(u.starFairy.lv / 2));
+    return { baseAtk, critChance, critMul, lootMul, starCount };
+  }
+
+  function getUpgradeCost(key) {
+    const u = state.upgrades[key];
+    return Math.floor(u.baseCost * Math.pow(1.42, u.lv - 1));
+  }
+
+  // ─── 實體容器 ───
+  const enemies = [];
+  const bubbles = [];
+  const rainbows = [];
+  const fruits = [];
+  const floatTexts = [];
+  const particles = [];
+  let orbitAngle = 0;
+
+  const FRUIT_ICONS = ['🍓', '🍉', '🍍', '🍒', '🍑', '👑', '💎'];
+  const BUBBLE_COLORS = ['#38bdf8', '#f472b6', '#facc15', '#34d399', '#a78bfa'];
+
+  function addFloatText(x, y, text, color = '#d97706', size = 15, isCrit = false) {
+    floatTexts.push({ x, y, vy: -64, text, color, size, life: 0.9, maxLife: 0.9, isCrit });
+  }
+  function addParticles(x, y, color, count = 10, speed = 170) {
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const sp = (0.35 + Math.random() * 0.65) * speed;
+      particles.push({
+        x, y,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp - 35,
+        color,
+        r: 2.5 + Math.random() * 4.0,
+        life: 0.45 + Math.random() * 0.35,
+        star: i % 3 === 0
+      });
+    }
+  }
+
+  // ─── 浮空島陽光去背萌怪與雙首領生成器 ───
+  function spawnEnemy(forceBossType = null) {
+    const islandScale = Math.pow(1.22, state.island - 1);
+    const isBossWave = forceBossType || (state.wave >= 5 && !enemies.some(e => e.isBoss));
+    if (isBossWave) {
+      const bossKey = forceBossType || (state.island % 2 === 1 ? 'sunQueen' : 'crystalDragon');
+      const isDragon = bossKey === 'crystalDragon';
+      const maxHp = Math.round(1050 * islandScale * (isDragon ? 1.3 : 1.0));
+      enemies.push({
+        id: 'boss_' + Date.now(),
+        type: bossKey,
+        spriteKey: isDragon ? 'crystalDragon' : 'sunQueen',
+        name: isDragon ? '🌈 虹光水晶天龍・利維坦' : '☀️ 晴空女武神・索爾',
+        isBoss: true,
+        trappedTimer: 0,
+        x: W - 95,
+        y: 235,
+        baseY: 235,
+        vx: -36,
+        r: 48,
+        hp: maxHp,
+        maxHp,
+        hitFlash: 0,
+        phase: 0,
+        color: isDragon ? '#0ea5e9' : '#f59e0b'
+      });
+      state.currentBossName = isDragon ? '🌈 虹光水晶天龍・利維坦' : '☀️ 晴空女武神・索爾';
+      state.currentBossPortrait = bossKey;
+      state.bossBannerTimer = 4.0;
+      playSfx('fanfare');
+      return;
+    }
+
+    const archetypes = [
+      { type: 'slime',   spriteKey: 'slime',         name: '皇冠果凍王',   r: 26, hpMul: 1.0,  speed: 48, flying: false, color: '#38bdf8', accent: '#bae6fd' },
+      { type: 'pixie',   spriteKey: 'pixie',         name: '星光羽翼妖精', r: 25, hpMul: 0.9,  speed: 65, flying: true,  color: '#f472b6', accent: '#fbcfe8' },
+      { type: 'golem',   spriteKey: 'golem',         name: '黃金發條魔像', r: 27, hpMul: 1.35, speed: 42, flying: false, color: '#f59e0b', accent: '#fef08a' },
+      { type: 'wyvern',  spriteKey: 'crystalDragon', name: '幼年虹彩飛龍', r: 26, hpMul: 1.15, speed: 58, flying: true,  color: '#10b981', accent: '#a7f3d0' }
+    ];
+    const pick = archetypes[Math.floor(Math.random() * archetypes.length)];
+    const fromRight = Math.random() > 0.25;
+    const spawnX = fromRight ? W + 28 : -28;
+    const spawnY = pick.flying ? (210 + Math.random() * 165) : (GROUND_Y - 26);
+    const maxHp = Math.round(135 * islandScale * pick.hpMul);
+    enemies.push({
+      id: 'mob_' + Math.random(),
+      type: pick.type,
+      spriteKey: pick.spriteKey,
+      name: pick.name,
+      isBoss: false,
+      trappedTimer: 0,
+      x: spawnX,
+      y: spawnY,
+      baseY: spawnY,
+      vx: fromRight ? -pick.speed : pick.speed,
+      r: pick.r,
+      hp: maxHp,
+      maxHp,
+      hitFlash: 0,
+      phase: Math.random() * Math.PI * 2,
+      color: pick.color,
+      accent: pick.accent
+    });
+  }
+
+  // ─── 4 大太東泡泡龍／彩虹島經典必殺技 ───
+  function triggerRainbowBridge() {
+    if (state.cooldowns.rainbow > 0) return;
+    ensureAudio();
+    playSfx('fanfare');
+    state.cooldowns.rainbow = 4.0;
+    state.hero.castAnim = 0.45;
+    const st = getStats();
+    const dmg = st.baseAtk * (2.6 + state.upgrades.rainbowArc.lv * 0.45);
+    rainbows.push({ x: 135, y: 390, r: 98, dmg, life: 2.2 });
+    rainbows.push({ x: 295, y: 330, r: 108, dmg, life: 2.2 });
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      damageEnemy(enemies[i], dmg, true);
+    }
+    addFloatText(W * 0.5, 195, '🌈 七彩雙虹橋 RAINBOW BRIDGE!', '#0284c7', 16, true);
+  }
+
+  function triggerBubbleStorm() {
+    if (state.cooldowns.storm > 0) return;
+    ensureAudio();
+    playSfx('bubble');
+    state.cooldowns.storm = 3.5;
+    state.hero.castAnim = 0.45;
+    const st = getStats();
+    for (let i = 0; i < 12; i++) {
+      const ang = -Math.PI * 0.15 - Math.random() * Math.PI * 0.7;
+      const sp = 240 + Math.random() * 140;
+      bubbles.push({
+        x: state.hero.x,
+        y: state.hero.y - 36,
+        vx: Math.cos(ang) * sp,
+        vy: Math.sin(ang) * sp,
+        r: 17 + Math.random() * 6,
+        color: BUBBLE_COLORS[i % BUBBLE_COLORS.length],
+        dmg: st.baseAtk * 1.35,
+        wobble: Math.random() * Math.PI * 2,
+        life: 2.4
+      });
+    }
+    addFloatText(state.hero.x, state.hero.y - 72, '🫧 滿天七彩泡泡雨!', '#ec4899', 15, true);
+  }
+
+  function triggerChainPopAll() {
+    if (state.cooldowns.pop > 0) return;
+    ensureAudio();
+    playSfx('pop');
+    state.cooldowns.pop = 3.8;
+    state.hero.castAnim = 0.45;
+    const st = getStats();
+    const dmg = st.baseAtk * (2.5 + state.upgrades.chainPop.lv * 0.42);
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      const e = enemies[i];
+      e.trappedTimer = 2.5;
+      damageEnemy(e, dmg, true);
+    }
+    addFloatText(W * 0.5, 225, '💥 全屏連鎖破泡 CHAIN BURST!', '#ec4899', 16, true);
+  }
+
+  function triggerSunbeam() {
+    if (state.cooldowns.sun > 0) return;
+    ensureAudio();
+    playSfx('fanfare');
+    state.cooldowns.sun = 6.0;
+    state.sunbeamTimer = 3.5;
+    state.hero.castAnim = 0.5;
+    const st = getStats();
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      damageEnemy(enemies[i], st.baseAtk * 3.0, true);
+    }
+    addFloatText(W * 0.5, 170, '☀️ 晴空聖光極光砲 SUNBEAM!', '#d97706', 16, true);
+  }
+
+  function damageEnemy(e, rawDmg, trapInBubble = false) {
+    if (!e) return;
+    const st = getStats();
+    const isCrit = Math.random() < st.critChance;
+    const sunMul = state.sunbeamTimer > 0 ? 1.65 : 1.0;
+    const trappedMul = e.trappedTimer > 0 ? (1.35 + state.upgrades.chainPop.lv * 0.12) : 1.0;
+    const finalDmg = Math.max(1, Math.round(rawDmg * (isCrit ? st.critMul : 1.0) * sunMul * trappedMul));
+    e.hp -= finalDmg;
+    e.hitFlash = 1.0;
+    if (trapInBubble && !e.isBoss) {
+      e.trappedTimer = 2.8;
+    }
+
+    addFloatText(
+      e.x + (Math.random() - 0.5) * 28,
+      e.y - e.r - 12,
+      isCrit ? `💥${finalDmg.toLocaleString()}!` : `${finalDmg.toLocaleString()}`,
+      isCrit ? '#ec4899' : '#0284c7',
+      isCrit ? 17 : 13.5,
+      isCrit
+    );
+    addParticles(e.x, e.y, BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)], isCrit ? 9 : 4, 150);
+
+    if (e.hp <= 0) {
+      state.pops++;
+      state.combo++;
+      state.comboTimer = 3.2;
+      playSfx('pop');
+      const coinGain = Math.round((e.isBoss ? 220 : 28) * Math.pow(1.18, state.island - 1) * st.lootMul);
+      const starGain = Math.round((e.isBoss ? 75 : 10) * Math.pow(1.15, state.island - 1) * st.lootMul);
+      const fruitCount = e.isBoss ? 6 : 2;
+      for (let f = 0; f < fruitCount; f++) {
+        fruits.push({
+          x: e.x + (Math.random() - 0.5) * 32,
+          y: e.y - 10,
+          vx: (Math.random() - 0.5) * 120,
+          vy: -160 - Math.random() * 80,
+          icon: FRUIT_ICONS[Math.floor(Math.random() * FRUIT_ICONS.length)],
+          coins: Math.ceil(coinGain / fruitCount),
+          stars: Math.ceil(starGain / fruitCount)
+        });
+      }
+      addParticles(e.x, e.y, '#facc15', e.isBoss ? 32 : 16, 220);
+
+      if (e.isBoss) {
+        state.island++;
+        state.wave = 1;
+        addFloatText(W * 0.5, 150, `🏝️ 飛躍晴空浮空島 第 ${state.island} 島！`, '#059669', 17, true);
+        saveGame();
+      } else if (state.pops % 5 === 0) {
+        state.wave = Math.min(5, state.wave + 1);
+      }
+    }
+  }
+
+  // ─── 渲染下方 4 分頁現代手遊養成面板 ───
+  const upgradeGridEl = document.getElementById('upgradeGrid');
+  function renderUpgrades() {
+    const tab = state.activeTab;
+    if (tab === 'bubbles' || tab === 'dragons') {
+      const keys = tab === 'bubbles'
+        ? ['prismBubble', 'rainbowArc', 'chainPop', 'fruitHarvest']
+        : ['bubblunPet', 'bobblunPet', 'starFairy', 'sunTree'];
+      upgradeGridEl.innerHTML = keys.map(k => {
+        const u = state.upgrades[k];
+        const cost = getUpgradeCost(k);
+        const canBuy = u.currency === 'coins' ? state.coins >= cost : state.stars >= cost;
+        const icon = u.currency === 'coins' ? '🪙' : '🌟';
+        return `
+          <div class="up-card ${canBuy ? 'can-buy' : ''}" data-up="${k}">
+            <div class="up-info">
+              <div class="up-title">${u.name} <span class="lv-pill">Lv.${u.lv}</span></div>
+              <div class="up-desc">${u.desc}</div>
+            </div>
+            <button class="up-buy" type="button">${icon}${cost}</button>
+          </div>
+        `;
+      }).join('');
+      upgradeGridEl.querySelectorAll('.up-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const key = card.getAttribute('data-up');
+          const u = state.upgrades[key];
+          const cost = getUpgradeCost(key);
+          if (u.currency === 'coins' && state.coins >= cost) {
+            state.coins -= cost;
+            u.lv++;
+            ensureAudio(); playSfx('fanfare');
+            addFloatText(state.hero.x, state.hero.y - 60, `⬆️ ${u.name} Lv.${u.lv}!`, '#059669', 14, true);
+            saveGame();
+            renderUpgrades();
+          } else if (u.currency === 'stars' && state.stars >= cost) {
+            state.stars -= cost;
+            u.lv++;
+            ensureAudio(); playSfx('fanfare');
+            addFloatText(state.hero.x, state.hero.y - 60, `🌟 ${u.name} Lv.${u.lv}!`, '#0284c7', 14, true);
+            saveGame();
+            renderUpgrades();
+          }
+        });
+      });
+    } else if (tab === 'islands') {
+      upgradeGridEl.innerHTML = `
+        <div class="up-card can-buy" id="actSummonSunQueen">
+          <div class="up-info">
+            <div class="up-title">☀️ 召喚晴空女武神・索爾</div>
+            <div class="up-desc">挑戰陽光女武神領取王冠鑽石雨</div>
+          </div>
+          <button class="up-buy" type="button">BOSS戰</button>
+        </div>
+        <div class="up-card can-buy" id="actSummonCrystalDragon">
+          <div class="up-info">
+            <div class="up-title">🌈 召喚虹光水晶天龍</div>
+            <div class="up-desc">挑戰七彩水晶天龍突破新浮空島</div>
+          </div>
+          <button class="up-buy" type="button">天龍BOSS</button>
+        </div>
+        <div class="up-card can-buy" id="actSpeedToggle">
+          <div class="up-info">
+            <div class="up-title">⚡ 陽光巡航倍速：${state.speedMul}X</div>
+            <div class="up-desc">切換 1X / 2X 極速連爆破泡模式</div>
+          </div>
+          <button class="up-buy" type="button">切換倍速</button>
+        </div>
+        <div class="up-card can-buy" id="actClaimFruitBox">
+          <div class="up-info">
+            <div class="up-title">🍓 領取黃金水果寶箱</div>
+            <div class="up-desc">立即獲得 +2,000 金幣與 +600 星鑽</div>
+          </div>
+          <button class="up-buy" type="button">免費領取</button>
+        </div>
+      `;
+      document.getElementById('actSummonSunQueen')?.addEventListener('click', () => spawnEnemy('sunQueen'));
+      document.getElementById('actSummonCrystalDragon')?.addEventListener('click', () => spawnEnemy('crystalDragon'));
+      document.getElementById('actSpeedToggle')?.addEventListener('click', () => {
+        state.speedMul = state.speedMul === 1 ? 2 : 1;
+        renderUpgrades();
+      });
+      document.getElementById('actClaimFruitBox')?.addEventListener('click', () => {
+        state.coins += 2000;
+        state.stars += 600;
+        playSfx('fanfare');
+        addFloatText(W * 0.5, 220, '🍓 獲得 +2000 金幣 / +600 星鑽！', '#ec4899', 16, true);
+        saveGame();
+        renderUpgrades();
+      });
+    } else if (tab === 'rea') {
+      upgradeGridEl.innerHTML = `
+        <div class="up-card can-buy" id="actRainbowCheat">
+          <div class="up-info">
+            <div class="up-title">🌟 太東泡泡龍神裝密技全開</div>
+            <div class="up-desc">全泡泡與龍寵等級 +3、滿天彩虹爆發</div>
+          </div>
+          <button class="up-buy" type="button">啟動密技</button>
+        </div>
+        <div class="up-card">
+          <div class="up-info">
+            <div class="up-title">🔬 REA 逆向：商用去背精靈與流場</div>
+            <div class="up-desc">Flood-Fill 透明精靈裁切 + 氣泡浮力流場 vy=-95+sin(t)</div>
+          </div>
+        </div>
+      `;
+      document.getElementById('actRainbowCheat')?.addEventListener('click', activateRainbowCheat);
+    }
+  }
+
+  function activateRainbowCheat() {
+    ensureAudio();
+    playSfx('fanfare');
+    state.coins += 60000;
+    state.stars += 25000;
+    for (const k of Object.keys(state.upgrades)) {
+      state.upgrades[k].lv += 3;
+    }
+    state.cooldowns.rainbow = 0;
+    state.cooldowns.storm = 0;
+    state.cooldowns.pop = 0;
+    triggerRainbowBridge();
+    triggerBubbleStorm();
+    triggerChainPopAll();
+    addFloatText(W * 0.5, 150, '🌟 彩虹神裝覺醒！全等級+3 & 寶石暴增！', '#ec4899', 16, true);
+    saveGame();
+    renderUpgrades();
+  }
+
+  document.getElementById('btnSuperCheat').addEventListener('click', activateRainbowCheat);
+  document.getElementById('btnAutoIdle').addEventListener('click', (e) => {
+    state.autoIdle = !state.autoIdle;
+    e.currentTarget.classList.toggle('active-mode', state.autoIdle);
+    document.getElementById('autoIdleSub').textContent = state.autoIdle ? 'ON 巡航' : 'OFF 手動';
+  });
+  document.getElementById('btnSkillRainbow').addEventListener('click', triggerRainbowBridge);
+  document.getElementById('btnSkillBubbleStorm').addEventListener('click', triggerBubbleStorm);
+  document.getElementById('btnSkillPopAll').addEventListener('click', triggerChainPopAll);
+  document.getElementById('btnSkillSunbeam').addEventListener('click', triggerSunbeam);
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.activeTab = btn.getAttribute('data-tab');
+      renderUpgrades();
+    });
+  });
+
+  // ─── 單指點擊／滑動發射七彩泡泡並引爆氣泡 ───
+  function handleCanvasTap(clientX, clientY) {
+    ensureAudio();
+    const rect = canvas.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * W;
+    const y = ((clientY - rect.top) / rect.height) * H;
+    state.hero.facing = x >= state.hero.x ? 1 : -1;
+    state.hero.targetX = Math.max(55, Math.min(W - 55, x));
+    state.hero.castAnim = 0.35;
+    playSfx('bubble');
+    const st = getStats();
+    for (let i = -1; i <= 1; i++) {
+      const dx = x - state.hero.x;
+      const dy = y - (state.hero.y - 40);
+      const baseAng = Math.atan2(dy, dx) + i * 0.18;
+      bubbles.push({
+        x: state.hero.x,
+        y: state.hero.y - 40,
+        vx: Math.cos(baseAng) * 320,
+        vy: Math.sin(baseAng) * 320,
+        r: 17,
+        color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)],
+        dmg: st.baseAtk * 1.4,
+        wobble: Math.random() * Math.PI * 2,
+        life: 2.0
+      });
+    }
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      const e = enemies[i];
+      if (Math.hypot(e.x - x, e.y - y) < e.r + 65) {
+        damageEnemy(e, st.baseAtk * 1.5, true);
+      }
+    }
+  }
+  canvas.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    handleCanvasTap(e.clientX, e.clientY);
+  });
+
+  // ─── 更新現代商用玻璃擬態 DOM HUD ───
+  const hudIslandBadge = document.getElementById('hudIslandBadge');
+  const hudWaveText = document.getElementById('hudWaveText');
+  const hudPopsText = document.getElementById('hudPopsText');
+  const hudWaveFill = document.getElementById('hudWaveFill');
+  const hudCoins = document.getElementById('hudCoins');
+  const hudStars = document.getElementById('hudStars');
+  const hudComboPill = document.getElementById('hudComboPill');
+  const hudBossCard = document.getElementById('hudBossCard');
+  const hudBossImg = document.getElementById('hudBossImg');
+  const hudBossName = document.getElementById('hudBossName');
+  const hudBossHpText = document.getElementById('hudBossHpText');
+  const hudBossHpFill = document.getElementById('hudBossHpFill');
+
+  function syncModernHud() {
+    hudIslandBadge.textContent = `ISLAND ${state.island}`;
+    hudWaveText.textContent = `晴空浮空島 W${state.wave}/5`;
+    hudPopsText.textContent = `🫧${state.pops}`;
+    hudWaveFill.style.width = `${Math.min(100, (state.wave / 5) * 100)}%`;
+    hudCoins.textContent = Math.floor(state.coins).toLocaleString();
+    hudStars.textContent = Math.floor(state.stars).toLocaleString();
+
+    if (state.combo > 1 && state.comboTimer > 0) {
+      hudComboPill.textContent = `🔥 ${state.combo}X CHAIN BURST!`;
+      hudComboPill.classList.add('show');
+    } else {
+      hudComboPill.classList.remove('show');
+    }
+
+    const activeBoss = enemies.find(e => e.isBoss);
+    if (activeBoss || state.bossBannerTimer > 0) {
+      hudBossCard.classList.add('active');
+      const isDragon = (activeBoss ? activeBoss.type : state.currentBossPortrait) === 'crystalDragon';
+      const wantSrc = isDragon ? 'assets/boss_crystal_dragon.jpg' : 'assets/boss_sun_queen.jpg';
+      if (!hudBossImg.getAttribute('src').includes(wantSrc)) {
+        hudBossImg.setAttribute('src', wantSrc);
+      }
+      hudBossName.textContent = activeBoss ? activeBoss.name : state.currentBossName;
+      const pct = activeBoss ? Math.max(0, Math.round((activeBoss.hp / activeBoss.maxHp) * 100)) : 100;
+      hudBossHpText.textContent = `${pct}%`;
+      hudBossHpFill.style.width = `${pct}%`;
+    } else {
+      hudBossCard.classList.remove('active');
+    }
+  }
+
+  // ─── 物理與自動射泡巡航迴圈 ───
+  let spawnCooldown = 0.35;
+  let passiveTimer = 1.0;
+
+  function stepGame(rawDt) {
+    const dt = Math.min(0.05, rawDt) * state.speedMul;
+    orbitAngle += dt * 2.8;
+
+    if (state.sunbeamTimer > 0) state.sunbeamTimer = Math.max(0, state.sunbeamTimer - dt);
+    if (state.bossBannerTimer > 0) state.bossBannerTimer = Math.max(0, state.bossBannerTimer - dt);
+    if (state.hero.castAnim > 0) state.hero.castAnim = Math.max(0, state.hero.castAnim - dt);
+    if (state.comboTimer > 0) {
+      state.comboTimer = Math.max(0, state.comboTimer - dt);
+      if (state.comboTimer <= 0) state.combo = 0;
+    }
+
+    for (const k of ['rainbow', 'storm', 'pop', 'sun']) {
+      if (state.cooldowns[k] > 0) state.cooldowns[k] = Math.max(0, state.cooldowns[k] - dt);
+    }
+    document.getElementById('cdRainbow').textContent = state.cooldowns.rainbow > 0 ? `${state.cooldowns.rainbow.toFixed(1)}s` : 'READY';
+    document.getElementById('cdStorm').textContent = state.cooldowns.storm > 0 ? `${state.cooldowns.storm.toFixed(1)}s` : 'READY';
+    document.getElementById('cdPop').textContent = state.cooldowns.pop > 0 ? `${state.cooldowns.pop.toFixed(1)}s` : 'READY';
+    document.getElementById('cdSun').textContent = state.cooldowns.sun > 0 ? `${state.cooldowns.sun.toFixed(1)}s` : 'READY';
+
+    passiveTimer -= dt;
+    if (passiveTimer <= 0) {
+      passiveTimer = 1.0;
+      const treeLv = state.upgrades.sunTree.lv;
+      state.coins += Math.round(10 * Math.pow(1.25, treeLv - 1) * state.island);
+      state.stars += Math.round(4 * Math.pow(1.22, treeLv - 1) * state.island);
+      document.querySelectorAll('.up-card[data-up]').forEach(card => {
+        const k = card.getAttribute('data-up');
+        const u = state.upgrades[k];
+        const cost = getUpgradeCost(k);
+        const canBuy = u.currency === 'coins' ? state.coins >= cost : state.stars >= cost;
+        card.classList.toggle('can-buy', canBuy);
+      });
+    }
+
+    spawnCooldown -= dt;
+    if (spawnCooldown <= 0 && enemies.length < 6) {
+      spawnEnemy();
+      spawnCooldown = 1.0;
+    }
+
+    const st = getStats();
+    const hero = state.hero;
+
+    // 自動射泡巡航 AI
+    if (state.autoIdle && enemies.length > 0) {
+      let target = enemies[0];
+      for (const e of enemies) {
+        if (e.isBoss || e.trappedTimer > 0) { target = e; break; }
+      }
+      hero.targetX = Math.max(65, Math.min(W - 65, target.x + Math.sin(orbitAngle) * 55));
+      if (Math.abs(target.x - hero.x) > 12) {
+        hero.facing = target.x >= hero.x ? 1 : -1;
+      }
+      hero.shootTimer -= dt;
+      if (hero.shootTimer <= 0) {
+        hero.shootTimer = 0.28;
+        hero.castAnim = 0.22;
+        playSfx('bubble');
+        const dx = target.x - hero.x;
+        const dy = target.y - (hero.y - 44);
+        const ang = Math.atan2(dy, dx);
+        bubbles.push({
+          x: hero.x + hero.facing * 14,
+          y: hero.y - 44,
+          vx: Math.cos(ang) * 315,
+          vy: Math.sin(ang) * 315,
+          r: 16.5,
+          color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)],
+          dmg: st.baseAtk,
+          wobble: Math.random() * Math.PI * 2,
+          life: 2.2
+        });
+      }
+      if (state.cooldowns.rainbow <= 0 && enemies.length >= 2) triggerRainbowBridge();
+      else if (state.cooldowns.storm <= 0 && enemies.length >= 2) triggerBubbleStorm();
+      else if (state.cooldowns.pop <= 0 && enemies.some(e => e.trappedTimer > 0)) triggerChainPopAll();
+    }
+
+    hero.x += (hero.targetX - hero.x) * Math.min(1, dt * 7.5);
+
+    // 泡泡移動與困怪判定
+    for (let i = bubbles.length - 1; i >= 0; i--) {
+      const b = bubbles[i];
+      b.life -= dt;
+      b.wobble += dt * 9;
+      b.x += b.vx * dt;
+      b.y += b.vy * dt;
+      b.vy -= 45 * dt;
+      for (let j = enemies.length - 1; j >= 0; j--) {
+        const e = enemies[j];
+        if (Math.hypot(e.x - b.x, e.y - b.y) < e.r + b.r) {
+          damageEnemy(e, b.dmg, true);
+          bubbles.splice(i, 1);
+          break;
+        }
+      }
+      if (b.life <= 0) bubbles.splice(i, 1);
+    }
+
+    for (let i = rainbows.length - 1; i >= 0; i--) {
+      const rb = rainbows[i];
+      rb.life -= dt;
+      if (rb.life <= 0) rainbows.splice(i, 1);
+    }
+
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      const e = enemies[i];
+      if (e.hp <= 0) {
+        enemies.splice(i, 1);
+        continue;
+      }
+      if (e.hitFlash > 0) e.hitFlash = Math.max(0, e.hitFlash - dt * 5);
+      e.phase += dt * 3.4;
+      if (e.trappedTimer > 0) {
+        e.trappedTimer -= dt;
+        e.y = Math.max(125, e.y - 68 * dt);
+        e.x += Math.sin(e.phase * 2) * 35 * dt;
+      } else {
+        e.x += e.vx * dt;
+        e.y = e.baseY + Math.sin(e.phase) * 20;
+        if (e.x < 48) e.vx = Math.abs(e.vx);
+        if (e.x > W - 48) e.vx = -Math.abs(e.vx);
+      }
+    }
+
+    for (let i = fruits.length - 1; i >= 0; i--) {
+      const f = fruits[i];
+      const dx = hero.x - f.x;
+      const dy = (hero.y - 42) - f.y;
+      const d = Math.hypot(dx, dy);
+      f.x += (dx / Math.max(1, d)) * 350 * dt;
+      f.y += (dy / Math.max(1, d)) * 350 * dt;
+      if (d < 30) {
+        state.coins += f.coins;
+        state.stars += f.stars;
+        fruits.splice(i, 1);
+      }
+    }
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const pt = particles[i];
+      pt.life -= dt;
+      pt.x += pt.vx * dt;
+      pt.y += pt.vy * dt;
+      if (pt.life <= 0) particles.splice(i, 1);
+    }
+    for (let i = floatTexts.length - 1; i >= 0; i--) {
+      const ft = floatTexts[i];
+      ft.life -= dt;
+      ft.y += ft.vy * dt;
+      ft.vy *= 0.94;
+      if (ft.life <= 0) floatTexts.splice(i, 1);
+    }
+
+    syncModernHud();
+  }
+
+  // ─── 商用手遊級虹彩薄膜折射肥皂泡著色器 (Iridescent Thin-Film Soap Bubble Shader) ───
+  function drawCommercialSoapBubble(x, y, r, baseColor, wobblePhase = 0, isTrapOverlay = false) {
+    ctx.save();
+    ctx.translate(x, y);
+    const sx = 1 + Math.sin(wobblePhase) * 0.055;
+    const sy = 1 - Math.sin(wobblePhase) * 0.055;
+    ctx.scale(sx, sy);
+
+    // 1. 中心通透折射漸層
+    const g = ctx.createRadialGradient(-r * 0.28, -r * 0.3, r * 0.08, 0, 0, r);
+    g.addColorStop(0, 'rgba(255, 255, 255, 0.72)');
+    g.addColorStop(0.35, isTrapOverlay ? 'rgba(56, 189, 248, 0.14)' : 'rgba(255, 255, 255, 0.18)');
+    g.addColorStop(0.74, isTrapOverlay ? 'rgba(236, 72, 153, 0.32)' : baseColor + '66');
+    g.addColorStop(0.92, 'rgba(250, 204, 21, 0.68)');
+    g.addColorStop(1, 'rgba(255, 255, 255, 0.95)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. 七彩虹光薄膜邊框 (Cyan -> Pink -> Gold)
+    const rim = ctx.createLinearGradient(-r, -r, r, r);
+    rim.addColorStop(0, '#38bdf8');
+    rim.addColorStop(0.5, '#f472b6');
+    rim.addColorStop(1, '#facc15');
+    ctx.strokeStyle = rim;
+    ctx.lineWidth = isTrapOverlay ? 2.6 : 2.0;
+    ctx.stroke();
+
+    // 3. 左上弧形曲面高光窗 (Curved Specular Crescent)
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+    ctx.beginPath();
+    ctx.ellipse(-r * 0.36, -r * 0.38, r * 0.26, r * 0.13, -Math.PI * 0.24, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 4. 右下反光點
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.78)';
+    ctx.beginPath();
+    ctx.arc(r * 0.38, r * 0.36, Math.max(2, r * 0.09), 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  // ─── 商用手遊級去背動態精靈繪製器 (含地面橢圓陰影、Squash & Stretch 呼吸彈跳、受擊閃白) ───
+  function drawAnimatedCutoutSprite(spriteCanvas, x, y, drawW, drawH, phase, flipX = 1, glowColor = null, hitFlash = 0) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    // 底部柔和浮空陰影
+    ctx.fillStyle = 'rgba(2, 132, 199, 0.22)';
+    ctx.beginPath();
+    ctx.ellipse(0, drawH * 0.44, drawW * 0.34, Math.max(5, drawH * 0.09), 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Squash & Stretch 呼吸與彈跳動畫
+    const squashX = (1 + Math.sin(phase) * 0.055) * flipX;
+    const stretchY = 1 - Math.sin(phase) * 0.055;
+    const bobY = Math.cos(phase) * 3.5;
+    ctx.translate(0, bobY);
+    ctx.scale(squashX, stretchY);
+
+    if (glowColor) {
+      ctx.shadowColor = glowColor;
+      ctx.shadowBlur = 14;
+    } else {
+      ctx.shadowColor = 'rgba(15, 23, 42, 0.28)';
+      ctx.shadowBlur = 8;
+    }
+
+    if (spriteCanvas) {
+      ctx.drawImage(spriteCanvas, -drawW * 0.5, -drawH * 0.5, drawW, drawH);
+    }
+
+    if (hitFlash > 0.15) {
+      ctx.globalAlpha = hitFlash * 0.55;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(0, 0, drawW * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  // ─── 繪製星芒特效粒子 ───
+  function drawSparkleStar(x, y, r, color) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    for (let i = 0; i < 4; i++) {
+      const a = (i * Math.PI) / 2;
+      ctx.lineTo(Math.cos(a) * r * 1.6, Math.sin(a) * r * 1.6);
+      ctx.lineTo(Math.cos(a + Math.PI / 4) * r * 0.45, Math.sin(a + Math.PI / 4) * r * 0.45);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+
+    // 1. 晴空浮空島原創高解析背景 (100% 明亮呈現)
+    if (ASSETS.bg.complete && ASSETS.bg.naturalWidth > 0) {
+      ctx.drawImage(ASSETS.bg, 0, 0, W, H);
+    } else {
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, '#0ea5e9');
+      sky.addColorStop(0.6, '#7dd3fc');
+      sky.addColorStop(1, '#fef08a');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // 陽光聖光砲全屏虹彩光束特效
+    if (state.sunbeamTimer > 0) {
+      ctx.save();
+      const sunGrad = ctx.createLinearGradient(0, 0, W, H);
+      sunGrad.addColorStop(0, 'rgba(254, 240, 138, 0.52)');
+      sunGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.32)');
+      sunGrad.addColorStop(1, 'rgba(244, 114, 182, 0.42)');
+      ctx.fillStyle = sunGrad;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+
+    // 七彩雙虹橋渲染 (帶柔光發光層)
+    for (const rb of rainbows) {
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, rb.life);
+      ctx.shadowColor = '#facc15';
+      ctx.shadowBlur = 12;
+      const colors = ['#ff2a85', '#f59e0b', '#facc15', '#10b981', '#0ea5e9', '#8b5cf6'];
+      colors.forEach((c, idx) => {
+        ctx.strokeStyle = c;
+        ctx.lineWidth = 4.8;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(rb.x, rb.y, rb.r - idx * 5.2, Math.PI, 0, false);
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    // 浮空島彩虹水晶光橋平台
+    ctx.save();
+    const bridgeGrad = ctx.createLinearGradient(0, GROUND_Y, W, GROUND_Y);
+    bridgeGrad.addColorStop(0, 'rgba(56, 189, 248, 0.85)');
+    bridgeGrad.addColorStop(0.5, 'rgba(250, 204, 21, 0.92)');
+    bridgeGrad.addColorStop(1, 'rgba(244, 114, 182, 0.85)');
+    ctx.fillStyle = bridgeGrad;
+    ctx.shadowColor = '#38bdf8';
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.roundRect(14, GROUND_Y, W - 28, 7, 4);
+    ctx.fill();
+    ctx.restore();
+
+    // 2. 繪製主角「彩虹星仗法師」與左右隨行 3D 去背泡泡龍寵 (Bubblun & Bobblun) — 徹底告別粗糙圓形裁切與 Emoji！
+    const h = state.hero;
+    const heroBobPhase = orbitAngle * 2.2 + (h.castAnim > 0 ? 1.2 : 0);
+
+    // 腳下魔法陣光環
+    ctx.save();
+    ctx.translate(h.x, GROUND_Y - 2);
+    ctx.scale(1, 0.32);
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.85)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, 38 + Math.sin(orbitAngle * 3) * 3, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // 主角高精細去背動態精靈
+    if (SPRITES.heroine) {
+      drawAnimatedCutoutSprite(SPRITES.heroine, h.x, h.y - 46, 92, 92, heroBobPhase, h.facing, '#facc15', 0);
+    }
+
+    // 左側綠耀泡泡龍 (Bubblun) 3D 去背精靈
+    const bubX = h.x - 56;
+    const bubY = h.y - 54 + Math.sin(orbitAngle * 2.5) * 8;
+    if (SPRITES.bubblun) {
+      drawAnimatedCutoutSprite(SPRITES.bubblun, bubX, bubY, 58, 58, orbitAngle * 3.0, 1, '#10b981', 0);
+    }
+
+    // 右側藍耀水泡龍 (Bobblun) 3D 去背精靈
+    const bobX = h.x + 56;
+    const bobY = h.y - 54 + Math.cos(orbitAngle * 2.5) * 8;
+    if (SPRITES.bobblun) {
+      drawAnimatedCutoutSprite(SPRITES.bobblun, bobX, bobY, 58, 58, orbitAngle * 3.0 + 1.5, -1, '#0ea5e9', 0);
+    }
+
+    // 星光妖精環繞護盾 (商用級璀璨四角星芒 + 虹彩光球)
+    const st = getStats();
+    for (let s = 0; s < st.starCount; s++) {
+      const ang = orbitAngle + (s * Math.PI * 2) / st.starCount;
+      const sx = h.x + Math.cos(ang) * 78;
+      const sy = (h.y - 46) + Math.sin(ang) * 44;
+      drawSparkleStar(sx, sy, 6.5, '#fef08a');
+      drawSparkleStar(sx, sy, 4.0, '#ffffff');
+    }
+
+    // 3. 繪製浮空島怪物與雙首領 (全部使用高精細去背精靈 + 虹彩薄膜困泡球罩 + 膠囊血條)
+    for (const e of enemies) {
+      const spCanvas = SPRITES[e.spriteKey] || SPRITES.slime;
+      const drawSize = e.isBoss ? 122 : 68;
+      const flipDir = e.vx > 0 ? -1 : 1;
+
+      drawAnimatedCutoutSprite(
+        spCanvas,
+        e.x,
+        e.y,
+        drawSize,
+        drawSize,
+        e.phase,
+        flipDir,
+        e.isBoss ? '#f59e0b' : e.color,
+        e.hitFlash || 0
+      );
+
+      // 若處於「🫧 困泡狀態」，外層套上晶瑩剔透的虹彩折射肥皂泡！
+      if (e.trappedTimer > 0) {
+        drawCommercialSoapBubble(e.x, e.y, e.r + 11, e.color, e.phase * 1.5, true);
+      }
+
+      // 現代手遊圓角膠囊血條 (Capsule Health Bar)
+      const bw = e.isBoss ? 88 : 46;
+      const bh = e.isBoss ? 7 : 5.5;
+      const bx = e.x - bw * 0.5;
+      const by = e.y - e.r - (e.isBoss ? 24 : 15);
+      ctx.save();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.65)';
+      ctx.beginPath();
+      ctx.roundRect(bx - 1, by - 1, bw + 2, bh + 2, 999);
+      ctx.fill();
+
+      const hpRatio = Math.max(0, Math.min(1, e.hp / e.maxHp));
+      const hpGrad = ctx.createLinearGradient(bx, by, bx + bw, by);
+      if (e.isBoss) {
+        hpGrad.addColorStop(0, '#f43f5e');
+        hpGrad.addColorStop(1, '#facc15');
+      } else {
+        hpGrad.addColorStop(0, '#10b981');
+        hpGrad.addColorStop(1, '#38bdf8');
+      }
+      ctx.fillStyle = hpGrad;
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw * hpRatio, bh, 999);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 4. 繪製七彩晶瑩肥皂泡投射物
+    for (const b of bubbles) {
+      drawCommercialSoapBubble(b.x, b.y, b.r, b.color, b.wobble, false);
+    }
+
+    // 5. 繪製鑽石水果與王冠寶石 (加上發光泡泡底座，呈現商用街機質感)
+    for (const f of fruits) {
+      drawCommercialSoapBubble(f.x, f.y, 15, '#facc15', orbitAngle * 2, false);
+      ctx.save();
+      ctx.font = '18px "Segoe UI Emoji"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(f.icon, f.x, f.y + 1);
+      ctx.restore();
+    }
+
+    // 6. 粒子與星芒特效
+    for (const pt of particles) {
+      if (pt.star) {
+        drawSparkleStar(pt.x, pt.y, pt.r * 1.2, pt.color);
+      } else {
+        ctx.fillStyle = pt.color;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // 7. 商用手遊級暴擊縮放跳字 (Scale-Bounce Gradient Damage Typography)
+    for (const ft of floatTexts) {
+      ctx.save();
+      const progress = 1 - ft.life / (ft.maxLife || 0.9);
+      const scalePop = progress < 0.22 ? (0.7 + (progress / 0.22) * 0.55) : (1.25 - (progress - 0.22) * 0.25);
+      ctx.translate(ft.x, ft.y);
+      ctx.scale(scalePop, scalePop);
+      ctx.globalAlpha = Math.min(1, ft.life * 1.6);
+      ctx.font = `900 ${ft.size}px "Segoe UI", "PingFang TC", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(15, 23, 42, 0.35)';
+      ctx.shadowBlur = 6;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 4.0;
+      ctx.strokeText(ft.text, 0, 0);
+
+      if (ft.isCrit) {
+        const tg = ctx.createLinearGradient(0, -ft.size, 0, 4);
+        tg.addColorStop(0, '#fef08a');
+        tg.addColorStop(0.5, '#f59e0b');
+        tg.addColorStop(1, '#ec4899');
+        ctx.fillStyle = tg;
+      } else {
+        ctx.fillStyle = ft.color;
+      }
+      ctx.fillText(ft.text, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  renderUpgrades();
+  spawnEnemy();
+  spawnEnemy();
+  spawnEnemy();
+
+  window.__RAINBOW_ISLAND_ULTRA__ = {
+    version: VERSION_STAMP,
+    state,
+    enemies,
+    ASSETS,
+    SPRITES,
+    triggerRainbowBridge,
+    triggerBubbleStorm,
+    triggerChainPopAll,
+    triggerSunbeam,
+    activateRainbowCheat,
+    toggleImmersiveFullscreen,
+    spawnEnemy
+  };
+
+  let lastTime = performance.now();
+  function loop(now) {
+    const dt = (now - lastTime) / 1000;
+    lastTime = now;
+    stepGame(dt);
+    render();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

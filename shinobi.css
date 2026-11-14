@@ -1,0 +1,433 @@
+:root {
+  --ink: #0f1628;
+  --indigo: #182342;
+  --crimson: #c92a2a;
+  --crimson-bright: #ef4444;
+  --gold: #eab308;
+  --paper: #f6eedc;
+  --paper-dark: #dfd2b5;
+  --border-ink: #2b231d;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  touch-action: none;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: "Noto Serif TC", "PMingLiU", "Microsoft JhengHei", serif;
+}
+
+#game-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+#game-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 戰國和紙捲軸 HUD (不使用玻璃膠囊) */
+.scroll-hud {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+  left: 8px;
+  right: 8px;
+  z-index: 20;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 6px;
+  pointer-events: none;
+}
+
+body.parent-fs .scroll-hud {
+  top: calc(env(safe-area-inset-top, 0px) + 50px);
+}
+
+.hud-plaque {
+  pointer-events: auto;
+  background: linear-gradient(180deg, #f9f2e3 0%, #eadbc0 100%);
+  color: #1c1917;
+  border: 2px solid var(--border-ink);
+  border-radius: 6px;
+  box-shadow: 3px 3px 0 rgba(10, 14, 28, 0.75);
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.seal-stamp {
+  background: var(--crimson);
+  color: #fff7ed;
+  border: 1.5px solid #7f1d1d;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.stage-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 96px;
+}
+
+.stage-name {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1c1917;
+  line-height: 1.1;
+}
+
+.blade-bar {
+  width: 100%;
+  height: 6px;
+  background: #3f362e;
+  border: 1px solid #1c1917;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.blade-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  transition: width 0.15s linear;
+}
+
+.stat-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.magatama-row {
+  display: flex;
+  gap: 2px;
+}
+
+.magatama {
+  width: 11px;
+  height: 11px;
+  background: #dc2626;
+  border: 1.5px solid #450a0a;
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+
+.magatama.lost {
+  background: #a8a29e;
+  border-color: #57534e;
+  opacity: 0.45;
+}
+
+.hud-actions {
+  display: flex;
+  gap: 4px;
+  pointer-events: auto;
+}
+
+.ink-btn {
+  appearance: none;
+  background: #f6eedc;
+  color: #1c1917;
+  border: 2px solid var(--border-ink);
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 rgba(10, 14, 28, 0.8);
+  font-family: inherit;
+}
+
+.ink-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 rgba(10, 14, 28, 0.8);
+}
+
+.ink-btn.primary {
+  background: var(--crimson);
+  color: #fffbeb;
+  border-color: #450a0a;
+}
+
+.ink-btn.gold {
+  background: linear-gradient(180deg, #fde047, #ca8a04);
+  color: #1c1917;
+  border-color: #422006;
+}
+
+body.embedded .standalone-only {
+  display: none !important;
+}
+
+/* 連擊與首領捲軸條 */
+.combo-banner {
+  position: absolute;
+  top: 64px;
+  right: 12px;
+  z-index: 18;
+  background: rgba(15, 22, 40, 0.88);
+  border-left: 4px solid var(--gold);
+  border-right: 2px solid var(--gold);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+  font-weight: 900;
+  font-size: 15px;
+  color: #fde047;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(16px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+body.parent-fs .combo-banner {
+  top: 104px;
+}
+
+.combo-banner.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.boss-bar-wrap {
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(320px, 84vw);
+  z-index: 19;
+  background: #141824;
+  border: 2px solid #eab308;
+  border-radius: 6px;
+  padding: 5px 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.65);
+  display: none;
+  pointer-events: none;
+}
+
+body.parent-fs .boss-bar-wrap {
+  top: 102px;
+}
+
+.boss-bar-wrap.active {
+  display: block;
+}
+
+.boss-title-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 900;
+  color: #fde68a;
+  margin-bottom: 3px;
+}
+
+.boss-hp-track {
+  width: 100%;
+  height: 9px;
+  background: #292524;
+  border: 1px solid #78350f;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.boss-hp-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #dc2626, #f59e0b);
+  transition: width 0.08s linear;
+}
+
+/* 底部實戰動作按鍵盤 */
+.action-dock {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+  left: 10px;
+  right: 10px;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.dock-left, .dock-right {
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.act-pad {
+  appearance: none;
+  min-width: 66px;
+  height: 48px;
+  padding: 0 12px;
+  background: rgba(246, 238, 220, 0.94);
+  color: #1c1917;
+  border: 2.5px solid #1c1917;
+  border-radius: 8px;
+  box-shadow: 3px 3px 0 #090d16;
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.15;
+  cursor: pointer;
+}
+
+.act-pad span.sub {
+  font-size: 9px;
+  font-family: ui-monospace, monospace;
+  color: #57534e;
+}
+
+.act-pad:active, .act-pad.pressed {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #090d16;
+  background: #fde68a;
+}
+
+.act-pad.dash {
+  background: linear-gradient(180deg, #dc2626, #991b1b);
+  color: #fffbeb;
+  border-color: #450a0a;
+}
+
+.act-pad.dash span.sub {
+  color: #fecaca;
+}
+
+.act-pad.ulti {
+  background: linear-gradient(180deg, #eab308, #b45309);
+  color: #1c1917;
+  border-color: #451a03;
+}
+
+.act-pad.ulti.locked {
+  opacity: 0.52;
+  filter: grayscale(0.4);
+}
+
+/* 封面 / 暫停 / 結算 和紙卷軸彈窗 */
+.scroll-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  background: rgba(8, 12, 24, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.scroll-modal.hidden {
+  display: none;
+}
+
+.scroll-card {
+  width: 100%;
+  max-width: 356px;
+  background: linear-gradient(180deg, #fbf6ea 0%, #eadbc0 100%);
+  color: #1c1917;
+  border: 3px solid #1c1917;
+  border-radius: 10px;
+  box-shadow: 6px 6px 0 #050811;
+  padding: 16px;
+  text-align: center;
+}
+
+.cover-hero {
+  width: 100%;
+  height: 156px;
+  object-fit: cover;
+  object-position: center 22%;
+  border: 2px solid #1c1917;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.scroll-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #7f1d1d;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.scroll-sub {
+  font-size: 12px;
+  font-weight: 700;
+  color: #44403c;
+  margin-bottom: 10px;
+  line-height: 1.45;
+}
+
+.move-list {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1.5px solid #a8a29e;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.55;
+  margin-bottom: 12px;
+  color: #292524;
+}
+
+.modal-btn-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.modal-btn-row .ink-btn {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+@media (max-width: 420px) {
+  .act-pad {
+    min-width: 56px;
+    height: 44px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+  .hud-plaque {
+    padding: 3px 6px;
+  }
+}
