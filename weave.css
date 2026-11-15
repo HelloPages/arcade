@@ -6,3 +6,17 @@ button{-webkit-tap-highlight-color:transparent}
 @media(min-width:800px){#game{width:min(100%,850px);display:grid;grid-template-columns:220px max-content;grid-template-areas:"title board" "ledger board" "tools board" "status board" "note board";grid-template-rows:auto auto auto auto 1fr;column-gap:38px;align-content:start;justify-content:center;padding-top:22px}.work-title{grid-area:title;margin:0 0 16px}.ledger{grid-area:ledger;flex-direction:column;gap:16px;padding:18px 0;margin:0 0 18px}.ledger>div{width:100%;justify-content:space-between}.loom{grid-area:board;margin:0}.work-tools{grid-area:tools;flex-direction:column;margin:0;gap:7px}.mode button{flex:1}.status{grid-area:status;text-align:left;margin:18px 0 7px}.key-note{grid-area:note;text-align:left}}
 
 .embedded #fullscreen{display:none!important}
+
+/* 2026-11-15: Compact HUD & maximize playable board area */
+@media(max-width:799px){
+  main{padding:0 10px}
+  header{height:36px}
+  .work-title{margin:4px 0}
+  h2{font-size:18px}
+  .ledger{padding:4px 0;margin-bottom:6px}
+  .ledger strong{font-size:18px}
+  .selvedge,.key-note,footer{display:none}
+  #board{--cell:min(calc((100vw - 36px)/var(--cols)),calc((100dvh - 185px)/var(--rows)),56px)}
+  .work-tools{margin-top:6px}
+  .status{margin:4px 0;min-height:18px;font-size:11px}
+}

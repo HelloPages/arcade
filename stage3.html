@@ -86,7 +86,7 @@
 const VERSION_STAMP = "v_19:15:20";
 console.log(`[1943 Stage 3 Ayako] Version: ${VERSION_STAMP}`);
 
-const W = 480, HUD = 28;
+let W = 480; const HUD = 28;
 let H = 640;
 const cv = document.getElementById("game");
 const ctx = cv.getContext("2d");
@@ -1207,9 +1207,11 @@ function draw(){
   ctx.save();
   if(shake > 0) ctx.translate(rnd(-shake, shake)*0.45, rnd(-shake, shake)*0.45);
 
-  // 1. 深海與珊瑚礁無縫捲動背景
-  ctx.drawImage(bg, 0, bgY - BGH);
-  ctx.drawImage(bg, 0, bgY);
+  // 1. 深海與珊瑚礁無縫捲動背景（水平平鋪適應寬螢幕）
+  for(let bx = 0; bx < W; bx += bg.width){
+    ctx.drawImage(bg, bx, bgY - BGH);
+    ctx.drawImage(bg, bx, bgY);
+  }
 
   if(boss || state === ST.WIN){
     const grad = ctx.createLinearGradient(0, 0, 0, H);
@@ -1678,20 +1680,25 @@ function fit(){
   const topH = isEmbed ? 0 : 36;
   const availW = window.innerWidth;
   const availH = Math.max(240, window.innerHeight - topH);
+  let targetW = 480, targetH = 640;
 
-  // 直式手機螢幕自動延伸垂直空域高度 (最高至 1000px)，徹底消除上下黑邊！
+  // 直式手機螢幕自動延伸垂直空域高度 (最高至 1000px)，橫式桌面延伸水平空域寬度 (最高至 1280px)，徹底消除黑邊！
   if(availH > availW * 1.35){
-    const targetH = clamp(Math.round(W * (availH / availW)), 640, 1000);
-    if(cv.height !== targetH){
-      const oldH = H;
-      H = targetH;
-      cv.height = H;
-      if(P) P.y = clamp(P.y + (H - oldH), HUD + 30, H - 45);
+    targetH = clamp(Math.round(480 * (availH / availW)), 640, 1000);
+  } else if(availW > availH * 1.1){
+    targetW = clamp(Math.round(640 * (availW / availH)), 480, 1280);
+  }
+
+  if(W !== targetW || H !== targetH){
+    const oldW = W, oldH = H;
+    W = targetW;
+    H = targetH;
+    cv.width = W;
+    cv.height = H;
+    if(P){
+      P.x = clamp(P.x + (W - oldW) / 2, 24, W - 24);
+      P.y = clamp(P.y + (H - oldH), HUD + 30, H - 45);
     }
-  } else if(cv.height !== 640){
-    H = 640;
-    cv.height = 640;
-    if(P) P.y = clamp(P.y, HUD + 30, H - 45);
   }
 
   const s = Math.min(availW / W, availH / H);

@@ -449,6 +449,7 @@
   let scale = 1;
   let scaleX = 1;
   let scaleY = 1;
+  let offsetX = 0;
 
   // ─── 星際艦長造型桌布 (共 5 張) ───
   const THEME_PACKS = [
@@ -1599,6 +1600,21 @@
 
   function render() {
     ctx.save();
+    if (offsetX > 0) {
+      const fullBg = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      fullBg.addColorStop(0, '#04081c');
+      fullBg.addColorStop(0.5, '#08102b');
+      fullBg.addColorStop(1, '#030510');
+      ctx.fillStyle = fullBg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (const st of stars) {
+        ctx.fillStyle = `hsla(${st.hue}, 95%, 78%, ${st.alpha * 0.3})`;
+        ctx.beginPath();
+        ctx.arc((st.x / W) * canvas.width, (st.y / H) * canvas.height, st.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.translate(offsetX, 0);
+    }
     ctx.scale(scaleX, scaleY);
     ctx.translate(state.shakeX, state.shakeY);
 
@@ -1987,14 +2003,16 @@
       scaleX = vw / W;
       scaleY = vh / H;
       scale = scaleX;
+      offsetX = 0;
     } else {
       scale = Math.min(vw / W, vh / H);
       scaleX = scale;
       scaleY = scale;
-      canvas.width = Math.round(W * scale);
-      canvas.height = Math.round(H * scale);
-      canvas.style.width = canvas.width + 'px';
-      canvas.style.height = canvas.height + 'px';
+      canvas.width = Math.round(vw);
+      canvas.height = Math.round(vh);
+      canvas.style.width = vw + 'px';
+      canvas.style.height = vh + 'px';
+      offsetX = Math.round((vw - W * scale) / 2);
     }
   }
   window.addEventListener('resize', resizeViewport);
@@ -2087,7 +2105,7 @@
   function toLogicalCoords(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     return {
-      x: ((clientX - rect.left) / Math.max(1, rect.width)) * W,
+      x: ((clientX - rect.left - offsetX) / Math.max(1, W * scaleX)) * W,
       y: ((clientY - rect.top) / Math.max(1, rect.height)) * H
     };
   }

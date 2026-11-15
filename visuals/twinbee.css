@@ -5,8 +5,8 @@ html,body {
   font-family:"Arial Black","Microsoft JhengHei",sans-serif
 }
 .game-layout {
-  max-width:550px;
-  border-inline:5px solid #204297
+  max-width:100%;
+  width:100%
 }
 .topbar {
   background:#1742a9;
@@ -85,19 +85,19 @@ html,body {
   color:#fff0aa
 }
 .hud-dock {
-  background:#ecedef;
-  border-top:8px solid #234697;
+  background:transparent;
+  border-top:none;
   border-radius:0;
-  padding:8px
+  padding:4px 6px calc(env(safe-area-inset-bottom, 0px) + 5px)
 }
 .skill-btn {
   border-radius:5px 5px 2px 2px;
-  background:#234b9d;
+  background:rgba(35,75,157,.9);
   border:2px solid #173778;
-  border-bottom:5px solid #132c66;
+  border-bottom:4px solid #132c66;
   box-shadow:none;
   color:white;
-  min-height:67px
+  min-height:48px
 }
 .skill-btn.active-mode {
   background:#de503f;
@@ -126,6 +126,10 @@ html,body {
 }
 .skill-btn:nth-child(5)::before {
   content:'05'
+}
+.skill-btn:nth-child(6)::before {
+  content:'🔧';
+  font-size:16px
 }
 .tab-btn {
   border-radius:1px;

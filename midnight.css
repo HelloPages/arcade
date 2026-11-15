@@ -17,3 +17,19 @@ dialog{border:1px solid #9da494;border-radius:9px;background:#e8e5d8;color:#2428
 
 /* Keep both ending actions visible on short laptop viewports. */
 @media(min-width:900px) and (max-height:780px){.dialog-inner{padding:22px}.dialog-inner img{width:auto;height:29dvh;max-width:100%;margin:10px auto 14px}.dialog-inner h2{font-size:28px;margin-bottom:10px}#dialog-actions{margin-top:14px}.dialog-inner .eyebrow{margin-bottom:8px}}
+
+/* 2026-11-15: Compact HUD & maximize playable board area */
+@media(max-width:899px){
+  :root{--board:min(94vw,calc(100dvh - 210px),520px)}
+  #app{padding:0 10px}
+  .masthead{height:36px}
+  .journey{padding:6px 0}
+  .journey-copy .eyebrow,.journey-copy #chapter-story,.board-heading,.journey-bottom,footer,.tools kbd{display:none}
+  .ticket{margin:4px 0 8px;padding:4px 8px}
+  .ticket strong{font-size:18px}
+  .status{margin:4px 0;min-height:18px}
+  .tools button{min-height:38px;padding:6px 3px}
+}
+@media(min-width:900px){
+  :root{--board:min(54vw,calc(100dvh - 190px),620px)}
+}

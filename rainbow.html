@@ -151,16 +151,17 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
+    align-items: stretch;
+    justify-content: center;
     width: 100%;
-    max-width: 480px;
+    max-width: 100%;
     margin: 0 auto;
     position: relative;
   }
   .canvas-wrap {
     position: relative;
     width: 100%;
+    height: 100%;
     flex: 1;
     min-height: 0;
     display: flex;
@@ -388,41 +389,55 @@
     transition: width 0.18s ease-out;
   }
 
-  /* ─── 下方現代商用手遊玻璃底座 (Sleek Glass Dock) ─── */
+  /* ─── 下方輕量浮動技能列 + 可收合強化抽屜 ─── */
   .hud-dock {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(240, 249, 255, 0.98) 100%);
-    backdrop-filter: blur(16px);
-    border-top: 1.5px solid rgba(255, 255, 255, 0.95);
-    border-radius: 18px 18px 0 0;
-    margin-top: -10px;
-    padding: 7px 8px calc(env(safe-area-inset-bottom, 0px) + 6px);
+    max-width: 680px;
+    margin: 0 auto;
+    background: transparent;
+    padding: 4px 6px calc(env(safe-area-inset-bottom, 0px) + 5px);
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    z-index: 20;
-    flex-shrink: 0;
-    box-shadow: 0 -8px 24px rgba(2, 132, 199, 0.18);
-  }
-
-  /* 5 顆商用級立體膠囊技能鍵 */
-  .skill-bar {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
     gap: 5px;
+    z-index: 20;
+    pointer-events: none;
   }
-  .skill-btn {
-    background: linear-gradient(160deg, #ffffff 0%, #e0f2fe 100%);
+  .skill-bar, .upgrade-drawer { pointer-events: auto; }
+  .upgrade-drawer {
+    display: none;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(12px);
     border: 1.5px solid #bae6fd;
     border-radius: 12px;
-    padding: 4px 2px;
+    padding: 6px;
+    box-shadow: 0 -6px 20px rgba(2, 132, 199, 0.22);
+    flex-direction: column;
+    gap: 5px;
+  }
+  .upgrade-drawer.open { display: flex; }
+
+  .skill-bar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+  }
+  .skill-btn {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    border: 1.5px solid #bae6fd;
+    border-radius: 8px;
+    padding: 3px 2px;
     color: #0369a1;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 8px rgba(14, 165, 233, 0.14), inset 0 1px 0 #ffffff;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.16);
     transition: transform 0.12s, box-shadow 0.12s;
   }
   .skill-btn:active { transform: translateY(1px) scale(0.96); }
@@ -625,7 +640,18 @@
   </div>
 
   <div class="hud-dock">
-    <!-- 5 顆陽光彩虹泡泡必殺快捷列 -->
+    <!-- 可收合養成與首領抽屜（預設收合，確保 85%+ 滿版遊玩視野） -->
+    <div class="upgrade-drawer" id="upgradeDrawer">
+      <div class="tab-row">
+        <button class="tab-btn active" data-tab="bubbles" type="button">🫧 泡泡魔法</button>
+        <button class="tab-btn" data-tab="dragons" type="button">🐲 泡泡龍寵</button>
+        <button class="tab-btn" data-tab="islands" type="button">🏝️ 晴空首領</button>
+        <button class="tab-btn" data-tab="rea" type="button">🔬 REA 密技</button>
+      </div>
+      <div class="upgrade-grid" id="upgradeGrid"></div>
+    </div>
+
+    <!-- 精簡單排浮動必殺快捷列 + 強化開關 -->
     <div class="skill-bar">
       <button class="skill-btn active-mode" id="btnAutoIdle" type="button">
         <span class="sk-icon">🤖</span>
@@ -634,36 +660,30 @@
       </button>
       <button class="skill-btn" id="btnSkillRainbow" type="button">
         <span class="sk-icon">🌈</span>
-        <span class="sk-name">七彩雙虹橋</span>
+        <span class="sk-name">雙虹橋</span>
         <span class="sk-sub" id="cdRainbow">READY</span>
       </button>
       <button class="skill-btn" id="btnSkillBubbleStorm" type="button">
         <span class="sk-icon">🫧</span>
-        <span class="sk-name">滿天泡泡雨</span>
+        <span class="sk-name">泡泡雨</span>
         <span class="sk-sub" id="cdStorm">READY</span>
       </button>
       <button class="skill-btn" id="btnSkillPopAll" type="button">
         <span class="sk-icon">💥</span>
-        <span class="sk-name">全屏連鎖爆</span>
+        <span class="sk-name">連鎖爆</span>
         <span class="sk-sub" id="cdPop">READY</span>
       </button>
       <button class="skill-btn" id="btnSkillSunbeam" type="button">
         <span class="sk-icon">☀️</span>
-        <span class="sk-name">晴空聖光砲</span>
+        <span class="sk-name">聖光砲</span>
         <span class="sk-sub" id="cdSun">READY</span>
       </button>
+      <button class="skill-btn" id="btnToggleUpgrades" type="button" aria-expanded="false">
+        <span class="sk-icon">🔧</span>
+        <span class="sk-name">強化/王</span>
+        <span class="sk-sub" id="upDrawerSub">展開</span>
+      </button>
     </div>
-
-    <!-- 4 大養成與 REA 逆向分頁 -->
-    <div class="tab-row">
-      <button class="tab-btn active" data-tab="bubbles" type="button">🫧 泡泡魔法</button>
-      <button class="tab-btn" data-tab="dragons" type="button">🐲 泡泡龍寵</button>
-      <button class="tab-btn" data-tab="islands" type="button">🏝️ 晴空首領</button>
-      <button class="tab-btn" data-tab="rea" type="button">🔬 REA 密技</button>
-    </div>
-
-    <!-- 動態升級項目容器 -->
-    <div class="upgrade-grid" id="upgradeGrid"></div>
   </div>
 </div>
 
@@ -676,8 +696,33 @@
 
   const canvas = document.getElementById('rainbowCanvas');
   const ctx = canvas.getContext('2d');
-  const W = 430, H = 580;
+  let W = 430, H = 580;
   const GROUND_Y = 548;
+  function resizeCanvas() {
+    const wrap = canvas.parentElement;
+    if (!wrap) return;
+    const rect = wrap.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      H = 580;
+      W = Math.max(380, Math.round(H * (rect.width / rect.height)));
+      if (canvas.width !== W || canvas.height !== H) {
+        canvas.width = W;
+        canvas.height = H;
+      }
+    }
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  const upDrawer = document.getElementById('upgradeDrawer');
+  const btnToggleUpgrades = document.getElementById('btnToggleUpgrades');
+  const upDrawerSub = document.getElementById('upDrawerSub');
+  if (btnToggleUpgrades && upDrawer) {
+    btnToggleUpgrades.addEventListener('click', () => {
+      const open = upDrawer.classList.toggle('open');
+      btnToggleUpgrades.setAttribute('aria-expanded', String(open));
+      if (upDrawerSub) upDrawerSub.textContent = open ? '收合' : '展開';
+    });
+  }
 
   // ─── 載入背景與原創圖集，並透過 Flood-Fill 邊緣柔化演算法自動裁切出 8 組透明去背商用動態精靈 ───
   const ASSETS = {

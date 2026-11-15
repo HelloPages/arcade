@@ -3,3 +3,21 @@
 @media(max-width:700px){#cabinet{padding:0 18px 10px}.mast{min-height:42px;font-size:10px;gap:7px;letter-spacing:.4px}.mast>span{font-size:9px}.welcome{display:block;min-height:calc(100dvh - 82px)}.cover-art{height:clamp(170px,29dvh,270px);min-height:0;margin:17px -1px 0}.cover-art img{object-position:center 63%}.edition{font-size:9px;letter-spacing:2px;top:12px;left:12px}.intro{padding:17px 0 15px}.intro .eyebrow{font-size:9px;margin-bottom:9px}h1{font-size:31px;letter-spacing:4px;margin-bottom:12px}h1 span{display:inline;font-size:14px;letter-spacing:2px;margin-left:10px}.lead{font-size:14px;line-height:1.8;margin-bottom:10px}.lead br{display:none}.instructions{font-size:12px;line-height:1.7;margin-bottom:12px}.instructions br{display:none}.intro .fine{font-size:10px;margin-top:7px}.intro button{margin-top:9px}.level-label{font-size:10px}#workbench{display:block;padding:17px 0 10px;min-height:calc(100dvh - 80px)}.dispatch .eyebrow{font-size:9px;letter-spacing:1px;margin-bottom:9px}.dispatch h2{font-size:21px;margin:0 0 11px;letter-spacing:2px}.dispatch h2 span{display:inline;font-size:11px;margin-left:10px;letter-spacing:1px}.dispatch{position:relative}.meter{position:absolute;top:0;right:0;width:112px;padding:5px;border-radius:6px}.meter-face{height:66px}.meter-face svg{height:60px}.meter-scale{top:8px;font-size:5px}.meter-caption{font-size:6px;bottom:5px;letter-spacing:1px}.readouts{max-width:210px;margin:0 0 8px;padding-bottom:9px;gap:7px}.readouts span{font-size:9px}.readouts strong{font-size:22px;margin-top:3px}.readouts div+div{padding-left:10px}.desk-actions{position:absolute;top:80px;right:0;width:112px;gap:5px}.desk-actions button{font-size:10px;padding:3px;min-height:44px}#status{font-size:11px;min-height:35px;max-width:220px;margin:7px 0 0;line-height:1.6}#save-status{font-size:9px;margin:5px 0 12px}.board-label{font-size:9px;margin-bottom:7px}#board{width:min(100%,calc(100dvh - 357px));padding:7px}.tools{width:min(100%,calc(100dvh - 357px));gap:5px;margin-top:10px}.tools button{font-size:11px}.guide{font-size:10px;margin-top:8px;min-height:32px}.text-button{min-height:30px;font-size:10px}footer{font-size:9px}.modal-content{padding:24px}}
 body{background:var(--cream)}.tile{background:#8e8067}.tile.live{background:#ae7d42}.tile:not(.live) .trace{stroke:#c6bba3}.tile.live .trace{stroke:#ffecba}.tile:before{content:"";position:absolute;bottom:5px;left:5px;width:5px;height:5px;border:1px solid #4e4435;z-index:1;pointer-events:none}.tile.live:before{background:#fff0c3;border-color:#fff0c3}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* 2026-11-15: Compact HUD & maximize playable board area */
+@media(max-width:700px){
+  #cabinet{padding:0 10px 6px}
+  .mast{min-height:34px}
+  #workbench{padding:6px 0}
+  .dispatch .eyebrow,.board-label,.guide,footer,#save-status{display:none}
+  .dispatch h2{font-size:18px;margin:0 0 6px}
+  .readouts{margin:0 0 4px;padding-bottom:4px}
+  .readouts strong{font-size:18px}
+  #status{min-height:20px;margin:4px 0 6px}
+  #board{width:min(100%,calc(100dvh - 210px));padding:6px}
+  .tools{width:min(100%,calc(100dvh - 210px));margin-top:6px}
+  .tools button{min-height:38px;padding:6px 3px}
+}
+@media(min-width:701px){
+  #board,.tools{width:min(100%,calc(100dvh - 180px))}
+}

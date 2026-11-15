@@ -66,7 +66,7 @@
    關卡結構：叢林機場地面目標 → Zero 機群 → 高射炮 → 運輸船隊 → 戰艦 BOSS
    程式繪圖/音效，零外部檔案。
    ============================================================ */
-const W=480,H=640,HUD=26;
+let W=480,H=640;const HUD=26;
 const cv=document.getElementById("game"),ctx=cv.getContext("2d");
 
 /* ---------- 音效（WebAudio 程序化合成） ---------- */
@@ -539,8 +539,12 @@ function winStage(){ state=ST.WIN; score+=Math.floor(timer)*20; if(score>hiScore
 function draw(){
   ctx.save();
   if(shake>0)ctx.translate(rnd(-shake,shake)*.5,rnd(-shake,shake)*.5);
-  // 背景
-  ctx.drawImage(bg,0,bgY-BGH); ctx.drawImage(bg,0,bgY);
+  // 背景（水平與垂直無縫平鋪，滿版無黑邊）
+  for(let bx=0;bx<W;bx+=bg.width){
+    for(let by=bgY-BGH;by<H;by+=BGH){
+      ctx.drawImage(bg,bx,by);
+    }
+  }
   if(boss||state===ST.WIN){ // 海面區：BOSS 階段整幅淡化為海岸
     const gr=ctx.createLinearGradient(0,260,0,420);
     gr.addColorStop(0,"rgba(31,77,102,1)");gr.addColorStop(1,"rgba(31,77,102,0)");
@@ -753,10 +757,27 @@ function loop(ts){
 reset(); state=ST.TITLE;
 if(location.search.includes("dbg"))window.__dbg={spawnBoss,startGame,g:()=>({boss,state,tGame,score,medals,grounds,ebullets})};
 requestAnimationFrame(loop);
-/* 縮放佈滿螢幕 */
+/* 縮放佈滿螢幕（直式延伸 H、橫式延伸 W，無黑邊不拉伸） */
 function fit(){
   const topH=document.body.classList.contains("embedded")?0:36;
-  const s=Math.min(innerWidth/W,Math.max(200,innerHeight-topH)/H);
+  const availW=window.innerWidth;
+  const availH=Math.max(240,window.innerHeight-topH);
+  let targetW=480, targetH=640;
+  if(availH>availW*1.35){
+    targetH=clamp(Math.round(480*(availH/availW)),640,1000);
+  } else if(availW>availH*1.1){
+    targetW=clamp(Math.round(640*(availW/availH)),480,1280);
+  }
+  if(W!==targetW||H!==targetH){
+    const oldW=W, oldH=H;
+    W=targetW; H=targetH;
+    cv.width=W; cv.height=H;
+    if(P){
+      P.x=clamp(P.x+(W-oldW)/2,24,W-24);
+      P.y=clamp(P.y+(H-oldH),HUD+30,H-45);
+    }
+  }
+  const s=Math.min(availW/W,availH/H);
   cv.style.width=Math.floor(W*s)+"px"; cv.style.height=Math.floor(H*s)+"px";
 }
 addEventListener("resize",fit); fit();
