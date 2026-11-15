@@ -8,7 +8,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-<link rel="icon" href="assets/abyss-sub-0.svg"><title>REA 遊戲館｜每日動態新作・深潛重裝：斷層突圍</title>
+<link rel="icon" href="assets/ridge-bike-0.svg"><title>REA 遊戲館｜每日動態新作・銀脊急行：雪線追擊</title>
 
 <style>
 
@@ -321,6 +321,8 @@
 #tab-fossil{border-radius:7px}.stage-tab.active-fossil{background:#344e51;color:#fff;border:1px solid #8e9c9d;box-shadow:none}#tab-weave{border-radius:7px}.stage-tab.active-weave{background:#ead5dd;color:#422a40;border:1px solid #ad839d;box-shadow:none}
 #tab-shinobi{border-radius:7px}.stage-tab.active-shinobi{background:#991b1b;color:#fef3c7;border:1px solid #eab308;box-shadow:none;}
 #tab-abyss{border-radius:7px}.stage-tab.active-abyss{background:#102d2b;color:#eee4c8;border:1px solid #c98050;box-shadow:none}
+
+#tab-ridge{border-radius:7px}.stage-tab.active-ridge{background:#183ac7;color:#f3f6ed;border:1px solid #183ac7;box-shadow:none}
 </style>
 
 <link rel="stylesheet" href="visuals/portal.css?v=20261107-art1">
@@ -343,7 +345,8 @@
 
     <div class="tabs" id="portal-tabs">
 
-      <button type="button" class="stage-tab active-abyss" id="tab-abyss" onclick="selectStage('abyss')">深潛重裝</button>
+      <button type="button" class="stage-tab active-ridge" id="tab-ridge" onclick="selectStage('ridge')">銀脊急行</button>
+      <button type="button" class="stage-tab" id="tab-abyss" onclick="selectStage('abyss')">深潛重裝</button>
       <button type="button" class="stage-tab" id="tab-shinobi" onclick="selectStage('shinobi')">🥷 赤焰忍傳</button>
       <button type="button" class="stage-tab" id="tab-weave" onclick="selectStage('weave')">霜桃織坊</button>
       <button type="button" class="stage-tab" id="tab-fossil" onclick="selectStage('fossil')">霧銀標本室</button>
@@ -381,7 +384,7 @@
 
       <button type="button" class="fs-btn" id="standalone-link" onclick="togglePortalFullscreen()">⛶ 全螢幕</button>
 
-      <span class="ver-pill" id="portal-version">2026.11.15</span>
+      <span class="ver-pill" id="portal-version">2026.11.16</span>
 
     </div>
 
@@ -391,7 +394,7 @@
 
   <main id="stage-viewport">
 
-    <iframe id="game-frame" src="./abyss.html?embed=1&v=v_20261115_abyss_1" title="深潛重裝：斷層突圍" allow="autoplay; fullscreen"></iframe>
+    <iframe id="game-frame" src="./ridge.html?embed=1&v=v_20261116_ridge_1" title="銀脊急行：雪線追擊" allow="autoplay; fullscreen"></iframe>
 
   </main>
 
@@ -425,7 +428,7 @@
 
   <script>
 
-    const VERSION_STAMP = "v_20261115_abyss_1";
+    const VERSION_STAMP = "v_20261116_ridge_1";
 
     const frame = document.getElementById("game-frame");
 
@@ -498,6 +501,8 @@
 
 
     function selectStage(stage){
+      document.getElementById('tab-ridge').className='stage-tab';
+      if(stage==='ridge'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./ridge.html?embed=1&v='+VERSION_STAMP;frame.title='銀脊急行：雪線追擊';const tab=document.getElementById('tab-ridge');tab.className='stage-tab active-ridge';tab.scrollIntoView({block:'nearest',inline:'nearest'});toggleCatalog(false);setTimeout(()=>frame.focus(),120);return;}
       document.getElementById('tab-abyss').className='stage-tab';
       if(stage==='abyss'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./abyss.html?embed=1&v='+VERSION_STAMP;frame.title='深潛重裝：斷層突圍';const tab=document.getElementById('tab-abyss');tab.className='stage-tab active-abyss';tab.scrollIntoView({block:'nearest',inline:'nearest'});toggleCatalog(false);setTimeout(()=>frame.focus(),120);return;}
 
@@ -667,7 +672,7 @@
 
     const st = params.get("stage") || location.hash.replace("#", "");
 
-    if(!st || st==='abyss'){ selectStage('abyss'); } else if(st==='shinobi'){ selectStage('shinobi'); } else
+    if(!st || st==='ridge'){ selectStage('ridge'); } else if(st==='abyss'){ selectStage('abyss'); } else if(st==='shinobi'){ selectStage('shinobi'); } else
     if(st==='weave')selectStage('weave'); else
     if(st==='fossil')selectStage('fossil'); else
     if(st==='indigo')selectStage('indigo'); else
