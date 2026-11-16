@@ -348,17 +348,6 @@
       <button type="button" class="stage-tab active-ridge" id="tab-ridge" onclick="selectStage('ridge')">銀脊急行</button>
       <button type="button" class="stage-tab" id="tab-abyss" onclick="selectStage('abyss')">深潛重裝</button>
       <button type="button" class="stage-tab" id="tab-shinobi" onclick="selectStage('shinobi')">🥷 赤焰忍傳</button>
-      <button type="button" class="stage-tab" id="tab-weave" onclick="selectStage('weave')">霜桃織坊</button>
-      <button type="button" class="stage-tab" id="tab-fossil" onclick="selectStage('fossil')">霧銀標本室</button>
-      <button type="button" class="stage-tab" id="tab-indigo" onclick="selectStage('indigo')">靛藍暗房</button>
-
-      <button type="button" class="stage-tab" id="tab-amber" onclick="selectStage('amber')">琥珀電台</button>
-
-      <button type="button" class="stage-tab" id="tab-lacquer" onclick="selectStage('lacquer')">赤漆棋室</button>
-
-      <button type="button" class="stage-tab" id="tab-midnight" onclick="selectStage('midnight')">午夜特快</button>
-
-      <button type="button" class="stage-tab" id="tab-garden" onclick="selectStage('garden')">晴空花園</button>
 
       <button type="button" class="stage-tab" id="tab-capybara" onclick="selectStage('capybara')">水豚晴旅</button>
 
@@ -394,7 +383,7 @@
 
   <main id="stage-viewport">
 
-    <iframe id="game-frame" src="./ridge.html?embed=1&v=v_20261116_ridge_1" title="銀脊急行：雪線追擊" allow="autoplay; fullscreen"></iframe>
+    <iframe id="game-frame" src="./ridge.html?embed=1&v=v_20261116_action11_1" title="銀脊急行：雪線追擊" allow="autoplay; fullscreen"></iframe>
 
   </main>
 
@@ -428,7 +417,7 @@
 
   <script>
 
-    const VERSION_STAMP = "v_20261116_ridge_1";
+    const VERSION_STAMP = "v_20261116_action11_1";
 
     const frame = document.getElementById("game-frame");
 
@@ -530,8 +519,6 @@
 
       if(stage==='midnight'){ document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab'); frame.src='./midnight.html?embed=1&v=v_20261113_weave_1'; frame.title='午夜特快：月台拼圖'; document.getElementById('tab-midnight').className='stage-tab active-midnight'; document.getElementById('tab-midnight').scrollIntoView({block:'nearest',inline:'nearest'}); toggleCatalog(false); setTimeout(()=>{try{frame.focus();}catch(e){}},120); return; }
 
-      document.getElementById('tab-garden').className='stage-tab';
-
       document.getElementById('tab-capybara').className = 'stage-tab';
 
       if(tabTwinbee) tabTwinbee.className = 'stage-tab';
@@ -550,13 +537,7 @@
 
 
 
-      if(stage === 'garden'){
-
-        frame.src='./garden.html?embed=1&v='+VERSION_STAMP;
-
-        document.getElementById('tab-garden').className='stage-tab active-orchard';
-
-      } else if(stage === 'capybara'){
+      if(stage === 'capybara'){
 
         frame.src='./capybara.html?embed=1&v='+VERSION_STAMP;
 
@@ -673,17 +654,6 @@
     const st = params.get("stage") || location.hash.replace("#", "");
 
     if(!st || st==='ridge'){ selectStage('ridge'); } else if(st==='abyss'){ selectStage('abyss'); } else if(st==='shinobi'){ selectStage('shinobi'); } else
-    if(st==='weave')selectStage('weave'); else
-    if(st==='fossil')selectStage('fossil'); else
-    if(st==='indigo')selectStage('indigo'); else
-
-    if(st==='amber')selectStage('amber'); else
-
-    if(st==='lacquer')selectStage('lacquer'); else
-
-    if(st==='midnight')selectStage('midnight'); else
-
-    if(st === 'garden'){ selectStage('garden'); } else
 
     if(st === 'capybara'){ selectStage('capybara'); } else
 
