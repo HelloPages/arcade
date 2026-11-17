@@ -32,7 +32,19 @@
     "oracle-tube": "./assets/v2/oracle-tube.webp",
     "oracle-blocks": "./assets/v2/oracle-blocks.webp",
     "oracle-stick": "./assets/v2/oracle-stick.webp",
-    "oracle-censer": "./assets/v2/oracle-censer.webp"
+    "oracle-censer": "./assets/v2/oracle-censer.webp",
+    "Sam_normal": "./assets/office-fullbody/Sam_normal.png",
+    "Sam_happy": "./assets/office-fullbody/Sam_happy.png",
+    "Sam_hurt_cry": "./assets/office-fullbody/Sam_hurt_cry.png",
+    "Sam_innocent": "./assets/office-fullbody/Sam_innocent.png",
+    "Kenny_normal": "./assets/office-fullbody/Kenny_normal.png",
+    "Kenny_happy": "./assets/office-fullbody/Kenny_happy.png",
+    "Kenny_hurt_cry": "./assets/office-fullbody/Kenny_hurt_cry.png",
+    "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png",
+    "Sara_normal": "./assets/office-fullbody/Sara_normal.png",
+    "Sara_happy": "./assets/office-fullbody/Sara_happy.png",
+    "Sara_hurt_cry": "./assets/office-fullbody/Sara_hurt_cry.png",
+    "Sara_innocent": "./assets/office-fullbody/Sara_innocent.png"
   };
   const imgs = {};
   for (const [k, src] of Object.entries(assetUrls)) {
@@ -189,9 +201,12 @@
   }));
 
   // =========================================================
-  // 1. 打小人（4 種不同情境小人 + 4 種武器）
+  // 1. 打小人（辦公室三人全身版 Sam / Kenny / Sara + 4 種情境 + 4 種武器）
   // =========================================================
   const slapScenarios = [
+    { id: "Sam", label: "Sam・業績衝刺", charKey: "Sam", fullBody: true, officeEvents: ["業績衝刺！", "慶祝達標！", "同事相挺！"] },
+    { id: "Kenny", label: "Kenny・會議劇場", charKey: "Kenny", fullBody: true, officeEvents: ["會議小劇場！", "幫忙救火！", "資源協調中！"] },
+    { id: "Sara", label: "Sara・臨時急單", charKey: "Sara", fullBody: true, officeEvents: ["臨時急單！", "門市展示衝！", "達標歡呼！"] },
     { id: "sloth", label: "拖延症", sprite: "villain-sloth" },
     { id: "retrograde", label: "水逆退散", sprite: "villain-retrograde" },
     { id: "teammate", label: "豬隊友", sprite: "villain-teammate" },
@@ -214,6 +229,30 @@
   let villainSquash = 0;
   let villainDizzy = 0;
   let villainFly = 0;
+  let charMood = "normal"; // "normal" | "happy" | "hurt_cry" | "innocent"
+  let charMoodTimer = 0;
+  let forceMoodForTest = null;
+
+  function setCharMood(nextMood, duration = 1.2) {
+    charMood = nextMood;
+    charMoodTimer = duration;
+  }
+
+  function getActiveFullBodySprite(charKey) {
+    const mood = forceMoodForTest || charMood || "normal";
+    return imgs[`${charKey}_${mood}`] || imgs[`${charKey}_normal`];
+  }
+
+  window.__xinanDebug = {
+    setMood: (m) => { forceMoodForTest = m; },
+    getState: () => ({
+      scenario: selectedScenario.id,
+      mood: forceMoodForTest || charMood,
+      merit,
+      slapCombo,
+      slapCharge
+    })
+  };
 
   function performSlap(heavy = false) {
     if (!resultCard.classList.contains("hidden")) return;
@@ -232,20 +271,27 @@
       slapCharge = 0;
       slapCombo += 5;
       villainFly = 1;
+      setCharMood("happy", 1.8);
       addMerit(15);
       playWeaponSound(selectedWeapon.id, true);
       playBellSound(392);
       spawnBurst(altarX, altarY - 15, "#ffd466", 34, 340);
       spawnBurst(altarX, altarY - 15, selectedWeapon.color, 22, 260);
-      spawnFloatText(altarX, altarY - 95, `${selectedWeapon.label}鎮煞重擊！`, "#ffd466", 25);
+      const heavyWord = selectedScenario.fullBody
+        ? `${selectedScenario.charKey} 慶祝達標！`
+        : `${selectedWeapon.label}鎮煞重擊！`;
+      spawnFloatText(altarX, altarY - 95, heavyWord, "#ffd466", 25);
       renderControls();
     } else {
       slapCombo += 1;
       slapCharge = Math.min(10, slapCharge + 1);
+      setCharMood("hurt_cry", 0.9);
       addMerit(selectedWeapon.power);
       playWeaponSound(selectedWeapon.id, false);
       spawnBurst(altarX, altarY - 10, selectedWeapon.color, 14, 210);
-      const words = ["啪！", "打走霉運！", "退散！", "順心！", `${slapCombo} 連擊！`];
+      const words = selectedScenario.fullBody
+        ? selectedScenario.officeEvents
+        : ["啪！", "打走霉運！", "退散！", "順心！", `${slapCombo} 連擊！`];
       spawnFloatText(
         altarX + (Math.random() - 0.5) * 90,
         altarY - 85,
@@ -539,21 +585,33 @@
       if (villainSquash > 0) villainSquash = Math.max(0, villainSquash - dt * 3.2);
       if (villainDizzy > 0) villainDizzy = Math.max(0, villainDizzy - dt);
       if (villainFly > 0) villainFly = Math.max(0, villainFly - dt * 1.6);
+      if (charMoodTimer > 0) {
+        charMoodTimer -= dt;
+        if (charMoodTimer <= 0) {
+          if (charMood === "hurt_cry") setCharMood("innocent", 1.25);
+          else charMood = "normal";
+        }
+      }
 
-      const vImg = imgs[selectedScenario.sprite];
-      const vSize = Math.min(230, propBase * 0.44);
-      const scaleX = 1 + villainSquash * 0.34;
-      const scaleY = 1 - villainSquash * 0.44;
+      const vImg = selectedScenario.fullBody
+        ? getActiveFullBodySprite(selectedScenario.charKey)
+        : imgs[selectedScenario.sprite];
+      // 全身 768x1024 (3:4) 保留完整頭到鞋與等比例縮放
+      const vSize = selectedScenario.fullBody ? Math.min(285, propBase * 0.54) : Math.min(230, propBase * 0.44);
+      const scaleX = 1 + villainSquash * (selectedScenario.fullBody ? 0.14 : 0.34);
+      const scaleY = 1 - villainSquash * (selectedScenario.fullBody ? 0.14 : 0.44);
       const flyY = villainFly > 0 ? -Math.sin(villainFly * Math.PI) * 140 : 0;
-      const wobble = villainDizzy > 0 ? Math.sin(t * 28) * 0.14 : Math.sin(t * 2.5) * 0.03;
+      const wobble = villainDizzy > 0 ? Math.sin(t * 28) * 0.08 : Math.sin(t * 2.5) * 0.02;
 
       ctx.save();
-      ctx.translate(altarX, altarY + flyY);
+      // 腳底統一對齊神壇桌面基準線
+      const feetBaseY = altarY + 104;
+      ctx.translate(altarX, feetBaseY - vSize * 0.5 + flyY);
       ctx.rotate(wobble);
       ctx.scale(scaleX, scaleY);
       ctx.fillStyle = "rgba(0,0,0,0.34)";
       ctx.beginPath();
-      ctx.ellipse(0, vSize * 0.44, vSize * 0.35, vSize * 0.09, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, vSize * 0.47, vSize * 0.28, vSize * 0.07, 0, 0, Math.PI * 2);
       ctx.fill();
 
       if (vImg && vImg.complete && vImg.naturalWidth > 0) {
@@ -573,13 +631,13 @@
       ctx.strokeStyle = "#972819";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(altarX - labelW * 0.5, altarY + vSize * 0.45, labelW, 28, 6);
+      ctx.roundRect(altarX - labelW * 0.5, feetBaseY + 6, labelW, 28, 6);
       ctx.fill();
       ctx.stroke();
       ctx.fillStyle = "#2b211a";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(targetText, altarX, altarY + vSize * 0.45 + 14);
+      ctx.fillText(targetText, altarX, feetBaseY + 20);
       ctx.restore();
 
       // 武器動態揮擊
