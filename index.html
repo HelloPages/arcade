@@ -8,7 +8,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-<link rel="icon" href="assets/chime-player-idle.svg"><title>REA遊戲館｜每日動態新作・鐘樓拳影：發條對決</title>
+<link rel="icon" href="assets/chime-player-idle.svg"><title>REA 遊戲館｜心安宮・三儀殿（打小人・祈福・問卦）</title>
 
 <style>
 
@@ -322,6 +322,7 @@
 #tab-shinobi{border-radius:7px}.stage-tab.active-shinobi{background:#991b1b;color:#fef3c7;border:1px solid #eab308;box-shadow:none;}
 #tab-abyss{border-radius:7px}.stage-tab.active-abyss{background:#102d2b;color:#eee4c8;border:1px solid #c98050;box-shadow:none}
 
+#tab-xinan{border-radius:7px}.stage-tab.active-xinan{background:#c83e2b;color:#fff7ea;border:1px solid #e7b85c;box-shadow:none}
 #tab-ridge{border-radius:7px}.stage-tab.active-ridge{background:#183ac7;color:#f3f6ed;border:1px solid #183ac7;box-shadow:none}
 #tab-chime{border-radius:7px}.stage-tab.active-chime{background:#503357;color:#f3edf5;border:1px solid #503357;box-shadow:none}
 </style>
@@ -345,6 +346,7 @@
     </div>
 
     <div class="tabs" id="portal-tabs">
+      <button type="button" class="stage-tab active-xinan" id="tab-xinan" onclick="selectStage('xinan')">🏮 心安宮</button>
 
       <button type="button" class="stage-tab active-chime" id="tab-chime" onclick="selectStage('chime')">鐘樓拳影</button>
       <button type="button" class="stage-tab" id="tab-ridge" onclick="selectStage('ridge')">銀脊急行</button>
@@ -419,7 +421,7 @@
 
   <script>
 
-    const VERSION_STAMP = "v_20261117_chime_1";
+    const VERSION_STAMP = "v_20261117_xinan_1";
 
     const frame = document.getElementById("game-frame");
 
@@ -492,6 +494,8 @@
 
 
     function selectStage(stage){
+      const tabXinan = document.getElementById("tab-xinan"); if(tabXinan) tabXinan.className="stage-tab";
+      if(stage==="xinan"){document.querySelectorAll(".stage-tab").forEach(b=>b.className="stage-tab");frame.src="./xinan.html?embed=1&v="+VERSION_STAMP;frame.title="心安宮・三儀殿";if(tabXinan){tabXinan.className="stage-tab active-xinan";tabXinan.scrollIntoView({block:"nearest",inline:"nearest"});}toggleCatalog(false);setTimeout(()=>{try{frame.focus();}catch(e){}},120);return;}
       document.getElementById('tab-chime').className='stage-tab';
       if(stage==='chime'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./chime.html?embed=1&v='+VERSION_STAMP;frame.title='鐘樓拳影：發條對決';const tab=document.getElementById('tab-chime');tab.className='stage-tab active-chime';tab.scrollIntoView({block:'nearest',inline:'nearest'});toggleCatalog(false);setTimeout(()=>frame.focus(),120);return;}
       document.getElementById('tab-ridge').className='stage-tab';
@@ -636,7 +640,7 @@
 
     const st = params.get("stage") || location.hash.replace("#", "");
 
-    if(!st || st==='chime'){ selectStage('chime'); } else if(st==='ridge'){ selectStage('ridge'); } else if(st==='abyss'){ selectStage('abyss'); } else if(st==='shinobi'){ selectStage('shinobi'); } else
+    if(!st || st==='xinan'){ selectStage('xinan'); } else if(st==='chime'){ selectStage('chime'); } else if(st==='ridge'){ selectStage('ridge'); } else if(st==='abyss'){ selectStage('abyss'); } else if(st==='shinobi'){ selectStage('shinobi'); } else
 
     if(st === 'capybara'){ selectStage('capybara'); } else
 
