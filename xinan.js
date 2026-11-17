@@ -5,6 +5,7 @@
   const meritEl = document.getElementById("meritCount");
   const btnSound = document.getElementById("btnSound");
   const chipsRow = document.getElementById("chipsRow");
+  const weaponRow = document.getElementById("weaponRow");
   const actionRow = document.getElementById("actionRow");
   const resultCard = document.getElementById("resultCard");
   const resultBadge = document.getElementById("resultBadge");
@@ -13,14 +14,25 @@
   const resultSub = document.getElementById("resultSub");
   const btnCloseResult = document.getElementById("btnCloseResult");
 
-  // --- 資源載入 ---
+  // --- 高精細去背圖檔載入 ---
   const assetUrls = {
     bg: "./assets/xinan-temple-bg.jpg",
-    slipper: "./assets/xinan-slipper.png",
-    villain: "./assets/xinan-villain.png",
-    lantern: "./assets/xinan-lantern.png",
-    tube: "./assets/xinan-fortune-tube.png",
-    blocks: "./assets/xinan-moon-blocks.png"
+    "villain-sloth": "./assets/v2/villain-sloth.png",
+    "villain-retrograde": "./assets/v2/villain-retrograde.png",
+    "villain-teammate": "./assets/v2/villain-teammate.png",
+    "villain-overtime": "./assets/v2/villain-overtime.png",
+    "weapon-slipper": "./assets/v2/weapon-slipper.png",
+    "weapon-clog": "./assets/v2/weapon-clog.png",
+    "weapon-mallet": "./assets/v2/weapon-mallet.png",
+    "weapon-fan": "./assets/v2/weapon-fan.png",
+    "bless-lantern": "./assets/v2/bless-lantern.png",
+    "bless-ingot": "./assets/v2/bless-ingot.png",
+    "bless-lotus": "./assets/v2/bless-lotus.png",
+    "bless-omamori": "./assets/v2/bless-omamori.png",
+    "oracle-tube": "./assets/v2/oracle-tube.png",
+    "oracle-blocks": "./assets/v2/oracle-blocks.png",
+    "oracle-stick": "./assets/v2/oracle-stick.png",
+    "oracle-censer": "./assets/v2/oracle-censer.png"
   };
   const imgs = {};
   for (const [k, src] of Object.entries(assetUrls)) {
@@ -29,7 +41,7 @@
     imgs[k] = im;
   }
 
-  // --- Web Audio 合成音效（零外部依賴） ---
+  // --- Web Audio 合成音效 ---
   let audioCtx = null;
   let soundOn = true;
   function ensureAudio() {
@@ -41,20 +53,45 @@
     if (audioCtx && audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
     return audioCtx;
   }
-  function playSlapSound(heavy = false) {
+  function playWeaponSound(weaponId, heavy = false) {
     const ac = ensureAudio();
     if (!ac) return;
     const now = ac.currentTime;
     const osc = ac.createOscillator();
     const gain = ac.createGain();
-    osc.type = heavy ? "sawtooth" : "triangle";
-    osc.frequency.setValueAtTime(heavy ? 180 : 280, now);
-    osc.frequency.exponentialRampToValueAtTime(heavy ? 45 : 65, now + (heavy ? 0.22 : 0.12));
-    gain.gain.setValueAtTime(heavy ? 0.35 : 0.22, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + (heavy ? 0.24 : 0.13));
-    osc.connect(gain).connect(ac.destination);
-    osc.start(now);
-    osc.stop(now + (heavy ? 0.25 : 0.14));
+    if (weaponId === "mallet" || heavy) {
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(42, now + 0.22);
+      gain.gain.setValueAtTime(0.32, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+      osc.connect(gain).connect(ac.destination);
+      osc.start(now); osc.stop(now + 0.25);
+    } else if (weaponId === "clog") {
+      osc.type = "square";
+      osc.frequency.setValueAtTime(420, now);
+      osc.frequency.exponentialRampToValueAtTime(130, now + 0.11);
+      gain.gain.setValueAtTime(0.20, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      osc.connect(gain).connect(ac.destination);
+      osc.start(now); osc.stop(now + 0.13);
+    } else if (weaponId === "fan") {
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(720, now);
+      osc.frequency.exponentialRampToValueAtTime(240, now + 0.14);
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      osc.connect(gain).connect(ac.destination);
+      osc.start(now); osc.stop(now + 0.16);
+    } else {
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(290, now);
+      osc.frequency.exponentialRampToValueAtTime(68, now + 0.12);
+      gain.gain.setValueAtTime(0.24, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+      osc.connect(gain).connect(ac.destination);
+      osc.start(now); osc.stop(now + 0.14);
+    }
   }
   function playBellSound(freq = 528) {
     const ac = ensureAudio();
@@ -63,19 +100,15 @@
     const osc = ac.createOscillator();
     const osc2 = ac.createOscillator();
     const gain = ac.createGain();
-    osc.type = "sine";
-    osc2.type = "sine";
+    osc.type = "sine"; osc2.type = "sine";
     osc.frequency.setValueAtTime(freq, now);
     osc2.frequency.setValueAtTime(freq * 1.5, now);
     gain.gain.setValueAtTime(0.18, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
-    osc.connect(gain);
-    osc2.connect(gain);
+    osc.connect(gain); osc2.connect(gain);
     gain.connect(ac.destination);
-    osc.start(now);
-    osc2.start(now);
-    osc.stop(now + 0.95);
-    osc2.stop(now + 0.95);
+    osc.start(now); osc2.start(now);
+    osc.stop(now + 0.95); osc2.stop(now + 0.95);
   }
   function playWoodClack() {
     const ac = ensureAudio();
@@ -89,8 +122,7 @@
     gain.gain.setValueAtTime(0.14, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
     osc.connect(gain).connect(ac.destination);
-    osc.start(now);
-    osc.stop(now + 0.09);
+    osc.start(now); osc.stop(now + 0.09);
   }
 
   btnSound.addEventListener("click", () => {
@@ -124,7 +156,7 @@
   window.addEventListener("resize", resize);
   resize();
 
-  // --- 粒子與飄字系統 ---
+  // --- 粒子與飄字 ---
   const particles = [];
   const floatTexts = [];
   let shake = 0;
@@ -148,7 +180,6 @@
     floatTexts.push({ x, y, text, color, size, life: 0.9, maxLife: 0.9 });
   }
 
-  // --- 背景香煙與星火 ---
   const embers = Array.from({ length: 24 }, () => ({
     x: Math.random(),
     y: Math.random(),
@@ -158,52 +189,66 @@
   }));
 
   // =========================================================
-  // 1. 打小人狀態
+  // 1. 打小人（4 種不同情境小人 + 4 種武器）
   // =========================================================
-  const slapTargets = ["拖延症", "水逆退散", "豬隊友", "加班煩惱", "口舌是非"];
-  let selectedTarget = slapTargets[0];
+  const slapScenarios = [
+    { id: "sloth", label: "拖延症", sprite: "villain-sloth" },
+    { id: "retrograde", label: "水逆退散", sprite: "villain-retrograde" },
+    { id: "teammate", label: "豬隊友", sprite: "villain-teammate" },
+    { id: "overtime", label: "加班煩惱", sprite: "villain-overtime" }
+  ];
+  const weapons = [
+    { id: "slipper", label: "藍白拖", sprite: "weapon-slipper", color: "#6ec6ff", power: 2 },
+    { id: "clog", label: "紅木屐", sprite: "weapon-clog", color: "#ff7256", power: 3 },
+    { id: "mallet", label: "虎頭鎚", sprite: "weapon-mallet", color: "#ffd466", power: 4 },
+    { id: "fan", label: "桃木扇", sprite: "weapon-fan", color: "#79e6b2", power: 3 }
+  ];
+
+  let selectedScenario = slapScenarios[0];
+  let customTargetLabel = "";
+  let selectedWeapon = weapons[0];
   let slapCombo = 0;
   let slapCharge = 0; // 0..10
-  let slipperAnim = 0; // 0..1
-  let slipperHeavy = false;
+  let weaponAnim = 0;
+  let weaponHeavy = false;
   let villainSquash = 0;
   let villainDizzy = 0;
   let villainFly = 0;
 
   function performSlap(heavy = false) {
-    if (resultCard && !resultCard.classList.contains("hidden")) return;
+    if (!resultCard.classList.contains("hidden")) return;
     if (heavy && slapCharge < 10) return;
 
-    slipperAnim = 1;
-    slipperHeavy = heavy;
+    weaponAnim = 1;
+    weaponHeavy = heavy;
     villainSquash = heavy ? 1.0 : 0.65;
-    villainDizzy = heavy ? 2.2 : 0.8;
-    shake = heavy ? 18 : 8;
+    villainDizzy = heavy ? 2.2 : 0.85;
+    shake = heavy ? 18 : (selectedWeapon.id === "mallet" ? 11 : 7);
 
     const altarX = vw * 0.5;
-    const altarY = vh * 0.60;
+    const altarY = vh * 0.56;
 
     if (heavy) {
       slapCharge = 0;
       slapCombo += 5;
       villainFly = 1;
       addMerit(15);
-      playSlapSound(true);
+      playWeaponSound(selectedWeapon.id, true);
       playBellSound(392);
-      spawnBurst(altarX, altarY - 20, "#ffd466", 34, 340);
-      spawnBurst(altarX, altarY - 20, "#ff5c42", 22, 260);
-      spawnFloatText(altarX, altarY - 90, "鎮煞重擊！小人退散！", "#ffd466", 26);
+      spawnBurst(altarX, altarY - 15, "#ffd466", 34, 340);
+      spawnBurst(altarX, altarY - 15, selectedWeapon.color, 22, 260);
+      spawnFloatText(altarX, altarY - 95, `${selectedWeapon.label}鎮煞重擊！`, "#ffd466", 25);
       renderControls();
     } else {
       slapCombo += 1;
       slapCharge = Math.min(10, slapCharge + 1);
-      addMerit(2);
-      playSlapSound(false);
-      spawnBurst(altarX, altarY - 10, "#ffbe55", 14, 210);
+      addMerit(selectedWeapon.power);
+      playWeaponSound(selectedWeapon.id, false);
+      spawnBurst(altarX, altarY - 10, selectedWeapon.color, 14, 210);
       const words = ["啪！", "打走霉運！", "退散！", "順心！", `${slapCombo} 連擊！`];
       spawnFloatText(
         altarX + (Math.random() - 0.5) * 90,
-        altarY - 80,
+        altarY - 85,
         words[slapCombo % words.length],
         "#ffe7a3",
         21
@@ -213,32 +258,38 @@
   }
 
   // =========================================================
-  // 2. 祈福天燈狀態
+  // 2. 祈福（4 種不同祈福情境與專屬道具）
   // =========================================================
-  const wishChips = ["平安健康", "財運亨通", "事業順遂", "貴人相助", "心想事成"];
-  let selectedWish = wishChips[0];
-  const risingLanterns = [];
+  const blessScenarios = [
+    { id: "omamori", label: "平安健康", sprite: "bless-omamori", color: "#ff8c66", action: "祈求平安御守 ↗" },
+    { id: "ingot", label: "財運亨通", sprite: "bless-ingot", color: "#ffd859", action: "點亮聚寶金燈 ↗" },
+    { id: "lantern", label: "事業順遂", sprite: "bless-lantern", color: "#ffae52", action: "放飛祈福天燈 ↗" },
+    { id: "lotus", label: "心想事成", sprite: "bless-lotus", color: "#ff9ec4", action: "點燃蓮花心燈 ↗" }
+  ];
+  let selectedBless = blessScenarios[0];
+  let customWishLabel = "";
+  const risingProps = [];
 
-  function launchLantern() {
-    const wishText = selectedWish.trim() || "平安健康";
+  function launchBlessing() {
+    const wishText = customWishLabel.trim() || selectedBless.label;
     playBellSound(660);
     addMerit(10);
-    risingLanterns.push({
+    risingProps.push({
       x: vw * 0.5,
-      y: vh * 0.62,
-      vx: (Math.random() - 0.5) * 18,
-      vy: -78 - Math.random() * 22,
+      y: vh * 0.57,
+      vx: (Math.random() - 0.5) * 20,
+      vy: -82 - Math.random() * 20,
       scale: 1,
       wobble: Math.random() * Math.PI * 2,
-      wish: wishText,
+      sprite: selectedBless.sprite,
       age: 0
     });
-    spawnBurst(vw * 0.5, vh * 0.60, "#ffcf70", 20, 180);
-    spawnFloatText(vw * 0.5, vh * 0.45, `「${wishText}」祈福升空！`, "#ffd980", 22);
+    spawnBurst(vw * 0.5, vh * 0.56, selectedBless.color, 22, 200);
+    spawnFloatText(vw * 0.5, vh * 0.42, `「${wishText}」祈福昇空！`, "#ffd980", 22);
   }
 
   // =========================================================
-  // 3. 問卦靈籤狀態
+  // 3. 問卦（完整竹籤筒＋靈籤抽出＋完整紅木聖筊）
   // =========================================================
   const fortunes = [
     { grade: "上上籤", title: "旭日東昇・貴人扶搖", body: "心中所慮將隨春風散去，放手推進最重要的一件事，自有助力水到渠成。" },
@@ -250,12 +301,11 @@
   let oracleStep = "ready"; // "ready" | "shaking" | "drawn" | "throwing" | "done"
   let oracleTimer = 0;
   let drawnFortune = null;
-  let biaoResult = "";
 
   function shakeOracle() {
     if (oracleStep === "shaking" || oracleStep === "throwing") return;
     oracleStep = "shaking";
-    oracleTimer = 1.05;
+    oracleTimer = 1.0;
     playWoodClack();
     setTimeout(playWoodClack, 180);
     setTimeout(playWoodClack, 360);
@@ -265,7 +315,7 @@
   function throwBlocks() {
     if (oracleStep !== "drawn") return;
     oracleStep = "throwing";
-    oracleTimer = 0.95;
+    oracleTimer = 0.9;
     playWoodClack();
     setTimeout(playWoodClack, 220);
     renderControls();
@@ -291,15 +341,16 @@
   // =========================================================
   function renderControls() {
     chipsRow.innerHTML = "";
+    weaponRow.innerHTML = "";
     actionRow.innerHTML = "";
 
     if (mode === "slap") {
-      slapTargets.forEach(t => {
+      slapScenarios.forEach(s => {
         const b = document.createElement("button");
         b.type = "button";
-        b.className = "chip-btn" + (selectedTarget === t ? " active" : "");
-        b.textContent = t;
-        b.onclick = () => { selectedTarget = t; renderControls(); };
+        b.className = "chip-btn" + (selectedScenario.id === s.id && !customTargetLabel ? " active" : "");
+        b.textContent = s.label;
+        b.onclick = () => { selectedScenario = s; customTargetLabel = ""; renderControls(); };
         chipsRow.appendChild(b);
       });
       const inp = document.createElement("input");
@@ -307,18 +358,27 @@
       inp.maxLength = 10;
       inp.className = "custom-input";
       inp.placeholder = "自訂小人...";
-      inp.value = slapTargets.includes(selectedTarget) ? "" : selectedTarget;
+      inp.value = customTargetLabel;
       inp.oninput = () => {
-        selectedTarget = inp.value.trim() || slapTargets[0];
+        customTargetLabel = inp.value;
         chipsRow.querySelectorAll(".chip-btn").forEach(c => c.classList.remove("active"));
       };
       chipsRow.appendChild(inp);
+
+      weapons.forEach(w => {
+        const wb = document.createElement("button");
+        wb.type = "button";
+        wb.className = "chip-btn weapon-chip" + (selectedWeapon.id === w.id ? " active" : "");
+        wb.textContent = w.label;
+        wb.onclick = () => { selectedWeapon = w; renderControls(); };
+        weaponRow.appendChild(wb);
+      });
 
       const slapBtn = document.createElement("button");
       slapBtn.type = "button";
       slapBtn.id = "btnPrimaryAction";
       slapBtn.className = "rect-btn primary-btn";
-      slapBtn.textContent = "藍白拖連擊！";
+      slapBtn.textContent = `${selectedWeapon.label}連擊！`;
       slapBtn.onclick = () => performSlap(false);
       actionRow.appendChild(slapBtn);
 
@@ -331,12 +391,12 @@
       ultBtn.onclick = () => performSlap(true);
       actionRow.appendChild(ultBtn);
     } else if (mode === "bless") {
-      wishChips.forEach(w => {
+      blessScenarios.forEach(s => {
         const b = document.createElement("button");
         b.type = "button";
-        b.className = "chip-btn" + (selectedWish === w ? " active" : "");
-        b.textContent = w;
-        b.onclick = () => { selectedWish = w; renderControls(); };
+        b.className = "chip-btn" + (selectedBless.id === s.id && !customWishLabel ? " active" : "");
+        b.textContent = s.label;
+        b.onclick = () => { selectedBless = s; customWishLabel = ""; renderControls(); };
         chipsRow.appendChild(b);
       });
       const inp = document.createElement("input");
@@ -344,9 +404,9 @@
       inp.maxLength = 10;
       inp.className = "custom-input";
       inp.placeholder = "輸入心願...";
-      inp.value = wishChips.includes(selectedWish) ? "" : selectedWish;
+      inp.value = customWishLabel;
       inp.oninput = () => {
-        selectedWish = inp.value.trim() || wishChips[0];
+        customWishLabel = inp.value;
         chipsRow.querySelectorAll(".chip-btn").forEach(c => c.classList.remove("active"));
       };
       chipsRow.appendChild(inp);
@@ -355,22 +415,22 @@
       blessBtn.type = "button";
       blessBtn.id = "btnPrimaryAction";
       blessBtn.className = "rect-btn gold-btn";
-      blessBtn.textContent = "點燃祈福天燈 ↗";
-      blessBtn.onclick = launchLantern;
+      blessBtn.textContent = selectedBless.action;
+      blessBtn.onclick = launchBlessing;
       actionRow.appendChild(blessBtn);
     } else if (mode === "oracle") {
       const tip = document.createElement("span");
       tip.style.fontSize = "12px";
-      tip.style.background = "rgba(20,17,26,0.75)";
+      tip.style.background = "rgba(20,17,26,0.78)";
       tip.style.padding = "4px 10px";
       tip.style.borderRadius = "6px";
       tip.textContent = oracleStep === "ready"
-        ? "點擊「誠心求籤」或輕點籤筒"
+        ? "點擊「誠心求籤」或輕點神壇籤筒"
         : oracleStep === "drawn"
-          ? "已抽出靈籤！請擲筊確認"
+          ? "靈籤已出！請點擊「擲筊解籤」"
           : oracleStep === "done"
-            ? "求籤完成！可收下祝福或再求一籤"
-            : oracleStep === "shaking" ? "誠心搖籤中..." : "擲筊落下中...";
+            ? "聖筊應許！可再求下一籤"
+            : oracleStep === "shaking" ? "誠心搖籤中..." : "聖筊落下中...";
       chipsRow.appendChild(tip);
 
       const btn = document.createElement("button");
@@ -397,11 +457,10 @@
     });
   });
 
-  // 直接點擊畫布也可互動
   canvas.addEventListener("pointerdown", () => {
     if (!resultCard.classList.contains("hidden")) return;
     if (mode === "slap") performSlap(false);
-    else if (mode === "bless") launchLantern();
+    else if (mode === "bless") launchBlessing();
     else if (mode === "oracle") {
       if (oracleStep === "ready" || oracleStep === "done") shakeOracle();
       else if (oracleStep === "drawn") throwBlocks();
@@ -412,7 +471,7 @@
     if (e.code === "Space" && document.activeElement.tagName !== "INPUT") {
       e.preventDefault();
       if (mode === "slap") performSlap(false);
-      else if (mode === "bless") launchLantern();
+      else if (mode === "bless") launchBlessing();
       else if (mode === "oracle") {
         if (oracleStep === "ready" || oracleStep === "done") shakeOracle();
         else if (oracleStep === "drawn") throwBlocks();
@@ -432,13 +491,12 @@
       const scale = Math.max(vw / bg.naturalWidth, vh / bg.naturalHeight) * 1.04;
       const dw = bg.naturalWidth * scale;
       const dh = bg.naturalHeight * scale;
-      const dx = (vw - dw) * 0.5 + Math.sin(t * 0.35) * 6;
+      const dx = (vw - dw) * 0.5 + Math.sin(t * 0.35) * 5;
       const dy = (vh - dh) * 0.5 + Math.cos(t * 0.25) * 4;
       ctx.drawImage(bg, dx, dy, dw, dh);
-      // 柔和暗角突顯前景神壇與道具
-      const grad = ctx.createRadialGradient(vw * 0.5, vh * 0.55, vh * 0.12, vw * 0.5, vh * 0.55, Math.max(vw, vh) * 0.8);
-      grad.addColorStop(0, "rgba(20,16,24,0.05)");
-      grad.addColorStop(1, "rgba(12,10,16,0.58)");
+      const grad = ctx.createRadialGradient(vw * 0.5, vh * 0.54, vh * 0.14, vw * 0.5, vh * 0.54, Math.max(vw, vh) * 0.85);
+      grad.addColorStop(0, "rgba(20,16,24,0.04)");
+      grad.addColorStop(1, "rgba(12,10,16,0.52)");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, vw, vh);
     } else {
@@ -446,7 +504,6 @@
       ctx.fillRect(0, 0, vw, vh);
     }
 
-    // 浮動金塵星火
     embers.forEach(e => {
       e.y -= e.vy * 0.016;
       if (e.y < -0.05) { e.y = 1.05; e.x = Math.random(); }
@@ -473,21 +530,20 @@
     drawBackground(t);
 
     const altarX = vw * 0.5;
-    const altarY = vh * 0.59;
+    const altarY = vh * 0.55;
     const propBase = Math.min(vw, vh);
 
     // 1. 打小人舞台
     if (mode === "slap") {
-      if (slipperAnim > 0) slipperAnim = Math.max(0, slipperAnim - dt * 4.2);
+      if (weaponAnim > 0) weaponAnim = Math.max(0, weaponAnim - dt * 4.2);
       if (villainSquash > 0) villainSquash = Math.max(0, villainSquash - dt * 3.2);
       if (villainDizzy > 0) villainDizzy = Math.max(0, villainDizzy - dt);
       if (villainFly > 0) villainFly = Math.max(0, villainFly - dt * 1.6);
 
-      // 小人紙偶
-      const vImg = imgs.villain;
-      const vSize = Math.min(220, propBase * 0.42);
-      const scaleX = 1 + villainSquash * 0.35;
-      const scaleY = 1 - villainSquash * 0.45;
+      const vImg = imgs[selectedScenario.sprite];
+      const vSize = Math.min(230, propBase * 0.44);
+      const scaleX = 1 + villainSquash * 0.34;
+      const scaleY = 1 - villainSquash * 0.44;
       const flyY = villainFly > 0 ? -Math.sin(villainFly * Math.PI) * 140 : 0;
       const wobble = villainDizzy > 0 ? Math.sin(t * 28) * 0.14 : Math.sin(t * 2.5) * 0.03;
 
@@ -495,10 +551,9 @@
       ctx.translate(altarX, altarY + flyY);
       ctx.rotate(wobble);
       ctx.scale(scaleX, scaleY);
-      // 投影
-      ctx.fillStyle = "rgba(0,0,0,0.32)";
+      ctx.fillStyle = "rgba(0,0,0,0.34)";
       ctx.beginPath();
-      ctx.ellipse(0, vSize * 0.44, vSize * 0.34, vSize * 0.09, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, vSize * 0.44, vSize * 0.35, vSize * 0.09, 0, 0, Math.PI * 2);
       ctx.fill();
 
       if (vImg && vImg.complete && vImg.naturalWidth > 0) {
@@ -509,96 +564,100 @@
       }
       ctx.restore();
 
-      // 小人標籤牌
+      // 標籤牌
+      const targetText = customTargetLabel.trim() || selectedScenario.label;
       ctx.save();
-      ctx.font = "bold 16px 'Noto Serif TC', serif";
-      const labelW = ctx.measureText(selectedTarget).width + 26;
-      ctx.fillStyle = "rgba(248,241,228,0.92)";
+      ctx.font = "bold 15px 'Noto Serif TC', serif";
+      const labelW = ctx.measureText(targetText).width + 26;
+      ctx.fillStyle = "rgba(248,241,228,0.94)";
       ctx.strokeStyle = "#972819";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(altarX - labelW * 0.5, altarY + vSize * 0.46, labelW, 30, 6);
+      ctx.roundRect(altarX - labelW * 0.5, altarY + vSize * 0.45, labelW, 28, 6);
       ctx.fill();
       ctx.stroke();
       ctx.fillStyle = "#2b211a";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(selectedTarget, altarX, altarY + vSize * 0.46 + 15);
+      ctx.fillText(targetText, altarX, altarY + vSize * 0.45 + 14);
       ctx.restore();
 
-      // 藍白拖動態揮擊
-      const sImg = imgs.slipper;
-      if (sImg && sImg.complete && sImg.naturalWidth > 0) {
-        const sSize = Math.min(200, propBase * 0.38) * (slipperHeavy ? 1.25 : 1);
-        const swing = slipperAnim > 0 ? Math.sin(slipperAnim * Math.PI) : 0;
-        const sxPos = altarX + 100 - swing * 95;
-        const syPos = altarY - 120 + swing * 105;
-        const sRot = 0.45 - swing * 1.15;
+      // 武器動態揮擊
+      const wImg = imgs[selectedWeapon.sprite];
+      if (wImg && wImg.complete && wImg.naturalWidth > 0) {
+        const wSize = Math.min(205, propBase * 0.39) * (weaponHeavy ? 1.24 : 1);
+        const swing = weaponAnim > 0 ? Math.sin(weaponAnim * Math.PI) : 0;
+        const wxPos = altarX + 105 - swing * 100;
+        const wyPos = altarY - 118 + swing * 102;
+        const wRot = 0.45 - swing * 1.15;
 
         ctx.save();
-        ctx.translate(sxPos, syPos);
-        ctx.rotate(sRot);
-        if (slipperHeavy && slipperAnim > 0) {
+        ctx.translate(wxPos, wyPos);
+        ctx.rotate(wRot);
+        if (weaponHeavy && weaponAnim > 0) {
           ctx.shadowColor = "#ffd466";
           ctx.shadowBlur = 28;
         }
-        const aspect = sImg.naturalWidth / sImg.naturalHeight;
-        ctx.drawImage(sImg, -sSize * aspect * 0.5, -sSize * 0.5, sSize * aspect, sSize);
+        const aspect = wImg.naturalWidth / wImg.naturalHeight;
+        ctx.drawImage(wImg, -wSize * aspect * 0.5, -wSize * 0.5, wSize * aspect, wSize);
         ctx.restore();
       }
     }
 
-    // 2. 祈福天燈舞台
+    // 2. 祈福舞台（4 種專屬祈福道具）
     if (mode === "bless") {
-      // 神壇上待點燃的天燈
-      const lImg = imgs.lantern;
-      const lSize = Math.min(210, propBase * 0.40);
-      if (lImg && lImg.complete && lImg.naturalWidth > 0) {
-        const aspect = lImg.naturalWidth / lImg.naturalHeight;
+      const pImg = imgs[selectedBless.sprite];
+      const pSize = Math.min(215, propBase * 0.41);
+      const wishText = customWishLabel.trim() || selectedBless.label;
+      if (pImg && pImg.complete && pImg.naturalWidth > 0) {
+        const aspect = pImg.naturalWidth / pImg.naturalHeight;
         const bob = Math.sin(t * 2.4) * 6;
         ctx.save();
         ctx.translate(altarX, altarY + bob);
-        ctx.shadowColor = "rgba(255, 190, 85, 0.55)";
-        ctx.shadowBlur = 24;
-        ctx.drawImage(lImg, -lSize * aspect * 0.5, -lSize * 0.5, lSize * aspect, lSize);
-        // 願望貼條
+        ctx.shadowColor = selectedBless.color;
+        ctx.shadowBlur = 22;
+        ctx.drawImage(pImg, -pSize * aspect * 0.5, -pSize * 0.5, pSize * aspect, pSize);
         ctx.shadowBlur = 0;
-        ctx.fillStyle = "rgba(253, 246, 232, 0.92)";
+        ctx.fillStyle = "rgba(253, 246, 232, 0.94)";
+        ctx.strokeStyle = "#972819";
+        ctx.lineWidth = 1.5;
+        const lw = ctx.measureText(wishText).width + 24;
         ctx.beginPath();
-        ctx.roundRect(-52, -16, 104, 28, 5);
+        ctx.roundRect(-Math.max(54, lw * 0.5), pSize * 0.46, Math.max(108, lw), 26, 6);
         ctx.fill();
+        ctx.stroke();
         ctx.fillStyle = "#972819";
         ctx.font = "bold 14px 'Noto Serif TC', serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(selectedWish, 0, -2);
+        ctx.fillText(wishText, 0, pSize * 0.46 + 13);
         ctx.restore();
       }
 
-      // 升空中的天燈群
-      for (let i = risingLanterns.length - 1; i >= 0; i--) {
-        const ln = risingLanterns[i];
-        ln.age += dt;
-        ln.x += (ln.vx + Math.sin(t * 2 + ln.wobble) * 14) * dt;
-        ln.y += ln.vy * dt;
-        ln.scale = Math.max(0.28, 1 - ln.age * 0.14);
-        if (lImg && lImg.complete) {
-          const aspect = lImg.naturalWidth / lImg.naturalHeight;
-          const h = lSize * ln.scale;
+      for (let i = risingProps.length - 1; i >= 0; i--) {
+        const rp = risingProps[i];
+        rp.age += dt;
+        rp.x += (rp.vx + Math.sin(t * 2 + rp.wobble) * 14) * dt;
+        rp.y += rp.vy * dt;
+        rp.scale = Math.max(0.28, 1 - rp.age * 0.14);
+        const rImg = imgs[rp.sprite];
+        if (rImg && rImg.complete && rImg.naturalWidth > 0) {
+          const aspect = rImg.naturalWidth / rImg.naturalHeight;
+          const h = pSize * rp.scale;
           ctx.save();
-          ctx.globalAlpha = Math.max(0, 1 - ln.age / 5.5);
-          ctx.translate(ln.x, ln.y);
-          ctx.rotate(Math.sin(t * 3 + ln.wobble) * 0.05);
-          ctx.shadowColor = "rgba(255, 190, 85, 0.7)";
+          ctx.globalAlpha = Math.max(0, 1 - rp.age / 5.5);
+          ctx.translate(rp.x, rp.y);
+          ctx.rotate(Math.sin(t * 3 + rp.wobble) * 0.05);
+          ctx.shadowColor = "rgba(255, 200, 95, 0.7)";
           ctx.shadowBlur = 18;
-          ctx.drawImage(lImg, -h * aspect * 0.5, -h * 0.5, h * aspect, h);
+          ctx.drawImage(rImg, -h * aspect * 0.5, -h * 0.5, h * aspect, h);
           ctx.restore();
         }
-        if (ln.y < -160 || ln.age > 5.5) risingLanterns.splice(i, 1);
+        if (rp.y < -160 || rp.age > 5.5) risingProps.splice(i, 1);
       }
     }
 
-    // 3. 問卦靈籤舞台
+    // 3. 問卦舞台（完整竹籤筒 + 靈籤抽出 + 完整聖筊）
     if (mode === "oracle") {
       if (oracleStep === "shaking") {
         oracleTimer -= dt;
@@ -606,57 +665,84 @@
           oracleStep = "drawn";
           drawnFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
           playBellSound(587);
-          spawnBurst(altarX, altarY - 90, "#ffd466", 18, 170);
-          spawnFloatText(altarX, altarY - 120, "靈籤已出！請擲筊", "#ffe699", 21);
+          spawnBurst(altarX - 45, altarY - 95, "#ffd466", 18, 170);
+          spawnFloatText(altarX, altarY - 135, "靈籤已出！請擲筊", "#ffe699", 21);
           renderControls();
         }
       } else if (oracleStep === "throwing") {
         oracleTimer -= dt;
         if (oracleTimer <= 0) {
           oracleStep = "done";
-          biaoResult = "聖筊應許";
           addMerit(10);
           playBellSound(784);
-          spawnBurst(altarX, altarY + 30, "#ffd466", 24, 220);
+          spawnBurst(altarX + 60, altarY + 35, "#ffd466", 24, 220);
           showResult(
             drawnFortune.grade,
             drawnFortune.title,
             drawnFortune.body,
-            `${biaoResult} ・ 心安 +10`
+            "聖筊應許 ・ 心安 +10"
           );
           renderControls();
         }
       }
 
-      const tImg = imgs.tube;
-      const bImg = imgs.blocks;
-      const tubeH = Math.min(230, propBase * 0.44);
+      const tImg = imgs["oracle-tube"];
+      const sImg = imgs["oracle-stick"];
+      const bImg = imgs["oracle-blocks"];
+      const cImg = imgs["oracle-censer"];
+
+      // 背後小香爐裝飾
+      if (cImg && cImg.complete && cImg.naturalWidth > 0) {
+        const ch = Math.min(110, propBase * 0.22);
+        const ca = cImg.naturalWidth / cImg.naturalHeight;
+        ctx.save();
+        ctx.translate(altarX, altarY - 52);
+        ctx.drawImage(cImg, -ch * ca * 0.5, -ch * 0.5, ch * ca, ch);
+        ctx.restore();
+      }
+
+      const tubeH = Math.min(220, propBase * 0.42);
       const shakeRot = oracleStep === "shaking" ? Math.sin(t * 36) * 0.22 : Math.sin(t * 1.5) * 0.02;
       const shakeY = oracleStep === "shaking" ? Math.abs(Math.sin(t * 28)) * -18 : 0;
 
+      // 抽出的靈籤（位於籤筒上方）
+      if ((oracleStep === "drawn" || oracleStep === "throwing" || oracleStep === "done") && sImg && sImg.complete && sImg.naturalWidth > 0) {
+        const stickH = Math.min(130, propBase * 0.25);
+        const sa = sImg.naturalWidth / sImg.naturalHeight;
+        ctx.save();
+        ctx.translate(altarX - 50, altarY - tubeH * 0.55 + Math.sin(t * 3) * 4);
+        ctx.rotate(-0.35);
+        ctx.shadowColor = "#ffd466";
+        ctx.shadowBlur = 16;
+        ctx.drawImage(sImg, -stickH * sa * 0.5, -stickH * 0.5, stickH * sa, stickH);
+        ctx.restore();
+      }
+
+      // 完整竹籤筒
       if (tImg && tImg.complete && tImg.naturalWidth > 0) {
         const aspect = tImg.naturalWidth / tImg.naturalHeight;
         ctx.save();
-        ctx.translate(altarX - 42, altarY + shakeY);
+        ctx.translate(altarX - 52, altarY + 12 + shakeY);
         ctx.rotate(shakeRot);
         ctx.drawImage(tImg, -tubeH * aspect * 0.5, -tubeH * 0.5, tubeH * aspect, tubeH);
         ctx.restore();
       }
 
+      // 完整一對紅木聖筊（絕不裁切分割）
       if (bImg && bImg.complete && bImg.naturalWidth > 0) {
-        const bSize = Math.min(130, propBase * 0.25);
+        const bH = Math.min(115, propBase * 0.22);
         const aspect = bImg.naturalWidth / bImg.naturalHeight;
-        const tossY = oracleStep === "throwing" ? -Math.sin((1 - oracleTimer / 0.95) * Math.PI) * 130 : 0;
-        const tossRot = oracleStep === "throwing" ? (1 - oracleTimer / 0.95) * Math.PI * 6 : 0;
+        const tossY = oracleStep === "throwing" ? -Math.sin((1 - oracleTimer / 0.9) * Math.PI) * 135 : 0;
+        const tossRot = oracleStep === "throwing" ? (1 - oracleTimer / 0.9) * Math.PI * 6 : 0;
         ctx.save();
-        ctx.translate(altarX + 68, altarY + 45 + tossY);
+        ctx.translate(altarX + 66, altarY + 46 + tossY);
         ctx.rotate(tossRot);
-        ctx.drawImage(bImg, -bSize * aspect * 0.5, -bSize * 0.5, bSize * aspect, bSize);
+        ctx.drawImage(bImg, -bH * aspect * 0.5, -bH * 0.5, bH * aspect, bH);
         ctx.restore();
       }
     }
 
-    // 粒子與飄字更新繪製
+    // 粒子與飄字
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.life -= dt;
@@ -694,4 +780,3 @@
   }
   requestAnimationFrame(frame);
 })();
-
