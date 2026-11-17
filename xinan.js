@@ -40,7 +40,11 @@
     "Kenny_normal": "./assets/office-fullbody/Kenny_normal.png",
     "Kenny_happy": "./assets/office-fullbody/Kenny_happy.png",
     "Kenny_hurt_cry": "./assets/office-fullbody/Kenny_hurt_cry.png",
-    "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png"
+    "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png",
+    "Sara_normal": "./assets/office-fullbody/Sara_normal.png",
+    "Sara_happy": "./assets/office-fullbody/Sara_happy.png",
+    "Sara_hurt_cry": "./assets/office-fullbody/Sara_hurt_cry.png",
+    "Sara_innocent": "./assets/office-fullbody/Sara_innocent.png"
     // 啾底 / 偷泥 / 蝦婷 / 學妹 / 沙拉 將於取得核准全身透明 PNG 後接入 (7x4=28 格預留)
   };
   const imgs = {};
@@ -237,7 +241,7 @@
       blessLine: "學妹祈福：提案一次過關！"
     },
     {
-      id: "sara", label: "沙拉", charKey: "Sara", fullBody: true, assetStatus: "rejected_old_pending_black", color: "#26242c",
+      id: "sara", label: "沙拉", charKey: "Sara", fullBody: true, assetStatus: "approved", color: "#26242c",
       pendingNote: "待補黑色衣服核准照（舊小熊裙已停用）",
       officeEvents: ["專案進度追追追！", "黑衣戰袍待命中！", "辦公室相親相愛！"],
       blessLine: "沙拉祝願：團隊默契滿分！"
@@ -325,8 +329,13 @@
       addMerit(selectedWeapon.power);
       playWeaponSound(selectedWeapon.id, false);
       spawnBurst(altarX, altarY - 10, selectedWeapon.color, 14, 210);
+      const sharedOfficePool = [
+        "業績衝刺！", "臨時急單報到！", "門市展示衝一波！",
+        "會議小劇場開演！", "功勞爭寵中！", "搶資源大作戰！",
+        "同事相挺過關！", "跨部門幫忙救火！", "慶祝達標啦！"
+      ];
       const words = selectedScenario.fullBody
-        ? selectedScenario.officeEvents
+        ? [sharedOfficePool[Math.floor(Math.random() * sharedOfficePool.length)], ...selectedScenario.officeEvents]
         : ["啪！", "打走霉運！", "退散！", "順心！", `${slapCombo} 連擊！`];
       spawnFloatText(
         altarX + (Math.random() - 0.5) * 90,
@@ -917,4 +926,5 @@
   }
   requestAnimationFrame(frame);
 })();
+
 
