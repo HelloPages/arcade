@@ -33,15 +33,15 @@
     "oracle-blocks": "./assets/v2/oracle-blocks.webp",
     "oracle-stick": "./assets/v2/oracle-stick.webp",
     "oracle-censer": "./assets/v2/oracle-censer.webp",
-    "Sam_normal": "./assets/office-fullbody/Sam_normal.png",
-    "Sam_happy": "./assets/office-fullbody/Sam_happy.png",
-    "Sam_hurt_cry": "./assets/office-fullbody/Sam_hurt_cry.png",
-    "Sam_innocent": "./assets/office-fullbody/Sam_innocent.png",
+    "3畝_normal": "./assets/office-fullbody/3畝_normal.png",
+    "3畝_happy": "./assets/office-fullbody/3畝_happy.png",
+    "3畝_hurt_cry": "./assets/office-fullbody/3畝_hurt_cry.png",
+    "3畝_innocent": "./assets/office-fullbody/3畝_innocent.png",
     "Kenny_normal": "./assets/office-fullbody/Kenny_normal.png",
     "Kenny_happy": "./assets/office-fullbody/Kenny_happy.png",
     "Kenny_hurt_cry": "./assets/office-fullbody/Kenny_hurt_cry.png",
     "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png"
-    // Judy / Tony / Shrimp / Junior / Sara 將於取得核准全身透明 PNG 後接入 (7x4=28 格預留)
+    // 啾底 / 偷泥 / 蝦婷 / 學妹 / 沙拉 將於取得核准全身透明 PNG 後接入 (7x4=28 格預留)
   };
   const imgs = {};
   for (const [k, src] of Object.entries(assetUrls)) {
@@ -203,8 +203,8 @@
   // =========================================================
   const slapScenarios = [
     {
-      id: "sam3mu", label: "3畝", charKey: "Sam", fullBody: true, assetStatus: "approved", color: "#2b4d78",
-      officeEvents: ["Q4 業績衝刺！", "臨時加開會議！", "達標請喝飲料！"],
+      id: "sam3mu", label: "3畝", charKey: "3畝", fullBody: true, assetStatus: "approved", color: "#2b4d78",
+      officeEvents: ["Q4 業績爆衝啦！", "誰偷拿我貓咪杯！", "達標請全體喝珍奶！"],
       blessLine: "3畝相挺：業績長紅！"
     },
     {
@@ -472,6 +472,22 @@
       ultBtn.disabled = slapCharge < 10;
       ultBtn.onclick = () => performSlap(true);
       actionRow.appendChild(ultBtn);
+
+      const randBtn = document.createElement("button");
+      randBtn.type = "button";
+      randBtn.id = "btnRandomOffice";
+      randBtn.className = "rect-btn";
+      randBtn.textContent = "隨機劇場";
+      randBtn.onclick = () => {
+        const pool = slapScenarios.slice(0, 7);
+        selectedScenario = pool[Math.floor(Math.random() * pool.length)];
+        customTargetLabel = "";
+        const ev = selectedScenario.officeEvents[Math.floor(Math.random() * selectedScenario.officeEvents.length)];
+        spawnFloatText(vw * 0.5, vh * 0.42, `${selectedScenario.label}：${ev}`, "#ffd980", 20);
+        setCharMood("innocent", 1.1);
+        renderControls();
+      };
+      actionRow.appendChild(randBtn);
     } else if (mode === "bless") {
       blessScenarios.forEach(s => {
         const b = document.createElement("button");
