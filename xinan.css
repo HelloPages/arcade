@@ -281,9 +281,12 @@ html, body {
 }
 
 @media (max-width: 440px) {
-  .brand-text h1 { font-size: 13px; }
+  .top-hud { padding: 5px 7px; gap: 5px; left: 6px; right: 6px; }
+  .brand-seal { width: 24px; height: 24px; font-size: 12px; }
+  .brand-text h1 { font-size: 12px; }
   .brand-text .sub { font-size: 9px; }
   .mode-btn { padding: 5px 7px; font-size: 12px; }
   .merit-badge { padding: 4px 6px; font-size: 11px; }
   .icon-btn { padding: 5px 7px; font-size: 11px; white-space: nowrap; }
 }
+
