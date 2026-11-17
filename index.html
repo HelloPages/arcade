@@ -8,7 +8,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-<link rel="icon" href="assets/chime-player-idle.svg"><title>REA 遊戲館｜心安宮・三儀殿（打小人・祈福・問卦）</title>
+<link rel="icon" href="assets/moss-player-0.webp"><title>REA遊戲館｜螢林節拍：夜巡協奏</title>
 
 <style>
 
@@ -325,6 +325,7 @@
 #tab-xinan{border-radius:7px}.stage-tab.active-xinan{background:#c83e2b;color:#fff7ea;border:1px solid #e7b85c;box-shadow:none}
 #tab-ridge{border-radius:7px}.stage-tab.active-ridge{background:#183ac7;color:#f3f6ed;border:1px solid #183ac7;box-shadow:none}
 #tab-chime{border-radius:7px}.stage-tab.active-chime{background:#503357;color:#f3edf5;border:1px solid #503357;box-shadow:none}
+#tab-moss{border-radius:7px}.stage-tab.active-moss{background:#12204c;color:#f5efd5;border:1px solid #12204c;box-shadow:none}
 </style>
 
 <link rel="stylesheet" href="visuals/portal.css?v=20261107-art1">
@@ -346,7 +347,8 @@
     </div>
 
     <div class="tabs" id="portal-tabs">
-      <button type="button" class="stage-tab active-xinan" id="tab-xinan" onclick="selectStage('xinan')">🏮 心安宮</button>
+      <button type="button" class="stage-tab active-moss" id="tab-moss" onclick="selectStage('moss')">螢林節拍</button>
+      <button type="button" class="stage-tab" id="tab-xinan" onclick="selectStage('xinan')">🏮 心安宮</button>
 
       <button type="button" class="stage-tab active-chime" id="tab-chime" onclick="selectStage('chime')">鐘樓拳影</button>
       <button type="button" class="stage-tab" id="tab-ridge" onclick="selectStage('ridge')">銀脊急行</button>
@@ -387,7 +389,7 @@
 
   <main id="stage-viewport">
 
-    <iframe id="game-frame" src="./chime.html?embed=1&v=v_20261117_chime_1" title="鐘樓拳影：發條對決" allow="autoplay; fullscreen"></iframe>
+    <iframe id="game-frame" src="./moss.html?embed=1&v=v_20261118_moss_1" title="螢林節拍：夜巡協奏" allow="autoplay; fullscreen"></iframe>
 
   </main>
 
@@ -421,7 +423,7 @@
 
   <script>
 
-    const VERSION_STAMP = "v_20261117_xinan_1";
+    const VERSION_STAMP = "v_20261118_moss_1";
 
     const frame = document.getElementById("game-frame");
 
@@ -494,6 +496,8 @@
 
 
     function selectStage(stage){
+      document.getElementById('tab-moss').className='stage-tab';
+      if(stage==='moss'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./moss.html?embed=1&v='+VERSION_STAMP;frame.title='螢林節拍：夜巡協奏';const tab=document.getElementById('tab-moss');tab.className='stage-tab active-moss';tab.scrollIntoView({block:'nearest',inline:'nearest'});toggleCatalog(false);setTimeout(()=>frame.focus(),120);return;}
       const tabXinan = document.getElementById("tab-xinan"); if(tabXinan) tabXinan.className="stage-tab";
       if(stage==="xinan"){document.querySelectorAll(".stage-tab").forEach(b=>b.className="stage-tab");frame.src="./xinan.html?embed=1&v="+VERSION_STAMP;frame.title="心安宮・三儀殿";if(tabXinan){tabXinan.className="stage-tab active-xinan";tabXinan.scrollIntoView({block:"nearest",inline:"nearest"});}toggleCatalog(false);setTimeout(()=>{try{frame.focus();}catch(e){}},120);return;}
       document.getElementById('tab-chime').className='stage-tab';
@@ -640,7 +644,7 @@
 
     const st = params.get("stage") || location.hash.replace("#", "");
 
-    if(!st || st==='xinan'){ selectStage('xinan'); } else if(st==='chime'){ selectStage('chime'); } else if(st==='ridge'){ selectStage('ridge'); } else if(st==='abyss'){ selectStage('abyss'); } else if(st==='shinobi'){ selectStage('shinobi'); } else
+    if(!st || st==='moss'){ selectStage('moss'); } else if(st==='xinan'){ selectStage('xinan'); } else if(st==='chime'){ selectStage('chime'); } else if(st==='ridge'){ selectStage('ridge'); } else if(st==='abyss'){ selectStage('abyss'); } else if(st==='shinobi'){ selectStage('shinobi'); } else
 
     if(st === 'capybara'){ selectStage('capybara'); } else
 
