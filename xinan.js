@@ -40,11 +40,8 @@
     "Kenny_normal": "./assets/office-fullbody/Kenny_normal.png",
     "Kenny_happy": "./assets/office-fullbody/Kenny_happy.png",
     "Kenny_hurt_cry": "./assets/office-fullbody/Kenny_hurt_cry.png",
-    "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png",
-    "Sara_normal": "./assets/office-fullbody/Sara_normal.png",
-    "Sara_happy": "./assets/office-fullbody/Sara_happy.png",
-    "Sara_hurt_cry": "./assets/office-fullbody/Sara_hurt_cry.png",
-    "Sara_innocent": "./assets/office-fullbody/Sara_innocent.png"
+    "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png"
+    // Judy / Tony / Shrimp / Junior / Sara 將於取得核准全身透明 PNG 後接入 (7x4=28 格預留)
   };
   const imgs = {};
   for (const [k, src] of Object.entries(assetUrls)) {
@@ -201,12 +198,50 @@
   }));
 
   // =========================================================
-  // 1. 打小人（辦公室三人全身版 Sam / Kenny / Sara + 4 種情境 + 4 種武器）
+  // 1. 打小人（正式七人固定順序：3畝、肯尼、啾底、偷泥、蝦婷、學妹、沙拉）
+  //    預設啟動對象：偷泥 + 藍白拖
   // =========================================================
   const slapScenarios = [
-    { id: "Sam", label: "Sam・業績衝刺", charKey: "Sam", fullBody: true, officeEvents: ["業績衝刺！", "慶祝達標！", "同事相挺！"] },
-    { id: "Kenny", label: "Kenny・會議劇場", charKey: "Kenny", fullBody: true, officeEvents: ["會議小劇場！", "幫忙救火！", "資源協調中！"] },
-    { id: "Sara", label: "Sara・臨時急單", charKey: "Sara", fullBody: true, officeEvents: ["臨時急單！", "門市展示衝！", "達標歡呼！"] },
+    {
+      id: "sam3mu", label: "3畝", charKey: "Sam", fullBody: true, assetStatus: "approved", color: "#2b4d78",
+      officeEvents: ["Q4 業績衝刺！", "臨時加開會議！", "達標請喝飲料！"],
+      blessLine: "3畝相挺：業績長紅！"
+    },
+    {
+      id: "kenny", label: "肯尼", charKey: "Kenny", fullBody: true, assetStatus: "approved", color: "#36506b",
+      officeEvents: ["會議小劇場開演！", "跨部門救火支援！", "資源先讓給我吧！"],
+      blessLine: "肯尼救火：系統穩穩過關！"
+    },
+    {
+      id: "judy", label: "啾底", charKey: "Judy", fullBody: true, assetStatus: "pending_drive", color: "#8e4a6d",
+      pendingNote: "待核對私人 Drive 角色圖",
+      officeEvents: ["月底對帳衝刺！", "會議室搶起來！", "同事相挺過關！"],
+      blessLine: "啾底加油：對帳一次全過！"
+    },
+    {
+      id: "tony", label: "偷泥", charKey: "Tony", fullBody: true, assetStatus: "pending_drive", color: "#c85a32",
+      pendingNote: "待核對私人 Drive 角色圖",
+      officeEvents: ["臨時急單報到！", "功勞先記我頭上？", "急單救火隊出發！"],
+      blessLine: "偷泥支援：急單順利出貨！"
+    },
+    {
+      id: "shrimp", label: "蝦婷", charKey: "Shrimp", fullBody: true, assetStatus: "pending_drive", color: "#b84452",
+      pendingNote: "待核對私人 Drive 角色圖",
+      officeEvents: ["門市展示衝刺！", "業績王爭霸戰！", "達標擊掌慶祝！"],
+      blessLine: "蝦婷祈願：門市人潮爆滿！"
+    },
+    {
+      id: "junior", label: "學妹", charKey: "Junior", fullBody: true, assetStatus: "pending_drive", color: "#4a7a6e",
+      pendingNote: "待核對私人 Drive 角色圖",
+      officeEvents: ["學長姐救命呀！", "簡報救火趕工中！", "謝謝大家相挺！"],
+      blessLine: "學妹祈福：提案一次過關！"
+    },
+    {
+      id: "sara", label: "沙拉", charKey: "Sara", fullBody: true, assetStatus: "rejected_old_pending_black", color: "#26242c",
+      pendingNote: "待補黑色衣服核准照（舊小熊裙已停用）",
+      officeEvents: ["專案進度追追追！", "黑衣戰袍待命中！", "辦公室相親相愛！"],
+      blessLine: "沙拉祝願：團隊默契滿分！"
+    },
     { id: "sloth", label: "拖延症", sprite: "villain-sloth" },
     { id: "retrograde", label: "水逆退散", sprite: "villain-retrograde" },
     { id: "teammate", label: "豬隊友", sprite: "villain-teammate" },
@@ -219,7 +254,8 @@
     { id: "fan", label: "桃木扇", sprite: "weapon-fan", color: "#79e6b2", power: 3 }
   ];
 
-  let selectedScenario = slapScenarios[0];
+  // 預設啟動就是「偷泥」+「藍白拖」
+  let selectedScenario = slapScenarios.find(s => s.id === "tony");
   let customTargetLabel = "";
   let selectedWeapon = weapons[0];
   let slapCombo = 0;
@@ -278,7 +314,7 @@
       spawnBurst(altarX, altarY - 15, "#ffd466", 34, 340);
       spawnBurst(altarX, altarY - 15, selectedWeapon.color, 22, 260);
       const heavyWord = selectedScenario.fullBody
-        ? `${selectedScenario.charKey} 慶祝達標！`
+        ? `${selectedScenario.label} 慶祝達標！`
         : `${selectedWeapon.label}鎮煞重擊！`;
       spawnFloatText(altarX, altarY - 95, heavyWord, "#ffd466", 25);
       renderControls();
@@ -619,6 +655,33 @@
         const h = vSize;
         const w = h * aspect;
         ctx.drawImage(vImg, -w * 0.5, -h * 0.5, w, h);
+      } else if (selectedScenario.fullBody) {
+        // 尚待補核准真人圖的角色：以清楚標示的辦公室四表情待補立牌呈現，不假冒或亂猜相貌
+        const moodNow = forceMoodForTest || charMood || "normal";
+        const w = vSize * 0.68;
+        const h = vSize * 0.92;
+        ctx.fillStyle = selectedScenario.color || "#3a3545";
+        ctx.strokeStyle = moodNow === "hurt_cry" ? "#ff6b57" : "#e7b85c";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(-w * 0.5, -h * 0.5, w, h, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#fff6e5";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = "800 32px 'Noto Serif TC', serif";
+        ctx.fillText(selectedScenario.label, 0, -h * 0.22);
+
+        const moodFace = moodNow === "hurt_cry" ? "(＞﹏＜) 哭泣" : moodNow === "innocent" ? "(・_・;) 無辜" : moodNow === "happy" ? "(＾▽＾) 歡樂" : "(•̀ᴗ•́) 一般";
+        ctx.font = "bold 18px 'Noto Serif TC', serif";
+        ctx.fillStyle = "#ffd980";
+        ctx.fillText(moodFace, 0, 4);
+
+        ctx.font = "12px 'Noto Serif TC', serif";
+        ctx.fillStyle = "rgba(255,246,229,0.85)";
+        ctx.fillText(selectedScenario.pendingNote || "待補核准素材", 0, h * 0.28);
       }
       ctx.restore();
 
