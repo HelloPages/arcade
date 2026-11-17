@@ -17,22 +17,22 @@
   // --- 高精細去背圖檔載入 ---
   const assetUrls = {
     bg: "./assets/xinan-temple-bg.jpg",
-    "villain-sloth": "./assets/v2/villain-sloth.png",
-    "villain-retrograde": "./assets/v2/villain-retrograde.png",
-    "villain-teammate": "./assets/v2/villain-teammate.png",
-    "villain-overtime": "./assets/v2/villain-overtime.png",
-    "weapon-slipper": "./assets/v2/weapon-slipper.png",
-    "weapon-clog": "./assets/v2/weapon-clog.png",
-    "weapon-mallet": "./assets/v2/weapon-mallet.png",
-    "weapon-fan": "./assets/v2/weapon-fan.png",
-    "bless-lantern": "./assets/v2/bless-lantern.png",
-    "bless-ingot": "./assets/v2/bless-ingot.png",
-    "bless-lotus": "./assets/v2/bless-lotus.png",
-    "bless-omamori": "./assets/v2/bless-omamori.png",
-    "oracle-tube": "./assets/v2/oracle-tube.png",
-    "oracle-blocks": "./assets/v2/oracle-blocks.png",
-    "oracle-stick": "./assets/v2/oracle-stick.png",
-    "oracle-censer": "./assets/v2/oracle-censer.png"
+    "villain-sloth": "./assets/v2/villain-sloth.webp",
+    "villain-retrograde": "./assets/v2/villain-retrograde.webp",
+    "villain-teammate": "./assets/v2/villain-teammate.webp",
+    "villain-overtime": "./assets/v2/villain-overtime.webp",
+    "weapon-slipper": "./assets/v2/weapon-slipper.webp",
+    "weapon-clog": "./assets/v2/weapon-clog.webp",
+    "weapon-mallet": "./assets/v2/weapon-mallet.webp",
+    "weapon-fan": "./assets/v2/weapon-fan.webp",
+    "bless-lantern": "./assets/v2/bless-lantern.webp",
+    "bless-ingot": "./assets/v2/bless-ingot.webp",
+    "bless-lotus": "./assets/v2/bless-lotus.webp",
+    "bless-omamori": "./assets/v2/bless-omamori.webp",
+    "oracle-tube": "./assets/v2/oracle-tube.webp",
+    "oracle-blocks": "./assets/v2/oracle-blocks.webp",
+    "oracle-stick": "./assets/v2/oracle-stick.webp",
+    "oracle-censer": "./assets/v2/oracle-censer.webp"
   };
   const imgs = {};
   for (const [k, src] of Object.entries(assetUrls)) {
@@ -780,3 +780,4 @@
   }
   requestAnimationFrame(frame);
 })();
+
