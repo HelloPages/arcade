@@ -44,6 +44,45 @@
     // 啾底、偷泥、蝦婷、學妹仍待使用者核准各四張全身角色圖；不以他人影像代替。
   };
   const imgs = {};
+  const opaqueBoxCache = {};
+  function getOpaqueBox(img) {
+    const key = img.getAttribute("src") || img.src;
+    if (opaqueBoxCache[key]) return opaqueBoxCache[key];
+    const cw = img.naturalWidth;
+    const ch = img.naturalHeight;
+    if (!cw || !ch) return null;
+    try {
+      const oc = document.createElement("canvas");
+      oc.width = cw;
+      oc.height = ch;
+      const octx = oc.getContext("2d");
+      octx.drawImage(img, 0, 0);
+      const data = octx.getImageData(0, 0, cw, ch).data;
+      let minX = cw, minY = ch, maxX = -1, maxY = -1;
+      for (let y = 0; y < ch; y += 2) {
+        const row = y * cw * 4;
+        for (let x = 0; x < cw; x += 2) {
+          if (data[row + x * 4 + 3] > 16) {
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+      if (maxX >= minX && maxY >= minY) {
+        const box = {
+          x: Math.max(0, minX - 2),
+          y: Math.max(0, minY - 2),
+          w: Math.min(cw, maxX + 3) - Math.max(0, minX - 2),
+          h: Math.min(ch, maxY + 3) - Math.max(0, minY - 2)
+        };
+        opaqueBoxCache[key] = box;
+        return box;
+      }
+    } catch {}
+    return { x: 0, y: 0, w: cw, h: ch };
+  }
   for (const [k, src] of Object.entries(assetUrls)) {
     const im = new Image();
     im.src = src;
@@ -648,29 +687,29 @@
       const vImg = selectedScenario.fullBody
         ? getActiveFullBodySprite(selectedScenario.charKey)
         : imgs[selectedScenario.sprite];
-      // 全身 768x1024 (3:4) 保留完整頭到鞋與等比例縮放
-      const vSize = selectedScenario.fullBody ? Math.min(285, propBase * 0.54) : Math.min(230, propBase * 0.44);
-      const scaleX = 1 + villainSquash * (selectedScenario.fullBody ? 0.14 : 0.34);
-      const scaleY = 1 - villainSquash * (selectedScenario.fullBody ? 0.14 : 0.44);
+      // 所有全身角色依實際不透明像素邊界統一縮放到完全相同身高與腳底基準線
+      const vSize = Math.min(250, propBase * 0.50);
+      const scaleX = 1 + villainSquash * 0.14;
+      const scaleY = 1 - villainSquash * 0.14;
       const flyY = villainFly > 0 ? -Math.sin(villainFly * Math.PI) * 140 : 0;
       const wobble = villainDizzy > 0 ? Math.sin(t * 28) * 0.08 : Math.sin(t * 2.5) * 0.02;
 
       ctx.save();
-      // 腳底統一對齊神壇桌面基準線
       const feetBaseY = altarY + 104;
       ctx.translate(altarX, feetBaseY - vSize * 0.5 + flyY);
       ctx.rotate(wobble);
       ctx.scale(scaleX, scaleY);
       ctx.fillStyle = "rgba(0,0,0,0.34)";
       ctx.beginPath();
-      ctx.ellipse(0, vSize * 0.47, vSize * 0.28, vSize * 0.07, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, vSize * 0.48, vSize * 0.28, vSize * 0.07, 0, 0, Math.PI * 2);
       ctx.fill();
 
       if (vImg && vImg.complete && vImg.naturalWidth > 0) {
-        const aspect = vImg.naturalWidth / vImg.naturalHeight;
+        const box = getOpaqueBox(vImg) || { x: 0, y: 0, w: vImg.naturalWidth, h: vImg.naturalHeight };
+        const aspect = box.w / box.h;
         const h = vSize;
         const w = h * aspect;
-        ctx.drawImage(vImg, -w * 0.5, -h * 0.5, w, h);
+        ctx.drawImage(vImg, box.x, box.y, box.w, box.h, -w * 0.5, -h * 0.5, w, h);
       } else if (selectedScenario.fullBody) {
         // 尚待補核准真人圖的角色：以清楚標示的辦公室四表情待補立牌呈現，不假冒或亂猜相貌
         const moodNow = forceMoodForTest || charMood || "normal";
@@ -719,14 +758,18 @@
       ctx.fillText(targetText, altarX, feetBaseY + 20);
       ctx.restore();
 
-      // 武器動態揮擊
+      // 武器動態揮擊：待機與換道具時停靠在角色右上方外側，絕不遮擋人物
       const wImg = imgs[selectedWeapon.sprite];
       if (wImg && wImg.complete && wImg.naturalWidth > 0) {
-        const wSize = Math.min(205, propBase * 0.39) * (weaponHeavy ? 1.24 : 1);
         const swing = weaponAnim > 0 ? Math.sin(weaponAnim * Math.PI) : 0;
-        const wxPos = altarX + 105 - swing * 100;
-        const wyPos = altarY - 118 + swing * 102;
-        const wRot = 0.45 - swing * 1.15;
+        const idleSize = Math.min(112, propBase * 0.24);
+        const hitSize = Math.min(185, propBase * 0.36) * (weaponHeavy ? 1.2 : 1);
+        const wSize = idleSize + (hitSize - idleSize) * swing;
+        const restX = Math.min(vw - idleSize * 0.68, altarX + Math.max(122, vSize * 0.55));
+        const restY = altarY - vSize * 0.34;
+        const wxPos = restX + (altarX + 18 - restX) * swing;
+        const wyPos = restY + (altarY - vSize * 0.14 - restY) * swing;
+        const wRot = 0.28 - swing * 1.05;
 
         ctx.save();
         ctx.translate(wxPos, wyPos);
