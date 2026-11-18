@@ -375,6 +375,9 @@
       playWeaponSound(selectedWeapon.id, false);
       spawnBurst(altarX, altarY - 10, selectedWeapon.color, 14, 210);
       const sharedOfficePool = [
+        "買了啦！", "買了啦！這台 4K OLED 超香！", "240Hz 絲滑到回不去！",
+        "雙螢幕才是生產力標配！", "護眼抗藍光，加班不酸眼！", "Type-C 一線通超方便！",
+        "曲面電競螢幕帶回家！", "這色彩準度，買了啦！", "店長特價最後一台！",
         "業績衝刺！", "臨時急單報到！", "門市展示衝一波！",
         "會議小劇場開演！", "功勞爭寵中！", "搶資源大作戰！",
         "同事相挺過關！", "跨部門幫忙救火！", "慶祝達標啦！"
@@ -735,7 +738,12 @@
             const pool = slapScenarios;
             selectedScenario = pool[Math.floor(Math.random() * pool.length)];
             customTargetLabel = "";
-            const ev = selectedScenario.officeEvents[Math.floor(Math.random() * selectedScenario.officeEvents.length)];
+            const theaterMonitorLines = [
+              "買了啦！", "買了啦！4K OLED 帶回家！", "240Hz 電競螢幕超順！",
+              "雙螢幕工作效率翻倍！", "今天不買明天缺貨！", "護眼低藍光超讚！"
+            ];
+            const evPool = [...theaterMonitorLines, ...selectedScenario.officeEvents];
+            const ev = evPool[Math.floor(Math.random() * evPool.length)];
             spawnFloatText(vw * 0.5, hudBottom + 56, `${selectedScenario.label}：${ev}`, "#ffd980", 18);
             setCharMood(Math.random() < 0.45 ? "happy" : "innocent", 1.15);
             renderControls();
