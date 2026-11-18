@@ -17,6 +17,7 @@
   // --- 高精細去背圖檔載入 ---
   const assetUrls = {
     bg: "./assets/xinan-temple-bg.jpg",
+    bgDesktop: "./assets/xinan-temple-bg-desktop.webp",
     "weapon-slipper": "./assets/v2/weapon-slipper.webp",
     "weapon-clog": "./assets/v2/weapon-clog.webp",
     "weapon-mallet": "./assets/v2/weapon-mallet.webp",
@@ -196,10 +197,12 @@
   function resize() {
     vw = window.innerWidth;
     vh = window.innerHeight;
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = Math.min(window.devicePixelRatio || 1, 3);
     canvas.width = Math.round(vw * dpr);
     canvas.height = Math.round(vh * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
   }
   window.addEventListener("resize", resize);
   resize();
@@ -623,9 +626,12 @@
   // =========================================================
   let lastT = performance.now();
   function drawBackground(t) {
-    const bg = imgs.bg;
+    const isWide = vw > vh;
+    const bg = (isWide && imgs.bgDesktop && imgs.bgDesktop.complete && imgs.bgDesktop.naturalWidth > 0)
+      ? imgs.bgDesktop
+      : imgs.bg;
     if (bg && bg.complete && bg.naturalWidth > 0) {
-      const scale = Math.max(vw / bg.naturalWidth, vh / bg.naturalHeight) * 1.04;
+      const scale = Math.max(vw / bg.naturalWidth, vh / bg.naturalHeight) * 1.02;
       const dw = bg.naturalWidth * scale;
       const dh = bg.naturalHeight * scale;
       const dx = (vw - dw) * 0.5 + Math.sin(t * 0.35) * 5;
@@ -688,7 +694,8 @@
         ? getActiveFullBodySprite(selectedScenario.charKey)
         : imgs[selectedScenario.sprite];
       // 所有全身角色依實際不透明像素邊界統一縮放到完全相同身高與腳底基準線
-      const vSize = Math.min(250, propBase * 0.50);
+      const isWide = vw > vh;
+      const vSize = isWide ? Math.min(310, propBase * 0.44) : Math.min(250, propBase * 0.50);
       const scaleX = 1 + villainSquash * 0.14;
       const scaleY = 1 - villainSquash * 0.14;
       const flyY = villainFly > 0 ? -Math.sin(villainFly * Math.PI) * 140 : 0;
