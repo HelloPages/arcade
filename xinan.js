@@ -30,19 +30,34 @@
     "oracle-blocks": "./assets/v2/oracle-blocks.webp",
     "oracle-stick": "./assets/v2/oracle-stick.webp",
     "oracle-censer": "./assets/v2/oracle-censer.webp",
-    "3畝_normal": "./assets/office-fullbody/3畝_normal.png?v=20261118_hd_v6",
-    "3畝_happy": "./assets/office-fullbody/3畝_happy.png?v=20261118_hd_v6",
-    "3畝_hurt_cry": "./assets/office-fullbody/3畝_hurt_cry.png?v=20261118_hd_v6",
-    "3畝_innocent": "./assets/office-fullbody/3畝_innocent.png?v=20261118_hd_v6",
-    "Kenny_normal": "./assets/office-fullbody/Kenny_normal.png?v=20261118_hd_v6",
-    "Kenny_happy": "./assets/office-fullbody/Kenny_happy.png?v=20261118_hd_v6",
-    "Kenny_hurt_cry": "./assets/office-fullbody/Kenny_hurt_cry.png?v=20261118_hd_v6",
-    "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png?v=20261118_hd_v6",
+    "3畝_normal": "./assets/office-fullbody/3畝_normal.png?v=20261118_hd_v7",
+    "3畝_happy": "./assets/office-fullbody/3畝_happy.png?v=20261118_hd_v7",
+    "3畝_hurt_cry": "./assets/office-fullbody/3畝_hurt_cry.png?v=20261118_hd_v7",
+    "3畝_innocent": "./assets/office-fullbody/3畝_innocent.png?v=20261118_hd_v7",
+    "Kenny_normal": "./assets/office-fullbody/Kenny_normal.png?v=20261118_hd_v7",
+    "Kenny_happy": "./assets/office-fullbody/Kenny_happy.png?v=20261118_hd_v7",
+    "Kenny_hurt_cry": "./assets/office-fullbody/Kenny_hurt_cry.png?v=20261118_hd_v7",
+    "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png?v=20261118_hd_v7",
+    "Judy_normal": "./assets/office-fullbody/Judy_normal.png?v=20261118_hd_v7",
+    "Judy_happy": "./assets/office-fullbody/Judy_happy.png?v=20261118_hd_v7",
+    "Judy_hurt_cry": "./assets/office-fullbody/Judy_hurt_cry.png?v=20261118_hd_v7",
+    "Judy_innocent": "./assets/office-fullbody/Judy_innocent.png?v=20261118_hd_v7",
+    "Tony_normal": "./assets/office-fullbody/Tony_normal.png?v=20261118_hd_v7",
+    "Tony_happy": "./assets/office-fullbody/Tony_happy.png?v=20261118_hd_v7",
+    "Tony_hurt_cry": "./assets/office-fullbody/Tony_hurt_cry.png?v=20261118_hd_v7",
+    "Tony_innocent": "./assets/office-fullbody/Tony_innocent.png?v=20261118_hd_v7",
+    "Shrimp_normal": "./assets/office-fullbody/Shrimp_normal.png?v=20261118_hd_v7",
+    "Shrimp_happy": "./assets/office-fullbody/Shrimp_happy.png?v=20261118_hd_v7",
+    "Shrimp_hurt_cry": "./assets/office-fullbody/Shrimp_hurt_cry.png?v=20261118_hd_v7",
+    "Shrimp_innocent": "./assets/office-fullbody/Shrimp_innocent.png?v=20261118_hd_v7",
+    "Junior_normal": "./assets/office-fullbody/Junior_normal.png?v=20261118_hd_v7",
+    "Junior_happy": "./assets/office-fullbody/Junior_happy.png?v=20261118_hd_v7",
+    "Junior_hurt_cry": "./assets/office-fullbody/Junior_hurt_cry.png?v=20261118_hd_v7",
+    "Junior_innocent": "./assets/office-fullbody/Junior_innocent.png?v=20261118_hd_v7",
     "Sara_normal": "./assets/office-fullbody/Sara_normal.png?v=20261118_plaid_approved",
     "Sara_happy": "./assets/office-fullbody/Sara_happy.png?v=20261118_plaid_approved",
     "Sara_hurt_cry": "./assets/office-fullbody/Sara_hurt_cry.png?v=20261118_plaid_approved",
     "Sara_innocent": "./assets/office-fullbody/Sara_innocent.png?v=20261118_plaid_approved"
-    // 啾底、偷泥、蝦婷、學妹仍待使用者核准各四張全身角色圖；不以他人影像代替。
   };
   const imgs = {};
   const opaqueBoxCache = {};
@@ -227,8 +242,9 @@
       });
     }
   }
-  function spawnFloatText(x, y, text, color = "#ffe59e", size = 22) {
-    floatTexts.push({ x, y, text, color, size, life: 0.9, maxLife: 0.9 });
+  function spawnFloatText(x, y, text, color = "#ffe59e", size = 18) {
+    floatTexts.length = 0;
+    floatTexts.push({ x, y, text, color, size: Math.min(18, size), life: 2.3, maxLife: 2.3 });
   }
 
   const embers = Array.from({ length: 24 }, () => ({
@@ -797,23 +813,7 @@
       }
       ctx.restore();
 
-      // 標籤牌
-      const targetText = customTargetLabel.trim() || selectedScenario.label;
-      ctx.save();
-      ctx.font = "bold 15px 'Noto Serif TC', serif";
-      const labelW = ctx.measureText(targetText).width + 26;
-      ctx.fillStyle = "rgba(248,241,228,0.94)";
-      ctx.strokeStyle = "#972819";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.roundRect(altarX - labelW * 0.5, feetBaseY + 6, labelW, 28, 6);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = "#2b211a";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(targetText, altarX, feetBaseY + 20);
-      ctx.restore();
+      // 人物下方不再顯示多餘名字標籤牌，保持手機與桌面神壇乾淨清爽
 
       // 武器動態揮擊：待機與換道具時停靠在角色右上方外側，絕不遮擋人物
       const wImg = imgs[selectedWeapon.sprite];
@@ -998,17 +998,28 @@
     for (let i = floatTexts.length - 1; i >= 0; i--) {
       const ft = floatTexts[i];
       ft.life -= dt;
-      ft.y -= 48 * dt;
       if (ft.life <= 0) { floatTexts.splice(i, 1); continue; }
       ctx.save();
       ctx.globalAlpha = Math.min(1, ft.life / 0.35);
-      ctx.font = `800 ${ft.size}px 'Noto Serif TC', serif`;
+      const fontPx = Math.min(17, Math.max(14, ft.size));
+      ctx.font = `700 ${fontPx}px 'Noto Serif TC', 'PingFang TC', sans-serif`;
+      const tw = ctx.measureText(ft.text).width;
+      const bw = Math.min(vw - 24, tw + 28);
+      const bh = 36;
+      const bx = Math.max(12, Math.min(vw - bw - 12, ft.x - bw * 0.5));
+      const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 56) + 12;
+      const by = Math.max(hudB, Math.min(vh * 0.34, ft.y - bh * 0.5));
+      ctx.fillStyle = "rgba(18, 14, 22, 0.90)";
+      ctx.strokeStyle = "#e7b85c";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw, bh, 8);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#fff6e5";
       ctx.textAlign = "center";
-      ctx.strokeStyle = "rgba(20,12,8,0.85)";
-      ctx.lineWidth = 4;
-      ctx.strokeText(ft.text, ft.x, ft.y);
-      ctx.fillStyle = ft.color;
-      ctx.fillText(ft.text, ft.x, ft.y);
+      ctx.textBaseline = "middle";
+      ctx.fillText(ft.text, bx + bw * 0.5, by + bh * 0.5, bw - 16);
       ctx.restore();
     }
 
