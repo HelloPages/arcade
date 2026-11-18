@@ -107,18 +107,27 @@
     imgs[k] = im;
     return im;
   }
+  let restPreloaded = false;
+  function preloadRestCast() {
+    if (restPreloaded) return;
+    restPreloaded = true;
+    Object.keys(assetUrls).forEach(k => {
+      if (!imgs[k]) loadImg(k);
+    });
+  }
   const preferDesktopBg = window.innerWidth > window.innerHeight;
+  const bgKey = preferDesktopBg ? "bgDesktop" : "bg";
   const immediateKeys = [
-    preferDesktopBg ? "bgDesktop" : "bg",
+    bgKey,
     "weapon-slipper",
     "Tony_normal", "Tony_happy", "Tony_hurt_cry", "Tony_innocent"
   ];
   immediateKeys.forEach(loadImg);
-  setTimeout(() => {
-    Object.keys(assetUrls).forEach(k => {
-      if (!imgs[k]) loadImg(k);
-    });
-  }, 80);
+  if (imgs[bgKey]) {
+    imgs[bgKey].addEventListener("load", () => setTimeout(preloadRestCast, 120), { once: true });
+    imgs[bgKey].addEventListener("error", () => setTimeout(preloadRestCast, 120), { once: true });
+  }
+  setTimeout(preloadRestCast, 1200);
 
   // --- Web Audio 合成音效 ---
   let audioCtx = null;
@@ -259,7 +268,7 @@
   }
   function spawnFloatText(x, y, text, color = "#ffe59e", size = 18) {
     floatTexts.length = 0;
-    floatTexts.push({ x, y, text, color, size: Math.min(18, size), life: 2.3, maxLife: 2.3 });
+    floatTexts.push({ x, y, text, color, size: Math.min(22, size), life: 4.8, maxLife: 4.8 });
   }
 
   const embers = Array.from({ length: 24 }, () => ({
@@ -797,7 +806,7 @@
       if (autoTheater && resultCard.classList.contains("hidden")) {
         theaterTimer -= dt;
         if (theaterTimer <= 0) {
-          theaterTimer = 3.0 + Math.random() * 1.4;
+          theaterTimer = 4.6 + Math.random() * 1.4;
           theaterSlapCountdown -= 1;
           if (theaterSlapCountdown <= 0) {
             theaterSlapCountdown = 2 + Math.floor(Math.random() * 2);
