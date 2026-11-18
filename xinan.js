@@ -30,10 +30,10 @@
     "oracle-blocks": "./assets/v2/oracle-blocks.webp",
     "oracle-stick": "./assets/v2/oracle-stick.webp",
     "oracle-censer": "./assets/v2/oracle-censer.webp",
-    "3畝_normal": "./assets/office-fullbody-webp/3畝_normal.webp?v=20261118_hd2k_v8",
-    "3畝_happy": "./assets/office-fullbody-webp/3畝_happy.webp?v=20261118_hd2k_v8",
-    "3畝_hurt_cry": "./assets/office-fullbody-webp/3畝_hurt_cry.webp?v=20261118_hd2k_v8",
-    "3畝_innocent": "./assets/office-fullbody-webp/3畝_innocent.webp?v=20261118_hd2k_v8",
+      "3畝_normal": "./assets/office-fullbody-webp/3畝_normal.webp?v=20261118_hd2k_v10",
+    "3畝_happy": "./assets/office-fullbody-webp/3畝_happy.webp?v=20261118_hd2k_v10",
+    "3畝_hurt_cry": "./assets/office-fullbody-webp/3畝_hurt_cry.webp?v=20261118_hd2k_v10",
+    "3畝_innocent": "./assets/office-fullbody-webp/3畝_innocent.webp?v=20261118_hd2k_v10",
     "Kenny_normal": "./assets/office-fullbody-webp/Kenny_normal.webp?v=20261118_hd2k_v8",
     "Kenny_happy": "./assets/office-fullbody-webp/Kenny_happy.webp?v=20261118_hd2k_v8",
     "Kenny_hurt_cry": "./assets/office-fullbody-webp/Kenny_hurt_cry.webp?v=20261118_hd2k_v8",
@@ -1077,20 +1077,45 @@
       const fontPx = isWideScr ? 22 : 19;
       ctx.font = `800 ${fontPx}px 'Noto Serif TC', 'PingFang TC', sans-serif`;
 
-      // 自動依畫布寬度換行（最多 2 行），確保超大字體不溢出
+      // 平衡雙行折行：避免折行後第二行只剩 1-3 個字，優先在標點後斷行且上下寬度對稱
       const maxBubbleW = Math.min(vw - 24, isWideScr ? 540 : 350);
-      const maxTextW = maxBubbleW - 32;
+      const maxTextW = maxBubbleW - 34;
+      const fullW = ctx.measureText(ft.text).width;
       const lines = [];
-      let cur = "";
-      for (const ch of ft.text) {
-        if (ctx.measureText(cur + ch).width > maxTextW && cur.length > 0) {
-          lines.push(cur);
-          cur = ch;
+      if (fullW <= maxTextW) {
+        lines.push(ft.text);
+      } else {
+        const chars = Array.from(ft.text);
+        let bestIdx = Math.ceil(chars.length / 2);
+        let bestScore = Infinity;
+        for (let idx = 2; idx <= chars.length - 2; idx++) {
+          const l1 = chars.slice(0, idx).join("");
+          const l2 = chars.slice(idx).join("");
+          const w1 = ctx.measureText(l1).width;
+          const w2 = ctx.measureText(l2).width;
+          if (w1 > maxTextW || w2 > maxTextW) continue;
+          const prevCh = chars[idx - 1];
+          const punctBonus = /[！，。？：、]/.test(prevCh) ? -45 : 0;
+          const score = Math.abs(w1 - w2) + punctBonus;
+          if (score < bestScore) {
+            bestScore = score;
+            bestIdx = idx;
+          }
+        }
+        if (bestScore < Infinity) {
+          lines.push(chars.slice(0, bestIdx).join("").trim());
+          lines.push(chars.slice(bestIdx).join("").trim());
         } else {
-          cur += ch;
+          let cur = "";
+          for (const ch of chars) {
+            if (ctx.measureText(cur + ch).width > maxTextW && cur.length > 0) {
+              lines.push(cur);
+              cur = ch;
+            } else cur += ch;
+          }
+          if (cur) lines.push(cur);
         }
       }
-      if (cur) lines.push(cur);
 
       const lineH = fontPx + 7;
       const longestW = Math.max(...lines.map(l => ctx.measureText(l).width));

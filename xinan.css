@@ -153,7 +153,7 @@ html, body {
   min-height: 32px;
 }
 
-/* 底部極簡三列操控區（手機絕不遮擋神壇角色） */
+/* 底部極簡整齊控制面板（手機 4 欄對齊網格＋半透明神壇底板） */
 .bottom-dock {
   position: fixed;
   left: 8px;
@@ -162,43 +162,45 @@ html, body {
   z-index: 20;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  max-width: 560px;
+  gap: 6px;
+  max-width: 540px;
   margin: 0 auto;
-  pointer-events: none;
+  padding: 8px;
+  background: rgba(14, 11, 20, 0.84);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(231, 184, 92, 0.34);
+  border-radius: 10px;
+  pointer-events: auto;
 }
 
 .chips-row {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
-  overflow-x: auto;
-  scrollbar-width: none;
   pointer-events: auto;
-  padding: 1px 2px;
-}
-.chips-row::-webkit-scrollbar { display: none; }
-
-@media (min-width: 560px) {
-  .chips-row { justify-content: center; }
 }
 
 .action-row {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 6px;
   pointer-events: auto;
 }
 
 .chip-btn {
-  padding: 4px 9px;
+  padding: 6px 4px;
   font-size: 12px;
+  line-height: 1.2;
+  min-height: 30px;
   white-space: nowrap;
-  flex-shrink: 0;
-  background: rgba(20, 17, 26, 0.82);
-  backdrop-filter: blur(6px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 7px;
+  background: rgba(28, 23, 36, 0.88);
+  border: 1px solid rgba(231, 184, 92, 0.25);
+  color: rgba(255, 246, 229, 0.9);
+  text-align: center;
 }
 
 .chip-btn.active {
@@ -209,18 +211,20 @@ html, body {
 }
 
 .weapon-chip.active {
-  background: rgba(200, 62, 43, 0.72);
+  background: rgba(200, 62, 43, 0.82);
   border-color: #ffd466;
   color: #fff8e6;
 }
 
 .rect-btn {
-  padding: 8px 12px;
+  padding: 8px 8px;
   font-size: 13px;
   font-weight: 700;
   min-height: 36px;
+  border-radius: 7px;
   white-space: nowrap;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  text-align: center;
 }
 
 body.in-fs .top-hud {
@@ -244,14 +248,17 @@ body.in-fs .top-hud {
 }
 
 .custom-input {
-  width: 132px;
-  padding: 6px 10px;
+  width: 100%;
+  min-width: 0;
+  min-height: 30px;
+  padding: 4px 6px;
   border-radius: 7px;
-  border: 1px solid rgba(231, 184, 92, 0.45);
-  background: rgba(20, 17, 26, 0.85);
+  border: 1px solid rgba(231, 184, 92, 0.35);
+  background: rgba(28, 23, 36, 0.88);
   color: var(--paper);
   font-family: inherit;
   font-size: 12px;
+  text-align: center;
   outline: none;
 }
 
