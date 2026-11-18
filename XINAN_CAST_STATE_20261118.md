@@ -13,3 +13,8 @@
 - 先驗證手機直式與桌面顯示七位且**不再有四個虛構角色**；切換 3畝、肯尼、沙拉四表情，核對圖片無 404、全身可見及沒有灰底。祈福、問卦、選武器、隨機劇場需回歸驗證。
 - 注意瀏覽器快取：`xinan.html` 的程式資源版本及 Sara 圖片網址都已變更；確認正式 GitHub Pages 部署完成、HTTP 200 且內容為最新，不得用舊網站或本機結果冒充上線。
 - 本輪工作使用獨立的乾淨發布工作樹，未觸碰 Antigravity 在主遊戲專案中進行的其他未提交編輯。其後 Antigravity 必須先讀取最新 Git 遠端／開發手冊，再繼續每日遊戲發布，避免回歸。
+
+## 同日併行發布回歸與防護
+- Sam 角色修正首次由 ChatGPT 提交 `ba2ce85` 後，Antigravity 又以舊的 `dist/xinan.js`、`dist/xinan.html` 發布 `b896d07`，造成已刪除資產的四條載入網址、`sam3mu` 舊識別、沙拉無版號 PNG 網址及失效的待補註記重新進入正式站（四個舊角色按鈕本身未恢復）。
+- 目前在原修正上追加一筆只恢復兩個程式檔語意的最小補丁，保留 Antigravity 其他已發行遊戲；修改了 HTML/JS 防快取版號為 `20261118_cast7_plaid_v3`。
+- **下次每日遊戲發布前，必須同步修正 WORK-PC 主來源 `dist/xinan.js`、`dist/xinan.html` 及 `dist/assets/office-fullbody/Sara_*.png`，且執行本 repo `node tests/xinan-cast-regression.cjs`。** 只比對 UI 上是否七個按鈕還不夠，還要確保沒有殘餘資源載入、名字與圖庫的版本一致。

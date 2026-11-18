@@ -53,5 +53,5 @@ for (const who of ["3畝", "Kenny", "Sara"]) {
     }
   }
 }
-assert(html.includes("xinan.js?v=20261118_cast7_plaid_v2"), "HTML cache-busted JS reference missing");
+assert(html.includes("xinan.js?v=20261118_cast7_plaid_v3"), "HTML cache-busted JS reference missing");
 console.log("PASS Xinan: exactly seven people, removed four old roles/assets, 12 valid fullbody PNG, Sara approved plaid verified by SHA-256, cache version updated");
