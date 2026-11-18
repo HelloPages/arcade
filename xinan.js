@@ -17,10 +17,6 @@
   // --- 高精細去背圖檔載入 ---
   const assetUrls = {
     bg: "./assets/xinan-temple-bg.jpg",
-    "villain-sloth": "./assets/v2/villain-sloth.webp",
-    "villain-retrograde": "./assets/v2/villain-retrograde.webp",
-    "villain-teammate": "./assets/v2/villain-teammate.webp",
-    "villain-overtime": "./assets/v2/villain-overtime.webp",
     "weapon-slipper": "./assets/v2/weapon-slipper.webp",
     "weapon-clog": "./assets/v2/weapon-clog.webp",
     "weapon-mallet": "./assets/v2/weapon-mallet.webp",
@@ -41,11 +37,11 @@
     "Kenny_happy": "./assets/office-fullbody/Kenny_happy.png",
     "Kenny_hurt_cry": "./assets/office-fullbody/Kenny_hurt_cry.png",
     "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png",
-    "Sara_normal": "./assets/office-fullbody/Sara_normal.png",
-    "Sara_happy": "./assets/office-fullbody/Sara_happy.png",
-    "Sara_hurt_cry": "./assets/office-fullbody/Sara_hurt_cry.png",
-    "Sara_innocent": "./assets/office-fullbody/Sara_innocent.png"
-    // 啾底 / 偷泥 / 蝦婷 / 學妹 / 沙拉 將於取得核准全身透明 PNG 後接入 (7x4=28 格預留)
+    "Sara_normal": "./assets/office-fullbody/Sara_normal.png?v=20261118_plaid_approved",
+    "Sara_happy": "./assets/office-fullbody/Sara_happy.png?v=20261118_plaid_approved",
+    "Sara_hurt_cry": "./assets/office-fullbody/Sara_hurt_cry.png?v=20261118_plaid_approved",
+    "Sara_innocent": "./assets/office-fullbody/Sara_innocent.png?v=20261118_plaid_approved"
+    // 啾底、偷泥、蝦婷、學妹仍待使用者核准各四張全身角色圖；不以他人影像代替。
   };
   const imgs = {};
   for (const [k, src] of Object.entries(assetUrls)) {
@@ -207,7 +203,7 @@
   // =========================================================
   const slapScenarios = [
     {
-      id: "sam3mu", label: "3畝", charKey: "3畝", fullBody: true, assetStatus: "approved", color: "#2b4d78",
+      id: "three_mu", label: "3畝", charKey: "3畝", fullBody: true, assetStatus: "approved", color: "#2b4d78",
       officeEvents: ["Q4 業績爆衝啦！", "誰偷拿我貓咪杯！", "達標請全體喝珍奶！"],
       blessLine: "3畝相挺：業績長紅！"
     },
@@ -242,14 +238,9 @@
     },
     {
       id: "sara", label: "沙拉", charKey: "Sara", fullBody: true, assetStatus: "approved", color: "#26242c",
-      pendingNote: "待補黑色衣服核准照（舊小熊裙已停用）",
-      officeEvents: ["專案進度追追追！", "黑衣戰袍待命中！", "辦公室相親相愛！"],
+      officeEvents: ["專案進度追追追！", "會議室驚喜小劇場！", "辦公室相親相愛！"],
       blessLine: "沙拉祝願：團隊默契滿分！"
-    },
-    { id: "sloth", label: "拖延症", sprite: "villain-sloth" },
-    { id: "retrograde", label: "水逆退散", sprite: "villain-retrograde" },
-    { id: "teammate", label: "豬隊友", sprite: "villain-teammate" },
-    { id: "overtime", label: "加班煩惱", sprite: "villain-overtime" }
+    }
   ];
   const weapons = [
     { id: "slipper", label: "藍白拖", sprite: "weapon-slipper", color: "#6ec6ff", power: 2 },
@@ -488,7 +479,7 @@
       randBtn.className = "rect-btn";
       randBtn.textContent = "隨機劇場";
       randBtn.onclick = () => {
-        const pool = slapScenarios.slice(0, 7);
+        const pool = slapScenarios; // 名單恰好七人：不要把未核准的舊虛構角色混回抽選池
         selectedScenario = pool[Math.floor(Math.random() * pool.length)];
         customTargetLabel = "";
         const ev = selectedScenario.officeEvents[Math.floor(Math.random() * selectedScenario.officeEvents.length)];

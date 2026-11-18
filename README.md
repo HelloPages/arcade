@@ -1,7 +1,10 @@
-# REA 經典街機遊戲館 (GitHub Pages 免費測試站)
+# HelloPages｜每日一街機
 
-- **站台定位**：免費靜態測試鏡像站（正式站仍保留於 GPT Sites：https://arcade-1943-stage2-stage3.sasatw.chatgpt.site/ ）。
-- **收錄遊戲**：共 16 款經典街機與益智復刻作品（含 60fps 動態新作《赤焰忍傳》與已修復之《兵蜂：晴空鈴鐺幻想曲 ULTRA》）。
-- **素材與授權**：所有遊戲程式為獨立撰寫之原創 HTML5/Canvas/JS 引擎，美術為專案內獨立生成／繪製素材，未包含任何原版街機 ROM 或受版權保護之官方二進位檔。
-- **跨網域存檔說明**：高分與進度保存於各瀏覽器原網域之 `localStorage`，切換至 GitHub Pages 新網域後不會自動搬移舊紀錄（兩站各自獨立保存；如需遷移可於瀏覽器開發者工具匯出／匯入對應 `rea-*` 鍵值）。
-- **排程依賴說明**：本靜態測試站託管於 GitHub Pages，WORK-PC 關機時仍可正常公開遊玩；唯每日 04:00 自動生成新作與 07:00 LINE 推播仍由 WORK-PC 排程執行。
+本儲存庫是 **HelloPages/arcade 正式遊戲館**：https://hellopages.github.io/arcade/ 。《心安宮》網址為 https://hellopages.github.io/arcade/xinan.html 。
+
+- **來源及持續發布**：未來遊戲、修正、每日生成都應提交到 `https://github.com/HelloPages/arcade.git` 的 `main` 分支，並確認 GitHub Pages 實際更新；`FlySamTW/rea-arcade-hub-preview` 僅為舊站參考，不再發布新遊戲，GPT Sites 亦非目前發布目標。
+- **程式與素材**：獨立撰寫的 HTML5／Canvas／JavaScript 遊戲及專案自行製作的素材；未包含原版街機 ROM 或受版權保護的官方二進位檔。
+- **進度與存檔**：高分和設定存在各站來源的瀏覽器 `localStorage`；舊 GitHub 網域的資料不會隨網址更換而自動轉移。
+- **執行時間**：線上 GitHub Pages 為靜態網站；每日 04:00 新遊戲製作及 07:00 LINE 回報仍依賴 WORK-PC 原有排程。排程啟用不等於當次發布成功，須讀取日誌、Git 提交與線上網址驗收。
+- **心安宮正式角色名單**：3畝、肯尼、啾底、偷泥、蝦婷、學妹、沙拉；不得額外增加或用虛構人物代替。已核准四表情圖僅有 3畝、肯尼、沙拉；其他四位目前仍在待補核准素材狀態，不能宣稱七人的相貌已全部完成。
+- **2026-11-18 角色修正**：《心安宮》選單移除原始四個虛構角色「拖延症、水逆退散、豬隊友、加班煩惱」及其專用不用的影像資源；沙拉改用 Sam 在本對話選定的「奶油色上衣、棕色格紋裙」四表情透明全身 PNG。詳見 `XINAN_CAST_STATE_20261118.md`。
