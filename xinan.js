@@ -16,8 +16,8 @@
 
   // --- 高精細去背圖檔載入 ---
   const assetUrls = {
-    bg: "./assets/xinan-temple-bg.jpg",
-    bgDesktop: "./assets/xinan-temple-bg-desktop.webp",
+    bg: "./assets/xinan-temple-bg.jpg?v=20261118_hd_v5",
+    bgDesktop: "./assets/xinan-temple-bg-desktop.webp?v=20261118_hd_v5",
     "weapon-slipper": "./assets/v2/weapon-slipper.webp",
     "weapon-clog": "./assets/v2/weapon-clog.webp",
     "weapon-mallet": "./assets/v2/weapon-mallet.webp",
@@ -30,14 +30,14 @@
     "oracle-blocks": "./assets/v2/oracle-blocks.webp",
     "oracle-stick": "./assets/v2/oracle-stick.webp",
     "oracle-censer": "./assets/v2/oracle-censer.webp",
-    "3畝_normal": "./assets/office-fullbody/3畝_normal.png",
-    "3畝_happy": "./assets/office-fullbody/3畝_happy.png",
-    "3畝_hurt_cry": "./assets/office-fullbody/3畝_hurt_cry.png",
-    "3畝_innocent": "./assets/office-fullbody/3畝_innocent.png",
-    "Kenny_normal": "./assets/office-fullbody/Kenny_normal.png",
-    "Kenny_happy": "./assets/office-fullbody/Kenny_happy.png",
-    "Kenny_hurt_cry": "./assets/office-fullbody/Kenny_hurt_cry.png",
-    "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png",
+    "3畝_normal": "./assets/office-fullbody/3畝_normal.png?v=20261118_hd_v5",
+    "3畝_happy": "./assets/office-fullbody/3畝_happy.png?v=20261118_hd_v5",
+    "3畝_hurt_cry": "./assets/office-fullbody/3畝_hurt_cry.png?v=20261118_hd_v5",
+    "3畝_innocent": "./assets/office-fullbody/3畝_innocent.png?v=20261118_hd_v5",
+    "Kenny_normal": "./assets/office-fullbody/Kenny_normal.png?v=20261118_hd_v5",
+    "Kenny_happy": "./assets/office-fullbody/Kenny_happy.png?v=20261118_hd_v5",
+    "Kenny_hurt_cry": "./assets/office-fullbody/Kenny_hurt_cry.png?v=20261118_hd_v5",
+    "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png?v=20261118_hd_v5",
     "Sara_normal": "./assets/office-fullbody/Sara_normal.png?v=20261118_plaid_approved",
     "Sara_happy": "./assets/office-fullbody/Sara_happy.png?v=20261118_plaid_approved",
     "Sara_hurt_cry": "./assets/office-fullbody/Sara_hurt_cry.png?v=20261118_plaid_approved",
@@ -967,5 +967,6 @@
   }
   requestAnimationFrame(frame);
 })();
+
 
 
