@@ -305,6 +305,18 @@
   let charMood = "normal"; // "normal" | "happy" | "hurt_cry" | "innocent"
   let charMoodTimer = 0;
   let forceMoodForTest = null;
+  let autoTheater = true;
+  let theaterTimer = 2.4;
+  let theaterSlapCountdown = 2;
+
+  function updateFsPadding() {
+    const inEmbed = location.search.includes("embed=1");
+    const maybeFs = inEmbed && (!!document.fullscreenElement || window.innerHeight >= (window.screen?.height || 9999) - 90);
+    document.body.classList.toggle("in-fs", maybeFs);
+  }
+  window.addEventListener("resize", updateFsPadding);
+  document.addEventListener("fullscreenchange", updateFsPadding);
+  updateFsPadding();
 
   function setCharMood(nextMood, duration = 1.2) {
     charMood = nextMood;
@@ -510,7 +522,7 @@
       ultBtn.type = "button";
       ultBtn.id = "btnUltimateSlap";
       ultBtn.className = "rect-btn " + (slapCharge >= 10 ? "gold-btn" : "");
-      ultBtn.textContent = slapCharge >= 10 ? "黃金鎮煞重擊！" : `蓄力 (${slapCharge}/10)`;
+      ultBtn.textContent = slapCharge >= 10 ? "鎮煞重擊！" : `重擊 (${slapCharge}/10)`;
       ultBtn.disabled = slapCharge < 10;
       ultBtn.onclick = () => performSlap(true);
       actionRow.appendChild(ultBtn);
@@ -518,15 +530,19 @@
       const randBtn = document.createElement("button");
       randBtn.type = "button";
       randBtn.id = "btnRandomOffice";
-      randBtn.className = "rect-btn";
-      randBtn.textContent = "隨機劇場";
+      randBtn.className = "rect-btn " + (autoTheater ? "gold-btn" : "");
+      randBtn.textContent = autoTheater ? "劇場:演中" : "隨機劇場";
       randBtn.onclick = () => {
-        const pool = slapScenarios; // 名單恰好七人：不要把未核准的舊虛構角色混回抽選池
-        selectedScenario = pool[Math.floor(Math.random() * pool.length)];
-        customTargetLabel = "";
-        const ev = selectedScenario.officeEvents[Math.floor(Math.random() * selectedScenario.officeEvents.length)];
-        spawnFloatText(vw * 0.5, vh * 0.42, `${selectedScenario.label}：${ev}`, "#ffd980", 20);
-        setCharMood("innocent", 1.1);
+        autoTheater = !autoTheater;
+        if (autoTheater) {
+          const pool = slapScenarios;
+          selectedScenario = pool[Math.floor(Math.random() * pool.length)];
+          customTargetLabel = "";
+          const ev = selectedScenario.officeEvents[Math.floor(Math.random() * selectedScenario.officeEvents.length)];
+          spawnFloatText(vw * 0.5, vh * 0.34, `${selectedScenario.label}：${ev}`, "#ffd980", 19);
+          setCharMood("innocent", 1.1);
+          theaterTimer = 2.8;
+        }
         renderControls();
       };
       actionRow.appendChild(randBtn);
@@ -693,16 +709,42 @@
       const vImg = selectedScenario.fullBody
         ? getActiveFullBodySprite(selectedScenario.charKey)
         : imgs[selectedScenario.sprite];
-      // 所有全身角色依實際不透明像素邊界統一縮放到完全相同身高與腳底基準線
+      // 所有全身角色依實際不透明像素邊界統一縮放到完全相同身高與腳底基準線，且絕不被底部操控列遮擋
       const isWide = vw > vh;
-      const vSize = isWide ? Math.min(310, propBase * 0.44) : Math.min(250, propBase * 0.50);
+      const dockEl = document.querySelector(".bottom-dock");
+      const dockTop = dockEl ? dockEl.getBoundingClientRect().top : (vh - 125);
+      const hudEl = document.querySelector(".top-hud");
+      const hudBottom = hudEl ? hudEl.getBoundingClientRect().bottom : 58;
+      const safeSpan = Math.max(220, dockTop - hudBottom - 44);
+      const vSize = isWide ? Math.min(300, safeSpan * 0.68) : Math.min(230, safeSpan * 0.56);
       const scaleX = 1 + villainSquash * 0.14;
       const scaleY = 1 - villainSquash * 0.14;
-      const flyY = villainFly > 0 ? -Math.sin(villainFly * Math.PI) * 140 : 0;
+      const flyY = villainFly > 0 ? -Math.sin(villainFly * Math.PI) * 120 : 0;
       const wobble = villainDizzy > 0 ? Math.sin(t * 28) * 0.08 : Math.sin(t * 2.5) * 0.02;
 
+      // 隨機劇場自動輪演：持續演辦公室劇情＋三不五十自動打幾下
+      if (autoTheater && resultCard.classList.contains("hidden")) {
+        theaterTimer -= dt;
+        if (theaterTimer <= 0) {
+          theaterTimer = 2.8 + Math.random() * 1.4;
+          theaterSlapCountdown -= 1;
+          if (theaterSlapCountdown <= 0) {
+            theaterSlapCountdown = 2 + Math.floor(Math.random() * 2);
+            performSlap(false);
+          } else {
+            const pool = slapScenarios;
+            selectedScenario = pool[Math.floor(Math.random() * pool.length)];
+            customTargetLabel = "";
+            const ev = selectedScenario.officeEvents[Math.floor(Math.random() * selectedScenario.officeEvents.length)];
+            spawnFloatText(vw * 0.5, hudBottom + 56, `${selectedScenario.label}：${ev}`, "#ffd980", 18);
+            setCharMood(Math.random() < 0.45 ? "happy" : "innocent", 1.15);
+            renderControls();
+          }
+        }
+      }
+
       ctx.save();
-      const feetBaseY = altarY + 104;
+      const feetBaseY = Math.min(dockTop - 36, altarY + 86);
       ctx.translate(altarX, feetBaseY - vSize * 0.5 + flyY);
       ctx.rotate(wobble);
       ctx.scale(scaleX, scaleY);
