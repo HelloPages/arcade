@@ -49,9 +49,9 @@ for (const who of ["3畝", "Kenny", "Sara"]) {
     assert.equal(buf[25], 6, "PNG RGBA color type " + stem);
     if (who === "Sara") {
       assert.equal(hashSha256(file), approvedSaraHashes[state], "Sara must use the user's selected plaid-skirt source, not old bear pinafore");
-      assert(script.includes(`"${stem}": "./assets/office-fullbody/${stem}.png?v=20261118_plaid_approved"`), "Sara URL must bypass old image cache: " + stem);
+      assert(script.includes(`"${stem}": "./assets/office-fullbody-webp/${stem}.webp?v=20261118_hd2k_v8"`), "Sara fast WebP URL must bypass old image cache: " + stem);
     }
   }
 }
-assert(html.includes("xinan.js?v=20261118_cast7_plaid_v3"), "HTML cache-busted JS reference missing");
+assert(html.includes("xinan.js?v=20261118_hd2k_v8"), "HTML cache-busted JS reference missing");
 console.log("PASS Xinan: exactly seven people, removed four old roles/assets, 12 valid fullbody PNG, Sara approved plaid verified by SHA-256, cache version updated");

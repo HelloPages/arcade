@@ -14,10 +14,10 @@
   const resultSub = document.getElementById("resultSub");
   const btnCloseResult = document.getElementById("btnCloseResult");
 
-  // --- 高精細去背圖檔載入 ---
+  // --- 高精細去背圖檔載入（WebP 輕量高速版 + 優先載入當前角色與對應解析度背景）---
   const assetUrls = {
-    bg: "./assets/xinan-temple-bg.jpg?v=20261118_hd_v6",
-    bgDesktop: "./assets/xinan-temple-bg-desktop.webp?v=20261118_hd_v6",
+    bg: "./assets/xinan-temple-bg-portrait-hd.webp?v=20261118_hd2k_v8",
+    bgDesktop: "./assets/xinan-temple-bg-desktop-hd.webp?v=20261118_hd2k_v8",
     "weapon-slipper": "./assets/v2/weapon-slipper.webp",
     "weapon-clog": "./assets/v2/weapon-clog.webp",
     "weapon-mallet": "./assets/v2/weapon-mallet.webp",
@@ -30,34 +30,34 @@
     "oracle-blocks": "./assets/v2/oracle-blocks.webp",
     "oracle-stick": "./assets/v2/oracle-stick.webp",
     "oracle-censer": "./assets/v2/oracle-censer.webp",
-    "3畝_normal": "./assets/office-fullbody/3畝_normal.png?v=20261118_hd_v7",
-    "3畝_happy": "./assets/office-fullbody/3畝_happy.png?v=20261118_hd_v7",
-    "3畝_hurt_cry": "./assets/office-fullbody/3畝_hurt_cry.png?v=20261118_hd_v7",
-    "3畝_innocent": "./assets/office-fullbody/3畝_innocent.png?v=20261118_hd_v7",
-    "Kenny_normal": "./assets/office-fullbody/Kenny_normal.png?v=20261118_hd_v7",
-    "Kenny_happy": "./assets/office-fullbody/Kenny_happy.png?v=20261118_hd_v7",
-    "Kenny_hurt_cry": "./assets/office-fullbody/Kenny_hurt_cry.png?v=20261118_hd_v7",
-    "Kenny_innocent": "./assets/office-fullbody/Kenny_innocent.png?v=20261118_hd_v7",
-    "Judy_normal": "./assets/office-fullbody/Judy_normal.png?v=20261118_hd_v7",
-    "Judy_happy": "./assets/office-fullbody/Judy_happy.png?v=20261118_hd_v7",
-    "Judy_hurt_cry": "./assets/office-fullbody/Judy_hurt_cry.png?v=20261118_hd_v7",
-    "Judy_innocent": "./assets/office-fullbody/Judy_innocent.png?v=20261118_hd_v7",
-    "Tony_normal": "./assets/office-fullbody/Tony_normal.png?v=20261118_hd_v7",
-    "Tony_happy": "./assets/office-fullbody/Tony_happy.png?v=20261118_hd_v7",
-    "Tony_hurt_cry": "./assets/office-fullbody/Tony_hurt_cry.png?v=20261118_hd_v7",
-    "Tony_innocent": "./assets/office-fullbody/Tony_innocent.png?v=20261118_hd_v7",
-    "Shrimp_normal": "./assets/office-fullbody/Shrimp_normal.png?v=20261118_hd_v7",
-    "Shrimp_happy": "./assets/office-fullbody/Shrimp_happy.png?v=20261118_hd_v7",
-    "Shrimp_hurt_cry": "./assets/office-fullbody/Shrimp_hurt_cry.png?v=20261118_hd_v7",
-    "Shrimp_innocent": "./assets/office-fullbody/Shrimp_innocent.png?v=20261118_hd_v7",
-    "Junior_normal": "./assets/office-fullbody/Junior_normal.png?v=20261118_hd_v7",
-    "Junior_happy": "./assets/office-fullbody/Junior_happy.png?v=20261118_hd_v7",
-    "Junior_hurt_cry": "./assets/office-fullbody/Junior_hurt_cry.png?v=20261118_hd_v7",
-    "Junior_innocent": "./assets/office-fullbody/Junior_innocent.png?v=20261118_hd_v7",
-    "Sara_normal": "./assets/office-fullbody/Sara_normal.png?v=20261118_plaid_approved",
-    "Sara_happy": "./assets/office-fullbody/Sara_happy.png?v=20261118_plaid_approved",
-    "Sara_hurt_cry": "./assets/office-fullbody/Sara_hurt_cry.png?v=20261118_plaid_approved",
-    "Sara_innocent": "./assets/office-fullbody/Sara_innocent.png?v=20261118_plaid_approved"
+    "3畝_normal": "./assets/office-fullbody-webp/3畝_normal.webp?v=20261118_hd2k_v8",
+    "3畝_happy": "./assets/office-fullbody-webp/3畝_happy.webp?v=20261118_hd2k_v8",
+    "3畝_hurt_cry": "./assets/office-fullbody-webp/3畝_hurt_cry.webp?v=20261118_hd2k_v8",
+    "3畝_innocent": "./assets/office-fullbody-webp/3畝_innocent.webp?v=20261118_hd2k_v8",
+    "Kenny_normal": "./assets/office-fullbody-webp/Kenny_normal.webp?v=20261118_hd2k_v8",
+    "Kenny_happy": "./assets/office-fullbody-webp/Kenny_happy.webp?v=20261118_hd2k_v8",
+    "Kenny_hurt_cry": "./assets/office-fullbody-webp/Kenny_hurt_cry.webp?v=20261118_hd2k_v8",
+    "Kenny_innocent": "./assets/office-fullbody-webp/Kenny_innocent.webp?v=20261118_hd2k_v8",
+    "Judy_normal": "./assets/office-fullbody-webp/Judy_normal.webp?v=20261118_hd2k_v8",
+    "Judy_happy": "./assets/office-fullbody-webp/Judy_happy.webp?v=20261118_hd2k_v8",
+    "Judy_hurt_cry": "./assets/office-fullbody-webp/Judy_hurt_cry.webp?v=20261118_hd2k_v8",
+    "Judy_innocent": "./assets/office-fullbody-webp/Judy_innocent.webp?v=20261118_hd2k_v8",
+    "Tony_normal": "./assets/office-fullbody-webp/Tony_normal.webp?v=20261118_hd2k_v8",
+    "Tony_happy": "./assets/office-fullbody-webp/Tony_happy.webp?v=20261118_hd2k_v8",
+    "Tony_hurt_cry": "./assets/office-fullbody-webp/Tony_hurt_cry.webp?v=20261118_hd2k_v8",
+    "Tony_innocent": "./assets/office-fullbody-webp/Tony_innocent.webp?v=20261118_hd2k_v8",
+    "Shrimp_normal": "./assets/office-fullbody-webp/Shrimp_normal.webp?v=20261118_hd2k_v8",
+    "Shrimp_happy": "./assets/office-fullbody-webp/Shrimp_happy.webp?v=20261118_hd2k_v8",
+    "Shrimp_hurt_cry": "./assets/office-fullbody-webp/Shrimp_hurt_cry.webp?v=20261118_hd2k_v8",
+    "Shrimp_innocent": "./assets/office-fullbody-webp/Shrimp_innocent.webp?v=20261118_hd2k_v8",
+    "Junior_normal": "./assets/office-fullbody-webp/Junior_normal.webp?v=20261118_hd2k_v8",
+    "Junior_happy": "./assets/office-fullbody-webp/Junior_happy.webp?v=20261118_hd2k_v8",
+    "Junior_hurt_cry": "./assets/office-fullbody-webp/Junior_hurt_cry.webp?v=20261118_hd2k_v8",
+    "Junior_innocent": "./assets/office-fullbody-webp/Junior_innocent.webp?v=20261118_hd2k_v8",
+    "Sara_normal": "./assets/office-fullbody-webp/Sara_normal.webp?v=20261118_hd2k_v8",
+    "Sara_happy": "./assets/office-fullbody-webp/Sara_happy.webp?v=20261118_hd2k_v8",
+    "Sara_hurt_cry": "./assets/office-fullbody-webp/Sara_hurt_cry.webp?v=20261118_hd2k_v8",
+    "Sara_innocent": "./assets/office-fullbody-webp/Sara_innocent.webp?v=20261118_hd2k_v8"
   };
   const imgs = {};
   const opaqueBoxCache = {};
@@ -99,11 +99,26 @@
     } catch {}
     return { x: 0, y: 0, w: cw, h: ch };
   }
-  for (const [k, src] of Object.entries(assetUrls)) {
+  function loadImg(k) {
+    if (imgs[k]) return imgs[k];
     const im = new Image();
-    im.src = src;
+    im.decoding = "async";
+    im.src = assetUrls[k];
     imgs[k] = im;
+    return im;
   }
+  const preferDesktopBg = window.innerWidth > window.innerHeight;
+  const immediateKeys = [
+    preferDesktopBg ? "bgDesktop" : "bg",
+    "weapon-slipper",
+    "Tony_normal", "Tony_happy", "Tony_hurt_cry", "Tony_innocent"
+  ];
+  immediateKeys.forEach(loadImg);
+  setTimeout(() => {
+    Object.keys(assetUrls).forEach(k => {
+      if (!imgs[k]) loadImg(k);
+    });
+  }, 80);
 
   // --- Web Audio 合成音效 ---
   let audioCtx = null;
@@ -262,41 +277,65 @@
   const slapScenarios = [
     {
       id: "three_mu", label: "3畝", charKey: "3畝", fullBody: true, assetStatus: "approved", color: "#2b4d78",
-      officeEvents: ["Q4 業績爆衝啦！", "誰偷拿我貓咪杯！", "達標請全體喝珍奶！"],
+      officeEvents: [
+        "買了啦！這台 OLED 黑到像老闆的良心！",
+        "誰偷喝我珍奶？出來跟藍白拖單挑！",
+        "4K 雙螢幕架好，摸魚都看起來像在盯大盤！"
+      ],
       blessLine: "3畝相挺：業績長紅！"
     },
     {
       id: "kenny", label: "肯尼", charKey: "Kenny", fullBody: true, assetStatus: "approved", color: "#36506b",
-      officeEvents: ["會議小劇場開演！", "跨部門救火支援！", "資源先讓給我吧！"],
+      officeEvents: [
+        "240Hz 順到滑鼠自己離家出走啦！",
+        "系統沒掛啦，是你的瀏覽器還在睡！",
+        "老闆喊加班？我先把螢幕轉直看電影！"
+      ],
       blessLine: "肯尼救火：系統穩穩過關！"
     },
     {
-      id: "judy", label: "啾底", charKey: "Judy", fullBody: true, assetStatus: "pending_drive", color: "#8e4a6d",
-      pendingNote: "待核對私人 Drive 角色圖",
-      officeEvents: ["月底對帳衝刺！", "會議室搶起來！", "同事相挺過關！"],
+      id: "judy", label: "啾底", charKey: "Judy", fullBody: true, assetStatus: "approved", color: "#8e4a6d",
+      officeEvents: [
+        "月底對帳對到懷疑人生，快買護眼螢幕！",
+        "會議室被搶走？我直接坐供桌上開會！",
+        "今天不買明天漲價，卡刷下去就對了！"
+      ],
       blessLine: "啾底加油：對帳一次全過！"
     },
     {
-      id: "tony", label: "偷泥", charKey: "Tony", fullBody: true, assetStatus: "pending_drive", color: "#c85a32",
-      pendingNote: "待核對私人 Drive 角色圖",
-      officeEvents: ["臨時急單報到！", "功勞先記我頭上？", "急單救火隊出發！"],
+      id: "tony", label: "偷泥", charKey: "Tony", fullBody: true, assetStatus: "approved", color: "#c85a32",
+      officeEvents: [
+        "這台色準準到修圖完全不用開濾鏡！",
+        "急單又來了！功勞算我的，鍋算電腦的！",
+        "買了啦！大螢幕配藍白拖才是辦公室標配！"
+      ],
       blessLine: "偷泥支援：急單順利出貨！"
     },
     {
-      id: "shrimp", label: "蝦婷", charKey: "Shrimp", fullBody: true, assetStatus: "pending_drive", color: "#b84452",
-      pendingNote: "待核對私人 Drive 角色圖",
-      officeEvents: ["門市展示衝刺！", "業績王爭霸戰！", "達標擊掌慶祝！"],
+      id: "shrimp", label: "蝦婷", charKey: "Shrimp", fullBody: true, assetStatus: "approved", color: "#b84452",
+      officeEvents: [
+        "客人問哪台最香？指這台曲面電競螢幕就對了！",
+        "今天業績破表，全員原地升級 32 吋 4K！",
+        "買了啦！這台不帶回家晚上睡不著！"
+      ],
       blessLine: "蝦婷祈願：門市人潮爆滿！"
     },
     {
-      id: "junior", label: "學妹", charKey: "Junior", fullBody: true, assetStatus: "pending_drive", color: "#4a7a6e",
-      pendingNote: "待核對私人 Drive 角色圖",
-      officeEvents: ["學長姐救命呀！", "簡報救火趕工中！", "謝謝大家相挺！"],
+      id: "junior", label: "學妹", charKey: "Junior", fullBody: true, assetStatus: "approved", color: "#4a7a6e",
+      officeEvents: [
+        "簡報改到第 18 版了，學長姐救命呀！",
+        "換這台超寬螢幕，Excel 終於不用左右狂拉！",
+        "買了啦！低藍光護眼才能再戰三百頁 PPT！"
+      ],
       blessLine: "學妹祈福：提案一次過關！"
     },
     {
       id: "sara", label: "沙拉", charKey: "Sara", fullBody: true, assetStatus: "approved", color: "#26242c",
-      officeEvents: ["專案進度追追追！", "會議室驚喜小劇場！", "辦公室相親相愛！"],
+      officeEvents: [
+        "進度條卡在 99%？拖出去先敲三下木屐！",
+        "240Hz 打報告手速自動加倍，不信買一台！",
+        "買了啦！這台掛牆上連神明都說讚！"
+      ],
       blessLine: "沙拉祝願：團隊默契滿分！"
     }
   ];
@@ -391,12 +430,18 @@
       playWeaponSound(selectedWeapon.id, false);
       spawnBurst(altarX, altarY - 10, selectedWeapon.color, 14, 210);
       const sharedOfficePool = [
-        "買了啦！", "買了啦！這台 4K OLED 超香！", "240Hz 絲滑到回不去！",
-        "雙螢幕才是生產力標配！", "護眼抗藍光，加班不酸眼！", "Type-C 一線通超方便！",
-        "曲面電競螢幕帶回家！", "這色彩準度，買了啦！", "店長特價最後一台！",
-        "業績衝刺！", "臨時急單報到！", "門市展示衝一波！",
-        "會議小劇場開演！", "功勞爭寵中！", "搶資源大作戰！",
-        "同事相挺過關！", "跨部門幫忙救火！", "慶祝達標啦！"
+        "買了啦！這台 OLED 黑到像老闆的良心！",
+        "240Hz 滑到滑鼠直接離家出走！買了啦！",
+        "雙螢幕架好，摸魚都看起來像在盯大盤！",
+        "這台色準準到修圖不用開濾鏡！刷卡！",
+        "Type-C 一線通，桌面整齊到神明想借用！",
+        "曲面電競螢幕買回家，加班都變打電動！",
+        "店長偷偷說最後一台，不買晚上睡不著！",
+        "老闆喊加班？我先把螢幕轉直追劇！",
+        "護眼抗藍光，連看 18 版簡報都不流淚！",
+        "會議室又被搶走，我直接坐供桌上開會！",
+        "功勞算我的，鍋算舊螢幕解析度太低！",
+        "搶資源大作戰！藍白拖先給他巴下去！"
       ];
       const words = selectedScenario.fullBody
         ? [sharedOfficePool[Math.floor(Math.random() * sharedOfficePool.length)], ...selectedScenario.officeEvents]
@@ -660,6 +705,10 @@
   // 主迴圈 (60fps)
   // =========================================================
   let lastT = performance.now();
+  let bgTableSurfaceY = vh * 0.66;
+  let activeCharTopY = vh * 0.36;
+  let activeCharCenterX = vw * 0.5;
+
   function drawBackground(t) {
     const isWide = vw > vh;
     const bg = (isWide && imgs.bgDesktop && imgs.bgDesktop.complete && imgs.bgDesktop.naturalWidth > 0)
@@ -672,12 +721,15 @@
       const dx = (vw - dw) * 0.5 + Math.sin(t * 0.35) * 5;
       const dy = (vh - dh) * 0.5 + Math.cos(t * 0.25) * 4;
       ctx.drawImage(bg, dx, dy, dw, dh);
+      // 供桌石台頂面中段 Y 座標（直式 0.675 / 橫式 0.665）
+      bgTableSurfaceY = dy + dh * (isWide ? 0.665 : 0.675);
       const grad = ctx.createRadialGradient(vw * 0.5, vh * 0.54, vh * 0.14, vw * 0.5, vh * 0.54, Math.max(vw, vh) * 0.85);
-      grad.addColorStop(0, "rgba(20,16,24,0.04)");
-      grad.addColorStop(1, "rgba(12,10,16,0.52)");
+      grad.addColorStop(0, "rgba(20,16,24,0.03)");
+      grad.addColorStop(1, "rgba(12,10,16,0.44)");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, vw, vh);
     } else {
+      bgTableSurfaceY = vh * 0.66;
       ctx.fillStyle = "#191521";
       ctx.fillRect(0, 0, vw, vh);
     }
@@ -728,24 +780,24 @@
       const vImg = selectedScenario.fullBody
         ? getActiveFullBodySprite(selectedScenario.charKey)
         : imgs[selectedScenario.sprite];
-      // 所有全身角色依實際不透明像素邊界統一縮放到完全相同身高與腳底基準線，且絕不被底部操控列遮擋
+      // 所有全身角色依該角色 normal 站姿的實際不透明高度統一縮放，保證每個人大小完全一致且切換坐/跪姿不變大顆
       const isWide = vw > vh;
       const dockEl = document.querySelector(".bottom-dock");
       const dockTop = dockEl ? dockEl.getBoundingClientRect().top : (vh - 125);
       const hudEl = document.querySelector(".top-hud");
       const hudBottom = hudEl ? hudEl.getBoundingClientRect().bottom : 58;
-      const safeSpan = Math.max(220, dockTop - hudBottom - 44);
-      const vSize = isWide ? Math.min(300, safeSpan * 0.68) : Math.min(230, safeSpan * 0.56);
+      const safeSpan = Math.max(220, dockTop - hudBottom - 70);
+      const vSize = isWide ? Math.min(285, safeSpan * 0.64) : Math.min(235, safeSpan * 0.56);
       const scaleX = 1 + villainSquash * 0.14;
       const scaleY = 1 - villainSquash * 0.14;
       const flyY = villainFly > 0 ? -Math.sin(villainFly * Math.PI) * 120 : 0;
       const wobble = villainDizzy > 0 ? Math.sin(t * 28) * 0.08 : Math.sin(t * 2.5) * 0.02;
 
-      // 隨機劇場自動輪演：持續演辦公室劇情＋三不五十自動打幾下
+      // 隨機劇場自動輪演：持續演超爆笑辦公室＋螢幕銷售劇情＋三不五十自動打幾下
       if (autoTheater && resultCard.classList.contains("hidden")) {
         theaterTimer -= dt;
         if (theaterTimer <= 0) {
-          theaterTimer = 2.8 + Math.random() * 1.4;
+          theaterTimer = 3.0 + Math.random() * 1.4;
           theaterSlapCountdown -= 1;
           if (theaterSlapCountdown <= 0) {
             theaterSlapCountdown = 2 + Math.floor(Math.random() * 2);
@@ -755,36 +807,51 @@
             selectedScenario = pool[Math.floor(Math.random() * pool.length)];
             customTargetLabel = "";
             const theaterMonitorLines = [
-              "買了啦！", "買了啦！4K OLED 帶回家！", "240Hz 電競螢幕超順！",
-              "雙螢幕工作效率翻倍！", "今天不買明天缺貨！", "護眼低藍光超讚！"
+              "買了啦！這台 4K OLED 黑到像老闆的良心！",
+              "240Hz 滑到滑鼠自己離家出走！買了啦！",
+              "雙螢幕買下去，摸魚看起來像在盯大盤！",
+              "這螢幕色彩準到修圖完全不用開濾鏡！",
+              "今天不買明天漲價，卡拿出來刷下去！",
+              "護眼低藍光，加班到半夜眼睛還在發亮！"
             ];
             const evPool = [...theaterMonitorLines, ...selectedScenario.officeEvents];
             const ev = evPool[Math.floor(Math.random() * evPool.length)];
-            spawnFloatText(vw * 0.5, hudBottom + 56, `${selectedScenario.label}：${ev}`, "#ffd980", 18);
+            spawnFloatText(vw * 0.5, activeCharTopY - 22, `${selectedScenario.label}：${ev}`, "#2b1a10", 21);
             setCharMood(Math.random() < 0.45 ? "happy" : "innocent", 1.15);
             renderControls();
           }
         }
       }
 
+      // 腳底穩穩踩在背景供桌石台頂面上，絕不懸空；陰影固定貼在供桌平面
+      const feetBaseY = Math.min(dockTop - 22, Math.max(hudBottom + vSize + 64, bgTableSurfaceY + 14));
+      activeCharCenterX = altarX;
+
       ctx.save();
-      const feetBaseY = Math.min(dockTop - 36, altarY + 86);
-      ctx.translate(altarX, feetBaseY - vSize * 0.5 + flyY);
+      ctx.translate(altarX, feetBaseY);
+      ctx.fillStyle = "rgba(0,0,0,0.42)";
+      ctx.beginPath();
+      ctx.ellipse(0, 2, vSize * 0.27, vSize * 0.065, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(altarX, feetBaseY + flyY);
       ctx.rotate(wobble);
       ctx.scale(scaleX, scaleY);
-      ctx.fillStyle = "rgba(0,0,0,0.34)";
-      ctx.beginPath();
-      ctx.ellipse(0, vSize * 0.48, vSize * 0.28, vSize * 0.07, 0, 0, Math.PI * 2);
-      ctx.fill();
 
       if (vImg && vImg.complete && vImg.naturalWidth > 0) {
         const box = getOpaqueBox(vImg) || { x: 0, y: 0, w: vImg.naturalWidth, h: vImg.naturalHeight };
-        const aspect = box.w / box.h;
-        const h = vSize;
-        const w = h * aspect;
-        ctx.drawImage(vImg, box.x, box.y, box.w, box.h, -w * 0.5, -h * 0.5, w, h);
+        const normImg = imgs[`${selectedScenario.charKey}_normal`];
+        const normBox = (normImg && normImg.complete && normImg.naturalWidth > 0) ? getOpaqueBox(normImg) : null;
+        const refH = normBox ? normBox.h : Math.max(box.h, vImg.naturalHeight * 0.84);
+        const pxScale = vSize / refH;
+        const h = Math.min(vSize * 1.06, box.h * pxScale);
+        const w = h * (box.w / box.h);
+        activeCharTopY = feetBaseY + flyY - h;
+        ctx.drawImage(vImg, box.x, box.y, box.w, box.h, -w * 0.5, -h, w, h);
       } else if (selectedScenario.fullBody) {
-        // 尚待補核准真人圖的角色：以清楚標示的辦公室四表情待補立牌呈現，不假冒或亂猜相貌
+        activeCharTopY = feetBaseY + flyY - vSize * 0.92;
         const moodNow = forceMoodForTest || charMood || "normal";
         const w = vSize * 0.68;
         const h = vSize * 0.92;
@@ -792,7 +859,7 @@
         ctx.strokeStyle = moodNow === "hurt_cry" ? "#ff6b57" : "#e7b85c";
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.roundRect(-w * 0.5, -h * 0.5, w, h, 14);
+        ctx.roundRect(-w * 0.5, -h, w, h, 14);
         ctx.fill();
         ctx.stroke();
 
@@ -800,16 +867,12 @@
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = "800 32px 'Noto Serif TC', serif";
-        ctx.fillText(selectedScenario.label, 0, -h * 0.22);
+        ctx.fillText(selectedScenario.label, 0, -h * 0.68);
 
         const moodFace = moodNow === "hurt_cry" ? "(＞﹏＜) 哭泣" : moodNow === "innocent" ? "(・_・;) 無辜" : moodNow === "happy" ? "(＾▽＾) 歡樂" : "(•̀ᴗ•́) 一般";
         ctx.font = "bold 18px 'Noto Serif TC', serif";
         ctx.fillStyle = "#ffd980";
-        ctx.fillText(moodFace, 0, 4);
-
-        ctx.font = "12px 'Noto Serif TC', serif";
-        ctx.fillStyle = "rgba(255,246,229,0.85)";
-        ctx.fillText(selectedScenario.pendingNote || "待補核准素材", 0, h * 0.28);
+        ctx.fillText(moodFace, 0, -h * 0.44);
       }
       ctx.restore();
 
@@ -1000,26 +1063,73 @@
       ft.life -= dt;
       if (ft.life <= 0) { floatTexts.splice(i, 1); continue; }
       ctx.save();
-      ctx.globalAlpha = Math.min(1, ft.life / 0.35);
-      const fontPx = Math.min(17, Math.max(14, ft.size));
-      ctx.font = `700 ${fontPx}px 'Noto Serif TC', 'PingFang TC', sans-serif`;
-      const tw = ctx.measureText(ft.text).width;
-      const bw = Math.min(vw - 24, tw + 28);
-      const bh = 36;
-      const bx = Math.max(12, Math.min(vw - bw - 12, ft.x - bw * 0.5));
-      const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 56) + 12;
-      const by = Math.max(hudB, Math.min(vh * 0.34, ft.y - bh * 0.5));
-      ctx.fillStyle = "rgba(18, 14, 22, 0.90)";
-      ctx.strokeStyle = "#e7b85c";
-      ctx.lineWidth = 2;
+      ctx.globalAlpha = Math.min(1, ft.life / 0.3);
+      const isWideScr = vw > vh;
+      const fontPx = isWideScr ? 22 : 19;
+      ctx.font = `800 ${fontPx}px 'Noto Serif TC', 'PingFang TC', sans-serif`;
+
+      // 自動依畫布寬度換行（最多 2 行），確保超大字體不溢出
+      const maxBubbleW = Math.min(vw - 24, isWideScr ? 540 : 350);
+      const maxTextW = maxBubbleW - 32;
+      const lines = [];
+      let cur = "";
+      for (const ch of ft.text) {
+        if (ctx.measureText(cur + ch).width > maxTextW && cur.length > 0) {
+          lines.push(cur);
+          cur = ch;
+        } else {
+          cur += ch;
+        }
+      }
+      if (cur) lines.push(cur);
+
+      const lineH = fontPx + 7;
+      const longestW = Math.max(...lines.map(l => ctx.measureText(l).width));
+      const bw = Math.min(maxBubbleW, Math.max(150, longestW + 34));
+      const bh = lines.length * lineH + 18;
+      const tailH = 12;
+      const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 12;
+      const targetAnchorX = mode === "slap" ? activeCharCenterX : ft.x;
+      const targetBottomY = mode === "slap" ? (activeCharTopY - 16) : (ft.y - 12);
+      const by = Math.max(hudB, targetBottomY - bh - tailH);
+      const bx = Math.max(12, Math.min(vw - bw - 12, targetAnchorX - bw * 0.5));
+      const tailX = Math.max(bx + 22, Math.min(bx + bw - 22, targetAnchorX));
+      const r = 14;
+
+      // 繪製帶小尾巴的圓角矩形漫畫對話泡泡框
+      ctx.shadowColor = "rgba(0,0,0,0.45)";
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetY = 4;
       ctx.beginPath();
-      ctx.roundRect(bx, by, bw, bh, 8);
+      ctx.moveTo(bx + r, by);
+      ctx.lineTo(bx + bw - r, by);
+      ctx.quadraticCurveTo(bx + bw, by, bx + bw, by + r);
+      ctx.lineTo(bx + bw, by + bh - r);
+      ctx.quadraticCurveTo(bx + bw, by + bh, bx + bw - r, by + bh);
+      ctx.lineTo(tailX + 10, by + bh);
+      ctx.lineTo(tailX, by + bh + tailH);
+      ctx.lineTo(tailX - 10, by + bh);
+      ctx.lineTo(bx + r, by + bh);
+      ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - r);
+      ctx.lineTo(bx, by + r);
+      ctx.quadraticCurveTo(bx, by, bx + r, by);
+      ctx.closePath();
+
+      ctx.fillStyle = "#fffaf0";
       ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.strokeStyle = "#2b1a10";
+      ctx.lineWidth = 3;
       ctx.stroke();
-      ctx.fillStyle = "#fff6e5";
+
+      ctx.fillStyle = "#2b1a10";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(ft.text, bx + bw * 0.5, by + bh * 0.5, bw - 16);
+      const startY = by + bh * 0.5 - ((lines.length - 1) * lineH) * 0.5;
+      lines.forEach((ln, idx) => {
+        ctx.fillText(ln, bx + bw * 0.5, startY + idx * lineH, bw - 22);
+      });
       ctx.restore();
     }
 
