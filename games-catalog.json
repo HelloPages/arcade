@@ -1,28 +1,13 @@
 {
   "portalTitle": "REA 經典街機與放置成長逆向重製中心",
-  "version": "v_20261120_curated_1",
-  "updatedAt": "2026-11-20T19:30:00+08:00",
+  "version": "v_20261120_curated_2",
+  "updatedAt": "2026-11-20T20:15:00+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向，在時代、色彩、材質、字體、HUD、構圖與動效上明顯區分；禁止全館陽光海島、共用玻璃膠囊或換色模板。每日新作優先動態精細動作遊戲（禁止偷懶靜態格子益智），以實際封面與遊戲畫面比對驗收。",
   "dailySchedule": {
     "generateCron": "每日 04:00 自動生成具獨立美術風格、與其他館藏可明顯區分的直式手機 REA 經典動態動作復刻遊戲",
     "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
   },
   "games": [
-    {
-      "id": "moss",
-      "title": "《螢林節拍：夜巡協奏》",
-      "shortTab": "螢林節拍",
-      "path": "./moss.html",
-      "genre": "木刻植物夜曲×即時節奏動作射擊",
-      "addedDate": "2026-11-18",
-      "thumbnail": "assets/moss-cover.webp",
-      "reaSource": "Chris Wilson Web Audio Metronome（MIT）發布範例metronome.js：REA靜態分析前瞻排程與音畫時鐘；引擎、美術、音效原創",
-      "highlights": [
-        "自由飛行、敲鼓連射、合拍增幅、無敵衝刺反射與滿奏回復；追針／和弦／掃線三樂章首領",
-        "象牙紙、群青植物木刻、檸檬黃鼓翼；真Alpha四姿勢與紙本節拍尺，失拍仍可攻擊"
-      ],
-      "artDirection": "1960年代木刻音樂海報；象牙紙、群青刻線植物、檸檬黃鼓翼與珊瑚紅甲蟲；紙本節拍尺及矩形控制，排除深綠海床、劇院、雪地與玻璃膠囊"
-    },
     {
       "id": "xinan",
       "title": "《心安宮・三儀殿》",
