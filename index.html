@@ -352,18 +352,11 @@
 
       <button type="button" class="stage-tab active-chime" id="tab-chime" onclick="selectStage('chime')">鐘樓拳影</button>
       <button type="button" class="stage-tab" id="tab-ridge" onclick="selectStage('ridge')">銀脊急行</button>
-      <button type="button" class="stage-tab" id="tab-abyss" onclick="selectStage('abyss')">深潛重裝</button>
       <button type="button" class="stage-tab" id="tab-shinobi" onclick="selectStage('shinobi')">🥷 赤焰忍傳</button>
-
-      <button type="button" class="stage-tab" id="tab-capybara" onclick="selectStage('capybara')">水豚晴旅</button>
 
       <button type="button" class="stage-tab active-twinbee" id="tab-twinbee" onclick="selectStage('twinbee')">🔔 兵蜂・鈴鐺幻想</button>
 
       <button type="button" class="stage-tab" id="tab-rainbow" onclick="selectStage('rainbow')">🌈 彩虹泡泡龍</button>
-
-      <button type="button" class="stage-tab" id="tab-orchard" onclick="selectStage('orchard')">☀ 晴空果園</button>
-
-      <button type="button" class="stage-tab" id="tab-pang" onclick="selectStage('pang')">☀ 晴空海島</button>
 
       <button type="button" class="stage-tab" id="tab-pinball" onclick="selectStage('pinball')">🌌 太空彈珠台</button>
 
@@ -423,7 +416,7 @@
 
   <script>
 
-    const VERSION_STAMP = "v_20261118_moss_1";
+    const VERSION_STAMP = "v_20261120_curated_1";
 
     const frame = document.getElementById("game-frame");
 
@@ -504,19 +497,12 @@
       if(stage==='chime'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./chime.html?embed=1&v='+VERSION_STAMP;frame.title='鐘樓拳影：發條對決';const tab=document.getElementById('tab-chime');tab.className='stage-tab active-chime';tab.scrollIntoView({block:'nearest',inline:'nearest'});toggleCatalog(false);setTimeout(()=>frame.focus(),120);return;}
       document.getElementById('tab-ridge').className='stage-tab';
       if(stage==='ridge'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./ridge.html?embed=1&v='+VERSION_STAMP;frame.title='銀脊急行：雪線追擊';const tab=document.getElementById('tab-ridge');tab.className='stage-tab active-ridge';tab.scrollIntoView({block:'nearest',inline:'nearest'});toggleCatalog(false);setTimeout(()=>frame.focus(),120);return;}
-      document.getElementById('tab-abyss').className='stage-tab';
-      if(stage==='abyss'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./abyss.html?embed=1&v='+VERSION_STAMP;frame.title='深潛重裝：斷層突圍';const tab=document.getElementById('tab-abyss');tab.className='stage-tab active-abyss';tab.scrollIntoView({block:'nearest',inline:'nearest'});toggleCatalog(false);setTimeout(()=>frame.focus(),120);return;}
 
       const tabShinobi = document.getElementById('tab-shinobi');
       if(tabShinobi) tabShinobi.className='stage-tab';
       if(stage==='shinobi'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./shinobi.html?embed=1&v='+VERSION_STAMP;frame.title='赤焰忍傳：疾風手裏劍';if(tabShinobi){tabShinobi.className='stage-tab active-shinobi';tabShinobi.scrollIntoView({block:'nearest',inline:'nearest'});}toggleCatalog(false);setTimeout(()=>{try{frame.focus();}catch(e){}},120);return;}
-      document.getElementById('tab-capybara').className = 'stage-tab';
 
       if(tabTwinbee) tabTwinbee.className = 'stage-tab';
-
-      document.getElementById('tab-orchard').className = 'stage-tab';
-
-      document.getElementById('tab-pang').className = 'stage-tab';
 
       tabRainbow.className = "stage-tab";
 
@@ -526,31 +512,11 @@
 
       tab3.className = "stage-tab";
 
-
-
-      if(stage === 'capybara'){
-
-        frame.src='./capybara.html?embed=1&v='+VERSION_STAMP;
-
-        document.getElementById('tab-capybara').className='stage-tab active-orchard';
-
-      } else if(stage === 'twinbee'){
+      if(stage === 'twinbee'){
 
         frame.src = './twinbee.html?embed=1&v=' + VERSION_STAMP;
 
         if(tabTwinbee) tabTwinbee.className = 'stage-tab active-twinbee';
-
-      } else if(stage === 'orchard'){
-
-        frame.src = './orchard.html?embed=1&v=' + VERSION_STAMP;
-
-        document.getElementById('tab-orchard').className = 'stage-tab active-orchard';
-
-      } else if(stage === "pang"){
-
-        frame.src = './pang.html?embed=1&v=' + VERSION_STAMP;
-
-        document.getElementById('tab-pang').className = 'stage-tab active-pang';
 
       } else if(stage === "stage2"){
 
@@ -644,9 +610,7 @@
 
     const st = params.get("stage") || location.hash.replace("#", "");
 
-    if(!st || st==='moss'){ selectStage('moss'); } else if(st==='xinan'){ selectStage('xinan'); } else if(st==='chime'){ selectStage('chime'); } else if(st==='ridge'){ selectStage('ridge'); } else if(st==='abyss'){ selectStage('abyss'); } else if(st==='shinobi'){ selectStage('shinobi'); } else
-
-    if(st === 'capybara'){ selectStage('capybara'); } else
+    if(!st || st==='moss'){ selectStage('moss'); } else if(st==='xinan'){ selectStage('xinan'); } else if(st==='chime'){ selectStage('chime'); } else if(st==='ridge'){ selectStage('ridge'); } else if(st==='shinobi'){ selectStage('shinobi'); } else
 
     if(st === "2" || st === "stage2"){
 
@@ -664,17 +628,13 @@
 
       selectStage("rainbow");
 
-    } else if(st === "pang"){
+    } else if(st === "twinbee"){
 
-      selectStage("pang");
-
-    } else if(st === "orchard"){
-
-      selectStage("orchard");
+      selectStage("twinbee");
 
     } else {
 
-      selectStage("twinbee");
+      selectStage("moss");
 
     }
 

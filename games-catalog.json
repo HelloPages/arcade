@@ -1,7 +1,7 @@
 {
   "portalTitle": "REA 經典街機與放置成長逆向重製中心",
-  "version": "v_20261118_moss_1",
-  "updatedAt": "2026-11-18T04:00:00+08:00",
+  "version": "v_20261120_curated_1",
+  "updatedAt": "2026-11-20T19:30:00+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向，在時代、色彩、材質、字體、HUD、構圖與動效上明顯區分；禁止全館陽光海島、共用玻璃膠囊或換色模板。每日新作優先動態精細動作遊戲（禁止偷懶靜態格子益智），以實際封面與遊戲畫面比對驗收。",
   "dailySchedule": {
     "generateCron": "每日 04:00 自動生成具獨立美術風格、與其他館藏可明顯區分的直式手機 REA 經典動態動作復刻遊戲",
@@ -30,11 +30,11 @@
       "path": "./xinan.html",
       "genre": "宮廟民俗動作 × 打小人・祈福天燈・問卦擲筊",
       "addedDate": "2026-11-17",
-      "thumbnail": "assets/xinan-temple-bg.jpg",
+      "thumbnail": "assets/xinan-temple-bg-portrait-hd.webp",
       "reaSource": "參考心安宮線上 3D 宮廟交互架構（REA 瀏覽器觀察），去除連網大廳與等待牆，原創單人 60fps 2.5D 動作儀式與專屬去背精靈／音效",
       "highlights": [
-        "無大廳即開即玩：藍白拖連擊打小人＋黃金鎮煞重擊、祈福天燈昇空、搖籤擲筊解籤三大儀式",
-        "100% 滿版暮色宮廟青石神壇、浮動金塵香煙與五組專屬去背透明 PNG 道具"
+        "三儀合一角色互動：選定 7 位真人角色常駐青石供桌，隨時直接對該角色打小人、祈福或問卦擲筊",
+        "高解析重繪宮廟供桌背景、10 倍速輕量 WebP、平衡雙行漫畫對話泡泡與宣紙靈籤彈窗"
       ],
       "artDirection": "台灣暮色宮廟青石神壇；朱紅燈籠、鎏金星火、青石浮雕與藍白拖等民俗實物繪製，極簡矩形 HUD"
     },
@@ -69,21 +69,6 @@
       "artDirection": "1970 年代瑞士國際賽事海報與當代精密網版；冷白雪地、群青、螢光黃，斜角速度構圖、等寬計時、平面賽事票券與雪霧線條，無玻璃膠囊、無共用角色"
     },
     {
-      "id": "abyss",
-      "title": "《深潛重裝：斷層突圍》",
-      "shortTab": "深潛重裝",
-      "path": "./abyss.html",
-      "genre": "工業海床版畫 × 即時潛航彈幕動作",
-      "addedDate": "2026-11-15",
-      "thumbnail": "assets/abyss-cover.svg",
-      "reaSource": "Doug McInnes HTML5 Asteroids（MIT）公開 game.js：REA 靜態分析旋轉推進、彈體速度與碰撞；引擎、美術、三態首領原創，未執行原作",
-      "highlights": [
-        "自由潛航、瞄準連射、無敵衝刺切彈、深壓脈衝、連擊與三階段動態機械首領",
-        "墨綠／氧化銅／象牙白原創向量版畫，三幀機械動畫、視差海床與刻度式儀表；非玻璃模板"
-      ],
-      "artDirection": "深海工業科學版畫；墨綠、氧化銅、象牙白，透明多幀剖面機械、海床桁架、平面航海誌、方向舵與分離式武器面板"
-    },
-    {
       "id": "shinobi",
       "title": "《赤焰忍傳：疾風手裏劍》",
       "shortTab": "赤焰忍傳",
@@ -97,21 +82,6 @@
         "60fps 屋簷跑酷、二段翻滾手裏劍、無敵幀瞬身斬殘影、急降滑鏟與三階段首領羅剎鎧決戰"
       ],
       "artDirection": "戰國浮世繪金月夜色與和紙朱印卷軸；靛青夜空、緋紅圍巾、銀杏燙金，無玻璃膠囊、強調高張力打擊頓幀與殘影動效"
-    },
-    {
-      "id": "capybara",
-      "title": "《水豚晴旅：海島跳跳渡假》",
-      "shortTab": "水豚晴旅",
-      "path": "./capybara.html",
-      "genre": "復古旅行海報 × 水豚海島穿越",
-      "addedDate": "2026-11-06",
-      "thumbnail": "assets/redesign-capybara-cover.webp",
-      "reaSource": "elharony/FEND-Arcade-Game 公開 MIT JavaScript 版（REA 靜態分析格移、時間步進、AABB 碰撞及重置；原創擴充漂浮海龜）",
-      "highlights": [
-        "珊瑚旅行版畫、奶油色行程卡與湖水綠河道；票券 HUD、渡假貼紙與水豚旅人",
-        "三段旅程、滑動逐格閃車與搭乘漂浮海龜；安全岸邊、海風暫停與金冠鵜鶘登場"
-      ],
-      "artDirection": "珊瑚旅行版畫、奶油色行程卡與湖水綠河道；票券 HUD、渡假貼紙與水豚旅人"
     },
     {
       "id": "twinbee",
@@ -142,36 +112,6 @@
         "支援全自動射泡巡航 (Auto-Idle) 與 4 大經典必殺技（🌈 七彩雙虹橋、🫧 滿天泡泡雨、💥 全屏連鎖爆、☀️ 晴空聖光砲）"
       ],
       "artDirection": "亮紫、桃紅與酸橙綠街機；漫畫角色、半色調場景、硬邊連擊與街機控制列"
-    },
-    {
-      "id": "orchard",
-      "title": "《晴空果園：彈彈守護隊》",
-      "shortTab": "☀ 晴空果園",
-      "path": "./orchard.html",
-      "genre": "民俗拼貼剪紙 × 果園打磚塊",
-      "addedDate": "2026-11-05",
-      "thumbnail": "assets/redesign-orchard-cover.webp",
-      "reaSource": "jakesgordon/javascript-breakout 公開 JavaScript 版本（REA 靜態分析球拍落點反射、碰撞與掉球）",
-      "highlights": [
-        "杏橘紙纖維、橄欖樹葉與葡萄紫布藝；剪紙果實、縫線標籤與採收進度",
-        "左右滑動葉片球拍、三關採收與八段血條鳳梨國王；晴光護盾與晴光導引"
-      ],
-      "artDirection": "杏橘紙纖維、橄欖樹葉與葡萄紫布藝；剪紙果實、縫線標籤與採收進度"
-    },
-    {
-      "id": "pang",
-      "title": "《晴空海島：晶獸彈跳祭》",
-      "shortTab": "☀ 晴空海島",
-      "path": "./pang.html",
-      "genre": "科幻動作漫畫 × 晶獸分裂消除",
-      "addedDate": "2026-11-04",
-      "thumbnail": "assets/redesign-pang-cover.webp",
-      "reaSource": "Pang 公開 JavaScript 重製版 mkmik/pang（靜態分析魚叉碰撞、晶獸分裂與彈跳）",
-      "highlights": [
-        "磚紅異星研究基地、青綠晶獸與象牙白紙張；粗墨線分鏡 HUD、漫畫命中與異獸圖鑑",
-        "左右滑動閃避、自動晶光魚叉、潮汐凍結；三關闖關與金冠晶獸首領"
-      ],
-      "artDirection": "磚紅異星研究基地、青綠晶獸與象牙白紙張；粗墨線分鏡 HUD、漫畫命中與異獸圖鑑"
     },
     {
       "id": "pinball",

@@ -490,26 +490,36 @@
   let customWishLabel = "";
   const risingProps = [];
 
+  function getTargetName() {
+    return customTargetLabel.trim() || selectedScenario.label;
+  }
+
   function launchBlessing() {
+    const targetName = getTargetName();
     const wishText = customWishLabel.trim() || selectedBless.label;
+    setCharMood("happy", 2.2);
     playBellSound(660);
     addMerit(10);
     risingProps.push({
       x: vw * 0.5,
-      y: vh * 0.57,
-      vx: (Math.random() - 0.5) * 20,
-      vy: -82 - Math.random() * 20,
-      scale: 1,
+      y: Math.min(vh * 0.56, bgTableSurfaceY - 40),
+      vx: (Math.random() - 0.5) * 26,
+      vy: -88 - Math.random() * 20,
+      scale: 0.95,
       wobble: Math.random() * Math.PI * 2,
       sprite: selectedBless.sprite,
       age: 0
     });
-    spawnBurst(vw * 0.5, vh * 0.56, selectedBless.color, 22, 200);
-    spawnFloatText(vw * 0.5, vh * 0.42, `「${wishText}」祈福昇空！`, "#ffd980", 22);
+    spawnBurst(vw * 0.5, bgTableSurfaceY - 65, selectedBless.color, 26, 220);
+    spawnShockwave(vw * 0.5, bgTableSurfaceY - 20, "#ffd466", 150, 4);
+    const blessLine = !customWishLabel.trim() && selectedScenario.blessLine
+      ? `${selectedScenario.blessLine}（${wishText}）`
+      : `為${targetName}祈求「${wishText}」心想事成！`;
+    spawnFloatText(vw * 0.5, activeCharTopY - 18, blessLine, "#ffd980", 21);
   }
 
   // =========================================================
-  // 3. 問卦（完整竹籤筒＋靈籤抽出＋完整紅木聖筊）
+  // 3. 問卦（完整竹籤筒＋靈籤抽出＋完整紅木聖筊，對當前角色問卦）
   // =========================================================
   const fortunes = [
     { grade: "上上籤", title: "旭日東昇・貴人扶搖", body: "心中所慮將隨春風散去，放手推進最重要的一件事，自有助力水到渠成。" },
@@ -526,9 +536,11 @@
     if (oracleStep === "shaking" || oracleStep === "throwing") return;
     oracleStep = "shaking";
     oracleTimer = 1.0;
+    setCharMood("innocent", 1.8);
     playWoodClack();
     setTimeout(playWoodClack, 180);
     setTimeout(playWoodClack, 360);
+    spawnFloatText(vw * 0.5, activeCharTopY - 18, `${getTargetName()}：誠心祈求神明賜支好籤！`, "#ffe699", 21);
     renderControls();
   }
 
@@ -536,6 +548,7 @@
     if (oracleStep !== "drawn") return;
     oracleStep = "throwing";
     oracleTimer = 0.9;
+    setCharMood("innocent", 1.2);
     playWoodClack();
     setTimeout(playWoodClack, 220);
     renderControls();
@@ -564,27 +577,30 @@
     weaponRow.innerHTML = "";
     actionRow.innerHTML = "";
 
-    if (mode === "slap") {
-      slapScenarios.forEach(s => {
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "chip-btn" + (selectedScenario.id === s.id && !customTargetLabel ? " active" : "");
-        b.textContent = s.label;
-        b.onclick = () => { selectedScenario = s; customTargetLabel = ""; renderControls(); };
-        chipsRow.appendChild(b);
-      });
-      const inp = document.createElement("input");
-      inp.type = "text";
-      inp.maxLength = 10;
-      inp.className = "custom-input";
-      inp.placeholder = "自訂小人...";
-      inp.value = customTargetLabel;
-      inp.oninput = () => {
-        customTargetLabel = inp.value;
-        chipsRow.querySelectorAll(".chip-btn").forEach(c => c.classList.remove("active"));
-      };
-      chipsRow.appendChild(inp);
+    // 三儀合一：任何模式皆常駐 7 位角色＋自訂選角列，隨時可對選定角色打小人、祈福或問卦
+    slapScenarios.forEach(s => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip-btn" + (selectedScenario.id === s.id && !customTargetLabel ? " active" : "");
+      b.textContent = s.label;
+      b.onclick = () => { selectedScenario = s; customTargetLabel = ""; renderControls(); };
+      chipsRow.appendChild(b);
+    });
+    const targetInp = document.createElement("input");
+    targetInp.type = "text";
+    targetInp.maxLength = 10;
+    targetInp.className = "custom-input";
+    targetInp.placeholder = "自訂對象...";
+    targetInp.value = customTargetLabel;
+    targetInp.oninput = () => {
+      customTargetLabel = targetInp.value;
+      chipsRow.querySelectorAll(".chip-btn").forEach(c => c.classList.remove("active"));
+    };
+    chipsRow.appendChild(targetInp);
 
+    const targetName = getTargetName();
+
+    if (mode === "slap") {
       weapons.forEach(w => {
         const wb = document.createElement("button");
         wb.type = "button";
@@ -637,25 +653,25 @@
         b.className = "chip-btn" + (selectedBless.id === s.id && !customWishLabel ? " active" : "");
         b.textContent = s.label;
         b.onclick = () => { selectedBless = s; customWishLabel = ""; renderControls(); };
-        chipsRow.appendChild(b);
+        weaponRow.appendChild(b);
       });
-      const inp = document.createElement("input");
-      inp.type = "text";
-      inp.maxLength = 14;
-      inp.className = "custom-input full-span";
-      inp.placeholder = "輸入專屬心願（留空則用上方祈願）...";
-      inp.value = customWishLabel;
-      inp.oninput = () => {
-        customWishLabel = inp.value;
-        chipsRow.querySelectorAll(".chip-btn").forEach(c => c.classList.remove("active"));
+      const wishInp = document.createElement("input");
+      wishInp.type = "text";
+      wishInp.maxLength = 14;
+      wishInp.className = "custom-input full-span";
+      wishInp.placeholder = `替「${targetName}」輸入專屬心願（留空則用上方祈願）...`;
+      wishInp.value = customWishLabel;
+      wishInp.oninput = () => {
+        customWishLabel = wishInp.value;
+        weaponRow.querySelectorAll(".chip-btn").forEach(c => c.classList.remove("active"));
       };
-      chipsRow.appendChild(inp);
+      weaponRow.appendChild(wishInp);
 
       const blessBtn = document.createElement("button");
       blessBtn.type = "button";
       blessBtn.id = "btnPrimaryAction";
       blessBtn.className = "rect-btn gold-btn";
-      blessBtn.textContent = selectedBless.action;
+      blessBtn.textContent = `為 ${targetName} ${selectedBless.action}`;
       blessBtn.onclick = launchBlessing;
       actionRow.appendChild(blessBtn);
     } else if (mode === "oracle") {
@@ -665,25 +681,25 @@
       const s2 = oracleStep === "drawn" || oracleStep === "throwing";
       const s3 = oracleStep === "done";
       const msg = oracleStep === "ready"
-        ? "點擊「誠心求籤」或輕點神壇籤筒"
+        ? `為「${targetName}」求籤，點擊按鈕或神壇`
         : oracleStep === "drawn"
-          ? "靈籤已出！請點擊「擲筊解籤」"
+          ? `靈籤已出！為「${targetName}」擲筊解籤`
           : oracleStep === "done"
-            ? "聖筊應許！可再求下一籤"
-            : oracleStep === "shaking" ? "誠心搖籤中..." : "聖筊高拋落下中...";
+            ? `聖筊應許！可再為「${targetName}」求籤`
+            : oracleStep === "shaking" ? `為「${targetName}」誠心搖籤中...` : "聖筊高拋落下中...";
       guide.innerHTML =
         `<div class="oracle-steps">` +
         `<span class="oracle-step ${s1 ? "active" : ""}">① 搖籤</span><span>›</span>` +
         `<span class="oracle-step ${s2 ? "active" : ""}">② 擲筊</span><span>›</span>` +
         `<span class="oracle-step ${s3 ? "active" : ""}">③ 解籤</span>` +
         `</div><span class="oracle-msg">${msg}</span>`;
-      chipsRow.appendChild(guide);
+      weaponRow.appendChild(guide);
 
       const btn = document.createElement("button");
       btn.type = "button";
       btn.id = "btnPrimaryAction";
       btn.className = "rect-btn " + (oracleStep === "drawn" ? "gold-btn ult-ready" : "primary-btn");
-      btn.textContent = oracleStep === "drawn" ? "擲筊解籤" : "誠心求籤";
+      btn.textContent = oracleStep === "drawn" ? `為 ${targetName} 擲筊解籤` : `為 ${targetName} 誠心求籤`;
       btn.disabled = oracleStep === "shaking" || oracleStep === "throwing";
       btn.onclick = () => {
         if (oracleStep === "ready" || oracleStep === "done") shakeOracle();
@@ -822,69 +838,87 @@
     const altarX = vw * 0.5;
     const altarY = vh * 0.55;
     const propBase = Math.min(vw, vh);
+    const isWide = vw > vh;
+    const dockEl = document.querySelector(".bottom-dock");
+    const dockTop = dockEl ? dockEl.getBoundingClientRect().top : (vh - 155);
+    const hudEl = document.querySelector(".top-hud");
+    const hudBottom = hudEl ? hudEl.getBoundingClientRect().bottom : 58;
+    const safeSpan = Math.max(210, dockTop - hudBottom - 66);
+    const vSize = isWide ? Math.min(278, safeSpan * 0.62) : Math.min(228, safeSpan * 0.55);
+    const feetBaseY = Math.min(dockTop - 20, Math.max(hudBottom + vSize + 60, bgTableSurfaceY + 12));
 
-    // 1. 打小人舞台
-    if (mode === "slap") {
-      if (weaponAnim > 0) weaponAnim = Math.max(0, weaponAnim - dt * 4.2);
-      if (villainSquash > 0) villainSquash = Math.max(0, villainSquash - dt * 3.2);
-      if (villainDizzy > 0) villainDizzy = Math.max(0, villainDizzy - dt);
-      if (villainFly > 0) villainFly = Math.max(0, villainFly - dt * 1.6);
-      if (charMoodTimer > 0) {
-        charMoodTimer -= dt;
-        if (charMoodTimer <= 0) {
-          if (charMood === "hurt_cry") setCharMood("innocent", 1.25);
-          else charMood = "normal";
+    if (weaponAnim > 0) weaponAnim = Math.max(0, weaponAnim - dt * 4.2);
+    if (villainSquash > 0) villainSquash = Math.max(0, villainSquash - dt * 3.2);
+    if (villainDizzy > 0) villainDizzy = Math.max(0, villainDizzy - dt);
+    if (villainFly > 0) villainFly = Math.max(0, villainFly - dt * 1.6);
+    if (charMoodTimer > 0) {
+      charMoodTimer -= dt;
+      if (charMoodTimer <= 0) {
+        if (charMood === "hurt_cry") setCharMood("innocent", 1.25);
+        else charMood = "normal";
+      }
+    }
+
+    // 隨機劇場自動輪演（打小人模式持續演爆笑劇情＋三不五十自動打幾下）
+    if (mode === "slap" && autoTheater && resultCard.classList.contains("hidden")) {
+      theaterTimer -= dt;
+      if (theaterTimer <= 0) {
+        theaterTimer = 4.6 + Math.random() * 1.4;
+        theaterSlapCountdown -= 1;
+        if (theaterSlapCountdown <= 0) {
+          theaterSlapCountdown = 2 + Math.floor(Math.random() * 2);
+          performSlap(false);
+        } else {
+          const pool = slapScenarios;
+          selectedScenario = pool[Math.floor(Math.random() * pool.length)];
+          customTargetLabel = "";
+          const theaterMonitorLines = [
+            "買了啦！這台 4K OLED 黑到像老闆的良心！",
+            "240Hz 滑到滑鼠自己離家出走！買了啦！",
+            "雙螢幕買下去，摸魚看起來像在盯大盤！",
+            "這螢幕色彩準到修圖完全不用開濾鏡！",
+            "今天不買明天漲價，卡拿出來刷下去！",
+            "護眼低藍光，加班到半夜眼睛還在發亮！"
+          ];
+          const evPool = [...theaterMonitorLines, ...selectedScenario.officeEvents];
+          const ev = evPool[Math.floor(Math.random() * evPool.length)];
+          spawnFloatText(vw * 0.5, activeCharTopY - 22, `${selectedScenario.label}：${ev}`, "#2b1a10", 21);
+          setCharMood(Math.random() < 0.45 ? "happy" : "innocent", 1.15);
+          renderControls();
         }
       }
+    }
 
+    // 祈福模式：角色腳下旋轉金色祈福陣法雙環（畫在角色底層）
+    if (mode === "bless") {
+      ctx.save();
+      ctx.translate(altarX, feetBaseY);
+      ctx.scale(1, 0.28);
+      ctx.rotate(t * 0.65);
+      ctx.strokeStyle = "rgba(231, 184, 92, 0.78)";
+      ctx.lineWidth = 3.5;
+      ctx.setLineDash([14, 8]);
+      ctx.beginPath();
+      ctx.arc(0, 0, vSize * 0.56, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = "rgba(255, 224, 148, 0.52)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, vSize * 0.42, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 三儀合一核心舞台：選定角色永遠穩站青石供桌正中央，與打小人／祈福／問卦即時互動
+    {
       const vImg = selectedScenario.fullBody
         ? getActiveFullBodySprite(selectedScenario.charKey)
         : imgs[selectedScenario.sprite];
-      // 所有全身角色依該角色 normal 站姿的實際不透明高度統一縮放，保證每個人大小完全一致且切換坐/跪姿不變大顆
-      const isWide = vw > vh;
-      const dockEl = document.querySelector(".bottom-dock");
-      const dockTop = dockEl ? dockEl.getBoundingClientRect().top : (vh - 125);
-      const hudEl = document.querySelector(".top-hud");
-      const hudBottom = hudEl ? hudEl.getBoundingClientRect().bottom : 58;
-      const safeSpan = Math.max(220, dockTop - hudBottom - 70);
-      const vSize = isWide ? Math.min(285, safeSpan * 0.64) : Math.min(235, safeSpan * 0.56);
       const scaleX = 1 + villainSquash * 0.14;
       const scaleY = 1 - villainSquash * 0.14;
       const flyY = villainFly > 0 ? -Math.sin(villainFly * Math.PI) * 120 : 0;
-      const wobble = villainDizzy > 0 ? Math.sin(t * 28) * 0.08 : Math.sin(t * 2.5) * 0.02;
-
-      // 隨機劇場自動輪演：持續演超爆笑辦公室＋螢幕銷售劇情＋三不五十自動打幾下
-      if (autoTheater && resultCard.classList.contains("hidden")) {
-        theaterTimer -= dt;
-        if (theaterTimer <= 0) {
-          theaterTimer = 4.6 + Math.random() * 1.4;
-          theaterSlapCountdown -= 1;
-          if (theaterSlapCountdown <= 0) {
-            theaterSlapCountdown = 2 + Math.floor(Math.random() * 2);
-            performSlap(false);
-          } else {
-            const pool = slapScenarios;
-            selectedScenario = pool[Math.floor(Math.random() * pool.length)];
-            customTargetLabel = "";
-            const theaterMonitorLines = [
-              "買了啦！這台 4K OLED 黑到像老闆的良心！",
-              "240Hz 滑到滑鼠自己離家出走！買了啦！",
-              "雙螢幕買下去，摸魚看起來像在盯大盤！",
-              "這螢幕色彩準到修圖完全不用開濾鏡！",
-              "今天不買明天漲價，卡拿出來刷下去！",
-              "護眼低藍光，加班到半夜眼睛還在發亮！"
-            ];
-            const evPool = [...theaterMonitorLines, ...selectedScenario.officeEvents];
-            const ev = evPool[Math.floor(Math.random() * evPool.length)];
-            spawnFloatText(vw * 0.5, activeCharTopY - 22, `${selectedScenario.label}：${ev}`, "#2b1a10", 21);
-            setCharMood(Math.random() < 0.45 ? "happy" : "innocent", 1.15);
-            renderControls();
-          }
-        }
-      }
-
-      // 腳底穩穩踩在背景供桌石台頂面上，絕不懸空；陰影固定貼在供桌平面
-      const feetBaseY = Math.min(dockTop - 22, Math.max(hudBottom + vSize + 64, bgTableSurfaceY + 14));
+      const wobble = villainDizzy > 0 ? Math.sin(t * 28) * 0.08 : Math.sin(t * 2.4) * 0.018;
       activeCharCenterX = altarX;
 
       ctx.save();
@@ -899,6 +933,10 @@
       ctx.translate(altarX, feetBaseY + flyY);
       ctx.rotate(wobble);
       ctx.scale(scaleX, scaleY);
+      if (mode === "bless") {
+        ctx.shadowColor = selectedBless.color;
+        ctx.shadowBlur = 18;
+      }
 
       if (vImg && vImg.complete && vImg.naturalWidth > 0) {
         const box = getOpaqueBox(vImg) || { x: 0, y: 0, w: vImg.naturalWidth, h: vImg.naturalHeight };
@@ -928,13 +966,12 @@
         ctx.textBaseline = "middle";
         ctx.font = "800 32px 'Noto Serif TC', serif";
         ctx.fillText(selectedScenario.label, 0, -h * 0.68);
-
-        const moodFace = moodNow === "hurt_cry" ? "(＞﹏＜) 哭泣" : moodNow === "innocent" ? "(・_・;) 無辜" : moodNow === "happy" ? "(＾▽＾) 歡樂" : "(•̀ᴗ•́) 一般";
-        ctx.font = "bold 18px 'Noto Serif TC', serif";
-        ctx.fillStyle = "#ffd980";
-        ctx.fillText(moodFace, 0, -h * 0.44);
       }
       ctx.restore();
+    }
+
+    // 1. 打小人法器與連擊印記
+    if (mode === "slap") {
 
       // 人物下方不再顯示多餘名字標籤牌，保持手機與桌面神壇乾淨清爽
 
@@ -996,67 +1033,20 @@
       }
     }
 
-    // 2. 祈福舞台（4 種專屬祈福聖物 + 供桌陣法光環 + 質感心願牌匾）
+    // 2. 祈福互動層（守護聖物懸浮在角色右上方外側＋祈福升空特效）
     if (mode === "bless") {
-      const dockEl = document.querySelector(".bottom-dock");
-      const dockTop = dockEl ? dockEl.getBoundingClientRect().top : (vh - 140);
-      const tableY = Math.min(dockTop - 26, bgTableSurfaceY + 14);
       const pImg = imgs[selectedBless.sprite];
-      const pSize = Math.min(200, propBase * 0.38);
-      const wishText = customWishLabel.trim() || selectedBless.label;
-
-      // 供桌表面接觸投影與旋轉金色祈福陣法光環
-      ctx.save();
-      ctx.translate(altarX, tableY - 4);
-      ctx.scale(1, 0.28);
-      ctx.fillStyle = "rgba(0, 0, 0, 0.38)";
-      ctx.beginPath();
-      ctx.arc(0, 0, pSize * 0.56, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.rotate(t * 0.55);
-      ctx.strokeStyle = "rgba(231, 184, 92, 0.65)";
-      ctx.lineWidth = 3;
-      ctx.setLineDash([12, 8]);
-      ctx.beginPath();
-      ctx.arc(0, 0, pSize * 0.62, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.strokeStyle = "rgba(255, 224, 148, 0.42)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(0, 0, pSize * 0.46, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.restore();
-
+      const pSize = Math.min(110, propBase * 0.24);
       if (pImg && pImg.complete && pImg.naturalWidth > 0) {
         const aspect = pImg.naturalWidth / pImg.naturalHeight;
-        const bob = Math.sin(t * 2.4) * 7;
-        const propCenterY = tableY - pSize * 0.56 - 14 + bob;
+        const bob = Math.sin(t * 2.6) * 6;
+        const px = Math.min(vw - pSize * 0.65, altarX + Math.max(118, vSize * 0.56));
+        const py = feetBaseY - vSize * 0.66 + bob;
         ctx.save();
-        ctx.translate(altarX, propCenterY);
+        ctx.translate(px, py);
         ctx.shadowColor = selectedBless.color;
-        ctx.shadowBlur = 26;
+        ctx.shadowBlur = 22;
         ctx.drawImage(pImg, -pSize * aspect * 0.5, -pSize * 0.5, pSize * aspect, pSize);
-        ctx.restore();
-
-        // 深底細金邊心願牌匾（穩坐於供桌前沿）
-        ctx.save();
-        ctx.font = "700 15px 'Noto Serif TC', serif";
-        const lw = Math.max(126, ctx.measureText(wishText).width + 36);
-        const lh = 30;
-        const lx = altarX - lw * 0.5;
-        const ly = tableY - 12;
-        ctx.fillStyle = "rgba(20, 14, 26, 0.90)";
-        ctx.strokeStyle = "#e7b85c";
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.roundRect(lx, ly, lw, lh, 7);
-        ctx.fill();
-        ctx.stroke();
-        ctx.fillStyle = "#f9e4b4";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(`✦ ${wishText} ✦`, altarX, ly + lh * 0.5);
         ctx.restore();
       }
 
@@ -1069,7 +1059,7 @@
         const rImg = imgs[rp.sprite];
         if (rImg && rImg.complete && rImg.naturalWidth > 0) {
           const aspect = rImg.naturalWidth / rImg.naturalHeight;
-          const h = pSize * rp.scale;
+          const h = Math.min(150, propBase * 0.30) * rp.scale;
           ctx.save();
           ctx.globalAlpha = Math.max(0, 1 - rp.age / 5.5);
           ctx.translate(rp.x, rp.y);
@@ -1083,11 +1073,14 @@
       }
     }
 
-    // 3. 問卦舞台（青銅香爐、竹籤筒、紅木聖筊全數穩放供桌平面）
+    // 3. 問卦互動層（竹籤筒置於角色左前、紅木聖筊置於角色右前，不擋人物）
     if (mode === "oracle") {
-      const dockEl = document.querySelector(".bottom-dock");
-      const dockTop = dockEl ? dockEl.getBoundingClientRect().top : (vh - 130);
-      const tableY = Math.min(dockTop - 22, bgTableSurfaceY + 12);
+      const targetName = getTargetName();
+      const tubeH = Math.min(138, propBase * 0.28);
+      const sideOffset = Math.min(vw * 0.32, Math.max(110, vSize * 0.54));
+      const tubeX = altarX - sideOffset;
+      const blocksX = altarX + sideOffset;
+      const propBaseY = feetBaseY + 6;
 
       if (oracleStep === "shaking") {
         oracleTimer -= dt;
@@ -1095,24 +1088,25 @@
           oracleStep = "drawn";
           drawnFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
           playBellSound(587);
-          spawnBurst(altarX - 58, tableY - 175, "#ffd466", 18, 170);
-          spawnShockwave(altarX - 58, tableY - 150, "#ffd466", 90, 3);
-          spawnFloatText(altarX, tableY - 220, "靈籤已出！請點擊擲筊解籤", "#ffe699", 21);
+          spawnBurst(tubeX, propBaseY - tubeH, "#ffd466", 18, 170);
+          spawnShockwave(tubeX, propBaseY - tubeH * 0.8, "#ffd466", 85, 3);
+          spawnFloatText(vw * 0.5, activeCharTopY - 18, `${targetName}：靈籤已出！快來擲筊解籤！`, "#ffe699", 21);
           renderControls();
         }
       } else if (oracleStep === "throwing") {
         oracleTimer -= dt;
         if (oracleTimer <= 0) {
           oracleStep = "done";
+          setCharMood("happy", 2.5);
           addMerit(10);
           playBellSound(784);
-          spawnBurst(altarX + 68, tableY - 20, "#ffd466", 24, 220);
-          spawnShockwave(altarX + 68, tableY - 12, "#ffd466", 120, 4);
+          spawnBurst(blocksX, propBaseY - 24, "#ffd466", 24, 220);
+          spawnShockwave(blocksX, propBaseY - 12, "#ffd466", 110, 4);
           showResult(
             drawnFortune.grade,
-            drawnFortune.title,
+            `【${targetName}】${drawnFortune.title}`,
             drawnFortune.body,
-            "聖筊應許 ・ 心安 +10"
+            `為 ${targetName} 聖筊應許 ・ 心安 +10`
           );
           renderControls();
         }
@@ -1121,80 +1115,50 @@
       const tImg = imgs["oracle-tube"];
       const sImg = imgs["oracle-stick"];
       const bImg = imgs["oracle-blocks"];
-      const cImg = imgs["oracle-censer"];
+      const shakeRot = oracleStep === "shaking" ? Math.sin(t * 36) * 0.22 : 0;
+      const shakeY = oracleStep === "shaking" ? Math.abs(Math.sin(t * 28)) * -14 : 0;
 
-      // (a) 後方中央：青銅香爐（穩坐供桌後緣＋爐口上升嫋嫋香煙）
-      if (cImg && cImg.complete && cImg.naturalWidth > 0) {
-        const ch = Math.min(108, propBase * 0.21);
-        const ca = cImg.naturalWidth / cImg.naturalHeight;
-        const censerBaseY = tableY - 22;
-        ctx.save();
-        ctx.fillStyle = "rgba(0,0,0,0.36)";
-        ctx.beginPath();
-        ctx.ellipse(altarX, censerBaseY, ch * ca * 0.36, 8, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.drawImage(cImg, altarX - ch * ca * 0.5, censerBaseY - ch, ch * ca, ch);
-        // 香爐嫋嫋香煙
-        ctx.beginPath();
-        ctx.moveTo(altarX, censerBaseY - ch + 14);
-        for (let st = 1; st <= 5; st++) {
-          ctx.lineTo(altarX + Math.sin(t * 2.2 + st * 0.9) * (6 + st * 3), censerBaseY - ch + 14 - st * 22);
-        }
-        ctx.strokeStyle = "rgba(255, 240, 210, 0.22)";
-        ctx.lineWidth = 6;
-        ctx.lineCap = "round";
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      const tubeH = Math.min(198, propBase * 0.38);
-      const tubeX = altarX - Math.min(72, vw * 0.17);
-      const tubeBaseY = tableY + 6;
-      const shakeRot = oracleStep === "shaking" ? Math.sin(t * 36) * 0.20 : 0;
-      const shakeY = oracleStep === "shaking" ? Math.abs(Math.sin(t * 28)) * -16 : 0;
-
-      // (b) 左前方：竹籤筒與抽出之靈籤
+      // 抽出之靈籤
       if ((oracleStep === "drawn" || oracleStep === "throwing" || oracleStep === "done") && sImg && sImg.complete && sImg.naturalWidth > 0) {
-        const stickH = Math.min(120, propBase * 0.23);
+        const stickH = Math.min(96, propBase * 0.20);
         const sa = sImg.naturalWidth / sImg.naturalHeight;
         ctx.save();
-        ctx.translate(tubeX + 6, tubeBaseY - tubeH - 12 + Math.sin(t * 3.2) * 5);
-        ctx.rotate(-0.28);
+        ctx.translate(tubeX + 6, propBaseY - tubeH - 12 + Math.sin(t * 3.2) * 5);
+        ctx.rotate(-0.26);
         ctx.shadowColor = "#ffd466";
-        ctx.shadowBlur = 18;
+        ctx.shadowBlur = 16;
         ctx.drawImage(sImg, -stickH * sa * 0.5, -stickH * 0.5, stickH * sa, stickH);
         ctx.restore();
       }
 
+      // 左前：竹籤筒
       if (tImg && tImg.complete && tImg.naturalWidth > 0) {
         const aspect = tImg.naturalWidth / tImg.naturalHeight;
         const tw = tubeH * aspect;
         ctx.save();
-        ctx.fillStyle = "rgba(0,0,0,0.42)";
+        ctx.fillStyle = "rgba(0,0,0,0.40)";
         ctx.beginPath();
-        ctx.ellipse(tubeX, tubeBaseY, tw * 0.42, 10, 0, 0, Math.PI * 2);
+        ctx.ellipse(tubeX, propBaseY, tw * 0.42, 8, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.translate(tubeX, tubeBaseY + shakeY);
+        ctx.translate(tubeX, propBaseY + shakeY);
         ctx.rotate(shakeRot);
         ctx.drawImage(tImg, -tw * 0.5, -tubeH, tw, tubeH);
         ctx.restore();
       }
 
-      // (c) 右前方：紅木聖筊（穩放供桌，擲筊時高拋翻轉）
+      // 右前：紅木聖筊
       if (bImg && bImg.complete && bImg.naturalWidth > 0) {
-        const bH = Math.min(102, propBase * 0.20);
+        const bH = Math.min(82, propBase * 0.17);
         const aspect = bImg.naturalWidth / bImg.naturalHeight;
         const bw = bH * aspect;
-        const bx = altarX + Math.min(78, vw * 0.18);
-        const bBaseY = tableY + 8;
         const tossY = oracleStep === "throwing" ? -Math.sin((1 - oracleTimer / 0.9) * Math.PI) * 145 : 0;
         const tossRot = oracleStep === "throwing" ? (1 - oracleTimer / 0.9) * Math.PI * 6 : 0;
         ctx.save();
         ctx.fillStyle = "rgba(0,0,0,0.38)";
         ctx.beginPath();
-        ctx.ellipse(bx, bBaseY, bw * 0.36, 9, 0, 0, Math.PI * 2);
+        ctx.ellipse(blocksX, propBaseY, bw * 0.36, 7, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.translate(bx, bBaseY - bH * 0.48 + tossY);
+        ctx.translate(blocksX, propBaseY - bH * 0.48 + tossY);
         ctx.rotate(tossRot);
         ctx.drawImage(bImg, -bw * 0.5, -bH * 0.5, bw, bH);
         ctx.restore();
@@ -1290,8 +1254,8 @@
       const bh = lines.length * lineH + 18;
       const tailH = 12;
       const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 12;
-      const targetAnchorX = mode === "slap" ? activeCharCenterX : ft.x;
-      const targetBottomY = mode === "slap" ? (activeCharTopY - 16) : (ft.y - 12);
+      const targetAnchorX = activeCharCenterX;
+      const targetBottomY = activeCharTopY - 16;
       const by = Math.max(hudB, targetBottomY - bh - tailH);
       const bx = Math.max(12, Math.min(vw - bw - 12, targetAnchorX - bw * 0.5));
       const tailX = Math.max(bx + 22, Math.min(bx + bw - 22, targetAnchorX));
