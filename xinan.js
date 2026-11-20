@@ -16,8 +16,8 @@
 
   // --- 高精細去背圖檔載入（WebP 輕量高速版 + 優先載入當前角色與對應解析度背景）---
   const assetUrls = {
-    bg: "./assets/xinan-temple-bg-portrait-hd.webp?v=20261118_hd2k_v8",
-    bgDesktop: "./assets/xinan-temple-bg-desktop-hd.webp?v=20261118_hd2k_v8",
+    bg: "./assets/xinan-temple-bg-portrait-sunny.webp?v=20261121_sunny_v1",
+    bgDesktop: "./assets/xinan-temple-bg-desktop-sunny.webp?v=20261121_sunny_v1",
     "weapon-slipper": "./assets/v2/weapon-slipper.webp",
     "weapon-clog": "./assets/v2/weapon-clog.webp",
     "weapon-mallet": "./assets/v2/weapon-mallet.webp",
@@ -767,22 +767,22 @@
       const dx = (vw - dw) * 0.5 + Math.sin(t * 0.35) * 5;
       const dy = (vh - dh) * 0.5 + Math.cos(t * 0.25) * 4;
       ctx.drawImage(bg, dx, dy, dw, dh);
-      // 供桌石台頂面中段 Y 座標（直式 0.675 / 橫式 0.665）
-      bgTableSurfaceY = dy + dh * (isWide ? 0.665 : 0.675);
-      // 柔和燈籠暖光呼吸（宮廟神韻光影層）
+      // 供桌石台頂面中段 Y 座標（日間歡樂直式 0.688 / 橫式 0.765）
+      bgTableSurfaceY = dy + dh * (isWide ? 0.765 : 0.688);
+      // 明亮陽光暖光呼吸（開心歡樂日間神韻）
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
-      const glowPulse = 0.08 + 0.04 * Math.sin(t * 2.1);
-      const glowCenter = ctx.createRadialGradient(vw * 0.5, dy + dh * 0.44, 10, vw * 0.5, dy + dh * 0.44, Math.min(vw, vh) * 0.48);
-      glowCenter.addColorStop(0, `rgba(255, 196, 92, ${glowPulse * 1.15})`);
-      glowCenter.addColorStop(1, "rgba(255, 140, 40, 0)");
+      const glowPulse = 0.06 + 0.03 * Math.sin(t * 2.0);
+      const glowCenter = ctx.createRadialGradient(vw * 0.5, dy + dh * 0.28, 10, vw * 0.5, dy + dh * 0.28, Math.min(vw, vh) * 0.52);
+      glowCenter.addColorStop(0, `rgba(255, 244, 196, ${glowPulse})`);
+      glowCenter.addColorStop(1, "rgba(255, 220, 140, 0)");
       ctx.fillStyle = glowCenter;
       ctx.fillRect(0, 0, vw, vh);
       ctx.restore();
 
-      const grad = ctx.createRadialGradient(vw * 0.5, vh * 0.54, vh * 0.14, vw * 0.5, vh * 0.54, Math.max(vw, vh) * 0.85);
-      grad.addColorStop(0, "rgba(20,16,24,0.02)");
-      grad.addColorStop(1, "rgba(12,10,16,0.42)");
+      const grad = ctx.createRadialGradient(vw * 0.5, vh * 0.5, vh * 0.22, vw * 0.5, vh * 0.5, Math.max(vw, vh) * 0.92);
+      grad.addColorStop(0, "rgba(255,250,235,0)");
+      grad.addColorStop(1, "rgba(42,26,18,0.16)");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, vw, vh);
     } else {
