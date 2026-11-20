@@ -8,7 +8,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-<link rel="icon" href="assets/raiden-hero.webp"><title>REA遊戲館｜雷霆空域：蒼穹覺醒 ULTRA</title>
+<link rel="icon" href="assets/solar-cover.webp"><title>REA遊戲館｜鹽原裂日</title>
 
 <style>
 
@@ -323,6 +323,7 @@
 #tab-abyss{border-radius:7px}.stage-tab.active-abyss{background:#102d2b;color:#eee4c8;border:1px solid #c98050;box-shadow:none}
 
 #tab-raiden{border-radius:7px}.stage-tab.active-raiden{background:linear-gradient(180deg,#0284c7,#0369a1);color:#fff;border:1px solid #5ce1ff}
+#tab-solar{border-radius:7px}.stage-tab.active-solar{background:#973e2f;color:#fff4d4;border:1px solid #ffca7a}
 #tab-xinan{border-radius:7px}.stage-tab.active-xinan{background:#c83e2b;color:#fff7ea;border:1px solid #e7b85c;box-shadow:none}
 #tab-ridge{border-radius:7px}.stage-tab.active-ridge{background:#183ac7;color:#f3f6ed;border:1px solid #183ac7;box-shadow:none}
 #tab-chime{border-radius:7px}.stage-tab.active-chime{background:#503357;color:#f3edf5;border:1px solid #503357;box-shadow:none}
@@ -348,7 +349,8 @@
     </div>
 
     <div class="tabs" id="portal-tabs">
-      <button type="button" class="stage-tab active-raiden" id="tab-raiden" onclick="selectStage('raiden')">⚡ 雷霆空域</button>
+      <button type="button" class="stage-tab active-solar" id="tab-solar" onclick="selectStage('solar')">鹽原裂日</button>
+      <button type="button" class="stage-tab" id="tab-raiden" onclick="selectStage('raiden')">⚡ 雷霆空域</button>
       <button type="button" class="stage-tab" id="tab-xinan" onclick="selectStage('xinan')">🏮 心安宮</button>
 
       <button type="button" class="stage-tab" id="tab-shinobi" onclick="selectStage('shinobi')">🥷 赤焰忍傳</button>
@@ -371,7 +373,7 @@
 
       <button type="button" class="fs-btn" id="standalone-link" onclick="togglePortalFullscreen()">⛶ 全螢幕</button>
 
-      <span class="ver-pill" id="portal-version">2026.11.17</span>
+      <span class="ver-pill" id="portal-version">2026.11.21</span>
 
     </div>
 
@@ -381,7 +383,7 @@
 
   <main id="stage-viewport">
 
-    <iframe id="game-frame" src="./raiden.html?embed=1&v=v_20261120_raiden_1" title="雷霆空域：蒼穹覺醒 ULTRA" allow="autoplay; fullscreen"></iframe>
+    <iframe id="game-frame" src="./solar.html?embed=1&v=v_20261121_solar_1" title="鹽原裂日" allow="autoplay; fullscreen"></iframe>
 
   </main>
 
@@ -415,7 +417,7 @@
 
   <script>
 
-    const VERSION_STAMP = "v_20261120_raiden_1";
+    const VERSION_STAMP = "v_20261121_solar_1";
 
     const frame = document.getElementById("game-frame");
 
@@ -488,6 +490,18 @@
 
 
     function selectStage(stage){
+      const tabSolar = document.getElementById('tab-solar');
+      tabSolar.className = 'stage-tab';
+      if (stage === 'solar') {
+        document.querySelectorAll('.stage-tab').forEach(tab => tab.className = 'stage-tab');
+        const source = './solar.html?embed=1&v=' + VERSION_STAMP;
+        if (frame.getAttribute('src') !== source) frame.src = source;
+        frame.title = '鹽原裂日';
+        tabSolar.className = 'stage-tab active-solar';
+        tabSolar.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        toggleCatalog(false);
+        return;
+      }
       const tabRaiden = document.getElementById("tab-raiden"); if(tabRaiden) tabRaiden.className="stage-tab";
       if(stage==="raiden"){document.querySelectorAll(".stage-tab").forEach(b=>b.className="stage-tab");frame.src="./raiden.html?embed=1&v="+VERSION_STAMP;frame.title="雷霆空域：蒼穹覺醒 ULTRA";if(tabRaiden){tabRaiden.className="stage-tab active-raiden";tabRaiden.scrollIntoView({block:"nearest",inline:"nearest"});}toggleCatalog(false);setTimeout(()=>{try{frame.focus();}catch(e){}},120);return;}
       const tabXinan = document.getElementById("tab-xinan"); if(tabXinan) tabXinan.className="stage-tab";
@@ -587,7 +601,7 @@
 
               <div class="cat-meta">${g.genre} ｜ 新增日期：${g.addedDate}</div>
 
-              <div class="cat-desc">• <b>REA 逆向基底</b>：${g.reaSource}<br>• ${(g.highlights || []).join("；")}</div>
+              <div class="cat-desc">• <b>${g.id === 'solar' ? '玩法靈感' : 'REA 逆向基底'}</b>：${g.reaSource}<br>• ${(g.highlights || []).join("；")}</div>
 
             </div>
 
@@ -605,7 +619,7 @@
 
     const st = params.get("stage") || location.hash.replace("#", "");
 
-    if(!st || st==='raiden'){ selectStage('raiden'); } else if(st==='shinobi'){ selectStage('shinobi'); } else if(st==='xinan'){ selectStage('xinan'); } else
+    if(!st || st==='solar'){ selectStage('solar'); } else if(st==='raiden'){ selectStage('raiden'); } else if(st==='shinobi'){ selectStage('shinobi'); } else if(st==='xinan'){ selectStage('xinan'); } else
 
     if(st === "2" || st === "stage2"){
 

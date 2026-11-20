@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#292d29">
+  <title>鹽原裂日｜REA遊戲館</title>
+  <link rel="icon" href="assets/solar-cover.webp">
+  <link rel="preload" as="image" href="assets/solar-cover.webp">
+  <link rel="stylesheet" href="solar.css?v=20261121">
+  <script src="solar-engine.js?v=20261121" defer></script>
+  <script src="solar.js?v=20261121" defer></script>
+</head>
+<body>
+  <canvas id="battlefield" aria-label="鹽原裂日戰場"></canvas>
+  <header id="hud">
+    <div class="gauge"><strong>鹽原裂日</strong><span id="hearts" aria-label="裝甲"></span></div>
+    <div class="score"><span>戰績</span><b id="score">000000</b><small id="combo"></small></div>
+    <div class="tools">
+      <button id="audio" type="button" aria-label="音效" aria-pressed="false">音效關</button>
+      <button id="pause" type="button" aria-label="暫停">暫停</button>
+      <button id="fullscreen" type="button" hidden>全螢幕</button>
+    </div>
+  </header>
+  <div id="objective"><span id="section">01 / 03　越過鹽原</span><progress id="progress" aria-label="區段進度" value="0" max="1"></progress></div>
+  <div id="controls" aria-label="觸控操作" hidden>
+    <div class="move"><button type="button" data-input="left" aria-label="往左">←</button><button type="button" data-input="right" aria-label="往右">→</button></div>
+    <div class="actions"><button type="button" data-input="dash">衝刺</button><button type="button" data-input="jump">跳躍</button></div>
+  </div>
+  <div id="cover" class="screen cover">
+    <div class="cover-inner"><p>01 / 西境輸電線</p><h1>鹽原<br>裂日</h1><p class="cover-sub">穿越鹽原，擊破日爐守衛</p><button id="start" type="button">出擊 <span aria-hidden="true">→</span></button><small>自動射擊・跳躍閃避・衝刺穿越</small></div>
+  </div>
+  <div id="modal" class="screen modal" hidden>
+    <section aria-labelledby="result-title"><p id="result-kicker"></p><h2 id="result-title"></h2><p id="result-text"></p><div><button id="resume" type="button"></button><button id="return" type="button">回到封面</button></div></section>
+  </div>
+</body>
+</html>
