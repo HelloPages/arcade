@@ -349,8 +349,6 @@
     <div class="tabs" id="portal-tabs">
       <button type="button" class="stage-tab" id="tab-xinan" onclick="selectStage('xinan')">🏮 心安宮</button>
 
-      <button type="button" class="stage-tab active-chime" id="tab-chime" onclick="selectStage('chime')">鐘樓拳影</button>
-      <button type="button" class="stage-tab" id="tab-ridge" onclick="selectStage('ridge')">銀脊急行</button>
       <button type="button" class="stage-tab" id="tab-shinobi" onclick="selectStage('shinobi')">🥷 赤焰忍傳</button>
 
       <button type="button" class="stage-tab active-twinbee" id="tab-twinbee" onclick="selectStage('twinbee')">🔔 兵蜂・鈴鐺幻想</button>
@@ -381,7 +379,7 @@
 
   <main id="stage-viewport">
 
-    <iframe id="game-frame" src="./shinobi.html?embed=1&v=v_20261120_curated_2" title="赤焰忍傳：疾風手裏劍" allow="autoplay; fullscreen"></iframe>
+    <iframe id="game-frame" src="./shinobi.html?embed=1&v=v_20261120_curated_3" title="赤焰忍傳：疾風手裏劍" allow="autoplay; fullscreen"></iframe>
 
   </main>
 
@@ -415,7 +413,7 @@
 
   <script>
 
-    const VERSION_STAMP = "v_20261120_curated_2";
+    const VERSION_STAMP = "v_20261120_curated_3";
 
     const frame = document.getElementById("game-frame");
 
@@ -490,10 +488,6 @@
     function selectStage(stage){
       const tabXinan = document.getElementById("tab-xinan"); if(tabXinan) tabXinan.className="stage-tab";
       if(stage==="xinan"){document.querySelectorAll(".stage-tab").forEach(b=>b.className="stage-tab");frame.src="./xinan.html?embed=1&v="+VERSION_STAMP;frame.title="心安宮・三儀殿";if(tabXinan){tabXinan.className="stage-tab active-xinan";tabXinan.scrollIntoView({block:"nearest",inline:"nearest"});}toggleCatalog(false);setTimeout(()=>{try{frame.focus();}catch(e){}},120);return;}
-      document.getElementById('tab-chime').className='stage-tab';
-      if(stage==='chime'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./chime.html?embed=1&v='+VERSION_STAMP;frame.title='鐘樓拳影：發條對決';const tab=document.getElementById('tab-chime');tab.className='stage-tab active-chime';tab.scrollIntoView({block:'nearest',inline:'nearest'});toggleCatalog(false);setTimeout(()=>frame.focus(),120);return;}
-      document.getElementById('tab-ridge').className='stage-tab';
-      if(stage==='ridge'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./ridge.html?embed=1&v='+VERSION_STAMP;frame.title='銀脊急行：雪線追擊';const tab=document.getElementById('tab-ridge');tab.className='stage-tab active-ridge';tab.scrollIntoView({block:'nearest',inline:'nearest'});toggleCatalog(false);setTimeout(()=>frame.focus(),120);return;}
 
       const tabShinobi = document.getElementById('tab-shinobi');
       if(tabShinobi) tabShinobi.className='stage-tab';
@@ -607,7 +601,7 @@
 
     const st = params.get("stage") || location.hash.replace("#", "");
 
-    if(!st || st==='shinobi'){ selectStage('shinobi'); } else if(st==='xinan'){ selectStage('xinan'); } else if(st==='chime'){ selectStage('chime'); } else if(st==='ridge'){ selectStage('ridge'); } else
+    if(!st || st==='shinobi'){ selectStage('shinobi'); } else if(st==='xinan'){ selectStage('xinan'); } else
 
     if(st === "2" || st === "stage2"){
 
