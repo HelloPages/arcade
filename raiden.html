@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>雷霆空域：蒼穹覺醒 ULTRA｜經典街機縱向空戰</title>
+  <link rel="stylesheet" href="./raiden.css?v=20261120_raiden_v1">
+</head>
+<body>
+  <div id="game-wrap">
+    <canvas id="stage"></canvas>
+
+    <!-- 頂部極簡戰術 HUD -->
+    <header class="hud-top">
+      <div class="hud-left">
+        <div class="score-box">
+          <span class="hud-label">SCORE</span>
+          <strong id="scoreVal">000000</strong>
+        </div>
+        <div class="stage-pill" id="stageVal">空域 1-1</div>
+      </div>
+      <div class="hud-center">
+        <div class="hp-bar" id="hpBar" aria-label="裝甲"></div>
+        <div class="wpn-tag" id="wpnVal">🔴 烈焰 Lv.1</div>
+      </div>
+      <div class="hud-right">
+        <button type="button" class="hud-btn" id="btnSound">音效開</button>
+        <button type="button" class="hud-btn" id="btnFs">全螢幕</button>
+      </div>
+    </header>
+
+    <!-- 首領血條（首領現身時顯示） -->
+    <div class="boss-hud hidden" id="bossHud">
+      <div class="boss-title">
+        <span>⚠ SKY FORTRESS 空中要塞</span>
+        <span id="bossPhase">PHASE 1</span>
+      </div>
+      <div class="boss-track"><div class="boss-fill" id="bossFill"></div></div>
+    </div>
+
+    <!-- 底部極簡角落戰術按鈕（不遮擋戰場） -->
+    <footer class="hud-bottom">
+      <button type="button" class="tac-btn wpn-btn" id="btnSwitchWpn">切換武器</button>
+      <div class="tac-right">
+        <button type="button" class="tac-btn shield-btn" id="btnShield">護盾 <span id="shieldCd">就緒</span></button>
+        <button type="button" class="tac-btn bomb-btn" id="btnBomb">⚡核彈 ×<span id="bombVal">3</span></button>
+      </div>
+    </footer>
+
+    <!-- 戰損／凱旋彈窗（單層微立體卡片） -->
+    <div class="modal-card hidden" id="endModal">
+      <div class="modal-badge" id="endBadge">MISSION CLEAR</div>
+      <h2 id="endTitle">蒼穹制霸！</h2>
+      <p id="endBody">戰果統計</p>
+      <button type="button" class="tac-btn bomb-btn modal-cta" id="btnRestart">再次出擊 ↗</button>
+    </div>
+  </div>
+
+  <script src="./raiden.js?v=20261120_raiden_v1"></script>
+</body>
+</html>
