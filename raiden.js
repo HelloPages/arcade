@@ -36,9 +36,9 @@
   const imgs = {};
   const assetMap = {
     bg: "./assets/raiden-bg.webp?v=20261120_raiden_v1",
-    hero: "./assets/raiden-hero.webp?v=20261120_raiden_v1",
-    enemy: "./assets/raiden-enemy.webp?v=20261120_raiden_v1",
-    boss: "./assets/raiden-boss.webp?v=20261120_raiden_v1"
+    hero: "./assets/raiden-hero.webp?v=20261120_raiden_v2",
+    enemy: "./assets/raiden-enemy.webp?v=20261120_raiden_v2",
+    boss: "./assets/raiden-boss.webp?v=20261120_raiden_v2"
   };
   for (const [k, src] of Object.entries(assetMap)) {
     const im = new Image();
@@ -787,16 +787,31 @@
     ctx.save();
     if (shake > 0) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
 
-    // 1. 無縫縱向捲動高空夕陽海峽背景
+    // 1. 鏡像無縫縱向捲動高空夕陽海峽背景（零水平接縫）
     const bg = imgs.bg;
     if (bg && bg.complete && bg.naturalWidth > 0) {
       const scale = Math.max(vw / bg.naturalWidth, vh / bg.naturalHeight);
       const dw = bg.naturalWidth * scale;
       const dh = bg.naturalHeight * scale;
       const ox = (vw - dw) * 0.5;
-      const yOff = bgScroll % dh;
-      ctx.drawImage(bg, ox, yOff - dh, dw, dh);
-      ctx.drawImage(bg, ox, yOff, dw, dh);
+      const cycle = dh * 2;
+      const yOff = bgScroll % cycle;
+      const drawTile = (y, flipped) => {
+        if (y + dh < 0 || y > vh) return;
+        ctx.save();
+        if (flipped) {
+          ctx.translate(0, y + dh);
+          ctx.scale(1, -1);
+          ctx.drawImage(bg, ox, 0, dw, dh);
+        } else {
+          ctx.drawImage(bg, ox, y, dw, dh);
+        }
+        ctx.restore();
+      };
+      drawTile(yOff - cycle, false);
+      drawTile(yOff - dh, true);
+      drawTile(yOff, false);
+      drawTile(yOff + dh, true);
     } else {
       ctx.fillStyle = "#0a2a44";
       ctx.fillRect(0, 0, vw, vh);
