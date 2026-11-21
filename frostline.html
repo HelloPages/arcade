@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#172a33">
+<meta name="description" content="在冰川纜車站迎戰攔路者。近身三連擊、翻滾閃避，擊敗三階段的重裝站長。">
+<title>霜軌突圍</title>
+<link rel="icon" href="assets/frostline-cover.webp">
+<link rel="preload" as="image" href="assets/frostline-arena.webp">
+<link rel="stylesheet" href="frostline.css">
+<main id="station">
+  <canvas id="field" aria-label="霜軌突圍戰鬥場地"></canvas>
+  <div id="cover" class="cover screen">
+    <div class="poster">
+      <p class="line-label">FROSTLINE</p>
+      <h1>霜軌<br class="portrait-break">突圍</h1>
+    </div>
+    <div class="launch">
+      <button id="start-btn" class="primary" disabled>載入場地…</button>
+      <p class="touch-hint">左手移動・右手連拳與閃避</p>
+      <p class="keyboard-hint">方向鍵移動・Z連拳・X閃避</p>
+      <p class="record" id="record"></p>
+    </div>
+  </div>
+  <section id="hud" hidden aria-label="戰況">
+    <div class="plate readout">
+      <span id="wave">纜車月台</span>
+      <strong id="score">000000</strong>
+      <div id="health" role="meter" aria-label="體力" aria-valuemin="0" aria-valuemax="9"></div>
+    </div>
+    <div class="tools">
+      <button id="audio" aria-label="音效" aria-pressed="false" title="音效">♪</button>
+      <button id="fullscreen" aria-label="全螢幕" title="全螢幕">⛶</button>
+      <button id="pause" aria-label="暫停" title="暫停">Ⅱ</button>
+    </div>
+    <div id="boss" class="plate" hidden>
+      <span id="boss-name">裝甲站長</span><div id="boss-bar"></div>
+    </div>
+    <div id="chain" hidden></div>
+    <div id="notice" role="status"></div>
+  </section>
+  <div id="controls" hidden>
+    <div id="stick" role="group" aria-label="移動搖桿"><span></span></div>
+    <div class="actions">
+      <button id="dodge" aria-label="閃避"><span>閃避</span></button>
+      <button id="attack" aria-label="連拳">連拳</button>
+    </div>
+  </div>
+  <section id="menu" class="screen menu" hidden aria-labelledby="menu-title">
+    <div class="menu-content">
+      <p class="line-label">FROSTLINE</p>
+      <h2 id="menu-title">暫停</h2>
+      <p id="result"></p>
+      <button id="resume" class="primary">繼續戰鬥</button>
+      <button id="restart" class="primary">再戰一次</button>
+      <button id="exit">回到封面</button>
+    </div>
+  </section>
+</main>
+<script defer src="frostline-engine.js"></script>
+<script defer src="frostline.js"></script>
+</html>
