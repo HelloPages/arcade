@@ -21,7 +21,9 @@ const recordKey = 'rea-frostline-record-v1';
 let sim, mode = 'cover', pointer = null, stickX = 0, stickY = 0;
 let attackBuffer = 0, dodgeBuffer = 0;
 let audio, muted = true, record = 0, flash = 0, notice = 0, frameAt = 0, accumulator = 0;
-let firstInputAt = 0, inputToPaint = null, entrance = 0;
+let firstInputAt = 0, inputToPaint = null, entrance = 0, leaving = false;
+addEventListener('pagehide', () => { leaving = true; });
+addEventListener('pageshow', () => { leaving = false; });
 
 if (new URLSearchParams(location.search).get('embed') === '1') document.documentElement.dataset.embed = '';
 try { record = Number(localStorage.getItem(recordKey)) || 0; } catch {}
@@ -46,10 +48,21 @@ new ResizeObserver(resize).observe(station);
 
 async function loadArt(names) {
   await Promise.all(names.map(async name => {
-    const art = new Image();
-    art.src = 'assets/frostline-' + name + '.webp';
-    await art.decode();
-    sprites[name] = art;
+    for (let attempt = 0; attempt < 2 && !leaving; attempt++) {
+      const art = new Image();
+      art.src = 'assets/frostline-' + name + '.webp?v=20261122_2' + (attempt ? '&retry=1' : '');
+      let timeout;
+      try {
+        await Promise.race([art.decode(), new Promise((_, reject) => {
+          timeout = setTimeout(() => reject(new Error('下載逾時')), 8000);
+        })]);
+        sprites[name] = art;
+        return;
+      } catch (error) {
+        art.removeAttribute('src');
+        if (attempt && !leaving) throw new Error('場景素材「' + name + '」讀取失敗', { cause: error });
+      } finally { clearTimeout(timeout); }
+    }
   }));
 }
 
@@ -469,10 +482,11 @@ window.render_game_to_text = () => JSON.stringify(sim ? {
 window.frostlineFrameStats = () => measures.slice();
 
 loadArt(['arena', 'ready', 'run', 'punch', 'scout', 'heavy', 'boss']).then(() => {
+  if (leaving) return;
   byId('start-btn').textContent = '開始戰鬥';
   byId('start-btn').disabled = false;
   resize();
-  return loadArt(locations.slice(1)).catch(error => console.error(error));
+  return loadArt(locations.slice(1)).catch(error => { if (!leaving) console.error(error); });
 }).catch(error => {
   byId('start-btn').textContent = '場地載入失敗，請重新整理';
   console.error(error);

@@ -8,7 +8,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-<link rel="icon" href="assets/frostline-cover.webp"><title>REA遊戲館｜霜軌突圍</title>
+<link rel="icon" href="assets/frostline-cover.webp?v=20261122_2"><title>REA遊戲館｜霜軌突圍</title>
 
 <style>
 
@@ -385,7 +385,7 @@
 
   <main id="stage-viewport">
 
-    <iframe id="game-frame" src="./frostline.html?embed=1&v=v_20261122_frostline_1" title="霜軌突圍" allow="autoplay; fullscreen"></iframe>
+    <iframe id="game-frame" src="./frostline.html?embed=1&v=v_20261122_frostline_2" title="霜軌突圍" allow="autoplay; fullscreen"></iframe>
 
   </main>
 
@@ -419,7 +419,7 @@
 
   <script>
 
-    const VERSION_STAMP = "v_20261122_frostline_1";
+    const VERSION_STAMP = "v_20261122_frostline_2";
 
     const frame = document.getElementById("game-frame");
 
@@ -607,7 +607,7 @@
 
           <div class="cat-item" onclick="selectStage('${g.id}')">
 
-            <img class="cat-thumb" src="${g.thumbnail}?v=${VERSION_STAMP}" alt="${g.title}">
+            <img class="cat-thumb" loading="lazy" decoding="async" src="${g.thumbnail}?v=${VERSION_STAMP}" alt="${g.title}">
 
             <div class="cat-body">
 
