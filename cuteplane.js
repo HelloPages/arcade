@@ -42,7 +42,7 @@
   const I18N = {
     tw: {
       score: "分數",
-      stages: ["辦公室雲空", "恐龍水上樂園", "星光珍奶夜市"],
+      stages: ["文具辦公宇宙", "恐龍摩天輪樂園", "甜點玩具星球"],
       weapons: { popcorn: "爆米花砲", rainbow: "彩虹光束", boba: "追蹤波霸" },
       switchWpn: "換武器",
       shieldReady: "泡泡盾",
@@ -55,14 +55,19 @@
       stageNextSub: (s, name) => `🚀 下一關：第 ${s} 關《${name}》登場！`,
       stageIntro: (s, name) => `✨ 第 ${s} 關《${name}》開飛！按住棒棒糖操縱柴柴！ ✨`,
       chiliShout: "🌶️ 爆辣辣椒全屏清場！！",
-      bubbleShout: "🫧 七彩泡泡護盾展開！",
+      bubbleShout: "🫧 護盾＋困敵泡泡發射！",
       pickups: {
         popcorn: "🍿 爆米花散射 UP!",
         rainbow: "🌈 彩虹光束 UP!",
         boba: "🧋 追蹤波霸 UP!",
         chili: "🌶️ 爆辣大招 +1!",
         cake: "🍰 草莓蛋糕回血 +1!",
-        bubble: "🫧 無敵泡泡盾啟動!"
+        bubble: "🫧 無敵泡泡盾啟動!",
+        coin: "🪙 金幣 +100!",
+        starcandy: "⭐ 星星糖火力加速!",
+        magnet: "🧲 糖果磁鐵吸寶中!",
+        giftbox: "🎁 彩虹禮盒大噴發!!",
+        trapbubble: "🫧 魔法困敵泡泡!!"
       },
       quipsByEnemy: {
         copier: ["卡紙啦！請補 A4！", "公文滿天飛！", "影印機暴走啦！"],
@@ -546,18 +551,49 @@
     o.connect(g).connect(a.destination);
     o.start(now); o.stop(now + (big ? 0.40 : 0.15));
   }
-  function sfxPickup() {
+  const COLLECT_SCALE = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51];
+  let collectStreak = 0;
+  let collectStreakTimer = 0;
+
+  function sfxCoin(streak = 0) {
     const a = getAC();
     if (!a) return;
     const now = a.currentTime;
-    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+    const f = COLLECT_SCALE[streak % COLLECT_SCALE.length];
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = "sine"; o.frequency.setValueAtTime(f, now);
+    o.frequency.setValueAtTime(f * 1.5, now + 0.045);
+    g.gain.setValueAtTime(0.18, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+    o.connect(g).connect(a.destination);
+    o.start(now); o.stop(now + 0.17);
+  }
+  function sfxBubblePop() {
+    const a = getAC();
+    if (!a) return;
+    const now = a.currentTime;
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(380, now);
+    o.frequency.exponentialRampToValueAtTime(1260, now + 0.075);
+    g.gain.setValueAtTime(0.22, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.085);
+    o.connect(g).connect(a.destination);
+    o.start(now); o.stop(now + 0.09);
+  }
+  function sfxPickup(rare = false) {
+    const a = getAC();
+    if (!a) return;
+    const now = a.currentTime;
+    const seq = rare ? [523.25, 659.25, 783.99, 1046.5, 1318.51] : [523.25, 659.25, 783.99, 1046.5];
+    seq.forEach((f, i) => {
       const o = a.createOscillator(), g = a.createGain();
       o.type = "triangle";
-      o.frequency.setValueAtTime(f, now + i * 0.042);
-      g.gain.setValueAtTime(0.20, now + i * 0.042);
-      g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.042 + 0.14);
+      o.frequency.setValueAtTime(f, now + i * 0.04);
+      g.gain.setValueAtTime(rare ? 0.24 : 0.19, now + i * 0.04);
+      g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.04 + 0.15);
       o.connect(g).connect(a.destination);
-      o.start(now + i * 0.042); o.stop(now + i * 0.042 + 0.15);
+      o.start(now + i * 0.04); o.stop(now + i * 0.04 + 0.16);
     });
   }
 
@@ -582,12 +618,17 @@
     { id: "boba", itemKey: "item-boba", color: "#9b5de5" }
   ];
   const TREASURES = {
-    popcorn: { img: "item-popcorn", glow: "#ffd166" },
-    rainbow: { img: "item-rainbow", glow: "#ff70d9" },
-    boba:    { img: "item-boba",    glow: "#b388ff" },
-    chili:   { img: "item-chili",   glow: "#ff5e5b" },
-    cake:    { img: "item-cake",    glow: "#ff85a1" },
-    bubble:  { img: "item-bubble",  glow: "#48cae4" }
+    popcorn:    { img: "item-popcorn", glow: "#ffd166" },
+    rainbow:    { img: "item-rainbow", glow: "#ff70d9" },
+    boba:       { img: "item-boba",    glow: "#b388ff" },
+    chili:      { img: "item-chili",   glow: "#ff5e5b" },
+    cake:       { img: "item-cake",    glow: "#ff85a1" },
+    bubble:     { img: "item-bubble",  glow: "#48cae4" },
+    coin:       { vector: true, glow: "#ffd84d" },
+    starcandy:  { vector: true, glow: "#ff99c8" },
+    magnet:     { vector: true, glow: "#ff4d6d" },
+    giftbox:    { vector: true, glow: "#c084fc" },
+    trapbubble: { vector: true, glow: "#38bdf8" }
   };
 
   let gameOver = false;
@@ -615,7 +656,8 @@
   const player = {
     x: vw * 0.5, y: vh * 0.68, tx: vw * 0.5, ty: vh * 0.68,
     hp: 5, maxHp: 5, wpnIdx: 0, wpnLv: 1, bombs: 3,
-    shieldTime: 0, shieldCd: 0, invuln: 0, fireCd: 0, tilt: 0
+    shieldTime: 0, shieldCd: 0, magnetTime: 0, speedBoostTime: 0,
+    invuln: 0, fireCd: 0, tilt: 0, collectBounce: 0
   };
 
   const pBullets = [];
@@ -624,9 +666,14 @@
   const pickups = [];
   const particles = [];
   const shockwaves = [];
+  const rainbowRings = []; // 尾牙抽獎感：彩虹橢圓光圈！
+  const confetti = [];     // 尾牙抽獎感：短彩帶四散！
+  const trapBubbles = [];  // 互動泡泡：吹出可包住敵人的魔法泡泡！
+  const bonusProps = [];   // 關卡可擊破奇想彩蛋物件（巨型咖啡機／氣球束／轉蛋機）
   const floatTexts = [];
   const quips = [];
   let boss = null;
+  let stageEventTimer = 5.5;
 
   // 取得四邊邊界（上緣受限時優先完整顯示整架柴犬飛機！）
   function getPlayerBounds() {
@@ -770,9 +817,80 @@
     }
   }
 
+  function spawnPartyCelebrate(x, y, big = false) {
+    // 尾牙抽獎感：彩虹橢圓光圈＋短彩帶四散！
+    const ringCount = big ? 2 : 1;
+    for (let r = 0; r < ringCount; r++) {
+      rainbowRings.push({
+        x, y,
+        rx: 12 + r * 10, ry: 7 + r * 6,
+        maxRx: big ? 115 : 58, maxRy: big ? 74 : 38,
+        hue: (r * 95 + Math.random() * 60) % 360,
+        life: big ? 0.55 : 0.36, maxLife: big ? 0.55 : 0.36
+      });
+    }
+    const cnt = big ? 18 : 8;
+    const cols = ["#ff3864", "#ffd84d", "#38e0a8", "#34c6ff", "#c084fc", "#ff9f1c"];
+    for (let i = 0; i < cnt; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const sp = (big ? 90 : 55) + Math.random() * (big ? 190 : 115);
+      confetti.push({
+        x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 40,
+        w: 6 + Math.random() * 5, h: 3 + Math.random() * 2.5,
+        rot: Math.random() * 6.28, vrot: (Math.random() - 0.5) * 14,
+        color: cols[i % cols.length],
+        life: 0.55 + Math.random() * 0.45, maxLife: 1.0
+      });
+    }
+  }
+
+  function spawnCoinArc(cx, cy, count = 5) {
+    for (let i = 0; i < count; i++) {
+      const norm = (i / Math.max(1, count - 1)) - 0.5;
+      const x = Math.max(32, Math.min(vw - 32, cx + norm * 120));
+      const y = cy - Math.abs(norm) * 44;
+      pickups.push({ x, y, vy: 78 + Math.random() * 18, type: i === Math.floor(count / 2) ? "starcandy" : "coin", phase: i * 0.7 });
+    }
+  }
+
+  function launchTrapBubbles(count = 3) {
+    sfxBubblePop();
+    for (let i = 0; i < count; i++) {
+      const spread = (i - (count - 1) / 2) * 0.32;
+      trapBubbles.push({
+        x: player.x + spread * 40, y: player.y - 26,
+        vx: Math.sin(spread) * 140, vy: -240 - Math.random() * 45,
+        r: 22, life: 3.4, phase: Math.random() * 6.28
+      });
+    }
+  }
+
+  function spawnBonusProp() {
+    if (bonusProps.length >= 1 || boss) return;
+    const stIdx = (stageNum - 1) % 3;
+    const kinds = ["coffeemachine", "balloons", "gachapon"];
+    bonusProps.push({
+      kind: kinds[stIdx],
+      x: 56 + Math.random() * (vw - 112),
+      y: -54, vy: 56,
+      hp: 36 + stageNum * 12, maxHp: 36 + stageNum * 12,
+      size: 56, hitFlash: 0, phase: Math.random() * 6.28
+    });
+  }
+
   function spawnPickup(x, y, forcedType = null) {
     const r = Math.random();
-    const type = forcedType || (r < 0.24 ? "popcorn" : r < 0.46 ? "rainbow" : r < 0.68 ? "boba" : r < 0.80 ? "chili" : r < 0.90 ? "cake" : "bubble");
+    const type = forcedType || (
+      r < 0.24 ? "coin" :
+      r < 0.38 ? "starcandy" :
+      r < 0.50 ? "popcorn" :
+      r < 0.61 ? "rainbow" :
+      r < 0.72 ? "boba" :
+      r < 0.80 ? "magnet" :
+      r < 0.87 ? "trapbubble" :
+      r < 0.92 ? "giftbox" :
+      r < 0.96 ? "chili" : "cake"
+    );
     pickups.push({ x: Math.max(36, Math.min(vw - 36, x)), y, vy: 82, type, phase: Math.random() * 6.28 });
   }
 
@@ -811,7 +929,8 @@
     if (gameOver || player.shieldCd > 0 || player.shieldTime > 0) return;
     player.shieldTime = 4.4;
     player.shieldCd = 10.5;
-    sfxPickup();
+    launchTrapBubbles(3);
+    spawnPartyCelebrate(player.x, player.y, false);
     floatTexts.push({ x: player.x, y: player.y - 38, text: tx().bubbleShout, color: "#00b4d8", life: 1.15, maxLife: 1.15 });
     renderHud();
   }
@@ -831,9 +950,11 @@
     player.x = vw * 0.5; player.y = Math.min(vh * 0.68, getPlayerBounds().maxY);
     player.tx = player.x; player.ty = player.y;
     player.hp = player.maxHp; player.wpnIdx = 0; player.wpnLv = 1; player.bombs = 3;
-    player.shieldTime = 0; player.shieldCd = 0; player.invuln = 1.2;
+    player.shieldTime = 0; player.shieldCd = 0; player.magnetTime = 0; player.speedBoostTime = 0; player.invuln = 1.2;
+    collectStreak = 0; collectStreakTimer = 0; stageEventTimer = 5.0;
     pBullets.length = 0; eBullets.length = 0; enemies.length = 0;
     pickups.length = 0; particles.length = 0; shockwaves.length = 0;
+    rainbowRings.length = 0; confetti.length = 0; trapBubbles.length = 0; bonusProps.length = 0;
     floatTexts.length = 0; quips.length = 0; boss = null;
     bossHud.classList.add("hidden");
     endModal.classList.add("hidden");
@@ -841,6 +962,7 @@
     bannerSub = "";
     bannerTimer = 2.6;
     spawnPickup(vw * 0.5, vh * 0.24, "popcorn");
+    spawnCoinArc(vw * 0.5, vh * 0.16, 5);
     renderHud();
   }
   btnRestart.addEventListener("click", resetGame);
@@ -899,6 +1021,7 @@
       }
       player.fireCd = 0.19;
     }
+    if (player.speedBoostTime > 0) player.fireCd *= 0.72;
   }
 
   // =========================================================
@@ -1028,6 +1151,9 @@
     getState: () => ({
       score, kills, stageNum, waveNum, bgmRunning, soundOn,
       activeTrackKey, stageClearTimer,
+      collectStreak, magnetTime: +player.magnetTime.toFixed(1),
+      bubbledEnemies: enemies.filter(e => e.bubbled > 0).length,
+      rainbowRings: rainbowRings.length,
       pickups: pickups.length, enemies: enemies.length,
       enemyKinds: [...new Set(enemies.map(e => e.kind))],
       boss: boss ? boss.kind : null,
@@ -1397,6 +1523,13 @@
       player.tilt = Math.max(-0.22, Math.min(0.22, dx * 0.006));
 
       if (player.invuln > 0) player.invuln = Math.max(0, player.invuln - dt);
+      if (player.magnetTime > 0) player.magnetTime = Math.max(0, player.magnetTime - dt);
+      if (player.speedBoostTime > 0) player.speedBoostTime = Math.max(0, player.speedBoostTime - dt);
+      if (player.collectBounce > 0) player.collectBounce = Math.max(0, player.collectBounce - dt * 5);
+      if (collectStreakTimer > 0) {
+        collectStreakTimer = Math.max(0, collectStreakTimer - dt);
+        if (collectStreakTimer === 0) collectStreak = 0;
+      }
       if (hitTickCd > 0) hitTickCd = Math.max(0, hitTickCd - dt);
       if (player.shieldTime > 0) {
         player.shieldTime = Math.max(0, player.shieldTime - dt);
@@ -1413,6 +1546,16 @@
       } else {
         player.fireCd -= dt;
         if (player.fireCd <= 0) firePlayerWeapon();
+
+        // 關卡奇想互動事件（可擊破彩蛋物件／泡泡噴泉／星光金幣雨！）
+        stageEventTimer -= dt;
+        if (stageEventTimer <= 0 && !boss) {
+          stageEventTimer = 7.5 + Math.random() * 2.5;
+          const stIdx = (stageNum - 1) % 3;
+          spawnBonusProp();
+          if (stIdx === 1) launchTrapBubbles(2); // 恐龍樂園泡泡浴缸噴泉加贈泡泡！
+          else if (stIdx === 2) spawnCoinArc(vw * (0.25 + Math.random() * 0.5), vh * 0.16, 6); // 甜點星球撒金幣雨！
+        }
 
         if (enemies.length === 0 && !boss) {
           waveTimer += dt;
@@ -1452,17 +1595,49 @@
               spawnQuip(e.x, e.y - 26, tx().quipsByEnemy.dinoegg[1]);
             }
             if (e.hp <= 0) {
-              spawnBoom(e.x, e.y, "#ffd84d", 14, false);
-              score += e.score; kills += 1;
-              if (Math.random() < 0.36) spawnPickup(e.x, e.y);
+              const wasBubbled = e.bubbled > 0;
+              if (wasBubbled) {
+                sfxBubblePop();
+                spawnPartyCelebrate(e.x, e.y, false);
+                spawnCoinArc(e.x, e.y, 4);
+              } else {
+                spawnBoom(e.x, e.y, "#ffd84d", 14, false);
+              }
+              score += e.score + (wasBubbled ? 200 : 0); kills += 1;
+              if (Math.random() < 0.65) spawnPickup(e.x, e.y);
               if (Math.random() < 0.30) {
                 const ql = tx().quipsByEnemy[e.kind] || tx().quipsByEnemy.catufo;
                 spawnQuip(e.x, e.y - 18, ql[Math.floor(Math.random() * ql.length)]);
               }
               enemies.splice(j, 1);
+              // 整隊擊破驚喜：撒出一小串閃亮金幣雨！
+              if (enemies.length === 0 && !boss) {
+                spawnCoinArc(vw * 0.5, vh * 0.24, 6);
+                spawnPartyCelebrate(vw * 0.5, vh * 0.26, false);
+              }
               renderHud();
             }
             break;
+          }
+        }
+        // 可擊破關卡奇想彩蛋物件（巨型咖啡機／氣球束／招財轉蛋機）
+        if (!hit) {
+          for (let j = bonusProps.length - 1; j >= 0; j--) {
+            const bp = bonusProps[j];
+            if (Math.hypot(b.x - bp.x, b.y - bp.y) < bp.size * 0.52 + b.r) {
+              bp.hp -= b.dmg; bp.hitFlash = 0.08; hit = true;
+              if (hitTickCd <= 0) { sfxHitTick(); hitTickCd = 0.06; }
+              if (bp.hp <= 0) {
+                spawnPartyCelebrate(bp.x, bp.y, true);
+                sfxPickup(true);
+                spawnCoinArc(bp.x, bp.y, 6);
+                spawnPickup(bp.x, bp.y, "giftbox");
+                score += 500;
+                bonusProps.splice(j, 1);
+                renderHud();
+              }
+              break;
+            }
           }
         }
         if (!hit && boss && Math.hypot(b.x - boss.x, b.y - boss.y) < boss.size * 0.44 + b.r) {
@@ -1512,9 +1687,24 @@
         if (boss.hp <= 0) triggerStageClear();
       }
 
-      // 更新敵人（各類型有專屬動作與彈幕）
+      // 更新敵人（被困在泡泡裡會飄浮停止攻擊，碰破噴星星＋金幣！）
       for (let i = enemies.length - 1; i >= 0; i--) {
         const e = enemies[i];
+        if (e.bubbled > 0) {
+          e.bubbled = Math.max(0, e.bubbled - dt);
+          e.y -= 28 * dt;
+          e.x += Math.sin(t * 5 + e.phase) * 26 * dt;
+          if (Math.hypot(e.x - player.x, e.y - player.y) < e.size * 0.55 + 24) {
+            sfxBubblePop();
+            spawnPartyCelebrate(e.x, e.y, false);
+            spawnCoinArc(e.x, e.y, 4);
+            score += e.score + 200; kills += 1;
+            enemies.splice(i, 1);
+            renderHud();
+            continue;
+          }
+          continue;
+        }
         if (e.kind === "chair") {
           e.rot += 9.5 * dt;
           e.x += Math.sin(t * 4.2 + e.phase) * 95 * dt + e.vx * dt;
@@ -1570,24 +1760,97 @@
         }
       }
 
-      // 更新 6 款實繪寶物
+      // 更新互動困敵泡泡（吹出去碰到敵人立刻把敵人包成大泡泡！）
+      for (let i = trapBubbles.length - 1; i >= 0; i--) {
+        const tb = trapBubbles[i];
+        tb.life -= dt;
+        tb.x += tb.vx * dt + Math.sin(t * 5 + tb.phase) * 32 * dt;
+        tb.y += tb.vy * dt;
+        if (tb.life <= 0 || tb.y < -40) { trapBubbles.splice(i, 1); continue; }
+        let caught = false;
+        for (const e of enemies) {
+          if (!e.bubbled && Math.hypot(tb.x - e.x, tb.y - e.y) < e.size * 0.5 + tb.r) {
+            e.bubbled = 3.8;
+            sfxBubblePop();
+            spawnPartyCelebrate(e.x, e.y, false);
+            caught = true;
+            break;
+          }
+        }
+        if (caught) trapBubbles.splice(i, 1);
+      }
+
+      // 更新關卡可擊破奇想彩蛋物件
+      for (let i = bonusProps.length - 1; i >= 0; i--) {
+        const bp = bonusProps[i];
+        bp.y += bp.vy * dt;
+        bp.x += Math.sin(t * 2.2 + bp.phase) * 36 * dt;
+        if (bp.hitFlash > 0) bp.hitFlash = Math.max(0, bp.hitFlash - dt);
+        if (bp.y > vh + 70) bonusProps.splice(i, 1);
+      }
+
+      // 更新 11 款豐富寶物掉落（含磁鐵吸寶＋連續吃寶音符上揚＋尾牙彩虹橢圓光圈＋短彩帶！）
       for (let i = pickups.length - 1; i >= 0; i--) {
         const pk = pickups[i];
-        pk.y += pk.vy * dt;
-        pk.x += Math.sin(t * 4 + pk.phase) * 30 * dt;
-        if (Math.hypot(pk.x - player.x, pk.y - player.y) < 42) {
-          sfxPickup();
+        if (player.magnetTime > 0) {
+          const dist = Math.hypot(player.x - pk.x, player.y - pk.y);
+          if (dist < 280) {
+            const ang = Math.atan2(player.y - pk.y, player.x - pk.x);
+            pk.x += Math.cos(ang) * 390 * dt;
+            pk.y += Math.sin(ang) * 390 * dt;
+          } else {
+            pk.y += pk.vy * dt;
+          }
+        } else {
+          pk.y += pk.vy * dt;
+          pk.x += Math.sin(t * 4 + pk.phase) * 26 * dt;
+        }
+
+        if (Math.hypot(pk.x - player.x, pk.y - player.y) < 44) {
+          collectStreak += 1;
+          collectStreakTimer = 2.2;
+          player.collectBounce = 1.0;
           const tCopy = tx().pickups;
-          if (pk.type === "chili") player.bombs = Math.min(6, player.bombs + 1);
-          else if (pk.type === "cake") player.hp = Math.min(player.maxHp, player.hp + 1);
-          else if (pk.type === "bubble") player.shieldTime = Math.max(player.shieldTime, 4.5);
-          else {
+          const isRare = pk.type === "giftbox" || pk.type === "chili" || pk.type === "bubble" || pk.type === "magnet";
+
+          if (pk.type === "coin") {
+            sfxCoin(collectStreak);
+            score += 100 + Math.min(200, collectStreak * 20);
+          } else if (pk.type === "starcandy") {
+            sfxCoin(collectStreak + 2);
+            score += 250;
+            player.speedBoostTime = Math.max(player.speedBoostTime, 5.0);
+          } else if (pk.type === "magnet") {
+            sfxPickup(true);
+            player.magnetTime = 8.5;
+          } else if (pk.type === "trapbubble") {
+            sfxBubblePop();
+            launchTrapBubbles(4);
+          } else if (pk.type === "giftbox") {
+            sfxPickup(true);
+            score += 600;
+            spawnCoinArc(pk.x, Math.max(120, pk.y - 40), 6);
+            player.wpnLv = Math.min(5, player.wpnLv + 1);
+          } else if (pk.type === "chili") {
+            sfxPickup(true);
+            player.bombs = Math.min(6, player.bombs + 1);
+          } else if (pk.type === "cake") {
+            sfxPickup(false);
+            player.hp = Math.min(player.maxHp, player.hp + 1);
+          } else if (pk.type === "bubble") {
+            sfxPickup(true);
+            player.shieldTime = Math.max(player.shieldTime, 4.5);
+            launchTrapBubbles(3);
+          } else {
+            sfxPickup(false);
             const idx = WEAPONS.findIndex(w => w.id === pk.type);
             if (player.wpnIdx === idx) player.wpnLv = Math.min(5, player.wpnLv + 1);
             else { player.wpnIdx = idx; player.wpnLv = Math.min(5, Math.max(2, player.wpnLv)); }
           }
-          floatTexts.push({ x: player.x, y: player.y - 36, text: tCopy[pk.type] || "UP!", color: "#fffdf5", life: 1.15, maxLife: 1.15 });
-          spawnBoom(pk.x, pk.y, TREASURES[pk.type]?.glow || "#ffd84d", 10, false);
+
+          spawnPartyCelebrate(pk.x, pk.y, isRare);
+          const label = pk.type === "coin" && collectStreak >= 2 ? `🪙 +${100 + Math.min(200, collectStreak * 20)} ×${collectStreak}` : (tCopy[pk.type] || "UP!");
+          floatTexts.push({ x: player.x, y: player.y - 36, text: label, color: "#fffdf5", life: 1.05, maxLife: 1.05 });
           renderHud();
           pickups.splice(i, 1);
           continue;
@@ -1610,6 +1873,15 @@
       shockwaves[i].life -= dt;
       if (shockwaves[i].life <= 0) shockwaves.splice(i, 1);
     }
+    for (let i = rainbowRings.length - 1; i >= 0; i--) {
+      rainbowRings[i].life -= dt;
+      if (rainbowRings[i].life <= 0) rainbowRings.splice(i, 1);
+    }
+    for (let i = confetti.length - 1; i >= 0; i--) {
+      const c = confetti[i];
+      c.life -= dt; c.x += c.vx * dt; c.y += c.vy * dt; c.vy += 260 * dt; c.rot += c.vrot * dt;
+      if (c.life <= 0) confetti.splice(i, 1);
+    }
     for (let i = floatTexts.length - 1; i >= 0; i--) {
       floatTexts[i].life -= dt; floatTexts[i].y -= 36 * dt;
       if (floatTexts[i].life <= 0) floatTexts.splice(i, 1);
@@ -1631,19 +1903,111 @@
     ctx.fillStyle = PASTEL_STAGES[curIdx].wash;
     ctx.fillRect(0, 0, vw, vh);
 
-    // 2. 6 款實繪寶物（鮮豔實色＋深色投影輪廓）
+    // 1b. 各關卡專屬奇想景觀層（文具宇宙漂浮鉛筆迴紋針／恐龍遊樂園旋轉摩天輪／甜點玩具星光）
+    ctx.save();
+    ctx.globalAlpha = 0.28;
+    if (curIdx === 0) {
+      // 關卡 1：漂浮文具辦公室宇宙（大粉彩鉛筆與便利貼緩緩飄過）
+      const py = ((bgScroll * 0.45) % (vh + 160)) - 80;
+      ctx.save(); ctx.translate(vw * 0.16, py); ctx.rotate(0.42);
+      ctx.fillStyle = "#fde047"; ctx.fillRect(-10, -34, 20, 56);
+      ctx.fillStyle = "#f9a8d4"; ctx.fillRect(-10, -44, 20, 10);
+      ctx.fillStyle = "#fed7aa"; ctx.beginPath(); ctx.moveTo(-10, 22); ctx.lineTo(0, 38); ctx.lineTo(10, 22); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      const ny = ((bgScroll * 0.35 + vh * 0.5) % (vh + 160)) - 80;
+      ctx.save(); ctx.translate(vw * 0.84, ny); ctx.rotate(-0.22);
+      ctx.fillStyle = "#fef08a"; ctx.fillRect(-22, -22, 44, 44);
+      ctx.restore();
+    } else if (curIdx === 1) {
+      // 關卡 2：恐龍摩天輪泡泡水上樂園（慢速旋轉粉彩摩天輪剪影！）
+      const fx = vw * 0.82, fy = vh * 0.28, fr = 64;
+      ctx.save(); ctx.translate(fx, fy); ctx.rotate(t * 0.45);
+      ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(0, 0, fr, 0, Math.PI * 2); ctx.stroke();
+      for (let i = 0; i < 8; i++) {
+        const a = (Math.PI * 2 * i) / 8;
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * fr, Math.sin(a) * fr); ctx.stroke();
+        ctx.fillStyle = ["#ff8fab", "#ffd166", "#80ed99", "#72efdd"][i % 4];
+        ctx.beginPath(); ctx.arc(Math.cos(a) * fr, Math.sin(a) * fr, 9, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+    } else {
+      // 關卡 3：甜點玩具星球（漂浮星光棒棒糖星環）
+      const sx = vw * 0.18, sy = ((bgScroll * 0.3) % (vh + 160)) - 80;
+      ctx.strokeStyle = "#ffd84d"; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.ellipse(sx, sy, 44, 14, -0.3, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = "#ff8fab"; ctx.beginPath(); ctx.arc(sx, sy, 20, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+
+    // 1c. 可擊破奇想彩蛋物件（巨型咖啡機／彩虹氣球束／招財轉蛋機）
+    for (const bp of bonusProps) {
+      ctx.save();
+      ctx.translate(bp.x, bp.y);
+      ctx.strokeStyle = "#2b1810"; ctx.lineWidth = 3;
+      if (bp.hitFlash > 0) ctx.filter = "brightness(1.7)";
+      if (bp.kind === "coffeemachine") {
+        ctx.fillStyle = "#fb7185"; ctx.beginPath(); ctx.roundRect(-22, -24, 44, 48, 8); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#fffdf5"; ctx.fillRect(-13, -6, 26, 20); ctx.strokeRect(-13, -6, 26, 20);
+        ctx.fillStyle = "#78350f"; ctx.fillRect(-9, 2, 18, 10);
+      } else if (bp.kind === "balloons") {
+        [[-12, -10, "#ff5768"], [12, -8, "#ffd84d"], [0, -20, "#38bdf8"]].forEach(([bx, by, col]) => {
+          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(bx, by, 13, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        });
+      } else {
+        ctx.fillStyle = "#ffd84d"; ctx.beginPath(); ctx.arc(0, -8, 22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#ff5768"; ctx.fillRect(-18, 8, 36, 18); ctx.strokeRect(-18, 8, 36, 18);
+      }
+      ctx.restore();
+    }
+
+    // 2. 11 款豐富寶物（6 款實繪 WebP ＋ 5 款精細向量可愛寶物：金幣／星星糖／磁鐵／彩虹禮盒／魔法泡泡）
     for (const pk of pickups) {
       const def = TREASURES[pk.type] || TREASURES.popcorn;
-      const im = imgs[def.img];
       ctx.save();
       ctx.translate(pk.x, pk.y + Math.sin(t * 6 + pk.phase) * 3);
       ctx.rotate(Math.sin(t * 3.5 + pk.phase) * 0.14);
       ctx.shadowColor = "rgba(35, 18, 10, 0.55)";
       ctx.shadowBlur = 6;
-      if (im && im.complete && im.naturalWidth > 0) {
-        const s = 48, asp = im.naturalWidth / im.naturalHeight;
+      if (!def.vector && def.img && imgs[def.img] && imgs[def.img].complete && imgs[def.img].naturalWidth > 0) {
+        const im = imgs[def.img], s = 48, asp = im.naturalWidth / im.naturalHeight;
         const w = asp >= 1 ? s : s * asp, h = asp >= 1 ? s / asp : s;
         ctx.drawImage(im, -w * 0.5, -h * 0.5, w, h);
+      } else if (pk.type === "coin") {
+        // 閃亮旋轉金幣
+        const wScale = 0.65 + 0.35 * Math.abs(Math.cos(t * 6 + pk.phase));
+        ctx.scale(wScale, 1);
+        ctx.fillStyle = "#ffd84d"; ctx.strokeStyle = "#5c2d0c"; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#fff9db"; ctx.font = "900 14px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("★", 0, 1);
+      } else if (pk.type === "starcandy") {
+        // 可愛彩繪星星糖（金平糖）
+        ctx.fillStyle = "#ff8fab"; ctx.strokeStyle = "#3a1f12"; ctx.lineWidth = 2.8;
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+          const r = i % 2 === 0 ? 16 : 8, a = (Math.PI * 2 * i) / 10 - Math.PI * 0.5;
+          if (i === 0) ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
+          else ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+        }
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+      } else if (pk.type === "magnet") {
+        // 糖果吸寶磁鐵
+        ctx.strokeStyle = "#3a1f12"; ctx.lineWidth = 10; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.arc(0, -2, 12, Math.PI, 0, true); ctx.stroke();
+        ctx.strokeStyle = "#ff3864"; ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.arc(0, -2, 12, Math.PI, 0, true); ctx.stroke();
+        ctx.fillStyle = "#e2e8f0"; ctx.fillRect(-15, -12, 6, 8); ctx.fillRect(9, -12, 6, 8);
+      } else if (pk.type === "giftbox") {
+        // 彩虹驚喜禮盒
+        ctx.fillStyle = "#c084fc"; ctx.strokeStyle = "#2b1810"; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.roundRect(-16, -15, 32, 30, 6); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#ffd84d"; ctx.fillRect(-4, -15, 8, 30); ctx.fillRect(-16, -4, 32, 8);
+      } else {
+        // 魔法困敵泡泡球
+        ctx.fillStyle = "rgba(125, 211, 252, 0.55)"; ctx.strokeStyle = "#0284c7"; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(-5, -5, 4.5, 0, Math.PI * 2); ctx.fill();
       }
       ctx.restore();
     }
@@ -1676,9 +2040,36 @@
       ctx.restore();
     }
 
-    // 4. 創意搞笑敵人與頭目
-    for (const e of enemies) drawCreativeEnemy(e, t);
+    // 4. 創意搞笑敵人（含被魔法泡泡包住的可愛狀態！）與頭目
+    for (const e of enemies) {
+      drawCreativeEnemy(e, t);
+      if (e.bubbled > 0) {
+        ctx.save();
+        ctx.translate(e.x, e.y);
+        const br = e.size * 0.62 + Math.sin(t * 10) * 2;
+        ctx.fillStyle = "rgba(125, 228, 255, 0.30)";
+        ctx.strokeStyle = `hsla(${(now * 0.28) % 360}, 95%, 62%, 0.95)`;
+        ctx.lineWidth = 3.5;
+        ctx.beginPath(); ctx.arc(0, 0, br, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+        ctx.beginPath(); ctx.ellipse(-br * 0.34, -br * 0.34, br * 0.24, br * 0.12, -0.6, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+    }
     if (boss) drawCreativeBoss(boss, t);
+
+    // 4b. 飛行的魔法困敵泡泡
+    for (const tb of trapBubbles) {
+      ctx.save();
+      ctx.translate(tb.x, tb.y);
+      ctx.fillStyle = "rgba(144, 224, 239, 0.38)";
+      ctx.strokeStyle = `hsla(${(now * 0.3 + tb.phase * 50) % 360}, 95%, 60%, 0.95)`;
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(0, 0, tb.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath(); ctx.arc(-tb.r * 0.32, -tb.r * 0.32, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
 
     // 5. 高對比實色敵彈（含暴走影印機公文彈＋深色實框高飽和危險彈！）
     for (const eb of eBullets) {
@@ -1710,7 +2101,16 @@
       if (player.invuln <= 0 || Math.floor(now / 70) % 2 === 0) {
         ctx.save();
         ctx.translate(player.x, player.y);
+        const popS = 1 + player.collectBounce * 0.14;
+        ctx.scale(popS, popS);
         ctx.rotate(player.tilt);
+        if (player.magnetTime > 0) {
+          ctx.strokeStyle = "rgba(255, 87, 137, 0.55)";
+          ctx.lineWidth = 3;
+          ctx.setLineDash([7, 5]);
+          ctx.beginPath(); ctx.arc(0, 0, 56 + Math.sin(t * 12) * 4, 0, Math.PI * 2); ctx.stroke();
+          ctx.setLineDash([]);
+        }
         ctx.fillStyle = "#ff7b00";
         ctx.strokeStyle = "#3a1608";
         ctx.lineWidth = 2.2;
@@ -1732,7 +2132,27 @@
       }
     }
 
-    // 7. 爆炸粒子與衝擊波
+    // 7. 尾牙抽獎感：彩虹橢圓光圈＋短彩帶＋爆炸粒子與衝擊波（通透歡樂、絕不擋戰機與敵彈！）
+    for (const rr of rainbowRings) {
+      const p = 1 - rr.life / rr.maxLife;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, (1 - p) * 0.85);
+      ctx.strokeStyle = `hsl(${(rr.hue + p * 180) % 360}, 95%, 60%)`;
+      ctx.lineWidth = 4.5 * (1 - p * 0.5);
+      ctx.beginPath();
+      ctx.ellipse(rr.x, rr.y, rr.rx + (rr.maxRx - rr.rx) * p, rr.ry + (rr.maxRy - rr.ry) * p, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+    for (const c of confetti) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, c.life / c.maxLife);
+      ctx.translate(c.x, c.y);
+      ctx.rotate(c.rot);
+      ctx.fillStyle = c.color;
+      ctx.fillRect(-c.w * 0.5, -c.h * 0.5, c.w, c.h);
+      ctx.restore();
+    }
     for (const sw of shockwaves) {
       const p = 1 - sw.life / sw.maxLife;
       ctx.save(); ctx.globalAlpha = Math.max(0, 1 - p);
