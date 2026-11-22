@@ -366,3 +366,70 @@ body.in-fs .top-hud {
   color: #845d2b;
   margin-bottom: 14px;
 }
+
+/* 左側直排道具快選欄（融入暖紅木鎏金廟宇風格，一個一個點就換，不擋中央人物） */
+.side-prop-rail {
+  position: fixed;
+  left: 6px;
+  top: 48%;
+  transform: translateY(-50%);
+  z-index: 24;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px 4px;
+  background: linear-gradient(180deg, rgba(66, 20, 14, 0.88), rgba(44, 13, 9, 0.92));
+  border: 1.5px solid rgba(242, 198, 108, 0.68);
+  border-radius: 9px;
+}
+
+.prop-rail-btn {
+  width: 54px;
+  padding: 4px 2px;
+  border-radius: 7px;
+  border: 1px solid rgba(242, 198, 108, 0.34);
+  background: rgba(102, 32, 20, 0.72);
+  color: #fcecd2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 9.5px;
+  font-weight: 800;
+  line-height: 1.1;
+  transition: transform .12s ease, background .14s ease, border-color .14s ease;
+}
+
+.prop-rail-btn img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));
+}
+
+.prop-rail-btn span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50px;
+}
+
+.prop-rail-btn:active { transform: scale(0.94); }
+
+.prop-rail-btn.active {
+  background: linear-gradient(180deg, #ffe294, #e5a835);
+  color: #361306;
+  border-color: #fff3c7;
+  animation: gentleNudge 3.2s ease-in-out infinite;
+}
+
+@media (min-width: 769px) {
+  .side-prop-rail { left: 14px; gap: 7px; padding: 7px 6px; }
+  .prop-rail-btn { width: 66px; padding: 6px 4px; font-size: 11px; }
+  .prop-rail-btn img { width: 38px; height: 38px; }
+  .prop-rail-btn span { max-width: 60px; }
+}
