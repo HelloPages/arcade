@@ -162,14 +162,41 @@ body.in-fs .top-hud {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 11px 9px 9px;
+  gap: 5px;
+  padding: 5px 10px 9px 8px;
   background: linear-gradient(180deg, #ffe799 0%, #f0bd52 100%);
   color: #5b140a;
   font-size: 12px;
   font-weight: 900;
   clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), 50% 100%, 0 calc(100% - 6px), 0 6px);
   filter: drop-shadow(0 2px 0 #7b1d12);
+}
+
+.merit-led-canvas {
+  display: block;
+  height: 20px;
+  width: auto;
+  padding: 2px 5px;
+  background: #1b0a0e;
+  border: 1px solid rgba(125, 30, 16, 0.72);
+  border-radius: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.led-ui-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  pointer-events: none;
 }
 
 .talisman-seal {
@@ -264,6 +291,9 @@ body.in-fs .top-hud {
 .mode-btn, .chip-btn, .rect-btn {
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: inherit;
   cursor: pointer;
   border-radius: 6px;
@@ -273,65 +303,65 @@ body.in-fs .top-hud {
 }
 
 .mode-btn {
-  padding: 4px 2px;
-  min-height: 27px;
+  padding: 3px 2px;
+  min-height: 29px;
   font-size: 11px;
   font-weight: 800;
-  border: 1px solid rgba(240, 195, 104, 0.34);
-  background: rgba(96, 36, 26, 0.72);
+  border: 1px solid rgba(240, 195, 104, 0.36);
+  background: #220b0d;
   color: #fce8c5;
 }
 
 .mode-btn.active {
-  background: linear-gradient(180deg, #e5523a 0%, #a82819 100%);
-  border-color: #ffe294;
+  background: linear-gradient(180deg, #6b1510 0%, #3d0908 100%);
+  border: 1.5px solid #ffe294;
   color: #fffaf0;
 }
 
 .mode-btn.util-btn {
-  background: rgba(118, 68, 28, 0.68);
+  background: #29130a;
   border-color: rgba(240, 195, 104, 0.44);
   color: #ffe8ad;
 }
 
 .mode-btn.auto-on {
-  background: linear-gradient(180deg, #f0c368 0%, #c68b2a 100%);
-  border-color: #fff4d4;
-  color: #2f1907;
+  background: linear-gradient(180deg, #4b2806 0%, #2b1403 100%);
+  border: 1.5px solid #ffe48a;
+  color: #ffe88a;
   animation: gentleNudge 3.2s ease-in-out infinite;
 }
 
 .chip-btn {
-  padding: 4px 2px;
-  min-height: 27px;
+  padding: 3px 2px;
+  min-height: 28px;
   font-size: 11px;
   font-weight: 700;
-  border: 1px solid rgba(240, 195, 104, 0.30);
-  background: rgba(255, 245, 224, 0.14);
+  border: 1px solid rgba(240, 195, 104, 0.32);
+  background: #200b0e;
   color: #fff4dd;
   text-overflow: ellipsis;
 }
 
 .chip-btn.active {
-  background: linear-gradient(180deg, #fff5dc 0%, #f5dfb2 100%);
-  border-color: #ffe399;
-  color: #6f1d12;
+  background: linear-gradient(180deg, #5e1b10 0%, #310a08 100%);
+  border: 1.5px solid #ffe399;
+  color: #ffe98a;
   font-weight: 900;
 }
 
 .rect-btn {
-  padding: 7px 6px;
-  min-height: 35px;
+  padding: 5px 5px;
+  min-height: 36px;
   font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.4px;
   border: 1px solid rgba(240, 195, 104, 0.45);
-  background: rgba(96, 38, 28, 0.85);
+  background: #260d0c;
   color: #fff4dd;
 }
 
 .rect-btn:disabled {
-  opacity: 0.55;
+  opacity: 0.52;
   cursor: not-allowed;
 }
 
@@ -342,15 +372,15 @@ body.in-fs .top-hud {
 }
 
 .primary-btn {
-  background: linear-gradient(180deg, #e5523a 0%, #a52517 100%);
-  border-color: #ffe18d;
+  background: linear-gradient(180deg, #751810 0%, #420a08 100%);
+  border: 1.5px solid #ffe18d;
   color: #fffaf0;
 }
 
 .gold-btn {
-  background: linear-gradient(180deg, #f6cf76 0%, #c98d29 100%);
-  border-color: #fff6dc;
-  color: #2c1707;
+  background: linear-gradient(180deg, #5c3208 0%, #2f1703 100%);
+  border: 1.5px solid #fff0b8;
+  color: #ffe878;
 }
 
 /* 引導互動微動畫：讓玩家一眼看出按鈕可按、有生命力 */
@@ -506,9 +536,9 @@ body.in-fs .top-hud {
 .prop-rail-btn:active { transform: scale(0.94); }
 
 .prop-rail-btn.active {
-  background: linear-gradient(180deg, #ffe294, #e5a835);
-  color: #361306;
-  border-color: #fff3c7;
+  background: linear-gradient(180deg, #5d1b0e, #310906);
+  color: #ffe98a;
+  border: 1.5px solid #ffe48a;
   animation: gentleNudge 3.2s ease-in-out infinite;
 }
 

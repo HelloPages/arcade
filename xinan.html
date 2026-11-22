@@ -4,27 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>心安宮・三儀殿｜打小人・祈福・問卦</title>
-  <link rel="stylesheet" href="./xinan.css?v=20261122_led_cloud_v1">
+  <link rel="stylesheet" href="./xinan.css?v=20261123_full_led_v1">
 </head>
 <body>
   <div id="app">
     <canvas id="stage"></canvas>
 
-    <!-- 頂部廟會造型狀態元件：飛簷木牌匾 LED 燈珠字 + 符籤功德牌 + 紅金宮燈音效鈕 -->
+    <!-- 頂部廟會造型狀態元件：飛簷木牌匾 LED 燈珠字 + 符籤功德牌 LED 數值 + 紅金宮燈音效鈕 -->
     <header class="top-hud">
       <div class="temple-plaque" aria-label="心安宮">
         <span class="plaque-eave" aria-hidden="true"></span>
         <span class="brand-seal">殿</span>
         <div class="plaque-led-wrap">
           <canvas id="ledBrandCanvas" class="led-brand-canvas" width="96" height="30" aria-label="心安宮"></canvas>
-          <span class="sub">v_23:58:00</span>
+          <span class="sub">v_00:10:00</span>
         </div>
       </div>
       <div class="top-right-charms">
         <div class="merit-talisman" title="心安指數">
           <span class="talisman-seal">福</span>
-          <span class="merit-label">心安</span>
-          <strong id="meritCount">0</strong>
+          <canvas id="meritLedCanvas" class="merit-led-canvas" width="76" height="22" aria-label="心安指數"></canvas>
+          <strong id="meritCount" class="sr-only">0</strong>
         </div>
         <button type="button" id="btnSound" class="bell-sound-btn" aria-label="音效開關">🔊</button>
       </div>
@@ -57,6 +57,6 @@
   </div>
 
   <script src="./arcade-i18n.js?v=20261122_i18n_menu_v1"></script>
-  <script src="./xinan.js?v=20261122_led_cloud_v3"></script>
+  <script src="./xinan.js?v=20261123_full_led_v1"></script>
 </body>
 </html>
