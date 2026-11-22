@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link rel="icon" href="assets/frostline-cover.webp?v=20261122_i18n_menu_v1">
-<title>經典街機遊戲館｜霜軌突圍</title>
+<title>經典街機遊戲館｜街頭格鬥-1</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
   html,body{
@@ -169,7 +169,7 @@
       <select id="mobile-game-select" class="portal-select" aria-label="切換遊戲"></select>
       <button type="button" class="catalog-btn" id="btn-catalog" onclick="toggleCatalog(true)">遊戲總覽</button>
       <button type="button" class="fs-btn" id="standalone-link" onclick="togglePortalFullscreen()">⛶ <span class="fs-label">全螢幕</span></button>
-      <span class="ver-pill" id="portal-version">v_16:40</span>
+      <span class="ver-pill" id="portal-version">v_19:48</span>
     </div>
   </header>
 
@@ -189,7 +189,7 @@
   </div>
 
   <script>
-    const VERSION_STAMP = "v_20261122_local_names_v1";
+    const VERSION_STAMP = "v_20261122_intuitive_names_v1";
     const frame = document.getElementById("game-frame");
     const tabsEl = document.getElementById("portal-tabs");
     const mobileSelect = document.getElementById("mobile-game-select");
@@ -243,16 +243,16 @@
 
     // 內建即時備援清單（確保首幀無閃爍；games-catalog.json 載入後會自動同步最新與未來新增遊戲）
     let catalogGames = [
-      { id: "frostline", path: "./frostline.html", shortTab: "雪線硬漢", title: "《雪線硬漢》", i18n: { tw: { shortTab: "雪線硬漢", title: "《雪線硬漢》" }, en: { shortTab: "Frostline Brawlers", title: "Frostline Brawlers" }, ko: { shortTab: "설원 파이터", title: "설원 파이터" } } },
-      { id: "solar", path: "./solar.html", shortTab: "烈日鹽原", title: "《烈日鹽原》", i18n: { tw: { shortTab: "烈日鹽原", title: "《烈日鹽原》" }, en: { shortTab: "Sunburn Runners", title: "Sunburn Runners" }, ko: { shortTab: "작열의 소금사막", title: "작열의 소금사막" } } },
-      { id: "raiden", path: "./raiden.html", shortTab: "蒼穹雷翼", title: "《蒼穹雷翼》", i18n: { tw: { shortTab: "蒼穹雷翼", title: "《蒼穹雷翼》" }, en: { shortTab: "Thunderwing Aces", title: "Thunderwing Aces" }, ko: { shortTab: "창공의 뇌격기", title: "창공의 뇌격기" } } },
-      { id: "xinan", path: "./xinan.html", shortTab: "心安宮", title: "《心安宮》", i18n: { tw: { shortTab: "心安宮", title: "《心安宮》" }, en: { shortTab: "Lucky Zen Shrine", title: "Lucky Zen Shrine" }, ko: { shortTab: "마음안심궁", title: "마음안심궁" } } },
-      { id: "shinobi", path: "./shinobi.html", shortTab: "夜櫻影刃", title: "《夜櫻影刃》", i18n: { tw: { shortTab: "夜櫻影刃", title: "《夜櫻影刃》" }, en: { shortTab: "Crimson Shadow", title: "Crimson Shadow" }, ko: { shortTab: "붉은 밤의 검객", title: "붉은 밤의 검객" } } },
-      { id: "twinbee", path: "./twinbee.html", shortTab: "晴空鈴翼", title: "《晴空鈴翼》", i18n: { tw: { shortTab: "晴空鈴翼", title: "《晴空鈴翼》" }, en: { shortTab: "Skybell Flyers", title: "Skybell Flyers" }, ko: { shortTab: "하늘방울 비행대", title: "하늘방울 비행대" } } },
-      { id: "rainbow", path: "./rainbow.html", shortTab: "七彩浮雲泡", title: "《七彩浮雲泡》", i18n: { tw: { shortTab: "七彩浮雲泡", title: "《七彩浮雲泡》" }, en: { shortTab: "Prism Pop Islands", title: "Prism Pop Islands" }, ko: { shortTab: "무지개 구름팡", title: "무지개 구름팡" } } },
-      { id: "pinball", path: "./pinball.html", shortTab: "星際彈珠王", title: "《星際彈珠王》", i18n: { tw: { shortTab: "星際彈珠王", title: "《星際彈珠王》" }, en: { shortTab: "Orbit Pinball Club", title: "Orbit Pinball Club" }, ko: { shortTab: "은하 핀볼 클럽", title: "은하 핀볼 클럽" } } },
-      { id: "stage3", path: "./stage3.html", shortTab: "雲海巨艦戰", title: "《雲海巨艦戰》", i18n: { tw: { shortTab: "雲海巨艦戰", title: "《雲海巨艦戰》" }, en: { shortTab: "Stormcloud Dreadnought", title: "Stormcloud Dreadnought" }, ko: { shortTab: "뇌운의 거대 전함", title: "뇌운의 거대 전함" } } },
-      { id: "stage2", path: "./stage2.html", shortTab: "碧海艦隊戰", title: "《碧海艦隊戰》", i18n: { tw: { shortTab: "碧海艦隊戰", title: "《碧海艦隊戰》" }, en: { shortTab: "Coral Sea Squadron", title: "Coral Sea Squadron" }, ko: { shortTab: "푸른 바다 함대전", title: "푸른 바다 함대전" } } }
+      { id: "frostline", path: "./frostline.html", shortTab: "街頭格鬥-1", title: "街頭格鬥-1", i18n: { tw: { shortTab: "街頭格鬥-1", title: "街頭格鬥-1" }, en: { shortTab: "Street Brawl 1", title: "Street Brawl 1" }, ko: { shortTab: "스트리트 격투-1", title: "스트리트 격투-1" } } },
+      { id: "solar", path: "./solar.html", shortTab: "橫向射擊-1", title: "橫向射擊-1", i18n: { tw: { shortTab: "橫向射擊-1", title: "橫向射擊-1" }, en: { shortTab: "Run & Gun 1", title: "Run & Gun 1" }, ko: { shortTab: "횡스크롤 슈팅-1", title: "횡스크롤 슈팅-1" } } },
+      { id: "raiden", path: "./raiden.html", shortTab: "飛機射擊-1", title: "飛機射擊-1", i18n: { tw: { shortTab: "飛機射擊-1", title: "飛機射擊-1" }, en: { shortTab: "Sky Shooter 1", title: "Sky Shooter 1" }, ko: { shortTab: "비행기 슈팅-1", title: "비행기 슈팅-1" } } },
+      { id: "xinan", path: "./xinan.html", shortTab: "心安宮", title: "心安宮", i18n: { tw: { shortTab: "心安宮", title: "心安宮" }, en: { shortTab: "Lucky Shrine", title: "Lucky Shrine" }, ko: { shortTab: "마음안심궁", title: "마음안심궁" } } },
+      { id: "shinobi", path: "./shinobi.html", shortTab: "忍者跑酷-1", title: "忍者跑酷-1", i18n: { tw: { shortTab: "忍者跑酷-1", title: "忍者跑酷-1" }, en: { shortTab: "Ninja Runner 1", title: "Ninja Runner 1" }, ko: { shortTab: "닌자 러너-1", title: "닌자 러너-1" } } },
+      { id: "twinbee", path: "./twinbee.html", shortTab: "飛機射擊-2", title: "飛機射擊-2", i18n: { tw: { shortTab: "飛機射擊-2", title: "飛機射擊-2" }, en: { shortTab: "Sky Shooter 2", title: "Sky Shooter 2" }, ko: { shortTab: "비행기 슈팅-2", title: "비행기 슈팅-2" } } },
+      { id: "rainbow", path: "./rainbow.html", shortTab: "泡泡闖關-1", title: "泡泡闖關-1", i18n: { tw: { shortTab: "泡泡闖關-1", title: "泡泡闖關-1" }, en: { shortTab: "Bubble Action 1", title: "Bubble Action 1" }, ko: { shortTab: "버블 액션-1", title: "버블 액션-1" } } },
+      { id: "pinball", path: "./pinball.html", shortTab: "太空彈珠台-1", title: "太空彈珠台-1", i18n: { tw: { shortTab: "太空彈珠台-1", title: "太空彈珠台-1" }, en: { shortTab: "Space Pinball 1", title: "Space Pinball 1" }, ko: { shortTab: "우주 핀볼-1", title: "우주 핀볼-1" } } },
+      { id: "stage3", path: "./stage3.html", shortTab: "飛機射擊-3", title: "飛機射擊-3", i18n: { tw: { shortTab: "飛機射擊-3", title: "飛機射擊-3" }, en: { shortTab: "Sky Shooter 3", title: "Sky Shooter 3" }, ko: { shortTab: "비행기 슈팅-3", title: "비행기 슈팅-3" } } },
+      { id: "stage2", path: "./stage2.html", shortTab: "飛機射擊-4", title: "飛機射擊-4", i18n: { tw: { shortTab: "飛機射擊-4", title: "飛機射擊-4" }, en: { shortTab: "Sky Shooter 4", title: "Sky Shooter 4" }, ko: { shortTab: "비행기 슈팅-4", title: "비행기 슈팅-4" } } }
     ];
 
     let activeStageId = "";

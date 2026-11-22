@@ -1,17 +1,17 @@
 {
   "portalTitle": "經典街機遊戲館",
-  "version": "v_20261122_local_names_v1",
-  "updatedAt": "2026-11-22T16:40:00+08:00",
+  "version": "v_20261122_intuitive_names_v1",
+  "updatedAt": "2026-11-22T19:48:00+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向與原創在地化命名（禁用真實版權遊戲名稱），並全面支援 TW / EN / KO 本土化語系切換。",
   "dailySchedule": {
-    "generateCron": "每日 04:00 自動生成具獨立美術風格、原創在地化命名並支援 TW/EN/KO 之直式手機動作遊戲",
+    "generateCron": "每日 04:00 依 REA_SPORTS_VS_CPU.md 自動生成單人對戰 CPU 之精緻運動競技遊戲（撞球-1、網球-1、羽球-1 等），採直覺類型-編號命名並支援 TW/EN/KO",
     "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
   },
   "games": [
     {
       "id": "frostline",
-      "title": "《雪線硬漢》",
-      "shortTab": "雪線硬漢",
+      "title": "街頭格鬥-1",
+      "shortTab": "街頭格鬥-1",
       "path": "./frostline.html",
       "genre": "近身清版格鬥",
       "addedDate": "2026-11-22",
@@ -24,8 +24,8 @@
       "artDirection": "1970年代冰川纜車站、歐洲手繪水粉風、冰藍鋅鋼與萊姆色工業標牌。",
       "i18n": {
         "tw": {
-          "title": "《雪線硬漢》",
-          "shortTab": "雪線硬漢",
+          "title": "街頭格鬥-1",
+          "shortTab": "街頭格鬥-1",
           "genre": "近身清版格鬥",
           "reaSource": "原創冰川纜車站近身連段格鬥，多方向走位與爽快擊退手感。",
           "highlights": [
@@ -34,8 +34,8 @@
           ]
         },
         "en": {
-          "title": "Frostline Brawlers",
-          "shortTab": "Frostline Brawlers",
+          "title": "Street Brawl 1",
+          "shortTab": "Street Brawl 1",
           "genre": "Street-Style Brawler",
           "reaSource": "Original glacier-station brawler built around multi-lane footwork, 3-hit combos, and wave showdowns.",
           "highlights": [
@@ -44,8 +44,8 @@
           ]
         },
         "ko": {
-          "title": "설원 파이터",
-          "shortTab": "설원 파이터",
+          "title": "스트리트 격투-1",
+          "shortTab": "스트리트 격투-1",
           "genre": "벨트스크롤 격투 액션",
           "reaSource": "빙하 케이블카 역을 무대로 펼쳐지는 오리지널 근접 콤보 격투 액션.",
           "highlights": [
@@ -57,8 +57,8 @@
     },
     {
       "id": "solar",
-      "title": "《烈日鹽原》",
-      "shortTab": "烈日鹽原",
+      "title": "橫向射擊-1",
+      "shortTab": "橫向射擊-1",
       "path": "./solar.html",
       "genre": "橫向捲軸動作射擊",
       "addedDate": "2026-11-21",
@@ -71,8 +71,8 @@
       "artDirection": "歐洲科幻版畫、珊瑚色鹽塵與裝飾藝術煉爐；墨綠儀表與琥珀色控制鍵。",
       "i18n": {
         "tw": {
-          "title": "《烈日鹽原》",
-          "shortTab": "烈日鹽原",
+          "title": "橫向射擊-1",
+          "shortTab": "橫向射擊-1",
           "genre": "橫向捲軸動作射擊",
           "reaSource": "原創科幻版畫風橫向跑射動作遊戲，主打快節奏走位與三階段機械首領戰。",
           "highlights": [
@@ -81,8 +81,8 @@
           ]
         },
         "en": {
-          "title": "Sunburn Runners",
-          "shortTab": "Sunburn Runners",
+          "title": "Run & Gun 1",
+          "shortTab": "Run & Gun 1",
           "genre": "Run-and-Gun Action",
           "reaSource": "Fast-paced side-scrolling gunplay and mechanical boss fights in crisp retro sci-fi print art.",
           "highlights": [
@@ -91,8 +91,8 @@
           ]
         },
         "ko": {
-          "title": "작열의 소금사막",
-          "shortTab": "작열의 소금사막",
+          "title": "횡스크롤 슈팅-1",
+          "shortTab": "횡스크롤 슈팅-1",
           "genre": "횡스크롤 런앤건 슈팅",
           "reaSource": "독창적인 복고 SF 판화풍 아트로 즐기는 쾌속 런앤건과 거대 메카 보스전.",
           "highlights": [
@@ -104,8 +104,8 @@
     },
     {
       "id": "raiden",
-      "title": "《蒼穹雷翼》",
-      "shortTab": "蒼穹雷翼",
+      "title": "飛機射擊-1",
+      "shortTab": "飛機射擊-1",
       "path": "./raiden.html",
       "genre": "縱向捲軸空戰射擊",
       "addedDate": "2026-11-20",
@@ -118,8 +118,8 @@
       "artDirection": "金色夕陽海峽、碧藍浪花與蓬鬆雲海，精細機甲塗裝與雷電光效。",
       "i18n": {
         "tw": {
-          "title": "《蒼穹雷翼》",
-          "shortTab": "蒼穹雷翼",
+          "title": "飛機射擊-1",
+          "shortTab": "飛機射擊-1",
           "genre": "縱向捲軸空戰射擊",
           "reaSource": "原創夕陽海峽空戰射擊，三色武器五段進化、追蹤飛彈與全屏雷擊一次到位。",
           "highlights": [
@@ -128,8 +128,8 @@
           ]
         },
         "en": {
-          "title": "Thunderwing Aces",
-          "shortTab": "Thunderwing Aces",
+          "title": "Sky Shooter 1",
+          "shortTab": "Sky Shooter 1",
           "genre": "Vertical Sky Shooter",
           "reaSource": "High-octane sunset sky shooter with tri-color weapon upgrades, homing missiles, and storm bombs.",
           "highlights": [
@@ -138,8 +138,8 @@
           ]
         },
         "ko": {
-          "title": "창공의 뇌격기",
-          "shortTab": "창공의 뇌격기",
+          "title": "비행기 슈팅-1",
+          "shortTab": "비행기 슈팅-1",
           "genre": "종스크롤 탄막 슈팅",
           "reaSource": "3색 무기 5단계 진화, 유도 미사일, 전 화면 번개 폭격이 어우러진 쾌속 공중 슈팅.",
           "highlights": [
@@ -151,7 +151,7 @@
     },
     {
       "id": "xinan",
-      "title": "《心安宮》",
+      "title": "心安宮",
       "shortTab": "心安宮",
       "path": "./xinan.html",
       "genre": "民俗紓壓・打小人・祈福・問卦",
@@ -165,7 +165,7 @@
       "artDirection": "台灣喜氣明亮宮廟與歡樂慶典場景；暖紅木鎏金控制列、民俗法器與爆笑對白。",
       "i18n": {
         "tw": {
-          "title": "《心安宮》",
+          "title": "心安宮",
           "shortTab": "心安宮",
           "genre": "民俗紓壓・打小人・祈福・問卦",
           "reaSource": "原創台灣宮廟三儀互動舞台，免排隊即開即玩打小人、放天燈祈福與搖籤擲聖筊。",
@@ -175,8 +175,8 @@
           ]
         },
         "en": {
-          "title": "Lucky Zen Shrine",
-          "shortTab": "Lucky Zen Shrine",
+          "title": "Lucky Shrine",
+          "shortTab": "Lucky Shrine",
           "genre": "Folk Comedy • Bonk, Bless & Oracle",
           "reaSource": "Playful Taiwanese shrine comedy stage—whack office stress, launch sky lanterns, and draw cheeky fortunes.",
           "highlights": [
@@ -198,8 +198,8 @@
     },
     {
       "id": "shinobi",
-      "title": "《夜櫻影刃》",
-      "shortTab": "夜櫻影刃",
+      "title": "忍者跑酷-1",
+      "shortTab": "忍者跑酷-1",
       "path": "./shinobi.html",
       "genre": "浮世繪夜戰動作跑酷",
       "addedDate": "2026-11-13",
@@ -212,8 +212,8 @@
       "artDirection": "浮世繪金月夜色與和紙朱印卷軸；靛青夜空、緋紅圍巾與銀杏燙金。",
       "i18n": {
         "tw": {
-          "title": "《夜櫻影刃》",
-          "shortTab": "夜櫻影刃",
+          "title": "忍者跑酷-1",
+          "shortTab": "忍者跑酷-1",
           "genre": "浮世繪夜戰動作跑酷",
           "reaSource": "原創浮世繪月夜屋簷疾走斬擊，主打空中翻滾飛鏢、瞬身殘影與首領對決。",
           "highlights": [
@@ -222,8 +222,8 @@
           ]
         },
         "en": {
-          "title": "Crimson Shadow",
-          "shortTab": "Crimson Shadow",
+          "title": "Ninja Runner 1",
+          "shortTab": "Ninja Runner 1",
           "genre": "Moonlit Rooftop Action",
           "reaSource": "High-speed moonlit rooftop runner with midair blade volleys, dash-slashes, and woodblock art.",
           "highlights": [
@@ -232,8 +232,8 @@
           ]
         },
         "ko": {
-          "title": "붉은 밤의 검객",
-          "shortTab": "붉은 밤의 검객",
+          "title": "닌자 러너-1",
+          "shortTab": "닌자 러너-1",
           "genre": "달밤 지붕 질주 액션",
           "reaSource": "보름달 아래 지붕을 가르며 비도와 섬광 베기로 적을 쓰러뜨리는 동양화풍 액션 런.",
           "highlights": [
@@ -245,8 +245,8 @@
     },
     {
       "id": "twinbee",
-      "title": "《晴空鈴翼》",
-      "shortTab": "晴空鈴翼",
+      "title": "飛機射擊-2",
+      "shortTab": "飛機射擊-2",
       "path": "./twinbee.html",
       "genre": "五色鈴鐺歡樂空戰",
       "addedDate": "2026-11-05",
@@ -259,8 +259,8 @@
       "artDirection": "寶藍發射基地、亮紅玩具機甲與明黃警示板；明亮賽璐璐風格。",
       "i18n": {
         "tw": {
-          "title": "《晴空鈴翼》",
-          "shortTab": "晴空鈴翼",
+          "title": "飛機射擊-2",
+          "shortTab": "飛機射擊-2",
           "genre": "五色鈴鐺歡樂空戰",
           "reaSource": "原創五色神鈴連擊強化與三機編隊齊射空戰，節奏輕快歡樂。",
           "highlights": [
@@ -269,8 +269,8 @@
           ]
         },
         "en": {
-          "title": "Skybell Flyers",
-          "shortTab": "Skybell Flyers",
+          "title": "Sky Shooter 2",
+          "shortTab": "Sky Shooter 2",
           "genre": "Bouncy Sky Shooter",
           "reaSource": "Cheerful arcade shooter built around juggling 5-color power bells and triple-wing formation blasts.",
           "highlights": [
@@ -279,8 +279,8 @@
           ]
         },
         "ko": {
-          "title": "하늘방울 비행대",
-          "shortTab": "하늘방울 비행대",
+          "title": "비행기 슈팅-2",
+          "shortTab": "비행기 슈팅-2",
           "genre": "오색 방울 쾌속 슈팅",
           "reaSource": "하늘에 뜬 오색 방울을 쏘아 색을 바꾸며 파워업하는 경쾌한 편대 슈팅.",
           "highlights": [
@@ -292,8 +292,8 @@
     },
     {
       "id": "rainbow",
-      "title": "《七彩浮雲泡》",
-      "shortTab": "七彩浮雲泡",
+      "title": "泡泡闖關-1",
+      "shortTab": "泡泡闖關-1",
       "path": "./rainbow.html",
       "genre": "街機普普・氣泡動作",
       "addedDate": "2026-11-03",
@@ -306,8 +306,8 @@
       "artDirection": "亮紫、桃紅與酸橙綠街機普普風；漫畫角色與半色調場景。",
       "i18n": {
         "tw": {
-          "title": "《七彩浮雲泡》",
-          "shortTab": "七彩浮雲泡",
+          "title": "泡泡闖關-1",
+          "shortTab": "泡泡闖關-1",
           "genre": "街機普普・氣泡動作",
           "reaSource": "結合氣泡困怪浮力、七彩雙虹橋貫穿與連鎖破泡水果爆分樂趣。",
           "highlights": [
@@ -316,8 +316,8 @@
           ]
         },
         "en": {
-          "title": "Prism Pop Islands",
-          "shortTab": "Prism Pop Islands",
+          "title": "Bubble Action 1",
+          "shortTab": "Bubble Action 1",
           "genre": "Pop-Art Bubble Action",
           "reaSource": "Trap critters in floating bubbles, chain massive fruit pops, and surf twin rainbow bridges.",
           "highlights": [
@@ -326,8 +326,8 @@
           ]
         },
         "ko": {
-          "title": "무지개 구름팡",
-          "shortTab": "무지개 구름팡",
+          "title": "버블 액션-1",
+          "shortTab": "버블 액션-1",
           "genre": "팝아트 버블 액션",
           "reaSource": "거품에 몬스터를 가두고 무지개 다리로 연쇄 격파하는 통통 튀는 아케이드 액션.",
           "highlights": [
@@ -339,8 +339,8 @@
     },
     {
       "id": "pinball",
-      "title": "《星際彈珠王》",
-      "shortTab": "星際彈珠王",
+      "title": "太空彈珠台-1",
+      "shortTab": "太空彈珠台-1",
       "path": "./pinball.html",
       "genre": "機械科幻・太空彈珠台",
       "addedDate": "2026-10-30",
@@ -353,8 +353,8 @@
       "artDirection": "深海軍藍金屬艦橋、電光青導軌與紫紅反應爐；霓虹玻璃與機械儀表。",
       "i18n": {
         "tw": {
-          "title": "《星際彈珠王》",
-          "shortTab": "星際彈珠王",
+          "title": "太空彈珠台-1",
+          "shortTab": "太空彈珠台-1",
           "genre": "機械科幻・太空彈珠台",
           "reaSource": "高頻剛體碰撞物理與九大軍階晉升任務，打造爽快霓虹科幻彈珠台。",
           "highlights": [
@@ -363,8 +363,8 @@
           ]
         },
         "en": {
-          "title": "Orbit Pinball Club",
-          "shortTab": "Orbit Pinball Club",
+          "title": "Space Pinball 1",
+          "shortTab": "Space Pinball 1",
           "genre": "Sci-Fi Arcade Pinball",
           "reaSource": "Crisp high-frequency physics, 9 starfleet ranks, and neon bridge missions built for instant web play.",
           "highlights": [
@@ -373,8 +373,8 @@
           ]
         },
         "ko": {
-          "title": "은하 핀볼 클럽",
-          "shortTab": "은하 핀볼 클럽",
+          "title": "우주 핀볼-1",
+          "shortTab": "우주 핀볼-1",
           "genre": "SF 아케이드 핀볼",
           "reaSource": "정밀 물리 충돌과 9단계 은하 계급 승급 미션으로 즐기는 네온 우주 핀볼.",
           "highlights": [
@@ -386,8 +386,8 @@
     },
     {
       "id": "stage3",
-      "title": "《雲海巨艦戰》",
-      "shortTab": "雲海巨艦戰",
+      "title": "飛機射擊-3",
+      "shortTab": "飛機射擊-3",
       "path": "./stage3.html",
       "genre": "雷暴雲海・空中巨艦決戰",
       "addedDate": "2026-10-29",
@@ -400,8 +400,8 @@
       "artDirection": "石板灰雷暴雲海、暗紅警報與古銅機身；戰爭電影質感。",
       "i18n": {
         "tw": {
-          "title": "《雲海巨艦戰》",
-          "shortTab": "雲海巨艦戰",
+          "title": "飛機射擊-3",
+          "shortTab": "飛機射擊-3",
           "genre": "雷暴雲海・空中巨艦決戰",
           "reaSource": "原創雷暴雲層多部位破壞空戰，逐一瓦解空中鋼鐵巨艦的砲塔與引擎。",
           "highlights": [
@@ -410,8 +410,8 @@
           ]
         },
         "en": {
-          "title": "Stormcloud Dreadnought",
-          "shortTab": "Stormcloud Dreadnought",
+          "title": "Sky Shooter 3",
+          "shortTab": "Sky Shooter 3",
           "genre": "Aerial Boss Showdown",
           "reaSource": "Dramatic thundercloud dogfight featuring multi-part skyship destruction over parallax storm layers.",
           "highlights": [
@@ -420,8 +420,8 @@
           ]
         },
         "ko": {
-          "title": "뇌운의 거대 전함",
-          "shortTab": "뇌운의 거대 전함",
+          "title": "비행기 슈팅-3",
+          "shortTab": "비행기 슈팅-3",
           "genre": "뇌운 상공 거대 보스전",
           "reaSource": "폭풍 구름 위에서 거대 공중 전함의 각 부위를 파괴하는 박진감 넘치는 보스 슈팅.",
           "highlights": [
@@ -433,8 +433,8 @@
     },
     {
       "id": "stage2",
-      "title": "《碧海艦隊戰》",
-      "shortTab": "碧海艦隊戰",
+      "title": "飛機射擊-4",
+      "shortTab": "飛機射擊-4",
       "path": "./stage2.html",
       "genre": "作戰地圖・海空艦隊戰",
       "addedDate": "2026-10-28",
@@ -447,8 +447,8 @@
       "artDirection": "海軍藍航海圖、卡其等高線與沙色任務紙；軍用計分儀表。",
       "i18n": {
         "tw": {
-          "title": "《碧海艦隊戰》",
-          "shortTab": "碧海艦隊戰",
+          "title": "飛機射擊-4",
+          "shortTab": "飛機射擊-4",
           "genre": "作戰地圖・海空艦隊戰",
           "reaSource": "原創復古航海作戰地圖空戰，鎖定敵艦砲塔並以散彈火力突破海上艦隊。",
           "highlights": [
@@ -457,8 +457,8 @@
           ]
         },
         "en": {
-          "title": "Coral Sea Squadron",
-          "shortTab": "Coral Sea Squadron",
+          "title": "Sky Shooter 4",
+          "shortTab": "Sky Shooter 4",
           "genre": "Naval Air-Strike Shooter",
           "reaSource": "Vintage nautical-chart shooter with battleship turret targeting and spread-shot upgrades.",
           "highlights": [
@@ -467,8 +467,8 @@
           ]
         },
         "ko": {
-          "title": "푸른 바다 함대전",
-          "shortTab": "푸른 바다 함대전",
+          "title": "비행기 슈팅-4",
+          "shortTab": "비행기 슈팅-4",
           "genre": "작전 지도풍 해공 함대전",
           "reaSource": "전함 포탑 조준과 산탄 강화 시스템으로 즐기는 빈티지 해군 작전 슈팅.",
           "highlights": [
