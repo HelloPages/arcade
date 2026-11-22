@@ -257,7 +257,7 @@ html, body {
   transition: width 0.08s linear;
 }
 
-/* 底部角落異形玩具徽章按鈕（各自有特色外型，非傳統方塊！） */
+/* 底部角落異形玩具徽章按鈕（真正票券缺口、盾牌尖底、漫畫星芒外形！） */
 .hud-bottom {
   position: fixed;
   left: 8px;
@@ -272,7 +272,7 @@ html, body {
 
 .tac-right {
   display: flex;
-  gap: 7px;
+  gap: 6px;
   pointer-events: auto;
 }
 
@@ -281,38 +281,53 @@ html, body {
   appearance: none;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  height: 42px;
-  padding: 0 11px;
-  border: 2.4px solid var(--border);
+  justify-content: center;
+  gap: 4px;
+  height: 46px;
+  padding: 0 13px;
+  border: none;
   font-family: inherit;
   font-size: 12px;
   font-weight: 900;
   color: var(--ink);
   cursor: pointer;
-  box-shadow: 3px 3px 0 rgba(58, 31, 18, 0.28);
+  filter: drop-shadow(0 0 1.8px #3a1f12) drop-shadow(0 0 1.2px #3a1f12) drop-shadow(2px 3px 0 rgba(58, 31, 18, 0.34));
   transition: transform 0.1s ease;
 }
-.toy-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(58, 31, 18, 0.28); }
-.toy-btn img { width: 23px; height: 23px; object-fit: contain; pointer-events: none; }
+.toy-btn:active { transform: scale(0.94); }
+.toy-btn img { width: 22px; height: 22px; object-fit: contain; pointer-events: none; }
 
-/* 換武器：遊樂園票券切角徽章 */
+/* 換武器：真正左右內凹半圓缺口的遊樂園票券造型 */
 .ticket-btn {
   background: linear-gradient(180deg, #fff5b8, #ffc947);
-  border-radius: 12px 4px 12px 4px;
+  padding: 0 16px;
+  clip-path: polygon(
+    0% 0%, 100% 0%,
+    100% 32%, 93% 40%, 93% 60%, 100% 68%,
+    100% 100%, 0% 100%,
+    0% 68%, 7% 60%, 7% 40%, 0% 32%
+  );
 }
 
-/* 泡泡盾：盾牌弧底徽章 */
+/* 泡泡盾：真正盾牌尖底徽章造型 */
 .shield-crest {
-  background: linear-gradient(180deg, #e0fbff, #7ce2ff);
-  border-radius: 6px 6px 14px 14px;
+  background: linear-gradient(180deg, #e0fbff, #6ad8ff);
+  height: 50px;
+  padding: 0 14px 6px;
+  clip-path: polygon(0% 10%, 50% 0%, 100% 10%, 96% 64%, 50% 100%, 4% 64%);
 }
 
-/* 爆辣大招：熱血不對稱漫畫爆裂徽章 */
+/* 爆辣大招：真正漫畫鋸齒星芒爆裂徽章造型 */
 .star-blast-btn {
-  background: linear-gradient(180deg, #ff9982, #ff4d5a);
+  background: linear-gradient(180deg, #ff9982, #ff3d52);
   color: #fffdf5;
-  border-radius: 4px 12px 4px 12px;
+  height: 50px;
+  padding: 0 16px;
+  clip-path: polygon(
+    6% 18%, 24% 2%, 44% 12%, 64% 0%, 84% 12%, 98% 22%,
+    92% 52%, 100% 80%, 80% 92%, 56% 100%, 32% 90%, 10% 96%,
+    0% 70%, 8% 44%
+  );
 }
 
 /* 結算造型卡 */

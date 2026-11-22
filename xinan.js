@@ -674,6 +674,177 @@
   let deityBannerText = "";
   let deityBannerTimer = 0;
 
+  // =========================================================================
+  // 演唱會手舉牌「圓點 LED 矩陣字」核心引擎（官方 TakWolf Fusion Pixel 12px zh_tw）
+  // 將 12px 點陣字模的每個亮格繪成一顆顆獨立發光的圓形 LED 燈珠，燈珠間保留清晰暗隙
+  // =========================================================================
+  const ledCache = new Map();
+  let ledFontReady = false;
+  const ledSampleCanvas = document.createElement("canvas");
+  const ledSampleCtx = ledSampleCanvas.getContext("2d", { willReadFrequently: true });
+
+  function sampleLedBitmap(text) {
+    const str = String(text || "");
+    if (!str) return { cols: 0, rows: 12, bits: new Uint8Array(0) };
+    const fontStr = `12px 'FusionPixel12', 'Noto Sans TC', monospace`;
+    ledSampleCtx.font = fontStr;
+    const estW = Math.max(16, Math.ceil(ledSampleCtx.measureText(str).width) + 8);
+    const estH = 16;
+    if (ledSampleCanvas.width < estW) ledSampleCanvas.width = estW;
+    if (ledSampleCanvas.height < estH) ledSampleCanvas.height = estH;
+    ledSampleCtx.clearRect(0, 0, estW, estH);
+    ledSampleCtx.font = fontStr;
+    ledSampleCtx.textBaseline = "top";
+    ledSampleCtx.textAlign = "left";
+    ledSampleCtx.fillStyle = "#ffffff";
+    ledSampleCtx.fillText(str, 2, 2);
+
+    const imgData = ledSampleCtx.getImageData(0, 0, estW, estH).data;
+    let minX = estW, maxX = -1, minY = estH, maxY = -1;
+    for (let y = 0; y < estH; y++) {
+      for (let x = 0; x < estW; x++) {
+        if (imgData[(y * estW + x) * 4 + 3] >= 100) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX < minX) return { cols: 0, rows: 12, bits: new Uint8Array(0) };
+    const cols = maxX - minX + 1;
+    const rows = Math.max(12, maxY - minY + 1);
+    const yOff = Math.max(0, minY);
+    const bits = new Uint8Array(cols * rows);
+    for (let y = 0; y < rows; y++) {
+      const sy = yOff + y;
+      if (sy >= estH) continue;
+      for (let x = 0; x < cols; x++) {
+        const sx = minX + x;
+        if (imgData[(sy * estW + sx) * 4 + 3] >= 100) {
+          bits[y * cols + x] = 1;
+        }
+      }
+    }
+    return { cols, rows, bits };
+  }
+
+  function getLedTextSprite(text, opts = {}) {
+    const pitch = opts.pitch || 2.2;
+    const color = opts.color || "#ffe875";
+    const glow = opts.glow || "rgba(255, 206, 72, 0.42)";
+    const dimDot = opts.dimDot !== false;
+    const pad = opts.pad != null ? opts.pad : 3;
+    const key = `${ledFontReady ? "F" : "B"}|${text}|${pitch}|${color}|${glow}|${dimDot ? 1 : 0}|${pad}`;
+    if (ledCache.has(key)) return ledCache.get(key);
+
+    const bm = sampleLedBitmap(text);
+    if (bm.cols === 0) return null;
+    const cssW = Math.ceil(bm.cols * pitch + pad * 2);
+    const cssH = Math.ceil(bm.rows * pitch + pad * 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.ceil(cssW * dpr));
+    c.height = Math.max(1, Math.ceil(cssH * dpr));
+    const g = c.getContext("2d");
+    g.scale(dpr, dpr);
+
+    // 1. 暗色未點亮 LED 燈座底陣列（讓燈板質感更立體、燈珠間距一目了然）
+    const rDot = pitch * 0.34;
+    if (dimDot) {
+      g.fillStyle = "rgba(255, 255, 255, 0.055)";
+      for (let y = 0; y < bm.rows; y++) {
+        const cy = pad + (y + 0.5) * pitch;
+        for (let x = 0; x < bm.cols; x++) {
+          const cx = pad + (x + 0.5) * pitch;
+          g.beginPath();
+          g.arc(cx, cy, rDot * 0.85, 0, Math.PI * 2);
+          g.fill();
+        }
+      }
+    }
+
+    // 2. 柔光外暈（適度發光，不糊字）
+    g.fillStyle = glow;
+    for (let y = 0; y < bm.rows; y++) {
+      const cy = pad + (y + 0.5) * pitch;
+      for (let x = 0; x < bm.cols; x++) {
+        if (!bm.bits[y * bm.cols + x]) continue;
+        const cx = pad + (x + 0.5) * pitch;
+        g.beginPath();
+        g.arc(cx, cy, rDot * 1.48, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
+
+    // 3. 實心明亮圓形 LED 燈珠（明確圓點＋間隙）
+    g.fillStyle = color;
+    for (let y = 0; y < bm.rows; y++) {
+      const cy = pad + (y + 0.5) * pitch;
+      for (let x = 0; x < bm.cols; x++) {
+        if (!bm.bits[y * bm.cols + x]) continue;
+        const cx = pad + (x + 0.5) * pitch;
+        g.beginPath();
+        g.arc(cx, cy, rDot, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
+
+    // 4. 燈珠中心高光點（呈現演唱會手舉牌 LED 亮點感）
+    g.fillStyle = "rgba(255, 255, 255, 0.78)";
+    const rHi = Math.max(0.35, rDot * 0.38);
+    for (let y = 0; y < bm.rows; y++) {
+      const cy = pad + (y + 0.5) * pitch - rDot * 0.16;
+      for (let x = 0; x < bm.cols; x++) {
+        if (!bm.bits[y * bm.cols + x]) continue;
+        const cx = pad + (x + 0.5) * pitch - rDot * 0.16;
+        g.beginPath();
+        g.arc(cx, cy, rHi, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
+
+    const res = { canvas: c, width: cssW, height: cssH, cols: bm.cols, rows: bm.rows };
+    if (ledCache.size > 140) ledCache.clear();
+    ledCache.set(key, res);
+    return res;
+  }
+
+  function renderBrandLedCanvas(label) {
+    const c = document.getElementById("ledBrandCanvas");
+    if (!c) return;
+    const text = label || (typeof xt === "function" ? xt().brand : "心安宮") || "心安宮";
+    const sp = getLedTextSprite(text, {
+      pitch: 2.2,
+      color: "#ffe46b",
+      glow: "rgba(255, 198, 56, 0.45)",
+      dimDot: true,
+      pad: 2
+    });
+    if (!sp) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    c.width = Math.max(1, Math.ceil(sp.width * dpr));
+    c.height = Math.max(1, Math.ceil(sp.height * dpr));
+    c.style.width = `${sp.width}px`;
+    c.style.height = `${sp.height}px`;
+    const g = c.getContext("2d");
+    g.clearRect(0, 0, c.width, c.height);
+    g.drawImage(sp.canvas, 0, 0);
+  }
+
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load("12px 'FusionPixel12'").then(() => {
+      ledFontReady = document.fonts.check("12px 'FusionPixel12'");
+      ledCache.clear();
+      renderBrandLedCanvas();
+    }).catch(() => {});
+    document.fonts.ready.then(() => {
+      ledFontReady = document.fonts.check("12px 'FusionPixel12'");
+      ledCache.clear();
+      renderBrandLedCanvas();
+    }).catch(() => {});
+  }
+
   function showDeityBanner(text, duration = 3.6) {
     deityBannerText = text;
     deityBannerTimer = duration;
@@ -995,10 +1166,9 @@
 
   function applyXinanStaticChrome() {
     const t = xt();
-    const h1 = document.querySelector(".brand-text h1");
     const seal = document.querySelector(".brand-seal");
     const mLbl = document.querySelector(".merit-label");
-    if (h1) h1.textContent = t.brand;
+    renderBrandLedCanvas(t.brand);
     if (seal) seal.textContent = t.seal;
     if (mLbl) mLbl.textContent = t.merit;
     const mSlap = document.querySelector('.mode-btn[data-mode="slap"]');
@@ -1945,35 +2115,42 @@
 
       // 人物下方不再顯示多餘名字標籤牌，保持手機與桌面神壇乾淨清爽
 
-      // 誇張巨型台式搞笑武器揮擊：紅電鍋改為「正上方垂直重砸頭頂」，其餘三款由右側瞬發橫掃重擊！
+      // 台式搞笑武器揮擊：縮小並調整待機／落點位置，待機與打擊瞬間都不遮住人物臉部！
       const wImg = imgs[selectedWeapon.sprite];
       if (wImg && wImg.complete && wImg.naturalWidth > 0) {
         const swing = weaponAnim > 0
           ? (weaponAnim > 0.78 ? 1.0 : Math.pow(weaponAnim / 0.78, 1.55))
           : 0;
         const isOverheadDrop = selectedWeapon.id === "cooker";
-        const idleSize = Math.min(188, propBase * 0.44);
-        const hitSize = Math.min(345, propBase * 0.80) * (weaponHeavy ? 1.28 : 1.0);
+        const idleSize = isOverheadDrop
+          ? Math.min(112, propBase * 0.27)
+          : Math.min(104, propBase * 0.25);
+        const hitSize = isOverheadDrop
+          ? Math.min(162, propBase * 0.39) * (weaponHeavy ? 1.15 : 1.0)
+          : Math.min(148, propBase * 0.35) * (weaponHeavy ? 1.14 : 1.0);
         const wSize = idleSize + (hitSize - idleSize) * swing;
         let wxPos, wyPos, wRot, comicScaleX, comicScaleY;
 
         if (isOverheadDrop) {
-          // 經典紅電鍋：懸浮在角色頭頂正上方蓄勢，點擊瞬間垂直狠狠往下砸頭！
-          const topStartY = Math.max(hudBottom + 56, activeCharTopY - vSize * 0.56);
-          const headHitY = activeCharTopY + vSize * 0.05;
+          // 經典紅電鍋：懸浮在角色頭頂正上方蓄勢，點擊瞬間垂直狠狠往下砸頭頂（不遮臉）！
+          const topStartY = Math.max(hudBottom + 56, activeCharTopY - vSize * 0.44);
+          const headHitY = activeCharTopY - 4;
           wxPos = altarX;
           wyPos = topStartY + (headHitY - topStartY) * swing;
           wRot = Math.sin(t * 2.6) * 0.06 * (1 - swing);
-          comicScaleX = 1 + swing * (weaponHeavy ? 0.28 : 0.20);
-          comicScaleY = 1 - swing * (weaponHeavy ? 0.20 : 0.14);
+          comicScaleX = 1 + swing * (weaponHeavy ? 0.24 : 0.18);
+          comicScaleY = 1 - swing * (weaponHeavy ? 0.18 : 0.12);
         } else {
-          const restX = Math.min(vw - idleSize * 0.46, altarX + Math.max(115, vSize * 0.54));
-          const restY = altarY - vSize * 0.28;
-          wxPos = restX + (altarX + 6 - restX) * swing;
-          wyPos = restY + (altarY - vSize * 0.16 - restY) * swing;
-          wRot = 0.24 - swing * 1.25 + Math.sin(t * 3.1) * 0.05 * (1 - swing);
-          comicScaleX = 1 + swing * (weaponHeavy ? 0.22 : 0.14);
-          comicScaleY = 1 - swing * 0.10;
+          // 藍白拖／紅塑膠椅／電蚊拍：待機持握在人物右下方肩側，揮擊敲在右頰邊緣，整張臉始終清楚可見！
+          const restX = Math.min(vw - idleSize * 0.50, altarX + Math.max(108, vSize * 0.58));
+          const restY = altarY + vSize * 0.05;
+          const hitX = Math.min(vw - hitSize * 0.42, altarX + Math.max(66, vSize * 0.38));
+          const hitY = altarY - vSize * 0.06;
+          wxPos = restX + (hitX - restX) * swing;
+          wyPos = restY + (hitY - restY) * swing;
+          wRot = 0.42 - swing * 1.10 + Math.sin(t * 3.1) * 0.05 * (1 - swing);
+          comicScaleX = 1 + swing * (weaponHeavy ? 0.18 : 0.12);
+          comicScaleY = 1 - swing * 0.08;
         }
 
         ctx.save();
@@ -1981,29 +2158,29 @@
           if (isOverheadDrop) {
             // 垂直天降砸頭漫畫速度線
             ctx.strokeStyle = weaponHeavy ? `rgba(255, 212, 102, ${swing * 0.9})` : `rgba(255, 245, 210, ${swing * 0.72})`;
-            ctx.lineWidth = weaponHeavy ? 8 : 5;
+            ctx.lineWidth = weaponHeavy ? 7 : 4.5;
             ctx.lineCap = "round";
-            for (const dx of [-58, -24, 24, 58]) {
+            for (const dx of [-46, -18, 18, 46]) {
               ctx.beginPath();
-              ctx.moveTo(altarX + dx, wyPos - wSize * 0.82);
-              ctx.lineTo(altarX + dx, wyPos - wSize * 0.15);
+              ctx.moveTo(altarX + dx, wyPos - wSize * 0.78);
+              ctx.lineTo(altarX + dx, wyPos - wSize * 0.16);
               ctx.stroke();
             }
           } else {
             ctx.beginPath();
-            ctx.arc(altarX + 18, altarY - vSize * 0.18, vSize * 0.68, -1.15, 0.35);
+            ctx.arc(altarX + vSize * 0.34, altarY - vSize * 0.06, vSize * 0.38, -1.05, 0.45);
             ctx.strokeStyle = weaponHeavy ? `rgba(255, 212, 102, ${swing * 0.88})` : `rgba(255, 240, 190, ${swing * 0.62})`;
-            ctx.lineWidth = weaponHeavy ? 22 : 13;
+            ctx.lineWidth = weaponHeavy ? 14 : 9;
             ctx.lineCap = "round";
             ctx.stroke();
           }
         }
-        ctx.translate(wxPos, wyPos + Math.sin(t * 2.8) * 5 * (1 - swing));
+        ctx.translate(wxPos, wyPos + Math.sin(t * 2.8) * 4 * (1 - swing));
         ctx.rotate(wRot);
         ctx.scale(comicScaleX, comicScaleY);
-        ctx.shadowColor = weaponHeavy ? "#ffd466" : "rgba(0,0,0,0.38)";
-        ctx.shadowBlur = weaponHeavy ? 34 : 16;
-        ctx.shadowOffsetY = weaponHeavy ? 0 : 8;
+        ctx.shadowColor = weaponHeavy ? "#ffd466" : "rgba(0,0,0,0.34)";
+        ctx.shadowBlur = weaponHeavy ? 26 : 12;
+        ctx.shadowOffsetY = weaponHeavy ? 0 : 6;
         const aspect = wImg.naturalWidth / wImg.naturalHeight;
         ctx.drawImage(wImg, -wSize * aspect * 0.5, -wSize * 0.5, wSize * aspect, wSize);
         ctx.restore();
@@ -2030,24 +2207,35 @@
         ctx.restore();
       }
 
-      // 爆笑漫畫撞擊擬聲字（啪啦！！／哐噹！！／滋滋啪！！／噹！熟了！）
+      // 爆笑漫畫撞擊擬聲字：發光圓點 LED 矩陣招牌（啪啦！！／哐噹！！／滋滋啪！！／噹！熟了！）
       if (weaponStampTimer > 0 && weaponStampText) {
         weaponStampTimer = Math.max(0, weaponStampTimer - dt);
         const p = Math.min(1, weaponStampTimer / 0.25);
-        const popScale = 0.85 + Math.sin(Math.min(1, (0.55 - weaponStampTimer) * 5) * Math.PI * 0.5) * 0.32;
+        const popScale = 0.88 + Math.sin(Math.min(1, (0.55 - weaponStampTimer) * 5) * Math.PI * 0.5) * 0.26;
+        const stampLed = getLedTextSprite(weaponStampText, {
+          pitch: weaponHeavy ? 3.0 : 2.5,
+          color: selectedWeapon.color || "#ffe047",
+          glow: "rgba(255, 224, 71, 0.52)",
+          dimDot: false,
+          pad: 4
+        });
         ctx.save();
         ctx.globalAlpha = p;
-        ctx.translate(altarX - vSize * 0.26, altarY - vSize * 0.42 - (1 - p) * 24);
-        ctx.rotate(-0.18);
+        ctx.translate(altarX - vSize * 0.24, altarY - vSize * 0.42 - (1 - p) * 24);
+        ctx.rotate(-0.14);
         ctx.scale(popScale, popScale);
-        ctx.font = `900 ${weaponHeavy ? 42 : 34}px 'Noto Serif TC', 'PingFang TC', sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.lineWidth = 7;
-        ctx.strokeStyle = "#2b1208";
-        ctx.strokeText(weaponStampText, 0, 0);
-        ctx.fillStyle = selectedWeapon.color || "#ffe047";
-        ctx.fillText(weaponStampText, 0, 0);
+        if (stampLed) {
+          const sw = stampLed.width + 14;
+          const sh = stampLed.height + 10;
+          ctx.fillStyle = "rgba(24, 10, 18, 0.88)";
+          ctx.strokeStyle = selectedWeapon.color || "#ffe047";
+          ctx.lineWidth = 2.4;
+          ctx.beginPath();
+          ctx.roundRect(-sw * 0.5, -sh * 0.5, sw, sh, 10);
+          ctx.fill();
+          ctx.stroke();
+          ctx.drawImage(stampLed.canvas, -stampLed.width * 0.5, -stampLed.height * 0.5, stampLed.width, stampLed.height);
+        }
         ctx.restore();
       }
 
@@ -2292,29 +2480,23 @@
       ctx.save();
       ctx.globalAlpha = Math.min(1, ft.life / 0.3);
       const isWideScr = vw > vh;
-      const fontPx = isWideScr ? 22 : 19;
-      ctx.font = `800 ${fontPx}px 'Noto Serif TC', 'PingFang TC', sans-serif`;
+      const ledPitch = isWideScr ? 2.3 : 1.95;
+      const maxBubbleW = Math.min(vw - 24, isWideScr ? 540 : 352);
+      const maxCharsPerLine = Math.max(8, Math.floor((maxBubbleW - 44) / (12 * ledPitch)));
 
       // 平衡雙行折行：避免折行後第二行只剩 1-3 個字，優先在標點後斷行且上下寬度對稱
-      const maxBubbleW = Math.min(vw - 24, isWideScr ? 540 : 350);
-      const maxTextW = maxBubbleW - 34;
-      const fullW = ctx.measureText(ft.text).width;
+      const chars = Array.from(ft.text || "");
       const lines = [];
-      if (fullW <= maxTextW) {
+      if (chars.length <= maxCharsPerLine) {
         lines.push(ft.text);
       } else {
-        const chars = Array.from(ft.text);
         let bestIdx = Math.ceil(chars.length / 2);
         let bestScore = Infinity;
-        for (let idx = 2; idx <= chars.length - 2; idx++) {
-          const l1 = chars.slice(0, idx).join("");
-          const l2 = chars.slice(idx).join("");
-          const w1 = ctx.measureText(l1).width;
-          const w2 = ctx.measureText(l2).width;
-          if (w1 > maxTextW || w2 > maxTextW) continue;
+        for (let idx = 3; idx <= chars.length - 3; idx++) {
+          if (idx > maxCharsPerLine || (chars.length - idx) > maxCharsPerLine) continue;
           const prevCh = chars[idx - 1];
-          const punctBonus = /[！，。？：、]/.test(prevCh) ? -45 : 0;
-          const score = Math.abs(w1 - w2) + punctBonus;
+          const punctBonus = /[！，。？：、]/.test(prevCh) ? -5 : 0;
+          const score = Math.abs(idx - (chars.length - idx)) + punctBonus;
           if (score < bestScore) {
             bestScore = score;
             bestIdx = idx;
@@ -2324,93 +2506,175 @@
           lines.push(chars.slice(0, bestIdx).join("").trim());
           lines.push(chars.slice(bestIdx).join("").trim());
         } else {
-          let cur = "";
-          for (const ch of chars) {
-            if (ctx.measureText(cur + ch).width > maxTextW && cur.length > 0) {
-              lines.push(cur);
-              cur = ch;
-            } else cur += ch;
+          for (let pos = 0; pos < chars.length; pos += maxCharsPerLine) {
+            lines.push(chars.slice(pos, pos + maxCharsPerLine).join(""));
           }
-          if (cur) lines.push(cur);
         }
       }
 
-      const lineH = fontPx + 7;
-      const longestW = Math.max(...lines.map(l => ctx.measureText(l).width));
-      const bw = Math.min(maxBubbleW, Math.max(150, longestW + 34));
-      const bh = lines.length * lineH + 18;
-      const tailH = 12;
-      const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 12;
+      const lineSprites = lines.map(ln => getLedTextSprite(ln, {
+        pitch: ledPitch,
+        color: "#ffe97a",
+        glow: "rgba(255, 204, 68, 0.45)",
+        dimDot: true,
+        pad: 2
+      })).filter(Boolean);
+
+      const lineGap = 5;
+      const contentW = lineSprites.length ? Math.max(...lineSprites.map(s => s.width)) : 140;
+      const contentH = lineSprites.reduce((sum, s) => sum + s.height, 0) + Math.max(0, lineSprites.length - 1) * lineGap;
+      const bw = Math.min(maxBubbleW, Math.max(168, contentW + 38));
+      const bh = Math.max(46, contentH + 26);
+      const tailH = 16;
+      const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 18;
       const targetAnchorX = activeCharCenterX;
-      const targetBottomY = activeCharTopY - 16;
+      const targetBottomY = activeCharTopY - 22;
       const by = Math.max(hudB, targetBottomY - bh - tailH);
       const bx = Math.max(12, Math.min(vw - bw - 12, targetAnchorX - bw * 0.5));
-      const tailX = Math.max(bx + 22, Math.min(bx + bw - 22, targetAnchorX));
-      const r = 14;
+      const tailX = Math.max(bx + 28, Math.min(bx + bw - 28, targetAnchorX));
+      const bounce = Math.sin(t * 5.2) * 2.2;
 
-      // 繪製帶小尾巴的圓角矩形漫畫對話泡泡框
-      ctx.shadowColor = "rgba(0,0,0,0.45)";
-      ctx.shadowBlur = 12;
-      ctx.shadowOffsetY = 4;
+      // 繪製活潑「漫畫雲朵造型說話泡泡」（非制式方框！波浪雲朵輪廓＋彎曲對話尾巴＋說話角色表情名牌）
+      ctx.save();
+      ctx.translate(0, bounce);
       ctx.beginPath();
-      ctx.moveTo(bx + r, by);
-      ctx.lineTo(bx + bw - r, by);
-      ctx.quadraticCurveTo(bx + bw, by, bx + bw, by + r);
-      ctx.lineTo(bx + bw, by + bh - r);
-      ctx.quadraticCurveTo(bx + bw, by + bh, bx + bw - r, by + bh);
-      ctx.lineTo(tailX + 10, by + bh);
-      ctx.lineTo(tailX, by + bh + tailH);
-      ctx.lineTo(tailX - 10, by + bh);
-      ctx.lineTo(bx + r, by + bh);
-      ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - r);
-      ctx.lineTo(bx, by + r);
-      ctx.quadraticCurveTo(bx, by, bx + r, by);
+      const topBumps = Math.max(4, Math.round(bw / 46));
+      const sideBumps = Math.max(2, Math.round(bh / 32));
+      // 上緣波浪雲弧
+      ctx.moveTo(bx + 14, by + 4);
+      for (let b = 0; b < topBumps; b++) {
+        const x1 = bx + 14 + ((bw - 28) * (b + 0.5)) / topBumps;
+        const x2 = bx + 14 + ((bw - 28) * (b + 1)) / topBumps;
+        ctx.quadraticCurveTo(x1, by - 9, x2, by + 4);
+      }
+      // 右緣波浪雲弧
+      for (let b = 0; b < sideBumps; b++) {
+        const y1 = by + 4 + ((bh - 8) * (b + 0.5)) / sideBumps;
+        const y2 = by + 4 + ((bh - 8) * (b + 1)) / sideBumps;
+        ctx.quadraticCurveTo(bx + bw + 9, y1, bx + bw - 14, y2);
+      }
+      // 下緣波浪雲弧（中間留出彎曲漫畫對話尾巴）
+      ctx.quadraticCurveTo(bx + bw - 26, by + bh + 8, tailX + 13, by + bh - 2);
+      ctx.quadraticCurveTo(tailX + 7, by + bh + tailH * 0.72, tailX - 2, by + bh + tailH);
+      ctx.quadraticCurveTo(tailX - 4, by + bh + tailH * 0.42, tailX - 12, by + bh - 2);
+      ctx.quadraticCurveTo(bx + 26, by + bh + 8, bx + 14, by + bh - 4);
+      // 左緣波浪雲弧
+      for (let b = sideBumps - 1; b >= 0; b--) {
+        const y1 = by + 4 + ((bh - 8) * (b + 0.5)) / sideBumps;
+        const y2 = by + 4 + ((bh - 8) * b) / sideBumps;
+        ctx.quadraticCurveTo(bx - 9, y1, bx + 14, y2);
+      }
       ctx.closePath();
 
-      ctx.fillStyle = "#fffaf0";
+      // 深色演唱會 LED 燈板底＋金邊雙重漫畫外框
+      ctx.shadowColor = "rgba(0,0,0,0.42)";
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 4;
+      ctx.fillStyle = "#1a0e18";
       ctx.fill();
       ctx.shadowBlur = 0;
       ctx.shadowOffsetY = 0;
-      ctx.strokeStyle = "#2b1a10";
-      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#ffd966";
+      ctx.lineWidth = 4.5;
+      ctx.stroke();
+      ctx.strokeStyle = "#2b1208";
+      ctx.lineWidth = 1.8;
       ctx.stroke();
 
-      ctx.fillStyle = "#2b1a10";
+      // 左上角說話者表情名牌（一眼看出是誰在講話！）
+      const speakerEmoji = mode === "slap" ? (hitAnim > 0.15 ? "😵" : "😆") : (mode === "bless" ? "🙏" : "🎋");
+      const speakerName = mode === "slap"
+        ? `${speakerEmoji} ${getLocalizedScenarioName(selectedScenario)}`
+        : (mode === "bless" ? `${speakerEmoji} 心安祈福` : `${speakerEmoji} 心安廟公`);
+      ctx.font = "900 12px 'Noto Sans TC', 'PingFang TC', sans-serif";
+      const tagW = Math.min(138, ctx.measureText(speakerName).width + 18);
+      const tagH = 22;
+      const tagX = bx + 16;
+      const tagY = by - 16;
+      ctx.fillStyle = mode === "slap" ? "#d93c28" : "#c98b24";
+      ctx.strokeStyle = "#fff3c4";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(tagX, tagY, tagW, tagH, 11);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#fffdf5";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const startY = by + bh * 0.5 - ((lines.length - 1) * lineH) * 0.5;
-      lines.forEach((ln, idx) => {
-        ctx.fillText(ln, bx + bw * 0.5, startY + idx * lineH, bw - 22);
-      });
+      ctx.fillText(speakerName, tagX + tagW * 0.5, tagY + tagH * 0.5 + 0.5, tagW - 10);
+
+      // 泡泡內繪製發光「圓點 LED 矩陣字」劇情文字
+      let curY = by + (bh - contentH) * 0.5;
+      for (const sp of lineSprites) {
+        const drawW = Math.min(sp.width, bw - 26);
+        const drawH = sp.height * (drawW / sp.width);
+        ctx.drawImage(sp.canvas, bx + (bw - drawW) * 0.5, curY, drawW, drawH);
+        curY += drawH + lineGap;
+      }
+      ctx.restore();
       ctx.restore();
     }
 
-    // 神鬼幽默突發廣播條（頂部 HUD 下方金色跑馬橫幅，完全不擋人物）
+    // 神鬼幽默突發廣播條（廟會燈籠造型圓點 LED 跑馬燈，完全不擋人物）
     if (deityBannerTimer > 0 && deityBannerText) {
       deityBannerTimer = Math.max(0, deityBannerTimer - dt);
-      const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 56) + 8;
+      const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 6;
+      const bannerLed = getLedTextSprite(deityBannerText, {
+        pitch: 1.65,
+        color: "#ffe478",
+        glow: "rgba(255, 198, 62, 0.42)",
+        dimDot: true,
+        pad: 2
+      });
       ctx.save();
       ctx.globalAlpha = Math.min(1, deityBannerTimer / 0.35);
-      ctx.font = "800 13px 'Noto Serif TC', 'PingFang TC', sans-serif";
-      const bw = Math.min(vw - 18, Math.max(220, ctx.measureText(deityBannerText).width + 26));
+      const bw = Math.min(vw - 24, Math.max(210, (bannerLed ? bannerLed.width : 200) + 34));
+      const bh = 30;
       const bx = vw * 0.5 - bw * 0.5;
-      ctx.fillStyle = "rgba(182, 42, 26, 0.92)";
-      ctx.strokeStyle = "#ffd980";
-      ctx.lineWidth = 1.8;
+      // 兩端帶金邊弧耳的廟會 LED 彩匾
+      ctx.fillStyle = "rgba(38, 12, 16, 0.94)";
+      ctx.strokeStyle = "#ffd970";
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(bx, hudB, bw, 30, 7);
+      ctx.roundRect(bx, hudB, bw, bh, 15);
       ctx.fill();
       ctx.stroke();
-      ctx.fillStyle = "#fff8e1";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(deityBannerText, vw * 0.5, hudB + 15, bw - 16);
+      // 左右小宮燈圓點裝飾
+      ctx.fillStyle = "#e54834";
+      ctx.beginPath(); ctx.arc(bx + 11, hudB + bh * 0.5, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(bx + bw - 11, hudB + bh * 0.5, 5, 0, Math.PI * 2); ctx.fill();
+      if (bannerLed) {
+        const maxLedW = bw - 36;
+        const dw = Math.min(bannerLed.width, maxLedW);
+        const dh = bannerLed.height * (dw / bannerLed.width);
+        ctx.drawImage(bannerLed.canvas, vw * 0.5 - dw * 0.5, hudB + (bh - dh) * 0.5, dw, dh);
+      }
       ctx.restore();
     }
 
     ctx.restore();
     requestAnimationFrame(frame);
   }
+
+  // 供自動化測試核對圓點 LED 字形完整性與互動狀態
+  window.__xinanDebug = {
+    getVersion: () => "v_23:48:00",
+    isLedFontLoaded: () => !!(document.fonts && document.fonts.check("12px 'FusionPixel12'")),
+    testLedGlyphs: (text) => {
+      const chars = Array.from(String(text || ""));
+      return chars.map(ch => {
+        const bm = sampleLedBitmap(ch);
+        let lit = 0;
+        for (let i = 0; i < bm.bits.length; i++) lit += bm.bits[i];
+        return { char: ch, cols: bm.cols, rows: bm.rows, lit };
+      });
+    },
+    triggerSlap: () => {
+      if (typeof performSlap === "function") performSlap(false);
+    },
+    showTestBanner: (txt) => showDeityBanner(txt || "心安宮藍白拖獎勵過關", 6)
+  };
+  renderBrandLedCanvas();
   requestAnimationFrame(frame);
 })();
 

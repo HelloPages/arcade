@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "FusionPixel12";
+  src: url("./assets/fonts/fusion-pixel-12px-monospaced-zh_tw.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg-deep: #1a1216;
   --vermilion: #c93b29;
@@ -42,7 +50,7 @@ html, body {
   cursor: pointer;
 }
 
-/* 頂部極輕量浮水印廟印（不放功能列，上方美景 95% 釋放） */
+/* 頂部廟會主題造型狀態元件：飛簷木牌匾 + 符籤功德牌 + 紅金宮燈音效鈕（非制式橫向長條） */
 .top-hud {
   position: fixed;
   top: max(8px, env(safe-area-inset-top));
@@ -50,7 +58,7 @@ html, body {
   right: 8px;
   z-index: 20;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   pointer-events: none;
 }
@@ -59,81 +67,158 @@ body.in-fs .top-hud {
   top: 48px;
 }
 
-.brand-box {
+/* 飛簷古廟牌匾（內嵌圓點 LED 矩陣字） */
+.temple-plaque {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 8px 4px 5px;
-  background: rgba(54, 22, 18, 0.72);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(240, 195, 104, 0.45);
-  border-radius: 8px;
+  padding: 7px 12px 5px 8px;
+  background: linear-gradient(180deg, #3c1210 0%, #1d090b 100%);
+  border: 2px solid #f0c368;
+  border-radius: 6px 6px 12px 12px;
+  box-shadow: 0 3px 0 #7b1d12;
   pointer-events: auto;
+}
+
+.temple-plaque::before,
+.temple-plaque::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  width: 14px;
+  height: 7px;
+  background: linear-gradient(180deg, #ffe294 0%, #c98324 100%);
+  border: 1px solid #5c1910;
+}
+
+.temple-plaque::before {
+  left: -5px;
+  border-radius: 8px 2px 2px 2px;
+  transform: rotate(-18deg);
+}
+
+.temple-plaque::after {
+  right: -5px;
+  border-radius: 2px 8px 2px 2px;
+  transform: rotate(18deg);
+}
+
+.plaque-eave {
+  position: absolute;
+  top: -4px;
+  left: 12px;
+  right: 12px;
+  height: 4px;
+  background: linear-gradient(90deg, #b8291a, #ffd978, #b8291a);
+  border-radius: 4px 4px 0 0;
 }
 
 .brand-seal {
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
-  background: linear-gradient(180deg, #df4c36 0%, #9b2416 100%);
+  background: linear-gradient(180deg, #e54e37 0%, #9b2214 100%);
   color: var(--gold-soft);
-  font-weight: 800;
+  font-weight: 900;
   font-size: 13px;
-  border: 1px solid var(--gold);
-  border-radius: 5px;
+  border: 1.5px solid #ffd978;
+  border-radius: 50%;
 }
 
-.brand-text h1 {
-  margin: 0;
-  font-size: 13px;
-  letter-spacing: 0.8px;
-  color: var(--gold-soft);
-  line-height: 1.05;
+.plaque-led-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
 }
 
-.brand-text .sub {
+.led-brand-canvas {
+  display: block;
+  height: 24px;
+  width: auto;
+  image-rendering: auto;
+}
+
+.plaque-led-wrap .sub {
   font-size: 9px;
-  opacity: 0.78;
+  line-height: 1;
+  color: #f4d692;
+  opacity: 0.85;
   font-family: ui-monospace, monospace;
 }
 
-.merit-badge {
+/* 右上角廟會吊飾組：尖尾符籤功德牌 + 圓形宮燈音效鈕 */
+.top-right-charms {
   display: flex;
-  align-items: baseline;
-  gap: 3px;
-  padding: 2px 6px;
-  margin-left: 2px;
-  background: rgba(240, 195, 104, 0.18);
-  border: 1px solid rgba(240, 195, 104, 0.42);
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--gold-soft);
+  align-items: flex-start;
+  gap: 7px;
+  pointer-events: auto;
+}
+
+.merit-talisman {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 11px 9px 9px;
+  background: linear-gradient(180deg, #ffe799 0%, #f0bd52 100%);
+  color: #5b140a;
+  font-size: 12px;
+  font-weight: 900;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), 50% 100%, 0 calc(100% - 6px), 0 6px);
+  filter: drop-shadow(0 2px 0 #7b1d12);
+}
+
+.talisman-seal {
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  background: #c93322;
+  color: #fff3cc;
+  font-size: 10px;
+  font-weight: 900;
+  border-radius: 4px;
 }
 
 .merit-label {
-  color: var(--gold);
+  color: #7d1e10;
   font-size: 10px;
+  font-weight: 800;
 }
 
-.mini-sound-btn {
-  width: 32px;
-  height: 32px;
+.bell-sound-btn {
+  position: relative;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
-  border-radius: 7px;
-  border: 1px solid rgba(240, 195, 104, 0.48);
-  background: rgba(54, 22, 18, 0.74);
-  backdrop-filter: blur(6px);
-  color: var(--gold-soft);
-  font-size: 14px;
+  border-radius: 50%;
+  border: 2px solid #ffd978;
+  background: radial-gradient(circle at 35% 30%, #f26142 0%, #b52416 68%, #6d120a 100%);
+  color: #fff5d6;
+  font-size: 15px;
   cursor: pointer;
-  pointer-events: auto;
+  box-shadow: 0 3px 0 #5a1109;
   transition: transform 0.12s ease;
 }
 
-.mini-sound-btn:active {
+.bell-sound-btn::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 5px;
+  background: #f0c368;
+  border-radius: 3px 3px 0 0;
+}
+
+.bell-sound-btn:active {
   transform: scale(0.92);
 }
 
