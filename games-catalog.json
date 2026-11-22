@@ -1,13 +1,60 @@
 {
   "portalTitle": "經典街機遊戲館",
-  "version": "v_20261122_intuitive_names_v1",
-  "updatedAt": "2026-11-22T19:48:00+08:00",
+  "version": "v_20261122_cuteplane_v1",
+  "updatedAt": "2026-11-22T22:00:00+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向與原創在地化命名（禁用真實版權遊戲名稱），並全面支援 TW / EN / KO 本土化語系切換。",
   "dailySchedule": {
     "generateCron": "每日 04:00 依 REA_SPORTS_VS_CPU.md 自動生成單人對戰 CPU 之精緻運動競技遊戲（撞球-1、網球-1、羽球-1 等），採直覺類型-編號命名並支援 TW/EN/KO",
     "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
   },
   "games": [
+    {
+      "id": "cuteplane",
+      "title": "飛機射擊-5",
+      "shortTab": "飛機射擊-5",
+      "path": "./cuteplane.html",
+      "genre": "超爆笑可愛縱向飛機射擊",
+      "addedDate": "2026-11-22",
+      "thumbnail": "assets/cuteplane-cover.webp",
+      "reaSource": "全面進化可愛搞笑空戰：柴犬飛行員對決氣噗噗貓咪幽浮、吐司轟炸機與珍奶貓皇母艦，全 6 款依功能細繪寶物、3 大手繪多變關卡！",
+      "highlights": [
+        "全 6 款實繪寶物（爆米花桶、彩虹冰棒、墨鏡珍奶、辣椒火箭、草莓蛋糕、泡泡魔杖），完全告別 ABCD 文字方框！",
+        "3 大風格迥異手繪關卡背景平滑切換：甜點雲海王國 → 珊瑚水上樂園 → 星光夜市空城，搭配爆笑敵機對白與復古 BGM。"
+      ],
+      "artDirection": "明亮手繪可愛爆笑空戰；柴犬戰機、珍奶貓皇母艦、甜點雲海／珊瑚樂園／星光夜市三關多變場景。",
+      "i18n": {
+        "tw": {
+          "title": "飛機射擊-5",
+          "shortTab": "飛機射擊-5",
+          "genre": "超爆笑可愛飛機射擊",
+          "reaSource": "全面進化可愛搞笑空戰：柴犬飛行員大戰珍奶貓皇母艦，6 款依功能細繪寶物＋3 大多變手繪關卡！",
+          "highlights": [
+            "爆米花桶、彩虹冰棒、墨鏡珍奶、飛天辣椒、草莓蛋糕、泡泡魔杖 6 款實繪寶物！",
+            "甜點雲海、珊瑚水上樂園、星光夜市空城 3 大豐富關卡背景平滑切換。"
+          ]
+        },
+        "en": {
+          "title": "Sky Shooter 5",
+          "shortTab": "Sky Shooter 5",
+          "genre": "Hilarious Cute-'em-Up",
+          "reaSource": "Upgraded comedy sky shooter: Shiba Inu pilot vs. King Boba-Cat Carrier with 6 illustrated treasures and 3 vivid stages!",
+          "highlights": [
+            "Zero letter boxes: 6 lovingly illustrated power-up treasures (Popcorn, Rainbow Pop, Boba, Chili, Cake, Bubble Wand).",
+            "3 distinct hand-painted stages: Dessert Cloud Kingdom, Coral Waterpark, and Sky Night Market."
+          ]
+        },
+        "ko": {
+          "title": "비행기 슈팅-5",
+          "shortTab": "비행기 슈팅-5",
+          "genre": "초코믹 귀염 비행기 슈팅",
+          "reaSource": "시바견 파일럿 vs 버블티 냥이 황제! 6가지 정교한 일러스트 보물 아이템과 3가지 다채로운 스테이지!",
+          "highlights": [
+            "단순 문자 박스 대신 팝콘통・무지개 아이스바・선글라스 버블티・고추 로켓・케이크・버블봉 6종 일러스트 보물!",
+            "디저트 구름왕국 → 산호 워터파크 → 별빛 야시장 3단계 핸드페인팅 배경 전환."
+          ]
+        }
+      }
+    },
     {
       "id": "frostline",
       "title": "街頭格鬥-1",
