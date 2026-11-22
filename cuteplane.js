@@ -681,9 +681,23 @@
     const dw = img.naturalWidth * scale;
     const dh = img.naturalHeight * scale;
     const dx = (vw - dw) * 0.5;
-    const off = (bgScroll % dh);
-    ctx.drawImage(img, dx, off - dh, dw, dh);
-    ctx.drawImage(img, dx, off, dw, dh);
+    const cycle = dh * 2;
+    const off = bgScroll % cycle;
+    // 鏡像無縫雙磚捲動（徹底消除上下接縫線！）
+    for (let k = -1; k <= 1; k++) {
+      const yA = off + k * cycle - dh;
+      if (yA < vh && yA + dh > 0) {
+        ctx.drawImage(img, dx, yA, dw, dh);
+      }
+      const yB = off + k * cycle;
+      if (yB < vh && yB + dh > 0) {
+        ctx.save();
+        ctx.translate(0, yB + dh);
+        ctx.scale(1, -1);
+        ctx.drawImage(img, dx, 0, dw, dh);
+        ctx.restore();
+      }
+    }
     ctx.restore();
   }
 
