@@ -1,14 +1,13 @@
 :root {
-  --bg-deep: #120f19;
+  --bg-deep: #1a1216;
   --vermilion: #c93b29;
-  --vermilion-dark: #8f2214;
-  --gold: #e7b85c;
-  --gold-soft: #f9e4b4;
-  --celadon: #74a595;
-  --paper: #f8f1e4;
-  --ink: #2b1d14;
-  --panel-bg: rgba(16, 12, 22, 0.84);
-  --panel-border: rgba(231, 184, 92, 0.36);
+  --vermilion-dark: #8e2114;
+  --wood-top: rgba(68, 28, 22, 0.88);
+  --wood-bot: rgba(42, 16, 14, 0.92);
+  --gold: #f0c368;
+  --gold-soft: #fff2cc;
+  --jade-cream: #fff8eb;
+  --ink: #331c12;
 }
 
 * {
@@ -24,7 +23,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: var(--bg-deep);
-  color: var(--paper);
+  color: var(--jade-cream);
   font-family: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif;
 }
 
@@ -43,7 +42,7 @@ html, body {
   cursor: pointer;
 }
 
-/* 頂部宮廟牌匾浮動列 */
+/* 頂部極輕量浮水印廟印（不放功能列，上方美景 95% 釋放） */
 .top-hud {
   position: fixed;
   top: max(8px, env(safe-area-inset-top));
@@ -53,12 +52,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding: 6px 10px;
-  background: linear-gradient(180deg, rgba(24, 17, 29, 0.90) 0%, rgba(14, 10, 19, 0.88) 100%);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--panel-border);
-  border-radius: 9px;
+  pointer-events: none;
 }
 
 body.in-fs .top-hud {
@@ -68,100 +62,82 @@ body.in-fs .top-hud {
 .brand-box {
   display: flex;
   align-items: center;
-  gap: 7px;
-  flex-shrink: 0;
+  gap: 6px;
+  padding: 4px 8px 4px 5px;
+  background: rgba(54, 22, 18, 0.72);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(240, 195, 104, 0.45);
+  border-radius: 8px;
+  pointer-events: auto;
 }
 
 .brand-seal {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
-  background: linear-gradient(180deg, #d84732 0%, #972517 100%);
+  background: linear-gradient(180deg, #df4c36 0%, #9b2416 100%);
   color: var(--gold-soft);
   font-weight: 800;
-  font-size: 14px;
+  font-size: 13px;
   border: 1px solid var(--gold);
-  border-radius: 6px;
+  border-radius: 5px;
 }
 
 .brand-text h1 {
   margin: 0;
-  font-size: 14px;
-  letter-spacing: 1px;
+  font-size: 13px;
+  letter-spacing: 0.8px;
   color: var(--gold-soft);
-  line-height: 1.1;
+  line-height: 1.05;
 }
 
 .brand-text .sub {
-  font-size: 10px;
-  opacity: 0.72;
+  font-size: 9px;
+  opacity: 0.78;
   font-family: ui-monospace, monospace;
-}
-
-.mode-tabs {
-  display: flex;
-  gap: 4px;
-}
-
-.mode-btn, .rect-btn, .icon-btn, .chip-btn {
-  border: 1px solid rgba(231, 184, 92, 0.30);
-  background: rgba(32, 25, 42, 0.88);
-  color: var(--paper);
-  font-family: inherit;
-  cursor: pointer;
-  border-radius: 7px;
-  transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-.mode-btn {
-  padding: 6px 10px;
-  font-size: 13px;
-  font-weight: 700;
-  min-height: 33px;
-  white-space: nowrap;
-}
-
-.mode-btn.active {
-  background: linear-gradient(180deg, #d84a35 0%, #a52a1b 100%);
-  border-color: var(--gold);
-  color: #fff8ea;
-}
-
-.hud-actions {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-shrink: 0;
 }
 
 .merit-badge {
   display: flex;
   align-items: baseline;
-  gap: 4px;
-  padding: 5px 8px;
-  background: rgba(231, 184, 92, 0.14);
-  border: 1px solid rgba(231, 184, 92, 0.36);
-  border-radius: 7px;
-  font-size: 12px;
-  font-weight: 700;
+  gap: 3px;
+  padding: 2px 6px;
+  margin-left: 2px;
+  background: rgba(240, 195, 104, 0.18);
+  border: 1px solid rgba(240, 195, 104, 0.42);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
   color: var(--gold-soft);
 }
 
 .merit-label {
   color: var(--gold);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
 }
 
-.icon-btn {
-  padding: 6px 9px;
-  font-size: 12px;
-  min-height: 33px;
-  white-space: nowrap;
+.mini-sound-btn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  border: 1px solid rgba(240, 195, 104, 0.48);
+  background: rgba(54, 22, 18, 0.74);
+  backdrop-filter: blur(6px);
+  color: var(--gold-soft);
+  font-size: 14px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.12s ease;
 }
 
-/* 底部極簡超薄 2 排控制面板（直式手機僅佔約 88px，把 85%+ 畫面還給神壇舞台） */
+.mini-sound-btn:active {
+  transform: scale(0.92);
+}
+
+/* 全功能集中於下方：融入廟宇暖木紅金雕花牌匾質感 */
 .bottom-dock {
   position: fixed;
   left: 8px;
@@ -170,26 +146,27 @@ body.in-fs .top-hud {
   z-index: 20;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   max-width: 520px;
   margin: 0 auto;
   padding: 6px;
-  background: linear-gradient(180deg, rgba(20, 15, 27, 0.84) 0%, rgba(12, 9, 18, 0.88) 100%);
+  background: linear-gradient(180deg, var(--wood-top) 0%, var(--wood-bot) 100%);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(231, 184, 92, 0.36);
+  border: 1px solid rgba(240, 195, 104, 0.56);
   border-radius: 10px;
   pointer-events: auto;
+}
+
+.mode-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
 }
 
 .chips-row {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 4px;
-  pointer-events: auto;
-}
-
-.chips-row:empty {
-  display: none;
+  gap: 3px;
 }
 
 .action-row {
@@ -197,46 +174,75 @@ body.in-fs .top-hud {
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
   gap: 5px;
-  pointer-events: auto;
+}
+
+.mode-btn, .chip-btn, .rect-btn {
+  position: relative;
+  overflow: hidden;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+  white-space: nowrap;
+  text-align: center;
+  transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.mode-btn {
+  padding: 4px 2px;
+  min-height: 27px;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1px solid rgba(240, 195, 104, 0.34);
+  background: rgba(96, 36, 26, 0.72);
+  color: #fce8c5;
+}
+
+.mode-btn.active {
+  background: linear-gradient(180deg, #e5523a 0%, #a82819 100%);
+  border-color: #ffe294;
+  color: #fffaf0;
+}
+
+.mode-btn.util-btn {
+  background: rgba(118, 68, 28, 0.68);
+  border-color: rgba(240, 195, 104, 0.44);
+  color: #ffe8ad;
+}
+
+.mode-btn.auto-on {
+  background: linear-gradient(180deg, #f0c368 0%, #c68b2a 100%);
+  border-color: #fff4d4;
+  color: #2f1907;
+  animation: gentleNudge 3.2s ease-in-out infinite;
 }
 
 .chip-btn {
-  padding: 5px 2px;
-  font-size: 12px;
-  line-height: 1.15;
-  min-height: 30px;
-  white-space: nowrap;
-  overflow: hidden;
+  padding: 4px 2px;
+  min-height: 27px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid rgba(240, 195, 104, 0.30);
+  background: rgba(255, 245, 224, 0.14);
+  color: #fff4dd;
   text-overflow: ellipsis;
-  border-radius: 6px;
-  background: rgba(30, 24, 40, 0.90);
-  border: 1px solid rgba(231, 184, 92, 0.24);
-  color: rgba(255, 246, 229, 0.92);
-  text-align: center;
 }
 
 .chip-btn.active {
-  background: rgba(231, 184, 92, 0.24);
-  border-color: var(--gold);
-  color: var(--gold-soft);
-  font-weight: 700;
-}
-
-.weapon-chip.active {
-  background: linear-gradient(180deg, rgba(214, 72, 50, 0.92) 0%, rgba(160, 40, 24, 0.92) 100%);
-  border-color: #ffd466;
-  color: #fff8e6;
+  background: linear-gradient(180deg, #fff5dc 0%, #f5dfb2 100%);
+  border-color: #ffe399;
+  color: #6f1d12;
+  font-weight: 900;
 }
 
 .rect-btn {
-  padding: 9px 8px;
+  padding: 7px 6px;
+  min-height: 35px;
   font-size: 13px;
-  font-weight: 800;
-  min-height: 38px;
-  border-radius: 7px;
-  white-space: nowrap;
-  letter-spacing: 0.5px;
-  text-align: center;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  border: 1px solid rgba(240, 195, 104, 0.45);
+  background: rgba(96, 38, 28, 0.85);
+  color: #fff4dd;
 }
 
 .rect-btn:disabled {
@@ -247,119 +253,71 @@ body.in-fs .top-hud {
 .rect-btn:active:not(:disabled),
 .mode-btn:active,
 .chip-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
 .primary-btn {
-  background: linear-gradient(180deg, #dc4e38 0%, #a32b1c 100%);
-  border-color: var(--gold);
-  color: #fff8ea;
+  background: linear-gradient(180deg, #e5523a 0%, #a52517 100%);
+  border-color: #ffe18d;
+  color: #fffaf0;
 }
 
 .gold-btn {
-  background: linear-gradient(180deg, #f0c86e 0%, #c1892b 100%);
-  border-color: #fff3d2;
-  color: #241608;
+  background: linear-gradient(180deg, #f6cf76 0%, #c98d29 100%);
+  border-color: #fff6dc;
+  color: #2c1707;
 }
 
-@keyframes goldPulse {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.16); }
+/* 引導互動微動畫：讓玩家一眼看出按鈕可按、有生命力 */
+@keyframes shimmerSweep {
+  0%, 70% { transform: translateX(-140%) skewX(-22deg); }
+  100% { transform: translateX(260%) skewX(-22deg); }
+}
+
+@keyframes gentleNudge {
+  0%, 82%, 100% { transform: translateY(0) scale(1); }
+  88% { transform: translateY(-2px) scale(1.03); }
+  94% { transform: translateY(0) scale(0.99); }
+}
+
+.cta-alive {
+  animation: gentleNudge 2.6s ease-in-out infinite;
+}
+
+.cta-alive::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 42%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 250, 224, 0.45), transparent);
+  animation: shimmerSweep 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.cycle-nudge {
+  animation: gentleNudge 4.1s ease-in-out 1.2s infinite;
 }
 
 .ult-ready {
-  animation: goldPulse 1.1s ease-in-out infinite;
+  animation: gentleNudge 1.3s ease-in-out infinite;
 }
 
-.custom-input {
-  width: 100%;
-  min-width: 0;
-  min-height: 31px;
-  padding: 4px 8px;
-  border-radius: 7px;
-  border: 1px solid rgba(231, 184, 92, 0.36);
-  background: rgba(26, 20, 35, 0.92);
-  color: var(--paper);
-  font-family: inherit;
-  font-size: 12px;
-  text-align: center;
-  outline: none;
-}
-
-.custom-input:focus {
-  border-color: var(--gold);
-  background: rgba(34, 26, 46, 0.96);
-}
-
-.custom-input.full-span {
-  grid-column: 1 / -1;
-  text-align: left;
-  padding: 6px 12px;
-  font-size: 13px;
-  min-height: 34px;
-}
-
-.custom-input::placeholder {
-  color: rgba(248, 241, 228, 0.50);
-}
-
-/* 問卦步驟進度引導條（跨滿整列，不再擠在單格） */
-.oracle-guide {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 7px 12px;
-  border-radius: 7px;
-  background: rgba(231, 184, 92, 0.10);
-  border: 1px solid rgba(231, 184, 92, 0.28);
-  font-size: 12px;
-  color: var(--gold-soft);
-}
-
-.oracle-steps {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.oracle-step {
-  opacity: 0.45;
-  font-size: 11px;
-}
-
-.oracle-step.active {
-  opacity: 1;
-  color: #ffd980;
-}
-
-.oracle-msg {
-  font-size: 12px;
-  color: var(--paper);
-  opacity: 0.92;
-  text-align: right;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 宣紙靈籤 / 祈福結果彈窗卡（單層微立體，無內外雙陰影） */
+/* 宣紙靈籤 / 祈福結果彈窗卡（單層微立體，無雙層陰影） */
 .result-card {
   position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 30;
-  width: min(90vw, 370px);
+  width: min(90vw, 365px);
   padding: 22px 20px 18px;
   background: linear-gradient(180deg, #fffaf0 0%, #f5ead4 100%);
   color: var(--ink);
   border: 1.5px solid #b47e36;
   border-radius: 10px;
-  box-shadow: 4px 4px 0 rgba(18, 12, 22, 0.52);
+  box-shadow: 4px 4px 0 rgba(36, 16, 12, 0.45);
   text-align: center;
 }
 
@@ -384,16 +342,15 @@ body.in-fs .top-hud {
   font-weight: 800;
   font-size: 13px;
   letter-spacing: 1px;
-  border: 1px solid #e7b85c;
+  border: 1px solid var(--gold);
   border-radius: 6px;
   margin-bottom: 10px;
 }
 
 .result-card h2 {
   margin: 2px 0 10px;
-  font-size: 21px;
+  font-size: 20px;
   color: var(--vermilion-dark);
-  letter-spacing: 0.6px;
 }
 
 .result-card p {
@@ -408,14 +365,4 @@ body.in-fs .top-hud {
   font-weight: 700;
   color: #845d2b;
   margin-bottom: 14px;
-}
-
-@media (max-width: 440px) {
-  .brand-text h1 { font-size: 13px; }
-  .brand-text .sub { font-size: 9px; }
-  .mode-btn { padding: 5px 8px; font-size: 12px; min-height: 31px; }
-  .merit-badge { padding: 4px 6px; font-size: 11px; }
-  .icon-btn { padding: 5px 7px; font-size: 11px; min-height: 31px; }
-  .oracle-guide { flex-direction: column; align-items: center; gap: 3px; padding: 6px 8px; }
-  .oracle-msg { text-align: center; white-space: normal; }
 }

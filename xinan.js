@@ -5,6 +5,7 @@
   const meritEl = document.getElementById("meritCount");
   const btnSound = document.getElementById("btnSound");
   const btnScene = document.getElementById("btnScene");
+  const btnAuto = document.getElementById("btnAuto");
   const chipsRow = document.getElementById("chipsRow");
   const weaponRow = document.getElementById("weaponRow");
   const actionRow = document.getElementById("actionRow");
@@ -222,7 +223,8 @@
 
   btnSound.addEventListener("click", () => {
     soundOn = !soundOn;
-    btnSound.textContent = soundOn ? "音效開" : "靜音";
+    btnSound.textContent = soundOn ? "🔊" : "🔇";
+    btnSound.setAttribute("aria-label", soundOn ? "音效開" : "靜音");
   });
 
   // --- 狀態 ---
@@ -477,8 +479,20 @@
   let charMoodTimer = 0;
   let forceMoodForTest = null;
   let autoTheater = true;
-  let theaterTimer = 2.4;
-  let theaterSlapCountdown = 2;
+  let theaterTimer = 1.6;
+  let theaterBeat = 0;
+
+  function syncAutoBtn() {
+    if (!btnAuto) return;
+    btnAuto.textContent = autoTheater ? "自動:演" : "自動:停";
+    btnAuto.classList.toggle("auto-on", autoTheater);
+  }
+
+  function stopAutoOnUserAction() {
+    if (!autoTheater) return;
+    autoTheater = false;
+    syncAutoBtn();
+  }
 
   function updateFsPadding() {
     const inEmbed = location.search.includes("embed=1");
@@ -502,6 +516,8 @@
   window.__xinanDebug = {
     setMood: (m) => { forceMoodForTest = m; },
     getState: () => ({
+      mode,
+      autoTheater,
       scenario: selectedScenario.id,
       mood: forceMoodForTest || charMood,
       merit,
@@ -684,28 +700,28 @@
   // =========================================================
   function renderControls() {
     chipsRow.innerHTML = "";
-    weaponRow.innerHTML = "";
+    if (weaponRow) weaponRow.innerHTML = "";
     actionRow.innerHTML = "";
 
-    // 超薄 2 排設計（把 85%+ 直式手機畫面留給神壇與角色）：第 1 排永遠是 7 位角色單排等寬 7 格
+    // 第 1 排角色列：7 位角色單排等寬 7 格
     slapScenarios.forEach(s => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "chip-btn" + (selectedScenario.id === s.id && !customTargetLabel ? " active" : "");
       b.textContent = s.label;
-      b.onclick = () => { selectedScenario = s; customTargetLabel = ""; renderControls(); };
+      b.onclick = () => { stopAutoOnUserAction(); selectedScenario = s; customTargetLabel = ""; renderControls(); };
       chipsRow.appendChild(b);
     });
 
     const targetName = getTargetName();
 
     if (mode === "slap") {
-      // 第 2 排：一鍵循環法器＋連擊主鍵＋滿氣重擊（省掉一整排按鈕，無腦好玩！）
       const wCycle = document.createElement("button");
       wCycle.type = "button";
-      wCycle.className = "rect-btn";
+      wCycle.className = "rect-btn cycle-nudge";
       wCycle.textContent = `換:${selectedWeapon.label}`;
       wCycle.onclick = () => {
+        stopAutoOnUserAction();
         const idx = weapons.findIndex(w => w.id === selectedWeapon.id);
         selectedWeapon = weapons[(idx + 1) % weapons.length];
         playWoodClack();
@@ -716,9 +732,9 @@
       const slapBtn = document.createElement("button");
       slapBtn.type = "button";
       slapBtn.id = "btnPrimaryAction";
-      slapBtn.className = "rect-btn primary-btn";
+      slapBtn.className = "rect-btn primary-btn cta-alive";
       slapBtn.textContent = `${selectedWeapon.label}連擊！`;
-      slapBtn.onclick = () => performSlap(false);
+      slapBtn.onclick = () => { stopAutoOnUserAction(); performSlap(false); };
       actionRow.appendChild(slapBtn);
 
       const ultBtn = document.createElement("button");
@@ -727,14 +743,15 @@
       ultBtn.className = "rect-btn " + (slapCharge >= 10 ? "gold-btn ult-ready" : "");
       ultBtn.textContent = slapCharge >= 10 ? "鎮煞重擊！" : `重擊 ${slapCharge}/10`;
       ultBtn.disabled = slapCharge < 10;
-      ultBtn.onclick = () => performSlap(true);
+      ultBtn.onclick = () => { stopAutoOnUserAction(); performSlap(true); };
       actionRow.appendChild(ultBtn);
     } else if (mode === "bless") {
       const bCycle = document.createElement("button");
       bCycle.type = "button";
-      bCycle.className = "rect-btn";
+      bCycle.className = "rect-btn cycle-nudge";
       bCycle.textContent = `換:${selectedBless.label}`;
       bCycle.onclick = () => {
+        stopAutoOnUserAction();
         const idx = blessScenarios.findIndex(s => s.id === selectedBless.id);
         selectedBless = blessScenarios[(idx + 1) % blessScenarios.length];
         playBellSound(587);
@@ -745,15 +762,15 @@
       const blessBtn = document.createElement("button");
       blessBtn.type = "button";
       blessBtn.id = "btnPrimaryAction";
-      blessBtn.className = "rect-btn gold-btn";
+      blessBtn.className = "rect-btn gold-btn cta-alive";
       blessBtn.textContent = `為 ${targetName} 放祈福 ↗`;
-      blessBtn.onclick = launchBlessing;
+      blessBtn.onclick = () => { stopAutoOnUserAction(); launchBlessing(); };
       actionRow.appendChild(blessBtn);
     } else if (mode === "oracle") {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.id = "btnPrimaryAction";
-      btn.className = "rect-btn " + (oracleStep === "drawn" ? "gold-btn ult-ready" : "primary-btn");
+      btn.className = "rect-btn " + (oracleStep === "drawn" ? "gold-btn ult-ready cta-alive" : "primary-btn cta-alive");
       btn.textContent = oracleStep === "drawn"
         ? `② 為 ${targetName} 擲聖筊解籤`
         : oracleStep === "shaking"
@@ -763,6 +780,7 @@
             : `① 為 ${targetName} 誠心搖籤`;
       btn.disabled = oracleStep === "shaking" || oracleStep === "throwing";
       btn.onclick = () => {
+        stopAutoOnUserAction();
         if (oracleStep === "ready" || oracleStep === "done") shakeOracle();
         else if (oracleStep === "drawn") throwBlocks();
       };
@@ -796,35 +814,62 @@
       activeSceneId = (candidates.length ? candidates : list)[Math.floor(Math.random() * (candidates.length || list.length))];
     }
     const def = SCENE_DEFS[activeSceneId] || SCENE_DEFS.sunny;
-    if (btnScene) btnScene.textContent = def.label;
+    if (btnScene) btnScene.textContent = "換景";
     loadImg(def.keyP);
     loadImg(def.keyD);
   }
+
+  function setModeUI(nextMode, isUser = false) {
+    if (isUser) stopAutoOnUserAction();
+    mode = nextMode;
+    document.querySelectorAll(".mode-btn[data-mode]").forEach(b => b.classList.toggle("active", b.dataset.mode === nextMode));
+    resultCard.classList.add("hidden");
+    floatTexts.length = 0;
+    particles.length = 0;
+    shockwaves.length = 0;
+    comboBadgeTimer = 0;
+    oracleStep = "ready";
+    pickModeScene(mode, false);
+    spawnFestiveShower(mode, 1.05);
+    renderControls();
+  }
+
   if (btnScene) {
-    btnScene.textContent = (SCENE_DEFS[activeSceneId] || SCENE_DEFS.sunny).label;
+    btnScene.textContent = "換景";
     btnScene.addEventListener("click", () => {
+      stopAutoOnUserAction();
       pickModeScene(mode, true);
       spawnFestiveShower(mode, 1.0);
+      const def = SCENE_DEFS[activeSceneId] || SCENE_DEFS.sunny;
+      showDeityBanner(`🏮 已切換場景：${def.label}`);
     });
   }
 
-  document.querySelectorAll(".mode-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      mode = btn.dataset.mode;
-      document.querySelectorAll(".mode-btn").forEach(b => b.classList.toggle("active", b === btn));
-      resultCard.classList.add("hidden");
-      floatTexts.length = 0;
-      particles.length = 0;
-      shockwaves.length = 0;
-      comboBadgeTimer = 0;
-      oracleStep = "ready";
-      pickModeScene(mode, false);
-      spawnFestiveShower(mode, 1.1);
+  if (btnAuto) {
+    syncAutoBtn();
+    btnAuto.addEventListener("click", () => {
+      autoTheater = !autoTheater;
+      syncAutoBtn();
+      if (autoTheater) {
+        resultCard.classList.add("hidden");
+        if (oracleStep === "done") oracleStep = "ready";
+        theaterTimer = 0.25;
+        showDeityBanner("🎬 自動劇情重新開演！隨時點畫面即可接手");
+      } else {
+        showDeityBanner("🖐️ 已暫停自動劇情，換你親自開玩！");
+      }
       renderControls();
+    });
+  }
+
+  document.querySelectorAll(".mode-btn[data-mode]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      setModeUI(btn.dataset.mode, true);
     });
   });
 
   canvas.addEventListener("pointerdown", () => {
+    stopAutoOnUserAction();
     if (!resultCard.classList.contains("hidden")) return;
     if (mode === "slap") performSlap(false);
     else if (mode === "bless") launchBlessing();
@@ -837,6 +882,7 @@
   window.addEventListener("keydown", e => {
     if (e.code === "Space" && document.activeElement.tagName !== "INPUT") {
       e.preventDefault();
+      stopAutoOnUserAction();
       if (mode === "slap") performSlap(false);
       else if (mode === "bless") launchBlessing();
       else if (mode === "oracle") {
@@ -964,32 +1010,82 @@
       }
     }
 
-    // 隨機劇場自動輪演（打小人模式持續演爆笑劇情＋三不五十自動打幾下）
-    if (mode === "slap" && autoTheater && resultCard.classList.contains("hidden")) {
-      theaterTimer -= dt;
-      if (theaterTimer <= 0) {
-        theaterTimer = 4.6 + Math.random() * 1.4;
-        theaterSlapCountdown -= 1;
-        if (theaterSlapCountdown <= 0) {
-          theaterSlapCountdown = 2 + Math.floor(Math.random() * 2);
-          performSlap(false);
-        } else {
-          const pool = slapScenarios;
-          selectedScenario = pool[Math.floor(Math.random() * pool.length)];
-          customTargetLabel = "";
-          const theaterMonitorLines = [
-            "買了啦！這台 4K OLED 黑到像老闆的良心！",
-            "240Hz 滑到滑鼠自己離家出走！買了啦！",
-            "雙螢幕買下去，摸魚看起來像在盯大盤！",
-            "這螢幕色彩準到修圖完全不用開濾鏡！",
-            "今天不買明天漲價，卡拿出來刷下去！",
-            "護眼低藍光，加班到半夜眼睛還在發亮！"
-          ];
-          const evPool = [...theaterMonitorLines, ...selectedScenario.officeEvents];
-          const ev = evPool[Math.floor(Math.random() * evPool.length)];
-          spawnFloatText(vw * 0.5, activeCharTopY - 22, `${selectedScenario.label}：${ev}`, "#2b1a10", 21);
-          setCharMood(Math.random() < 0.45 ? "happy" : "innocent", 1.15);
-          renderControls();
+    // 全自動劇情導演（預設自動輪演打小人、祈福、問卦三大模式；一旦人為介入立刻停止）
+    if (autoTheater && resultCard.classList.contains("hidden")) {
+      if (mode === "oracle" && (oracleStep === "shaking" || oracleStep === "throwing")) {
+        // 等待搖籤或擲筊動畫自然播完
+      } else {
+        theaterTimer -= dt;
+        if (theaterTimer <= 0) {
+          if (mode === "oracle" && oracleStep === "drawn") {
+            throwBlocks();
+            theaterTimer = 2.0;
+          } else {
+            const pool = slapScenarios;
+            const beat = theaterBeat % 7;
+            theaterBeat += 1;
+            const theaterMonitorLines = [
+              "買了啦！這台 4K OLED 黑到像老闆的良心！",
+              "240Hz 滑到滑鼠自己離家出走！買了啦！",
+              "雙螢幕買下去，摸魚看起來像在盯大盤！",
+              "這螢幕色彩準到修圖完全不用開濾鏡！",
+              "今天不買明天漲價，卡拿出來刷下去！",
+              "護眼低藍光，加班到半夜眼睛還在發亮！"
+            ];
+
+            if (beat === 0) {
+              if (mode !== "slap") setModeUI("slap", false);
+              selectedScenario = pool[Math.floor(Math.random() * pool.length)];
+              customTargetLabel = "";
+              const evPool = [...theaterMonitorLines, ...selectedScenario.officeEvents];
+              const ev = evPool[Math.floor(Math.random() * evPool.length)];
+              spawnFloatText(vw * 0.5, activeCharTopY - 22, `${selectedScenario.label}：${ev}`, "#2b1a10", 21);
+              setCharMood(Math.random() < 0.5 ? "happy" : "innocent", 1.2);
+              renderControls();
+              theaterTimer = 3.2;
+            } else if (beat === 1) {
+              if (mode !== "slap") setModeUI("slap", false);
+              selectedWeapon = weapons[Math.floor(Math.random() * weapons.length)];
+              renderControls();
+              performSlap(false);
+              theaterTimer = 2.8;
+            } else if (beat === 2) {
+              if (mode !== "slap") setModeUI("slap", false);
+              performSlap(slapCharge >= 10);
+              theaterTimer = 3.2;
+            } else if (beat === 3) {
+              setModeUI("bless", false);
+              selectedScenario = pool[Math.floor(Math.random() * pool.length)];
+              customTargetLabel = "";
+              selectedBless = blessScenarios[Math.floor(Math.random() * blessScenarios.length)];
+              renderControls();
+              launchBlessing();
+              theaterTimer = 3.4;
+            } else if (beat === 4) {
+              if (mode !== "bless") setModeUI("bless", false);
+              selectedBless = blessScenarios[Math.floor(Math.random() * blessScenarios.length)];
+              renderControls();
+              launchBlessing();
+              theaterTimer = 3.4;
+            } else if (beat === 5) {
+              setModeUI("oracle", false);
+              selectedScenario = pool[Math.floor(Math.random() * pool.length)];
+              customTargetLabel = "";
+              renderControls();
+              shakeOracle();
+              theaterTimer = 1.4;
+            } else {
+              setModeUI("slap", false);
+              selectedScenario = pool[Math.floor(Math.random() * pool.length)];
+              customTargetLabel = "";
+              const evPool = [...theaterMonitorLines, ...selectedScenario.officeEvents];
+              const ev = evPool[Math.floor(Math.random() * evPool.length)];
+              spawnFloatText(vw * 0.5, activeCharTopY - 22, `${selectedScenario.label}：${ev}`, "#2b1a10", 21);
+              setCharMood("happy", 1.2);
+              renderControls();
+              theaterTimer = 3.2;
+            }
+          }
         }
       }
     }
@@ -1249,19 +1345,26 @@
       } else if (oracleStep === "throwing") {
         oracleTimer -= dt;
         if (oracleTimer <= 0) {
-          oracleStep = "done";
           setCharMood("happy", 2.5);
           addMerit(10);
           playBellSound(784);
           spawnBurst(blocksX, propBaseY - 24, "#ffd466", 24, 220);
           spawnShockwave(blocksX, propBaseY - 12, "#ffd466", 110, 4);
           spawnFestiveShower("oracle", 2.0);
-          showResult(
-            drawnFortune.grade,
-            `【${targetName}】${drawnFortune.title}`,
-            drawnFortune.body,
-            `為 ${targetName} 聖筊應許 ・ 心安 +10`
-          );
+          if (autoTheater) {
+            oracleStep = "ready";
+            theaterTimer = 3.8;
+            spawnFloatText(vw * 0.5, activeCharTopY - 22, `【${drawnFortune.grade}】${targetName}：${drawnFortune.title}！`, "#2b1a10", 21);
+            showDeityBanner(`🎋 ${drawnFortune.grade}・${drawnFortune.title}：${drawnFortune.body}`);
+          } else {
+            oracleStep = "done";
+            showResult(
+              drawnFortune.grade,
+              `【${targetName}】${drawnFortune.title}`,
+              drawnFortune.body,
+              `為 ${targetName} 聖筊應許 ・ 心安 +10`
+            );
+          }
           renderControls();
         }
       }

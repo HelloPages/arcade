@@ -4,62 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>心安宮・三儀殿｜打小人・祈福・問卦</title>
-  <link rel="stylesheet" href="./xinan.css?v=20261122_compact_fun_v1">
+  <link rel="stylesheet" href="./xinan.css?v=20261122_unified_bottom_v1">
 </head>
 <body>
   <div id="app">
     <canvas id="stage"></canvas>
 
-    <!-- 頂部極簡浮動 HUD -->
+    <!-- 頂部極輕量浮水印式廟印（不放功能鍵，將上方美景完全解放） -->
     <header class="top-hud">
       <div class="brand-box">
         <span class="brand-seal">殿</span>
         <div class="brand-text">
           <h1>心安宮</h1>
-          <span class="sub">v_15:25:00</span>
+          <span class="sub">v_16:05:00</span>
         </div>
-      </div>
-
-      <nav class="mode-tabs" aria-label="儀式切換">
-        <button type="button" class="mode-btn active" data-mode="slap">打小人</button>
-        <button type="button" class="mode-btn" data-mode="bless">祈福</button>
-        <button type="button" class="mode-btn" data-mode="oracle">問卦</button>
-      </nav>
-
-      <div class="hud-actions">
         <div class="merit-badge" title="心安指數">
           <span class="merit-label">心安</span>
           <strong id="meritCount">0</strong>
         </div>
-        <button type="button" id="btnScene" class="icon-btn" aria-label="切換場景">換景</button>
-        <button type="button" id="btnSound" class="icon-btn" aria-label="音效開關">音效開</button>
       </div>
+      <button type="button" id="btnSound" class="mini-sound-btn" aria-label="音效開關">🔊</button>
     </header>
 
-    <!-- 中央浮動結果 / 籤詩卡（僅在需要時出現，不佔平常遊玩視野） -->
+    <!-- 中央浮動結果 / 籤詩卡 -->
     <div id="resultCard" class="result-card hidden" role="dialog" aria-live="polite">
       <div class="result-badge" id="resultBadge">上上籤</div>
       <h2 id="resultTitle">紫氣東來・萬事順遂</h2>
       <p id="resultBody">心定則事成，今日宜放寬心懷，貴人已在不遠處。</p>
-      <div class="result-sub" id="resultSub">聖筊應許 ・ 心安 +10</div>
+      <div class="result-sub" id="resultSub">心安 +10</div>
       <button type="button" id="btnCloseResult" class="rect-btn primary-btn">收下祝福</button>
     </div>
 
-    <!-- 底部輕量操控列（依模式切換，不遮擋中央神壇與道具） -->
+    <!-- 全功能集中於下方：融入廟宇紅木鎏金與暖玉質感，並附引導微動畫 -->
     <footer class="bottom-dock">
+      <div class="mode-strip" id="modeStrip">
+        <button type="button" class="mode-btn active" data-mode="slap">打小人</button>
+        <button type="button" class="mode-btn" data-mode="bless">祈福</button>
+        <button type="button" class="mode-btn" data-mode="oracle">問卦</button>
+        <button type="button" class="mode-btn util-btn" id="btnScene">換景</button>
+        <button type="button" class="mode-btn util-btn auto-on" id="btnAuto">自動:演</button>
+      </div>
       <div class="chips-row" id="chipsRow"></div>
-      <div class="chips-row" id="weaponRow"></div>
       <div class="action-row" id="actionRow"></div>
     </footer>
   </div>
 
-  <script src="./xinan.js?v=20261122_nomole_v1"></script>
+  <script src="./xinan.js?v=20261122_unified_bottom_v1"></script>
 </body>
 </html>
-
-
-
-
-
-
-
