@@ -26,10 +26,10 @@
     sceneFestival: "./assets/xinan-scene-festival.webp?v=20261122_party_v1",
     sceneSkylantern: "./assets/xinan-scene-skylantern.webp?v=20261122_party_v1",
     sceneOraclehall: "./assets/xinan-scene-oraclehall.webp?v=20261122_party_v1",
-    "weapon-slipper": "./assets/v2/weapon-slipper.webp",
-    "weapon-clog": "./assets/v2/weapon-clog.webp",
-    "weapon-mallet": "./assets/v2/weapon-mallet.webp",
-    "weapon-fan": "./assets/v2/weapon-fan.webp",
+    "weapon-slipper": "./assets/v2/weapon-slipper.webp?v=20261122_tw_giant_v1",
+    "weapon-stool": "./assets/v2/weapon-stool.webp?v=20261122_tw_giant_v1",
+    "weapon-zapper": "./assets/v2/weapon-zapper.webp?v=20261122_tw_giant_v1",
+    "weapon-cooker": "./assets/v2/weapon-cooker.webp?v=20261122_tw_giant_v1",
     "bless-lantern": "./assets/v2/bless-lantern.webp",
     "bless-ingot": "./assets/v2/bless-ingot.webp",
     "bless-lotus": "./assets/v2/bless-lotus.webp",
@@ -127,7 +127,7 @@
   const bgKey = preferDesktopBg ? "bgDesktop" : "bg";
   const immediateKeys = [
     bgKey,
-    "weapon-slipper",
+    "weapon-slipper", "weapon-stool", "weapon-zapper", "weapon-cooker",
     "Tony_normal", "Tony_happy", "Tony_hurt_cry", "Tony_innocent"
   ];
   immediateKeys.forEach(loadImg);
@@ -163,27 +163,39 @@
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
       osc.connect(gain).connect(ac.destination);
       osc.start(now); osc.stop(now + 0.25);
-    } else if (weaponId === "clog") {
-      osc.type = "square";
-      osc.frequency.setValueAtTime(420, now);
-      osc.frequency.exponentialRampToValueAtTime(130, now + 0.11);
-      gain.gain.setValueAtTime(0.20, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-      osc.connect(gain).connect(ac.destination);
-      osc.start(now); osc.stop(now + 0.13);
-    } else if (weaponId === "fan") {
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(720, now);
-      osc.frequency.exponentialRampToValueAtTime(240, now + 0.14);
+    } else if (weaponId === "zapper") {
+      // 阿嬤電蚊拍「滋滋啪！」高壓電擊聲
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(1080, now);
+      osc.frequency.exponentialRampToValueAtTime(210, now + 0.14);
       gain.gain.setValueAtTime(0.22, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
       osc.connect(gain).connect(ac.destination);
-      osc.start(now); osc.stop(now + 0.16);
-    } else {
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(290, now);
-      osc.frequency.exponentialRampToValueAtTime(68, now + 0.12);
+      osc.start(now); osc.stop(now + 0.17);
+    } else if (weaponId === "cooker") {
+      // 經典紅電鍋「噹！飯熟了！」清脆金屬響鈴聲
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1240, now);
+      osc.frequency.exponentialRampToValueAtTime(1180, now + 0.35);
+      gain.gain.setValueAtTime(0.26, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+      osc.connect(gain).connect(ac.destination);
+      osc.start(now); osc.stop(now + 0.40);
+    } else if (weaponId === "stool") {
+      // 辦桌紅塑膠椅「哐噹！」空心塑膠重擊聲
+      osc.type = "square";
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(88, now + 0.15);
       gain.gain.setValueAtTime(0.24, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+      osc.connect(gain).connect(ac.destination);
+      osc.start(now); osc.stop(now + 0.17);
+    } else {
+      // 巨型藍白拖「啪啦！」清脆拖鞋聲
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(64, now + 0.12);
+      gain.gain.setValueAtTime(0.26, now);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
       osc.connect(gain).connect(ac.destination);
       osc.start(now); osc.stop(now + 0.14);
@@ -490,10 +502,10 @@
     }
   ];
   const weapons = [
-    { id: "slipper", label: "藍白拖", sprite: "weapon-slipper", color: "#6ec6ff", power: 2 },
-    { id: "clog", label: "紅木屐", sprite: "weapon-clog", color: "#ff7256", power: 3 },
-    { id: "mallet", label: "虎頭鎚", sprite: "weapon-mallet", color: "#ffd466", power: 4 },
-    { id: "fan", label: "桃木扇", sprite: "weapon-fan", color: "#79e6b2", power: 3 }
+    { id: "slipper", label: "巨型藍白拖", sprite: "weapon-slipper", color: "#5cc8ff", power: 2, stamp: { tw: "啪啦！！", en: "MEGA SMACK!", ko: "찰싹!!" } },
+    { id: "stool", label: "辦桌紅椅", sprite: "weapon-stool", color: "#ff4d4d", power: 4, stamp: { tw: "哐噹！！", en: "STOOL BONK!", ko: "쾅!!" } },
+    { id: "zapper", label: "阿嬤電蚊拍", sprite: "weapon-zapper", color: "#ffe047", power: 3, stamp: { tw: "滋滋啪！！", en: "BZZZT ZAP!", ko: "찌릿!!" } },
+    { id: "cooker", label: "經典紅電鍋", sprite: "weapon-cooker", color: "#ff7043", power: 4, stamp: { tw: "噹！熟了！", en: "DING! DONE!", ko: "땡! 다됐다!" } }
   ];
 
   // 預設啟動就是「偷泥」+「藍白拖」
@@ -504,6 +516,8 @@
   let slapCharge = 0; // 0..10
   let weaponAnim = 0;
   let weaponHeavy = false;
+  let weaponStampTimer = 0;
+  let weaponStampText = "";
   let villainSquash = 0;
   let villainDizzy = 0;
   let villainFly = 0;
@@ -540,7 +554,7 @@
       bannerAutoOff: "🖐️ 已暫停自動劇情，換你親自開玩！",
       bannerScene: (lbl) => `🏮 已切換場景：${lbl}`,
       names: { three_mu: "3畝", kenny: "肯尼", judy: "啾底", tony: "偷泥", shrimp: "蝦婷", junior: "學妹", sara: "沙拉" },
-      weapons: { slipper: "藍白拖", clog: "紅木屐", mallet: "虎頭鎚", fan: "桃木扇" },
+      weapons: { slipper: "巨型藍白拖", stool: "辦桌紅椅", zapper: "阿嬤電蚊拍", cooker: "經典紅電鍋" },
       blessings: { lantern: "平安天燈", wealth: "招財進寶", career: "貴人相助", health: "健康平安" },
       scenes: { sunny: "櫻花廟埕", office: "歡樂螢幕間", festival: "廟口嘉年華", skylantern: "天燈雲海台", oraclehall: "金龍問卦殿", night: "暮色雕龍殿" }
     },
@@ -568,7 +582,7 @@
       bannerAutoOff: "🖐️ Auto-show paused — you're in full control!",
       bannerScene: (lbl) => `🏮 Stage switched: ${lbl}`,
       names: { three_mu: "3Mu", kenny: "Kenny", judy: "Judy", tony: "Tony", shrimp: "Shrimp", junior: "Junior", sara: "Sara" },
-      weapons: { slipper: "Slipper", clog: "Wood Clog", mallet: "Tiger Mallet", fan: "Lucky Fan" },
+      weapons: { slipper: "Mega Slipper", stool: "Red Stool", zapper: "Bug Zapper", cooker: "Rice Cooker" },
       blessings: { lantern: "Sky Lantern", wealth: "Jackpot", career: "Promotion", health: "Good Vibes" },
       scenes: { sunny: "Blossom Courtyard", office: "Monitor Showroom", festival: "Temple Carnival", skylantern: "Lantern Terrace", oraclehall: "Dragon Oracle Hall", night: "Twilight Shrine" }
     },
@@ -596,7 +610,7 @@
       bannerAutoOff: "🖐️ 자동 모드 일시정지 — 이제 직접 플레이하세요!",
       bannerScene: (lbl) => `🏮 배경 전환: ${lbl}`,
       names: { three_mu: "3무", kenny: "케니", judy: "주디", tony: "토니", shrimp: "슈림프", junior: "후배", sara: "사라" },
-      weapons: { slipper: "슬리퍼", clog: "나막신", mallet: "호랑이망치", fan: "복부채" },
+      weapons: { slipper: "초대형 슬리퍼", stool: "빨간 의자", zapper: "전기 모기채", cooker: "빨간 밥솥" },
       blessings: { lantern: "소원 풍등", wealth: "재물운", career: "귀인운", health: "건강운" },
       scenes: { sunny: "벚꽃 사당 마당", office: "즐거운 모니터 룸", festival: "사당 축제 광장", skylantern: "풍등 구름 전망대", oraclehall: "황금용 운세전", night: "황혼 용조각전" }
     }
@@ -691,9 +705,11 @@
 
     weaponAnim = 1;
     weaponHeavy = heavy;
-    villainSquash = heavy ? 1.0 : 0.65;
-    villainDizzy = heavy ? 2.2 : 0.85;
-    shake = heavy ? 18 : (selectedWeapon.id === "mallet" ? 11 : 7);
+    villainSquash = heavy ? 1.12 : 0.78;
+    villainDizzy = heavy ? 2.4 : 0.95;
+    shake = heavy ? 22 : ((selectedWeapon.id === "stool" || selectedWeapon.id === "cooker") ? 13 : 9);
+    weaponStampTimer = heavy ? 0.75 : 0.52;
+    weaponStampText = (selectedWeapon.stamp && (selectedWeapon.stamp[getXinanLang()] || selectedWeapon.stamp.tw)) || "啪啦！！";
 
     const altarX = vw * 0.5;
     const altarY = vh * 0.56;
@@ -1416,37 +1432,60 @@
 
       // 人物下方不再顯示多餘名字標籤牌，保持手機與桌面神壇乾淨清爽
 
-      // 武器動態揮擊：待機與換道具時停靠在角色右上方外側，絕不遮擋人物
+      // 誇張巨型台式搞笑武器揮擊：待機時已經超大浮在右側，砸下去直接膨脹成漫畫巨無霸！
       const wImg = imgs[selectedWeapon.sprite];
       if (wImg && wImg.complete && wImg.naturalWidth > 0) {
         const swing = weaponAnim > 0 ? Math.sin(weaponAnim * Math.PI) : 0;
-        const idleSize = Math.min(112, propBase * 0.24);
-        const hitSize = Math.min(185, propBase * 0.36) * (weaponHeavy ? 1.2 : 1);
+        const idleSize = Math.min(188, propBase * 0.44);
+        const hitSize = Math.min(345, propBase * 0.80) * (weaponHeavy ? 1.28 : 1.0);
         const wSize = idleSize + (hitSize - idleSize) * swing;
-        const restX = Math.min(vw - idleSize * 0.68, altarX + Math.max(122, vSize * 0.55));
-        const restY = altarY - vSize * 0.34;
-        const wxPos = restX + (altarX + 18 - restX) * swing;
-        const wyPos = restY + (altarY - vSize * 0.14 - restY) * swing;
-        const wRot = 0.28 - swing * 1.05;
+        const restX = Math.min(vw - idleSize * 0.46, altarX + Math.max(115, vSize * 0.54));
+        const restY = altarY - vSize * 0.28;
+        const wxPos = restX + (altarX + 6 - restX) * swing;
+        const wyPos = restY + (altarY - vSize * 0.16 - restY) * swing;
+        const wRot = 0.24 - swing * 1.25 + Math.sin(t * 3.1) * 0.05 * (1 - swing);
+        const comicScaleX = 1 + swing * (weaponHeavy ? 0.22 : 0.14);
+        const comicScaleY = 1 - swing * 0.10;
 
         ctx.save();
-        if (swing > 0.12) {
-          // 揮擊弧形光軌（Swing Trail）
+        if (swing > 0.10) {
+          // 誇張漫畫揮擊殘影弧光（巨型台式武器專屬）
           ctx.beginPath();
-          ctx.arc(altarX + 24, altarY - vSize * 0.18, vSize * 0.52, -0.95, 0.25);
-          ctx.strokeStyle = weaponHeavy ? `rgba(255, 212, 102, ${swing * 0.72})` : `rgba(255, 240, 200, ${swing * 0.45})`;
-          ctx.lineWidth = weaponHeavy ? 14 : 8;
+          ctx.arc(altarX + 18, altarY - vSize * 0.18, vSize * 0.68, -1.15, 0.35);
+          ctx.strokeStyle = weaponHeavy ? `rgba(255, 212, 102, ${swing * 0.88})` : `rgba(255, 240, 190, ${swing * 0.62})`;
+          ctx.lineWidth = weaponHeavy ? 22 : 13;
           ctx.lineCap = "round";
           ctx.stroke();
         }
-        ctx.translate(wxPos, wyPos + Math.sin(t * 2.8) * 3 * (1 - swing));
+        ctx.translate(wxPos, wyPos + Math.sin(t * 2.8) * 5 * (1 - swing));
         ctx.rotate(wRot);
-        if (weaponHeavy && weaponAnim > 0) {
-          ctx.shadowColor = "#ffd466";
-          ctx.shadowBlur = 28;
-        }
+        ctx.scale(comicScaleX, comicScaleY);
+        ctx.shadowColor = weaponHeavy ? "#ffd466" : "rgba(0,0,0,0.38)";
+        ctx.shadowBlur = weaponHeavy ? 34 : 16;
+        ctx.shadowOffsetY = weaponHeavy ? 0 : 8;
         const aspect = wImg.naturalWidth / wImg.naturalHeight;
         ctx.drawImage(wImg, -wSize * aspect * 0.5, -wSize * 0.5, wSize * aspect, wSize);
+        ctx.restore();
+      }
+
+      // 爆笑漫畫撞擊擬聲字（啪啦！！／哐噹！！／滋滋啪！！／噹！熟了！）
+      if (weaponStampTimer > 0 && weaponStampText) {
+        weaponStampTimer = Math.max(0, weaponStampTimer - dt);
+        const p = Math.min(1, weaponStampTimer / 0.25);
+        const popScale = 0.85 + Math.sin(Math.min(1, (0.55 - weaponStampTimer) * 5) * Math.PI * 0.5) * 0.32;
+        ctx.save();
+        ctx.globalAlpha = p;
+        ctx.translate(altarX - vSize * 0.26, altarY - vSize * 0.42 - (1 - p) * 24);
+        ctx.rotate(-0.18);
+        ctx.scale(popScale, popScale);
+        ctx.font = `900 ${weaponHeavy ? 42 : 34}px 'Noto Serif TC', 'PingFang TC', sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.lineWidth = 7;
+        ctx.strokeStyle = "#2b1208";
+        ctx.strokeText(weaponStampText, 0, 0);
+        ctx.fillStyle = selectedWeapon.color || "#ffe047";
+        ctx.fillText(weaponStampText, 0, 0);
         ctx.restore();
       }
 
