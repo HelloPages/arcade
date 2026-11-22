@@ -161,21 +161,21 @@ body.in-fs .top-hud {
   white-space: nowrap;
 }
 
-/* 底部整齊控制面板（三模式全適配） */
+/* 底部極簡超薄 2 排控制面板（直式手機僅佔約 88px，把 85%+ 畫面還給神壇舞台） */
 .bottom-dock {
   position: fixed;
   left: 8px;
   right: 8px;
-  bottom: max(8px, env(safe-area-inset-bottom));
+  bottom: max(6px, env(safe-area-inset-bottom));
   z-index: 20;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-width: 540px;
+  gap: 5px;
+  max-width: 520px;
   margin: 0 auto;
-  padding: 8px;
-  background: linear-gradient(180deg, rgba(20, 15, 27, 0.88) 0%, rgba(12, 9, 18, 0.92) 100%);
-  backdrop-filter: blur(12px);
+  padding: 6px;
+  background: linear-gradient(180deg, rgba(20, 15, 27, 0.84) 0%, rgba(12, 9, 18, 0.88) 100%);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(231, 184, 92, 0.36);
   border-radius: 10px;
   pointer-events: auto;
@@ -183,8 +183,8 @@ body.in-fs .top-hud {
 
 .chips-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 5px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
   pointer-events: auto;
 }
 
@@ -196,19 +196,19 @@ body.in-fs .top-hud {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
-  gap: 6px;
+  gap: 5px;
   pointer-events: auto;
 }
 
 .chip-btn {
-  padding: 6px 4px;
+  padding: 5px 2px;
   font-size: 12px;
-  line-height: 1.2;
-  min-height: 31px;
+  line-height: 1.15;
+  min-height: 30px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-radius: 7px;
+  border-radius: 6px;
   background: rgba(30, 24, 40, 0.90);
   border: 1px solid rgba(231, 184, 92, 0.24);
   color: rgba(255, 246, 229, 0.92);

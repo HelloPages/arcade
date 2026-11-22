@@ -273,6 +273,33 @@
     shockwaves.push({ x, y, color, r: 12, maxR, lineW, life: 0.42, maxLife: 0.42 });
   }
 
+  const GOD_GHOST_HUMOR = [
+    "土地公廣播：「買了啦！我土地廟都換 4K OLED 監視器了！」",
+    "財神爺路過：「雙螢幕買下去，業績直接飛升成仙！」",
+    "月老提醒：「別打了，再打我就把你跟加班綁紅線喔！」",
+    "黑白無常回報：「報告神明，他的薪水還在路上塞車！」",
+    "灶神開示：「珍奶全糖去冰，喝完再敲十下藍白拖！」",
+    "文昌帝君：「簡報第 18 版終於過關，拜託別再改字體！」",
+    "門神偷瞄：「誰偷喝珍奶？我從門縫都看得一清二楚！」",
+    "媽祖微笑：「心安指數爆表！今日免排隊 VIP 優先保佑！」",
+    "鍾馗拍桌：「水逆小鬼抓去面壁，大家準時下班吃宵夜！」",
+    "財神爺撒紅包：「笑得這麼開心，先賞你 +30 香火壓壓驚！」"
+  ];
+  let deityBannerText = "";
+  let deityBannerTimer = 0;
+
+  function maybeTriggerDeityCameo(force = false) {
+    if (!force && Math.random() > 0.28) return;
+    const line = GOD_GHOST_HUMOR[Math.floor(Math.random() * GOD_GHOST_HUMOR.length)];
+    deityBannerText = line;
+    deityBannerTimer = 3.6;
+    if (line.includes("+30")) {
+      addMerit(30);
+      playBellSound(880);
+      spawnFestiveShower(mode, 1.8);
+    }
+  }
+
   function spawnAmbientDrop(modeKey = mode) {
     if (funDrops.length > 95) return;
     const isConfetti = Math.random() < 0.48;
@@ -525,6 +552,8 @@
       spawnBurst(altarX, altarY - 10, selectedWeapon.color, 14, 210);
       spawnShockwave(altarX, altarY - 12, selectedWeapon.color, 95, 3.5);
       spawnFestiveShower("slap", 0.85);
+      if (slapCombo % 5 === 0) maybeTriggerDeityCameo(true);
+      else maybeTriggerDeityCameo(false);
       const sharedOfficePool = [
         "買了啦！這台 OLED 黑到像老闆的良心！",
         "240Hz 滑到滑鼠直接離家出走！買了啦！",
@@ -589,6 +618,7 @@
     spawnBurst(vw * 0.5, bgTableSurfaceY - 65, selectedBless.color, 26, 220);
     spawnShockwave(vw * 0.5, bgTableSurfaceY - 20, "#ffd466", 150, 4);
     spawnFestiveShower("bless", 1.8);
+    maybeTriggerDeityCameo(false);
     const blessLine = !customWishLabel.trim() && selectedScenario.blessLine
       ? `${selectedScenario.blessLine}（${wishText}）`
       : `為${targetName}祈求「${wishText}」心想事成！`;
@@ -599,11 +629,14 @@
   // 3. 問卦（完整竹籤筒＋靈籤抽出＋完整紅木聖筊，對當前角色問卦）
   // =========================================================
   const fortunes = [
-    { grade: "上上籤", title: "旭日東昇・貴人扶搖", body: "心中所慮將隨春風散去，放手推進最重要的一件事，自有助力水到渠成。" },
-    { grade: "大吉籤", title: "松風入懷・財運漸開", body: "穩住節奏便是最好策略，近期會有意料之外的好消息與實質回報。" },
-    { grade: "上吉籤", title: "雲開見月・思路澄明", body: "先前卡住的難題即將鬆動，照直覺選最簡單順手的那條路走即可。" },
-    { grade: "中吉籤", title: "靜水流深・步步生蓮", body: "不必急於一時勝負，先照顧好作息與精神，機會自然站到你這邊。" },
-    { grade: "吉籤", title: "竹影清風・小人遠離", body: "瑣碎干擾已過高峰，專注當下能掌握的事，心情安穩即是大福。" }
+    { grade: "上上籤", title: "財神敲門・卡刷不斷", body: "財神爺說你今天手氣旺到連自動販賣機都會多掉一罐，買螢幕直接遇到神價！" },
+    { grade: "大吉籤", title: "土地公按讚・小人退散", body: "土地公已幫你把衰運丟進資源回收桶並清空，今日宜喝珍奶、不宜加班！" },
+    { grade: "爆笑吉籤", title: "月老手滑・貴人暴走", body: "月老原本要牽紅線，結果手滑牽到一張大訂單，貴人正騎著藍白拖火速趕來！" },
+    { grade: "特吉籤", title: "文昌加冕・簡報免改", body: "文昌帝君親筆批示：今天交出去的提案一次過關，主管連標點符號都不會改！" },
+    { grade: "神明認證", title: "灶神加菜・滿血復活", body: "灶神開示：沒什麼事是一杯全糖珍奶解決不了的；如果有，那就加一顆布丁！" },
+    { grade: "超吉籤", title: "鍾馗代班・水逆清空", body: "鍾馗已經把電腦當機小鬼抓去面壁思過，今天系統順到像剛買 240Hz 新螢幕！" },
+    { grade: "上吉籤", title: "媽祖護航・準時閃人", body: "媽祖賜你下班加速光環，六點一到自動隱身，沒人敢在電梯口攔你開會！" },
+    { grade: "福星籤", title: "黑白無常・幫你喊讚", body: "黑白無常路過表示你的肝很健康，但還是建議今天早點睡，明天繼續賺大錢！" }
   ];
   let oracleStep = "ready"; // "ready" | "shaking" | "drawn" | "throwing" | "done"
   let oracleTimer = 0;
@@ -654,7 +687,7 @@
     weaponRow.innerHTML = "";
     actionRow.innerHTML = "";
 
-    // 三儀合一：任何模式皆常駐 7 位角色＋自訂選角列，隨時可對選定角色打小人、祈福或問卦
+    // 超薄 2 排設計（把 85%+ 直式手機畫面留給神壇與角色）：第 1 排永遠是 7 位角色單排等寬 7 格
     slapScenarios.forEach(s => {
       const b = document.createElement("button");
       b.type = "button";
@@ -663,29 +696,22 @@
       b.onclick = () => { selectedScenario = s; customTargetLabel = ""; renderControls(); };
       chipsRow.appendChild(b);
     });
-    const targetInp = document.createElement("input");
-    targetInp.type = "text";
-    targetInp.maxLength = 10;
-    targetInp.className = "custom-input";
-    targetInp.placeholder = "自訂對象...";
-    targetInp.value = customTargetLabel;
-    targetInp.oninput = () => {
-      customTargetLabel = targetInp.value;
-      chipsRow.querySelectorAll(".chip-btn").forEach(c => c.classList.remove("active"));
-    };
-    chipsRow.appendChild(targetInp);
 
     const targetName = getTargetName();
 
     if (mode === "slap") {
-      weapons.forEach(w => {
-        const wb = document.createElement("button");
-        wb.type = "button";
-        wb.className = "chip-btn weapon-chip" + (selectedWeapon.id === w.id ? " active" : "");
-        wb.textContent = w.label;
-        wb.onclick = () => { selectedWeapon = w; renderControls(); };
-        weaponRow.appendChild(wb);
-      });
+      // 第 2 排：一鍵循環法器＋連擊主鍵＋滿氣重擊（省掉一整排按鈕，無腦好玩！）
+      const wCycle = document.createElement("button");
+      wCycle.type = "button";
+      wCycle.className = "rect-btn";
+      wCycle.textContent = `換:${selectedWeapon.label}`;
+      wCycle.onclick = () => {
+        const idx = weapons.findIndex(w => w.id === selectedWeapon.id);
+        selectedWeapon = weapons[(idx + 1) % weapons.length];
+        playWoodClack();
+        renderControls();
+      };
+      actionRow.appendChild(wCycle);
 
       const slapBtn = document.createElement("button");
       slapBtn.type = "button";
@@ -699,84 +725,42 @@
       ultBtn.type = "button";
       ultBtn.id = "btnUltimateSlap";
       ultBtn.className = "rect-btn " + (slapCharge >= 10 ? "gold-btn ult-ready" : "");
-      ultBtn.textContent = slapCharge >= 10 ? "鎮煞重擊！" : `重擊 (${slapCharge}/10)`;
+      ultBtn.textContent = slapCharge >= 10 ? "鎮煞重擊！" : `重擊 ${slapCharge}/10`;
       ultBtn.disabled = slapCharge < 10;
       ultBtn.onclick = () => performSlap(true);
       actionRow.appendChild(ultBtn);
-
-      const randBtn = document.createElement("button");
-      randBtn.type = "button";
-      randBtn.id = "btnRandomOffice";
-      randBtn.className = "rect-btn " + (autoTheater ? "gold-btn" : "");
-      randBtn.textContent = autoTheater ? "劇場:演中" : "隨機劇場";
-      randBtn.onclick = () => {
-        autoTheater = !autoTheater;
-        if (autoTheater) {
-          const pool = slapScenarios;
-          selectedScenario = pool[Math.floor(Math.random() * pool.length)];
-          customTargetLabel = "";
-          const ev = selectedScenario.officeEvents[Math.floor(Math.random() * selectedScenario.officeEvents.length)];
-          spawnFloatText(vw * 0.5, vh * 0.34, `${selectedScenario.label}：${ev}`, "#ffd980", 19);
-          setCharMood("innocent", 1.1);
-          theaterTimer = 4.6;
-        }
+    } else if (mode === "bless") {
+      const bCycle = document.createElement("button");
+      bCycle.type = "button";
+      bCycle.className = "rect-btn";
+      bCycle.textContent = `換:${selectedBless.label}`;
+      bCycle.onclick = () => {
+        const idx = blessScenarios.findIndex(s => s.id === selectedBless.id);
+        selectedBless = blessScenarios[(idx + 1) % blessScenarios.length];
+        playBellSound(587);
         renderControls();
       };
-      actionRow.appendChild(randBtn);
-    } else if (mode === "bless") {
-      blessScenarios.forEach(s => {
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "chip-btn" + (selectedBless.id === s.id && !customWishLabel ? " active" : "");
-        b.textContent = s.label;
-        b.onclick = () => { selectedBless = s; customWishLabel = ""; renderControls(); };
-        weaponRow.appendChild(b);
-      });
-      const wishInp = document.createElement("input");
-      wishInp.type = "text";
-      wishInp.maxLength = 14;
-      wishInp.className = "custom-input full-span";
-      wishInp.placeholder = `替「${targetName}」輸入專屬心願（留空則用上方祈願）...`;
-      wishInp.value = customWishLabel;
-      wishInp.oninput = () => {
-        customWishLabel = wishInp.value;
-        weaponRow.querySelectorAll(".chip-btn").forEach(c => c.classList.remove("active"));
-      };
-      weaponRow.appendChild(wishInp);
+      actionRow.appendChild(bCycle);
 
       const blessBtn = document.createElement("button");
       blessBtn.type = "button";
       blessBtn.id = "btnPrimaryAction";
       blessBtn.className = "rect-btn gold-btn";
-      blessBtn.textContent = `為 ${targetName} ${selectedBless.action}`;
+      blessBtn.textContent = `為 ${targetName} 放祈福 ↗`;
       blessBtn.onclick = launchBlessing;
       actionRow.appendChild(blessBtn);
     } else if (mode === "oracle") {
-      const guide = document.createElement("div");
-      guide.className = "oracle-guide";
-      const s1 = oracleStep === "ready" || oracleStep === "shaking";
-      const s2 = oracleStep === "drawn" || oracleStep === "throwing";
-      const s3 = oracleStep === "done";
-      const msg = oracleStep === "ready"
-        ? `為「${targetName}」求籤，點擊按鈕或神壇`
-        : oracleStep === "drawn"
-          ? `靈籤已出！為「${targetName}」擲筊解籤`
-          : oracleStep === "done"
-            ? `聖筊應許！可再為「${targetName}」求籤`
-            : oracleStep === "shaking" ? `為「${targetName}」誠心搖籤中...` : "聖筊高拋落下中...";
-      guide.innerHTML =
-        `<div class="oracle-steps">` +
-        `<span class="oracle-step ${s1 ? "active" : ""}">① 搖籤</span><span>›</span>` +
-        `<span class="oracle-step ${s2 ? "active" : ""}">② 擲筊</span><span>›</span>` +
-        `<span class="oracle-step ${s3 ? "active" : ""}">③ 解籤</span>` +
-        `</div><span class="oracle-msg">${msg}</span>`;
-      weaponRow.appendChild(guide);
-
       const btn = document.createElement("button");
       btn.type = "button";
       btn.id = "btnPrimaryAction";
       btn.className = "rect-btn " + (oracleStep === "drawn" ? "gold-btn ult-ready" : "primary-btn");
-      btn.textContent = oracleStep === "drawn" ? `為 ${targetName} 擲筊解籤` : `為 ${targetName} 誠心求籤`;
+      btn.textContent = oracleStep === "drawn"
+        ? `② 為 ${targetName} 擲聖筊解籤`
+        : oracleStep === "shaking"
+          ? `為 ${targetName} 誠心搖籤中...`
+          : oracleStep === "throwing"
+            ? "聖筊高拋落下中..."
+            : `① 為 ${targetName} 誠心搖籤`;
       btn.disabled = oracleStep === "shaking" || oracleStep === "throwing";
       btn.onclick = () => {
         if (oracleStep === "ready" || oracleStep === "done") shakeOracle();
@@ -1496,6 +1480,29 @@
       lines.forEach((ln, idx) => {
         ctx.fillText(ln, bx + bw * 0.5, startY + idx * lineH, bw - 22);
       });
+      ctx.restore();
+    }
+
+    // 神鬼幽默突發廣播條（頂部 HUD 下方金色跑馬橫幅，完全不擋人物）
+    if (deityBannerTimer > 0 && deityBannerText) {
+      deityBannerTimer = Math.max(0, deityBannerTimer - dt);
+      const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 56) + 8;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, deityBannerTimer / 0.35);
+      ctx.font = "800 13px 'Noto Serif TC', 'PingFang TC', sans-serif";
+      const bw = Math.min(vw - 18, Math.max(220, ctx.measureText(deityBannerText).width + 26));
+      const bx = vw * 0.5 - bw * 0.5;
+      ctx.fillStyle = "rgba(182, 42, 26, 0.92)";
+      ctx.strokeStyle = "#ffd980";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.roundRect(bx, hudB, bw, 30, 7);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#fff8e1";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(deityBannerText, vw * 0.5, hudB + 15, bw - 16);
       ctx.restore();
     }
 
