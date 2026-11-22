@@ -2297,27 +2297,31 @@
         ctx.restore();
       }
 
-      // 爆笑漫畫撞擊擬聲字：發光圓點 LED 矩陣招牌（啪啦！！／哐噹！！／滋滋啪！！／噹！熟了！）
+      // 爆笑漫畫撞擊擬聲字：發光圓點 LED 矩陣招牌（移至腳邊／供桌前緣並嚴格限於畫面內，絕不遮擋跳起後的臉部！）
       if (weaponStampTimer > 0 && weaponStampText) {
         weaponStampTimer = Math.max(0, weaponStampTimer - dt);
         const p = Math.min(1, weaponStampTimer / 0.25);
-        const popScale = 0.88 + Math.sin(Math.min(1, (0.55 - weaponStampTimer) * 5) * Math.PI * 0.5) * 0.26;
+        const popScale = 0.90 + Math.sin(Math.min(1, (0.55 - weaponStampTimer) * 5) * Math.PI * 0.5) * 0.18;
         const stampLed = getLedTextSprite(weaponStampText, {
-          pitch: weaponHeavy ? 3.0 : 2.5,
+          pitch: weaponHeavy ? 2.15 : 1.85,
           color: selectedWeapon.color || "#ffe047",
           glow: "rgba(255, 224, 71, 0.52)",
           dimDot: false,
-          pad: 4
+          pad: 3
         });
-        ctx.save();
-        ctx.globalAlpha = p;
-        ctx.translate(altarX - vSize * 0.24, altarY - vSize * 0.42 - (1 - p) * 24);
-        ctx.rotate(-0.14);
-        ctx.scale(popScale, popScale);
         if (stampLed) {
           const sw = stampLed.width + 14;
           const sh = stampLed.height + 10;
-          ctx.fillStyle = "rgba(24, 10, 18, 0.88)";
+          const dockTop = (document.querySelector(".bottom-dock")?.getBoundingClientRect().top || (vh - 125));
+          // 放在人物腳底下方、供桌前緣偏左（避開右下角連擊牌與人物跳起變形後的臉部），並完整鎖在畫面內
+          const stampX = Math.max(sw * 0.5 + 14, Math.min(vw - sw * 0.5 - 14, altarX - 24));
+          const stampY = Math.min(dockTop - sh * 0.5 - 12, feetBaseY + 24) - (1 - p) * 8;
+          ctx.save();
+          ctx.globalAlpha = p;
+          ctx.translate(stampX, stampY);
+          ctx.rotate(-0.06);
+          ctx.scale(popScale, popScale);
+          ctx.fillStyle = "rgba(24, 10, 18, 0.92)";
           ctx.strokeStyle = selectedWeapon.color || "#ffe047";
           ctx.lineWidth = 2.4;
           ctx.beginPath();
@@ -2325,17 +2329,17 @@
           ctx.fill();
           ctx.stroke();
           ctx.drawImage(stampLed.canvas, -stampLed.width * 0.5, -stampLed.height * 0.5, stampLed.width, stampLed.height);
+          ctx.restore();
         }
-        ctx.restore();
       }
 
-      // 右上方連擊印記：發光圓點 LED 矩陣招牌（不擋角色與泡泡）
+      // 右下方連擊印記：發光圓點 LED 矩陣招牌（置於底欄上方右側，永不與頂部神明／角色泡泡重疊）
       if (comboBadgeTimer > 0 && slapCombo >= 2) {
         comboBadgeTimer = Math.max(0, comboBadgeTimer - dt);
-        const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + (deityBannerTimer > 0 ? 104 : 18);
-        const pop = 1 + Math.min(0.18, villainSquash * 0.16);
+        const dockTop = (document.querySelector(".bottom-dock")?.getBoundingClientRect().top || (vh - 125));
+        const pop = 1 + Math.min(0.14, villainSquash * 0.14);
         const comboLed = getLedTextSprite(`連擊 ×${slapCombo}`, {
-          pitch: 1.95,
+          pitch: 1.75,
           color: "#ffe46b",
           glow: "rgba(255, 198, 56, 0.50)",
           dimDot: true,
@@ -2343,12 +2347,12 @@
         });
         ctx.save();
         ctx.globalAlpha = Math.min(1, comboBadgeTimer / 0.35);
-        ctx.translate(vw - 14, hudB + 16);
+        ctx.translate(vw - 12, dockTop - 26);
         ctx.scale(pop, pop);
         if (comboLed) {
           const cw = comboLed.width + 14;
           const ch = comboLed.height + 10;
-          ctx.fillStyle = "rgba(28, 10, 16, 0.92)";
+          ctx.fillStyle = "rgba(28, 10, 16, 0.94)";
           ctx.strokeStyle = "#ffd966";
           ctx.lineWidth = 2.2;
           ctx.beginPath();
@@ -2571,6 +2575,18 @@
     }
     ctx.globalAlpha = 1;
 
+    // 偵測是否需要錯時避讓：當角色跳起或上方空間不足以「零重疊」同時容納神明泡泡＋角色泡泡時，
+    // 優先完整顯示角色台詞泡泡（暫停頂部神明泡泡計時並錯時退讓），等角色泡泡結束再接續顯示神明泡泡！
+    const topHudBottom = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 14;
+    let suppressDeityForOverlap = false;
+    const activeFloat = floatTexts.length > 0 ? floatTexts[floatTexts.length - 1] : null;
+    if (deityBannerTimer > 0 && deityBannerText && activeFloat) {
+      // 估計神明泡泡高度（約 104px）＋ 角色泡泡含名牌與尾巴高度（約 106px）＋ 安全間距 28px
+      const neededStackH = 104 + 28 + 106;
+      const availH = (activeCharTopY - 12) - (topHudBottom + 10);
+      if (availH < neededStackH) suppressDeityForOverlap = true;
+    }
+
     for (let i = floatTexts.length - 1; i >= 0; i--) {
       const ft = floatTexts[i];
       ft.life -= dt;
@@ -2624,10 +2640,12 @@
       const bw = Math.min(maxBubbleW, Math.max(168, contentW + 38));
       const bh = Math.max(46, contentH + 26);
       const tailH = 16;
-      const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 18;
+      const minSafeTop = (deityBannerTimer > 0 && !suppressDeityForOverlap)
+        ? (topHudBottom + 138)
+        : (topHudBottom + 20);
       const targetAnchorX = activeCharCenterX;
-      const targetBottomY = activeCharTopY - 22;
-      const by = Math.max(hudB, targetBottomY - bh - tailH);
+      const targetBottomY = activeCharTopY - 18;
+      const by = Math.max(minSafeTop, targetBottomY - bh - tailH);
       const bx = Math.max(12, Math.min(vw - bw - 12, targetAnchorX - bw * 0.5));
       const tailX = Math.max(bx + 28, Math.min(bx + bw - 28, targetAnchorX));
       const bounce = Math.sin(t * 5.2) * 2.2;
@@ -2722,8 +2740,8 @@
       ctx.restore();
     }
 
-    // 神鬼幽默突發劇情：最上方「活潑不規則漫畫雲朵說話泡泡」（多行折行＋說話尾巴＋神明 LED 名牌，絕不壓成 30px 扁長條！）
-    if (deityBannerTimer > 0 && deityBannerText) {
+    // 神鬼幽默突發劇情：最上方「活潑不規則漫畫雲朵說話泡泡」（若與跳起角色泡泡空間衝突則自動錯時暫避，永不重疊！）
+    if (deityBannerTimer > 0 && deityBannerText && !suppressDeityForOverlap) {
       deityBannerTimer = Math.max(0, deityBannerTimer - dt);
       const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 14;
       const isWideScr = vw > vh;
