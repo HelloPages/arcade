@@ -290,6 +290,11 @@
   let deityBannerText = "";
   let deityBannerTimer = 0;
 
+  function showDeityBanner(text, duration = 3.6) {
+    deityBannerText = text;
+    deityBannerTimer = duration;
+  }
+
   function maybeTriggerDeityCameo(force = false) {
     if (!force && Math.random() > 0.28) return;
     const line = GOD_GHOST_HUMOR[Math.floor(Math.random() * GOD_GHOST_HUMOR.length)];
