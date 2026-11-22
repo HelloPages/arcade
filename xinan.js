@@ -168,7 +168,7 @@
   const NOTE_HZ = {
     C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
     C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
-    C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, C6: 1046.50, D6: 1174.66
+    C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, B5: 987.77, C6: 1046.50, D6: 1174.66
   };
   const BGM_LEAD = [
     "G5", null, "E5", "G5", "A5", null, "G5", "E5",
@@ -191,10 +191,31 @@
     "D3", null, "G3", null, "C3", null, "G3", null
   ];
 
+  // 5 聲道豐富復古電玩 BGM（主旋律方波＋合聲方波＋16分音符琶音＋彈跳低音＋完整8-bit鼓組）
+  const BGM_HARM = [
+    "E5", null, "C5", "E5", "F5", null, "E5", "C5",
+    "B4", "C5", "E5", null, "C5", null, "G4", null,
+    "C5", null, "E5", "F5", "A5", null, "F5", "E5",
+    "C5", "E5", "F5", null, "E5", null, null, null,
+    "A5", null, "F5", "E5", "F5", "A5", "B5", null,
+    "A5", "F5", "E5", "C5", "E5", null, "F5", null,
+    "E5", "C5", "B4", "C5", "E5", "F5", "E5", "C5",
+    "B4", null, "C5", "B4", "G4", null, null, null
+  ];
+  const BGM_CHORDS = [
+    ["C4", "E4", "G4", "C5"],
+    ["A3", "C4", "E4", "A4"],
+    ["F3", "A3", "C4", "F4"],
+    ["G3", "B3", "D4", "G4"]
+  ];
+  const COMBO_PENTATONIC = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51];
+
   function scheduleBgmStep(ac, step, time) {
     const stepDur = 60 / 144 / 2; // 144 BPM 八分音符 (~0.208s)
     const leadNote = BGM_LEAD[step % BGM_LEAD.length];
+    const harmNote = BGM_HARM[step % BGM_HARM.length];
     const bassNote = BGM_BASS[step % BGM_BASS.length];
+    const chord = BGM_CHORDS[Math.floor((step % 16) / 4)];
 
     // 1. 8-bit 方波主旋律（清亮朗朗上口）
     if (leadNote && NOTE_HZ[leadNote]) {
@@ -203,51 +224,109 @@
       osc.type = "square";
       osc.frequency.setValueAtTime(NOTE_HZ[leadNote], time);
       g.gain.setValueAtTime(0.0001, time);
-      g.gain.linearRampToValueAtTime(0.042, time + 0.012);
+      g.gain.linearRampToValueAtTime(0.044, time + 0.01);
       g.gain.exponentialRampToValueAtTime(0.0008, time + stepDur * 0.92);
       osc.connect(g).connect(ac.destination);
       osc.start(time);
       osc.stop(time + stepDur * 0.95);
     }
 
-    // 2. 復古三角波彈跳低音
+    // 2. 復古街機三度／六度合聲（讓旋律更飽滿立體）
+    if (harmNote && NOTE_HZ[harmNote]) {
+      const osc = ac.createOscillator();
+      const g = ac.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(NOTE_HZ[harmNote], time);
+      g.gain.setValueAtTime(0.0001, time);
+      g.gain.linearRampToValueAtTime(0.017, time + 0.014);
+      g.gain.exponentialRampToValueAtTime(0.0006, time + stepDur * 0.85);
+      osc.connect(g).connect(ac.destination);
+      osc.start(time);
+      osc.stop(time + stepDur * 0.88);
+    }
+
+    // 3. 16 分音符閃亮電玩琶音（經典任天堂／卡普空歡樂閃耀感）
+    for (let sub = 0; sub < 2; sub++) {
+      const arpKey = chord[(step * 2 + sub) % chord.length];
+      if (NOTE_HZ[arpKey]) {
+        const at = time + sub * (stepDur * 0.5);
+        const osc = ac.createOscillator();
+        const g = ac.createGain();
+        osc.type = mode === "slap" ? "triangle" : "sine";
+        osc.frequency.setValueAtTime(NOTE_HZ[arpKey] * 2, at);
+        g.gain.setValueAtTime(0.0001, at);
+        g.gain.linearRampToValueAtTime(0.016, at + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0005, at + stepDur * 0.46);
+        osc.connect(g).connect(ac.destination);
+        osc.start(at);
+        osc.stop(at + stepDur * 0.48);
+      }
+    }
+
+    // 4. 復古三角波彈跳低音
     if (bassNote && NOTE_HZ[bassNote]) {
       const osc = ac.createOscillator();
       const g = ac.createGain();
       osc.type = "triangle";
       osc.frequency.setValueAtTime(NOTE_HZ[bassNote], time);
       g.gain.setValueAtTime(0.0001, time);
-      g.gain.linearRampToValueAtTime(0.075, time + 0.01);
+      g.gain.linearRampToValueAtTime(0.082, time + 0.01);
       g.gain.exponentialRampToValueAtTime(0.001, time + stepDur * 1.45);
       osc.connect(g).connect(ac.destination);
       osc.start(time);
       osc.stop(time + stepDur * 1.5);
     }
 
-    // 3. 輕快 8-bit 鼓組（底鼓 + 反拍小镲）
+    // 5. 完整 8-bit 街機鼓組（底鼓 + 2/4 拍軍鼓 + 反拍小镲 + 喜氣木魚點綴）
     if (step % 4 === 0) {
       const osc = ac.createOscillator();
       const g = ac.createGain();
       osc.type = "sine";
-      osc.frequency.setValueAtTime(135, time);
-      osc.frequency.exponentialRampToValueAtTime(42, time + 0.07);
-      g.gain.setValueAtTime(0.065, time);
-      g.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+      osc.frequency.setValueAtTime(142, time);
+      osc.frequency.exponentialRampToValueAtTime(42, time + 0.075);
+      g.gain.setValueAtTime(0.072, time);
+      g.gain.exponentialRampToValueAtTime(0.001, time + 0.085);
       osc.connect(g).connect(ac.destination);
       osc.start(time);
-      osc.stop(time + 0.085);
-    } else if (step % 2 === 1 && noiseBuffer) {
+      osc.stop(time + 0.09);
+    } else if (step % 4 === 2 && noiseBuffer) {
+      // 清脆 8-bit 軍鼓（Snare）
+      const src = ac.createBufferSource();
+      src.buffer = noiseBuffer;
+      const bp = ac.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.frequency.setValueAtTime(2400, time);
+      const g = ac.createGain();
+      g.gain.setValueAtTime(0.032, time);
+      g.gain.exponentialRampToValueAtTime(0.0006, time + 0.065);
+      src.connect(bp).connect(g).connect(ac.destination);
+      src.start(time);
+      src.stop(time + 0.07);
+    }
+    if (step % 2 === 1 && noiseBuffer) {
       const src = ac.createBufferSource();
       src.buffer = noiseBuffer;
       const filt = ac.createBiquadFilter();
       filt.type = "highpass";
-      filt.frequency.setValueAtTime(6500, time);
+      filt.frequency.setValueAtTime(6800, time);
       const g = ac.createGain();
-      g.gain.setValueAtTime(0.018, time);
+      g.gain.setValueAtTime(0.016, time);
       g.gain.exponentialRampToValueAtTime(0.0005, time + 0.032);
       src.connect(filt).connect(g).connect(ac.destination);
       src.start(time);
       src.stop(time + 0.036);
+    }
+    if (step % 16 === 0) {
+      // 每兩小節一聲喜氣清脆廟會小鈴點綴
+      const bell = ac.createOscillator();
+      const bg = ac.createGain();
+      bell.type = "sine";
+      bell.frequency.setValueAtTime(1567.98, time);
+      bg.gain.setValueAtTime(0.022, time);
+      bg.gain.exponentialRampToValueAtTime(0.0004, time + 0.22);
+      bell.connect(bg).connect(ac.destination);
+      bell.start(time);
+      bell.stop(time + 0.24);
     }
   }
 
@@ -311,38 +390,47 @@
     if (!ac) return;
     const now = ac.currentTime;
 
-    // 1. 瞬發跟手打擊脆響（0ms 延遲）
-    playImpactCrack(ac, now, weaponId === "zapper" ? 3600 : weaponId === "cooker" ? 2600 : 1650, heavy ? 0.11 : 0.055, heavy ? 0.34 : 0.24);
+    // 1. 瞬發跟手打擊脆響（0ms 延遲）＋連擊五聲音階遞增彩蛋（越連打越上癮！）
+    playImpactCrack(ac, now, weaponId === "zapper" ? 3600 : weaponId === "cooker" ? 2600 : 1650, heavy ? 0.11 : 0.055, heavy ? 0.34 : 0.25);
+    const comboHz = COMBO_PENTATONIC[slapCombo % COMBO_PENTATONIC.length];
+    const chime = ac.createOscillator();
+    const cg = ac.createGain();
+    chime.type = "triangle";
+    chime.frequency.setValueAtTime(comboHz, now);
+    cg.gain.setValueAtTime(0.11, now);
+    cg.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    chime.connect(cg).connect(ac.destination);
+    chime.start(now); chime.stop(now + 0.13);
 
-    // 2. 各台式武器專屬復古電玩打擊聲
+    // 2. 各台式武器專屬復古電玩多層次打擊聲
     if (heavy) {
       // 鎮煞重擊：超爽 8-bit 必殺和弦＋重低音衝擊
-      [523.25, 659.25, 783.99, 1046.5].forEach((f, idx) => {
+      [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, idx) => {
         const o = ac.createOscillator();
         const g = ac.createGain();
         o.type = "square";
-        o.frequency.setValueAtTime(f, now + idx * 0.028);
-        g.gain.setValueAtTime(0.14, now + idx * 0.028);
-        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.028 + 0.24);
+        o.frequency.setValueAtTime(f, now + idx * 0.025);
+        g.gain.setValueAtTime(0.14, now + idx * 0.025);
+        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.025 + 0.26);
         o.connect(g).connect(ac.destination);
-        o.start(now + idx * 0.028);
-        o.stop(now + idx * 0.028 + 0.25);
+        o.start(now + idx * 0.025);
+        o.stop(now + idx * 0.025 + 0.28);
       });
       const sub = ac.createOscillator();
       const sg = ac.createGain();
       sub.type = "triangle";
       sub.frequency.setValueAtTime(170, now);
-      sub.frequency.exponentialRampToValueAtTime(38, now + 0.22);
-      sg.gain.setValueAtTime(0.36, now);
-      sg.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+      sub.frequency.exponentialRampToValueAtTime(36, now + 0.24);
+      sg.gain.setValueAtTime(0.38, now);
+      sg.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
       sub.connect(sg).connect(ac.destination);
-      sub.start(now); sub.stop(now + 0.25);
+      sub.start(now); sub.stop(now + 0.27);
       return;
     }
 
     if (weaponId === "zapper") {
-      // 阿嬤電蚊拍「滋滋啪！」：雙段 8-bit 高壓電擊跳音
-      [1320, 880, 1560].forEach((f, i) => {
+      // 阿嬤電蚊拍「滋滋啪！」：三段 8-bit 高壓電擊跳音
+      [1320, 880, 1680].forEach((f, i) => {
         const o = ac.createOscillator();
         const g = ac.createGain();
         o.type = "sawtooth";
@@ -354,12 +442,12 @@
         o.start(now + i * 0.022); o.stop(now + i * 0.022 + 0.055);
       });
     } else if (weaponId === "cooker") {
-      // 經典紅電鍋「噹！熟了！」：瞬間悶擊＋超清脆雙泛音金屬噹聲
+      // 經典紅電鍋「噹！熟了！」：悶擊＋雙泛音金屬噹聲＋蒸氣「嘶—」
       const thud = ac.createOscillator();
       const tg = ac.createGain();
       thud.type = "triangle";
       thud.frequency.setValueAtTime(210, now);
-      thud.frequency.exponentialRampToValueAtTime(75, now + 0.07);
+      thud.frequency.exponentialRampToValueAtTime(72, now + 0.07);
       tg.gain.setValueAtTime(0.28, now);
       tg.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
       thud.connect(tg).connect(ac.destination);
@@ -369,19 +457,31 @@
         const ding = ac.createOscillator();
         const dg = ac.createGain();
         ding.type = "sine";
-        ding.frequency.setValueAtTime(f, now + 0.015);
-        dg.gain.setValueAtTime(i === 0 ? 0.24 : 0.11, now + 0.015);
-        dg.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+        ding.frequency.setValueAtTime(f, now + 0.012);
+        dg.gain.setValueAtTime(i === 0 ? 0.26 : 0.12, now + 0.012);
+        dg.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
         ding.connect(dg).connect(ac.destination);
-        ding.start(now + 0.015); ding.stop(now + 0.44);
+        ding.start(now + 0.012); ding.stop(now + 0.46);
       });
+      if (noiseBuffer) {
+        const hiss = ac.createBufferSource();
+        hiss.buffer = noiseBuffer;
+        const hp = ac.createBiquadFilter();
+        hp.type = "highpass";
+        hp.frequency.setValueAtTime(4200, now + 0.04);
+        const hg = ac.createGain();
+        hg.gain.setValueAtTime(0.06, now + 0.04);
+        hg.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
+        hiss.connect(hp).connect(hg).connect(ac.destination);
+        hiss.start(now + 0.04); hiss.stop(now + 0.21);
+      }
     } else if (weaponId === "stool") {
-      // 辦桌紅塑膠椅「哐噹！」：空心塑膠雙拍重擊聲
+      // 辦桌紅塑膠椅「哐噹！」：空心塑膠雙拍重擊＋彈地回音
       const o1 = ac.createOscillator();
       const g1 = ac.createGain();
       o1.type = "square";
       o1.frequency.setValueAtTime(340, now);
-      o1.frequency.exponentialRampToValueAtTime(92, now + 0.11);
+      o1.frequency.exponentialRampToValueAtTime(90, now + 0.11);
       g1.gain.setValueAtTime(0.24, now);
       g1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
       o1.connect(g1).connect(ac.destination);
@@ -390,23 +490,33 @@
       const o2 = ac.createOscillator();
       const g2 = ac.createGain();
       o2.type = "triangle";
-      o2.frequency.setValueAtTime(520, now + 0.032);
-      o2.frequency.exponentialRampToValueAtTime(180, now + 0.095);
-      g2.gain.setValueAtTime(0.18, now + 0.032);
-      g2.gain.exponentialRampToValueAtTime(0.001, now + 0.105);
+      o2.frequency.setValueAtTime(560, now + 0.032);
+      o2.frequency.exponentialRampToValueAtTime(175, now + 0.10);
+      g2.gain.setValueAtTime(0.20, now + 0.032);
+      g2.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
       o2.connect(g2).connect(ac.destination);
-      o2.start(now + 0.032); o2.stop(now + 0.11);
+      o2.start(now + 0.032); o2.stop(now + 0.115);
     } else {
-      // 巨型藍白拖「啪啦！」：超脆膠底瞬拍聲
+      // 巨型藍白拖「啪啦！」：超脆膠底瞬拍＋爆笑漫畫彈跳尾音
       const o = ac.createOscillator();
       const g = ac.createGain();
       o.type = "triangle";
-      o.frequency.setValueAtTime(420, now);
-      o.frequency.exponentialRampToValueAtTime(68, now + 0.09);
-      g.gain.setValueAtTime(0.30, now);
-      g.gain.exponentialRampToValueAtTime(0.001, now + 0.10);
+      o.frequency.setValueAtTime(440, now);
+      o.frequency.exponentialRampToValueAtTime(66, now + 0.085);
+      g.gain.setValueAtTime(0.32, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.095);
       o.connect(g).connect(ac.destination);
-      o.start(now); o.stop(now + 0.11);
+      o.start(now); o.stop(now + 0.10);
+
+      const boing = ac.createOscillator();
+      const bg = ac.createGain();
+      boing.type = "sine";
+      boing.frequency.setValueAtTime(240, now + 0.03);
+      boing.frequency.exponentialRampToValueAtTime(520, now + 0.11);
+      bg.gain.setValueAtTime(0.11, now + 0.03);
+      bg.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      boing.connect(bg).connect(ac.destination);
+      boing.start(now + 0.03); boing.stop(now + 0.125);
     }
   }
   function playBellSound(freq = 528) {
@@ -732,6 +842,18 @@
   let weaponHeavy = false;
   let weaponStampTimer = 0;
   let weaponStampText = "";
+  let impactFlashTimer = 0;
+  const sakuraPetals = Array.from({ length: 18 }, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    vx: -0.015 - Math.random() * 0.025,
+    vy: 0.028 + Math.random() * 0.036,
+    size: 5 + Math.random() * 5.5,
+    rot: Math.random() * Math.PI * 2,
+    vrot: (Math.random() - 0.5) * 2.4,
+    phase: Math.random() * Math.PI * 2,
+    gold: Math.random() < 0.35
+  }));
   let villainSquash = 0;
   let villainDizzy = 0;
   let villainFly = 0;
@@ -921,6 +1043,7 @@
 
     weaponAnim = 1;
     weaponHeavy = heavy;
+    impactFlashTimer = heavy ? 0.24 : 0.14;
     villainSquash = heavy ? 1.12 : 0.78;
     villainDizzy = heavy ? 2.4 : 0.95;
     shake = heavy ? 22 : ((selectedWeapon.id === "stool" || selectedWeapon.id === "cooker") ? 13 : 9);
@@ -1345,6 +1468,90 @@
       ctx.fillRect(0, 0, vw, vh);
     }
 
+    // 動態金色斜射聖光束（讓神壇畫面充滿生命力與層次感）
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    for (let i = 0; i < 4; i++) {
+      const rayX = vw * (0.16 + i * 0.23) + Math.sin(t * 0.45 + i * 1.4) * 24;
+      const rayW = Math.min(95, vw * 0.16);
+      const rayGrad = ctx.createLinearGradient(rayX, 0, rayX + 70, vh * 0.72);
+      const alpha = (0.045 + 0.022 * Math.sin(t * 1.2 + i * 1.8));
+      rayGrad.addColorStop(0, `rgba(255, 240, 185, ${alpha})`);
+      rayGrad.addColorStop(1, "rgba(255, 220, 140, 0)");
+      ctx.fillStyle = rayGrad;
+      ctx.beginPath();
+      ctx.moveTo(rayX - rayW * 0.3, 0);
+      ctx.lineTo(rayX + rayW * 0.5, 0);
+      ctx.lineTo(rayX + rayW * 1.15, vh * 0.75);
+      ctx.lineTo(rayX - rayW * 0.1, vh * 0.75);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 左右上角輕輕搖曳的喜氣紅金燈籠（不擋 HUD 與角色，增加宮廟慶典立體感）
+    ctx.save();
+    const hudSafeY = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 54) + 6;
+    for (const side of [-1, 1]) {
+      const lx = side < 0 ? 22 : vw - 22;
+      const sway = Math.sin(t * 1.65 + side) * 0.08;
+      ctx.save();
+      ctx.translate(lx, hudSafeY);
+      ctx.rotate(sway);
+      // 吊繩
+      ctx.strokeStyle = "#ffd980";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(0, -10);
+      ctx.lineTo(0, 6);
+      ctx.stroke();
+      // 暖光暈
+      const lg = ctx.createRadialGradient(0, 20, 2, 0, 20, 32);
+      lg.addColorStop(0, `rgba(255, 190, 80, ${0.30 + 0.08 * Math.sin(t * 3 + side)})`);
+      lg.addColorStop(1, "rgba(255, 140, 40, 0)");
+      ctx.fillStyle = lg;
+      ctx.beginPath();
+      ctx.arc(0, 20, 32, 0, Math.PI * 2);
+      ctx.fill();
+      // 燈籠主體
+      ctx.fillStyle = "#d92b1e";
+      ctx.strokeStyle = "#ffd980";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.ellipse(0, 20, 12, 15, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      // 金色上下帽與流蘇
+      ctx.fillStyle = "#f2be54";
+      ctx.fillRect(-6, 4, 12, 3.5);
+      ctx.fillRect(-5, 33, 10, 3);
+      ctx.strokeStyle = "#ff8a3d";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, 36);
+      ctx.lineTo(Math.sin(t * 3.2 + side) * 3, 48);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+
+    // 飛舞櫻花花瓣與金箔星點（持續動態視差氛圍）
+    sakuraPetals.forEach(p => {
+      p.x += p.vx * 0.016 + Math.sin(t * 1.5 + p.phase) * 0.0007;
+      p.y += p.vy * 0.016;
+      p.rot += p.vrot * 0.016;
+      if (p.y > 1.04) { p.y = -0.04; p.x = Math.random(); }
+      if (p.x < -0.05) p.x = 1.05;
+      ctx.save();
+      ctx.translate(p.x * vw, p.y * vh);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.gold ? "rgba(255, 224, 118, 0.72)" : "rgba(255, 186, 206, 0.74)";
+      ctx.beginPath();
+      ctx.ellipse(0, 0, p.size, p.size * 0.52, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+
     // 嫋嫋動態香煙絲帶（左右兩側）
     ctx.save();
     for (const side of [-1, 1]) {
@@ -1683,6 +1890,27 @@
         ctx.shadowOffsetY = weaponHeavy ? 0 : 8;
         const aspect = wImg.naturalWidth / wImg.naturalHeight;
         ctx.drawImage(wImg, -wSize * aspect * 0.5, -wSize * 0.5, wSize * aspect, wSize);
+        ctx.restore();
+      }
+
+      // 誇張漫畫撞擊集中線＋暖金閃光（每一下敲擊都有超爽街機打擊爆發感）
+      if (impactFlashTimer > 0) {
+        impactFlashTimer = Math.max(0, impactFlashTimer - dt);
+        const k = Math.min(1, impactFlashTimer / 0.14);
+        ctx.save();
+        ctx.globalAlpha = k * (weaponHeavy ? 0.65 : 0.42);
+        const cx = vw * 0.5;
+        const cy = altarY - vSize * 0.25;
+        const maxR = Math.hypot(vw, vh) * 0.65;
+        ctx.strokeStyle = weaponHeavy ? "#ffe066" : "#fff8e1";
+        ctx.lineWidth = weaponHeavy ? 3.5 : 2.2;
+        for (let i = 0; i < 20; i++) {
+          const ang = (Math.PI * 2 * i) / 20 + (weaponHeavy ? 0.12 : 0);
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(ang) * (maxR * 0.56), cy + Math.sin(ang) * (maxR * 0.56));
+          ctx.lineTo(cx + Math.cos(ang) * maxR, cy + Math.sin(ang) * maxR);
+          ctx.stroke();
+        }
         ctx.restore();
       }
 
