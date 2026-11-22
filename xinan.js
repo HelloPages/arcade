@@ -2582,7 +2582,7 @@
       ctx.stroke();
 
       // 左上角說話者表情名牌（一眼看出是誰在講話！）
-      const speakerEmoji = mode === "slap" ? (hitAnim > 0.15 ? "😵" : "😆") : (mode === "bless" ? "🙏" : "🎋");
+      const speakerEmoji = mode === "slap" ? (weaponAnim > 0.15 ? "😵" : "😆") : (mode === "bless" ? "🙏" : "🎋");
       const speakerName = mode === "slap"
         ? `${speakerEmoji} ${getLocalizedScenarioName(selectedScenario)}`
         : (mode === "bless" ? `${speakerEmoji} 心安祈福` : `${speakerEmoji} 心安廟公`);
