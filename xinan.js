@@ -545,7 +545,7 @@
       scenes: { sunny: "櫻花廟埕", office: "歡樂螢幕間", festival: "廟口嘉年華", skylantern: "天燈雲海台", oraclehall: "金龍問卦殿", night: "暮色雕龍殿" }
     },
     en: {
-      brand: "Peaceful Temple",
+      brand: "Lucky Zen Shrine",
       seal: "✦",
       merit: "Zen",
       modeSlap: "Bonk!",
@@ -573,7 +573,7 @@
       scenes: { sunny: "Blossom Courtyard", office: "Monitor Showroom", festival: "Temple Carnival", skylantern: "Lantern Terrace", oraclehall: "Dragon Oracle Hall", night: "Twilight Shrine" }
     },
     ko: {
-      brand: "마음편안궁",
+      brand: "마음안심궁",
       seal: "궁",
       merit: "평온",
       modeSlap: "액땜",
