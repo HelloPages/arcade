@@ -275,18 +275,44 @@
     shockwaves.push({ x, y, color, r: 12, maxR, lineW, life: 0.42, maxLife: 0.42 });
   }
 
-  const GOD_GHOST_HUMOR = [
-    "土地公廣播：「買了啦！我土地廟都換 4K OLED 監視器了！」",
-    "財神爺路過：「雙螢幕買下去，業績直接飛升成仙！」",
-    "月老提醒：「別打了，再打我就把你跟加班綁紅線喔！」",
-    "黑白無常回報：「報告神明，他的薪水還在路上塞車！」",
-    "灶神開示：「珍奶全糖去冰，喝完再敲十下藍白拖！」",
-    "文昌帝君：「簡報第 18 版終於過關，拜託別再改字體！」",
-    "門神偷瞄：「誰偷喝珍奶？我從門縫都看得一清二楚！」",
-    "媽祖微笑：「心安指數爆表！今日免排隊 VIP 優先保佑！」",
-    "鍾馗拍桌：「水逆小鬼抓去面壁，大家準時下班吃宵夜！」",
-    "財神爺撒紅包：「笑得這麼開心，先賞你 +30 香火壓壓驚！」"
-  ];
+  const GOD_GHOST_HUMOR_I18N = {
+    tw: [
+      "土地公廣播：「買了啦！我土地廟都換 4K OLED 監視器了！」",
+      "財神爺路過：「雙螢幕買下去，業績直接飛升成仙！」",
+      "月老提醒：「別打了，再打我就把你跟加班綁紅線喔！」",
+      "黑白無常回報：「報告神明，他的薪水還在路上塞車！」",
+      "灶神開示：「珍奶全糖去冰，喝完再敲十下藍白拖！」",
+      "文昌帝君：「簡報第 18 版終於過關，拜託別再改字體！」",
+      "門神偷瞄：「誰偷喝珍奶？我從門縫都看得一清二楚！」",
+      "媽祖微笑：「心安指數爆表！今日免排隊 VIP 優先保佑！」",
+      "鍾馗拍桌：「水逆小鬼抓去面壁，大家準時下班吃宵夜！」",
+      "財神爺撒紅包：「笑得這麼開心，先賞你 +30 香火壓壓驚！」"
+    ],
+    en: [
+      "Earth God PSA: \"Just buy it! Even my shrine runs dual 4K OLEDs now!\"",
+      "God of Wealth: \"Dual monitors unlocked—watch your KPIs ascend!\"",
+      "Matchmaker Deity: \"Keep bonking and I'll tie your red string to overtime!\"",
+      "Underworld Patrol: \"Update: your raise is still stuck in rush-hour traffic!\"",
+      "Kitchen God: \"Nothing a full-sugar boba tea and ten slipper bonks can't fix!\"",
+      "God of Exams: \"Deck v18 approved! Nobody touch the fonts!\"",
+      "Door Guardian: \"I saw who drank the office boba through the door crack!\"",
+      "Mazu smiles: \"Max zen vibes! VIP express blessing granted today!\"",
+      "Zhong Kui: \"Mercury retrograde grounded—clock out on time for late-night snacks!\"",
+      "God of Wealth tosses a red envelope: \"Bonus +30 Zen for that big grin!\""
+    ],
+    ko: [
+      "토지신 안내: \"질러요! 우리 사당도 4K OLED 듀얼 모니터로 바꿨다니까요!\"",
+      "재물신 한마디: \"듀얼 모니터 들이면 실적도 하늘로 승천합니다!\"",
+      "인연의 신 경고: \"계속 때리면 야근이랑 붉은 실로 묶어버린다?!\"",
+      "저승사자 보고: \"신령님, 이분 월급 인상이 아직 퇴근길 정체 중입니다!\"",
+      "부엌신 비법: \"달달한 버블티 한 잔 마시고 슬리퍼 10연타면 끝!\"",
+      "학문의 신: \"발표자료 18번째 수정본 최종 통과! 제발 폰트만은 건드리지 마!\"",
+      "문지기 신: \"누가 몰래 버블티 마셨는지 문틈으로 다 봤어요!\"",
+      "마조 여신 미소: \"평온 지수 만점! 오늘 VIP 고속 축복권 발급!\"",
+      "종규 일갈: \"수성 역행 귀신은 벽 보고 반성 중! 다들 칼퇴하고 야식 드세요!\"",
+      "재물신 세뱃돈 투척: \"웃는 얼굴이 보기 좋아서 평온 +30 보너스!\""
+    ]
+  };
   let deityBannerText = "";
   let deityBannerTimer = 0;
 
@@ -297,7 +323,8 @@
 
   function maybeTriggerDeityCameo(force = false) {
     if (!force && Math.random() > 0.28) return;
-    const line = GOD_GHOST_HUMOR[Math.floor(Math.random() * GOD_GHOST_HUMOR.length)];
+    const list = GOD_GHOST_HUMOR_I18N[getXinanLang()] || GOD_GHOST_HUMOR_I18N.tw;
+    const line = list[Math.floor(Math.random() * list.length)];
     deityBannerText = line;
     deityBannerTimer = 3.6;
     if (line.includes("+30")) {
@@ -519,7 +546,7 @@
     },
     en: {
       brand: "Peaceful Temple",
-      seal: "ZEN",
+      seal: "✦",
       merit: "Zen",
       modeSlap: "Bonk!",
       modeBless: "Bless",
@@ -1000,6 +1027,8 @@
   if (window.ArcadeI18n) {
     window.ArcadeI18n.onChange(() => {
       applyXinanStaticChrome();
+      floatTexts.length = 0;
+      deityBannerTimer = 0;
       renderControls();
     });
   }
@@ -1166,22 +1195,44 @@
             const pool = slapScenarios;
             const beat = theaterBeat % 7;
             theaterBeat += 1;
-            const theaterMonitorLines = [
-              "買了啦！這台 4K OLED 黑到像老闆的良心！",
-              "240Hz 滑到滑鼠自己離家出走！買了啦！",
-              "雙螢幕買下去，摸魚看起來像在盯大盤！",
-              "這螢幕色彩準到修圖完全不用開濾鏡！",
-              "今天不買明天漲價，卡拿出來刷下去！",
-              "護眼低藍光，加班到半夜眼睛還在發亮！"
-            ];
+            const theaterLinesByLang = {
+              tw: [
+                "買了啦！這台 4K OLED 黑到像老闆的良心！",
+                "240Hz 滑到滑鼠自己離家出走！買了啦！",
+                "雙螢幕買下去，摸魚看起來像在盯大盤！",
+                "這螢幕色彩準到修圖完全不用開濾鏡！",
+                "今天不買明天漲價，卡拿出來刷下去！",
+                "護眼低藍光，加班到半夜眼睛還在發亮！"
+              ],
+              en: [
+                "Just buy it! This 4K OLED is darker than the boss's conscience!",
+                "240Hz so smooth my mouse ran away on its own!",
+                "Go dual monitors—slacking off looks like Wall Street trading!",
+                "Colors so accurate you can retire every photo filter!",
+                "Price goes up tomorrow—swipe that card right now!",
+                "Eye-care low blue light: midnight crunch with zero eye strain!"
+              ],
+              ko: [
+                "질러요! 이 4K OLED 블랙은 팀장님 속마음보다 깊어요!",
+                "240Hz 너무 부드러워서 마우스가 혼자 가출했대요!",
+                "듀얼 모니터 쓰면 딴짓해도 주식 차트 보는 줄 알아요!",
+                "색감이 너무 정확해서 보정 필터가 필요 없어요!",
+                "오늘 안 사면 내일 올라요—지금 당장 카드 꺼내세요!",
+                "시력 보호 저블루라이트! 야근해도 눈이 반짝반짝!"
+              ]
+            };
+            const curLang = getXinanLang();
+            const curName = getLocalizedCharName(selectedScenario);
+            const evPool = curLang === "tw"
+              ? [...theaterLinesByLang.tw, ...selectedScenario.officeEvents]
+              : (theaterLinesByLang[curLang] || theaterLinesByLang.en);
 
             if (beat === 0) {
               if (mode !== "slap") setModeUI("slap", false);
               selectedScenario = pool[Math.floor(Math.random() * pool.length)];
               customTargetLabel = "";
-              const evPool = [...theaterMonitorLines, ...selectedScenario.officeEvents];
               const ev = evPool[Math.floor(Math.random() * evPool.length)];
-              spawnFloatText(vw * 0.5, activeCharTopY - 22, `${selectedScenario.label}：${ev}`, "#2b1a10", 21);
+              spawnFloatText(vw * 0.5, activeCharTopY - 22, `${getLocalizedCharName(selectedScenario)}：${ev}`, "#2b1a10", 21);
               setCharMood(Math.random() < 0.5 ? "happy" : "innocent", 1.2);
               renderControls();
               theaterTimer = 3.2;
@@ -1220,9 +1271,8 @@
               setModeUI("slap", false);
               selectedScenario = pool[Math.floor(Math.random() * pool.length)];
               customTargetLabel = "";
-              const evPool = [...theaterMonitorLines, ...selectedScenario.officeEvents];
               const ev = evPool[Math.floor(Math.random() * evPool.length)];
-              spawnFloatText(vw * 0.5, activeCharTopY - 22, `${selectedScenario.label}：${ev}`, "#2b1a10", 21);
+              spawnFloatText(vw * 0.5, activeCharTopY - 22, `${getLocalizedCharName(selectedScenario)}：${ev}`, "#2b1a10", 21);
               setCharMood("happy", 1.2);
               renderControls();
               theaterTimer = 3.2;
