@@ -137,68 +137,276 @@
   }
   setTimeout(preloadRestCast, 1200);
 
-  // --- Web Audio 合成音效 ---
+  // --- 復古電玩 8-bit Chiptune BGM ＋ 零延遲跟手打擊音效引擎 ---
   let audioCtx = null;
+  let noiseBuffer = null;
   let soundOn = true;
+  let bgmTimerId = null;
+  let bgmNextNoteTime = 0;
+  let bgmStep = 0;
+  let bgmRunning = false;
+
   function ensureAudio() {
     if (!soundOn) return null;
     if (!audioCtx) {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (AC) audioCtx = new AC();
     }
-    if (audioCtx && audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+    if (audioCtx && audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+    if (audioCtx && !noiseBuffer) {
+      const len = Math.floor(audioCtx.sampleRate * 0.18);
+      noiseBuffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+      const data = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    }
     return audioCtx;
   }
+
+  // 朗朗上口 144 BPM 復古街機五聲道喜氣旋律（64 步八分音符循環，A段俏皮＋B段高潮）
+  const NOTE_HZ = {
+    C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
+    C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+    C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, C6: 1046.50, D6: 1174.66
+  };
+  const BGM_LEAD = [
+    "G5", null, "E5", "G5", "A5", null, "G5", "E5",
+    "D5", "E5", "G5", null, "E5", null, "C5", null,
+    "E5", null, "G5", "A5", "C6", null, "A5", "G5",
+    "E5", "G5", "A5", null, "G5", null, null, null,
+    "C6", null, "A5", "G5", "A5", "C6", "D6", null,
+    "C6", "A5", "G5", "E5", "G5", null, "A5", null,
+    "G5", "E5", "D5", "E5", "G5", "A5", "G5", "E5",
+    "D5", null, "E5", "D5", "C5", null, null, null
+  ];
+  const BGM_BASS = [
+    "C3", null, "G3", null, "A3", null, "G3", null,
+    "F3", null, "C4", null, "G3", null, "D3", null,
+    "C3", null, "G3", null, "A3", null, "E3", null,
+    "F3", null, "G3", null, "C3", null, "G3", null,
+    "F3", null, "C4", null, "G3", null, "D4", null,
+    "A3", null, "E3", null, "G3", null, "D3", null,
+    "F3", null, "G3", null, "E3", null, "A3", null,
+    "D3", null, "G3", null, "C3", null, "G3", null
+  ];
+
+  function scheduleBgmStep(ac, step, time) {
+    const stepDur = 60 / 144 / 2; // 144 BPM 八分音符 (~0.208s)
+    const leadNote = BGM_LEAD[step % BGM_LEAD.length];
+    const bassNote = BGM_BASS[step % BGM_BASS.length];
+
+    // 1. 8-bit 方波主旋律（清亮朗朗上口）
+    if (leadNote && NOTE_HZ[leadNote]) {
+      const osc = ac.createOscillator();
+      const g = ac.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(NOTE_HZ[leadNote], time);
+      g.gain.setValueAtTime(0.0001, time);
+      g.gain.linearRampToValueAtTime(0.042, time + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0008, time + stepDur * 0.92);
+      osc.connect(g).connect(ac.destination);
+      osc.start(time);
+      osc.stop(time + stepDur * 0.95);
+    }
+
+    // 2. 復古三角波彈跳低音
+    if (bassNote && NOTE_HZ[bassNote]) {
+      const osc = ac.createOscillator();
+      const g = ac.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(NOTE_HZ[bassNote], time);
+      g.gain.setValueAtTime(0.0001, time);
+      g.gain.linearRampToValueAtTime(0.075, time + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, time + stepDur * 1.45);
+      osc.connect(g).connect(ac.destination);
+      osc.start(time);
+      osc.stop(time + stepDur * 1.5);
+    }
+
+    // 3. 輕快 8-bit 鼓組（底鼓 + 反拍小镲）
+    if (step % 4 === 0) {
+      const osc = ac.createOscillator();
+      const g = ac.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(135, time);
+      osc.frequency.exponentialRampToValueAtTime(42, time + 0.07);
+      g.gain.setValueAtTime(0.065, time);
+      g.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+      osc.connect(g).connect(ac.destination);
+      osc.start(time);
+      osc.stop(time + 0.085);
+    } else if (step % 2 === 1 && noiseBuffer) {
+      const src = ac.createBufferSource();
+      src.buffer = noiseBuffer;
+      const filt = ac.createBiquadFilter();
+      filt.type = "highpass";
+      filt.frequency.setValueAtTime(6500, time);
+      const g = ac.createGain();
+      g.gain.setValueAtTime(0.018, time);
+      g.gain.exponentialRampToValueAtTime(0.0005, time + 0.032);
+      src.connect(filt).connect(g).connect(ac.destination);
+      src.start(time);
+      src.stop(time + 0.036);
+    }
+  }
+
+  function startRetroBgm() {
+    if (!soundOn || bgmRunning) return;
+    const ac = ensureAudio();
+    if (!ac) return;
+    bgmRunning = true;
+    bgmNextNoteTime = ac.currentTime + 0.04;
+    const stepDur = 60 / 144 / 2;
+    bgmTimerId = setInterval(() => {
+      if (!soundOn || !audioCtx || audioCtx.state !== "running") return;
+      while (bgmNextNoteTime < audioCtx.currentTime + 0.14) {
+        scheduleBgmStep(audioCtx, bgmStep, bgmNextNoteTime);
+        bgmNextNoteTime += stepDur;
+        bgmStep = (bgmStep + 1) % BGM_LEAD.length;
+      }
+    }, 45);
+  }
+
+  function stopRetroBgm() {
+    bgmRunning = false;
+    if (bgmTimerId) {
+      clearInterval(bgmTimerId);
+      bgmTimerId = null;
+    }
+  }
+
+  // 第一次互動即自動解鎖並開啟復古電玩 BGM
+  function unlockAudioOnGesture() {
+    if (!soundOn) return;
+    const ac = ensureAudio();
+    if (ac && ac.state === "suspended") {
+      ac.resume().then(() => startRetroBgm()).catch(() => {});
+    } else if (ac) {
+      startRetroBgm();
+    }
+  }
+  window.addEventListener("pointerdown", unlockAudioOnGesture, { passive: true });
+  window.addEventListener("keydown", unlockAudioOnGesture, { passive: true });
+
+  // 零延遲瞬發噪音衝擊層（讓每次點擊跟手爆脆！）
+  function playImpactCrack(ac, now, freq = 1800, dur = 0.055, vol = 0.24) {
+    if (!noiseBuffer) return;
+    const src = ac.createBufferSource();
+    src.buffer = noiseBuffer;
+    const bp = ac.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.frequency.setValueAtTime(freq, now);
+    bp.Q.setValueAtTime(1.2, now);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(vol, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    src.connect(bp).connect(g).connect(ac.destination);
+    src.start(now);
+    src.stop(now + dur + 0.01);
+  }
+
   function playWeaponSound(weaponId, heavy = false) {
     const ac = ensureAudio();
     if (!ac) return;
     const now = ac.currentTime;
-    const osc = ac.createOscillator();
-    const gain = ac.createGain();
-    if (weaponId === "mallet" || heavy) {
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(160, now);
-      osc.frequency.exponentialRampToValueAtTime(42, now + 0.22);
-      gain.gain.setValueAtTime(0.32, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
-      osc.connect(gain).connect(ac.destination);
-      osc.start(now); osc.stop(now + 0.25);
-    } else if (weaponId === "zapper") {
-      // 阿嬤電蚊拍「滋滋啪！」高壓電擊聲
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(1080, now);
-      osc.frequency.exponentialRampToValueAtTime(210, now + 0.14);
-      gain.gain.setValueAtTime(0.22, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-      osc.connect(gain).connect(ac.destination);
-      osc.start(now); osc.stop(now + 0.17);
+
+    // 1. 瞬發跟手打擊脆響（0ms 延遲）
+    playImpactCrack(ac, now, weaponId === "zapper" ? 3600 : weaponId === "cooker" ? 2600 : 1650, heavy ? 0.11 : 0.055, heavy ? 0.34 : 0.24);
+
+    // 2. 各台式武器專屬復古電玩打擊聲
+    if (heavy) {
+      // 鎮煞重擊：超爽 8-bit 必殺和弦＋重低音衝擊
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, idx) => {
+        const o = ac.createOscillator();
+        const g = ac.createGain();
+        o.type = "square";
+        o.frequency.setValueAtTime(f, now + idx * 0.028);
+        g.gain.setValueAtTime(0.14, now + idx * 0.028);
+        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.028 + 0.24);
+        o.connect(g).connect(ac.destination);
+        o.start(now + idx * 0.028);
+        o.stop(now + idx * 0.028 + 0.25);
+      });
+      const sub = ac.createOscillator();
+      const sg = ac.createGain();
+      sub.type = "triangle";
+      sub.frequency.setValueAtTime(170, now);
+      sub.frequency.exponentialRampToValueAtTime(38, now + 0.22);
+      sg.gain.setValueAtTime(0.36, now);
+      sg.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+      sub.connect(sg).connect(ac.destination);
+      sub.start(now); sub.stop(now + 0.25);
+      return;
+    }
+
+    if (weaponId === "zapper") {
+      // 阿嬤電蚊拍「滋滋啪！」：雙段 8-bit 高壓電擊跳音
+      [1320, 880, 1560].forEach((f, i) => {
+        const o = ac.createOscillator();
+        const g = ac.createGain();
+        o.type = "sawtooth";
+        o.frequency.setValueAtTime(f, now + i * 0.022);
+        o.frequency.exponentialRampToValueAtTime(f * 0.35, now + i * 0.022 + 0.045);
+        g.gain.setValueAtTime(0.16, now + i * 0.022);
+        g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.022 + 0.05);
+        o.connect(g).connect(ac.destination);
+        o.start(now + i * 0.022); o.stop(now + i * 0.022 + 0.055);
+      });
     } else if (weaponId === "cooker") {
-      // 經典紅電鍋「噹！飯熟了！」清脆金屬響鈴聲
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(1240, now);
-      osc.frequency.exponentialRampToValueAtTime(1180, now + 0.35);
-      gain.gain.setValueAtTime(0.26, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
-      osc.connect(gain).connect(ac.destination);
-      osc.start(now); osc.stop(now + 0.40);
+      // 經典紅電鍋「噹！熟了！」：瞬間悶擊＋超清脆雙泛音金屬噹聲
+      const thud = ac.createOscillator();
+      const tg = ac.createGain();
+      thud.type = "triangle";
+      thud.frequency.setValueAtTime(210, now);
+      thud.frequency.exponentialRampToValueAtTime(75, now + 0.07);
+      tg.gain.setValueAtTime(0.28, now);
+      tg.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      thud.connect(tg).connect(ac.destination);
+      thud.start(now); thud.stop(now + 0.085);
+
+      [1318.5, 2637.0].forEach((f, i) => {
+        const ding = ac.createOscillator();
+        const dg = ac.createGain();
+        ding.type = "sine";
+        ding.frequency.setValueAtTime(f, now + 0.015);
+        dg.gain.setValueAtTime(i === 0 ? 0.24 : 0.11, now + 0.015);
+        dg.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+        ding.connect(dg).connect(ac.destination);
+        ding.start(now + 0.015); ding.stop(now + 0.44);
+      });
     } else if (weaponId === "stool") {
-      // 辦桌紅塑膠椅「哐噹！」空心塑膠重擊聲
-      osc.type = "square";
-      osc.frequency.setValueAtTime(260, now);
-      osc.frequency.exponentialRampToValueAtTime(88, now + 0.15);
-      gain.gain.setValueAtTime(0.24, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-      osc.connect(gain).connect(ac.destination);
-      osc.start(now); osc.stop(now + 0.17);
+      // 辦桌紅塑膠椅「哐噹！」：空心塑膠雙拍重擊聲
+      const o1 = ac.createOscillator();
+      const g1 = ac.createGain();
+      o1.type = "square";
+      o1.frequency.setValueAtTime(340, now);
+      o1.frequency.exponentialRampToValueAtTime(92, now + 0.11);
+      g1.gain.setValueAtTime(0.24, now);
+      g1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      o1.connect(g1).connect(ac.destination);
+      o1.start(now); o1.stop(now + 0.13);
+
+      const o2 = ac.createOscillator();
+      const g2 = ac.createGain();
+      o2.type = "triangle";
+      o2.frequency.setValueAtTime(520, now + 0.032);
+      o2.frequency.exponentialRampToValueAtTime(180, now + 0.095);
+      g2.gain.setValueAtTime(0.18, now + 0.032);
+      g2.gain.exponentialRampToValueAtTime(0.001, now + 0.105);
+      o2.connect(g2).connect(ac.destination);
+      o2.start(now + 0.032); o2.stop(now + 0.11);
     } else {
-      // 巨型藍白拖「啪啦！」清脆拖鞋聲
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(320, now);
-      osc.frequency.exponentialRampToValueAtTime(64, now + 0.12);
-      gain.gain.setValueAtTime(0.26, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
-      osc.connect(gain).connect(ac.destination);
-      osc.start(now); osc.stop(now + 0.14);
+      // 巨型藍白拖「啪啦！」：超脆膠底瞬拍聲
+      const o = ac.createOscillator();
+      const g = ac.createGain();
+      o.type = "triangle";
+      o.frequency.setValueAtTime(420, now);
+      o.frequency.exponentialRampToValueAtTime(68, now + 0.09);
+      g.gain.setValueAtTime(0.30, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.10);
+      o.connect(g).connect(ac.destination);
+      o.start(now); o.stop(now + 0.11);
     }
   }
   function playBellSound(freq = 528) {
@@ -225,18 +433,24 @@
     const osc = ac.createOscillator();
     const gain = ac.createGain();
     osc.type = "square";
-    osc.frequency.setValueAtTime(640, now);
-    osc.frequency.exponentialRampToValueAtTime(220, now + 0.07);
+    osc.frequency.setValueAtTime(660, now);
+    osc.frequency.exponentialRampToValueAtTime(240, now + 0.055);
     gain.gain.setValueAtTime(0.14, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
     osc.connect(gain).connect(ac.destination);
-    osc.start(now); osc.stop(now + 0.09);
+    osc.start(now); osc.stop(now + 0.07);
   }
 
   btnSound.addEventListener("click", () => {
     soundOn = !soundOn;
     btnSound.textContent = soundOn ? "🔊" : "🔇";
     btnSound.setAttribute("aria-label", soundOn ? "音效開" : "靜音");
+    if (soundOn) {
+      unlockAudioOnGesture();
+      playWoodClack();
+    } else {
+      stopRetroBgm();
+    }
   });
 
   // --- 狀態 ---
@@ -691,6 +905,8 @@
     getState: () => ({
       mode,
       autoTheater,
+      bgmRunning,
+      soundOn,
       scenario: selectedScenario.id,
       mood: forceMoodForTest || charMood,
       merit,
@@ -1432,10 +1648,12 @@
 
       // 人物下方不再顯示多餘名字標籤牌，保持手機與桌面神壇乾淨清爽
 
-      // 誇張巨型台式搞笑武器揮擊：待機時已經超大浮在右側，砸下去直接膨脹成漫畫巨無霸！
+      // 誇張巨型台式搞笑武器揮擊：瞬發零延遲砸下（與打擊音效毫秒同步跟手），再彈性回彈！
       const wImg = imgs[selectedWeapon.sprite];
       if (wImg && wImg.complete && wImg.naturalWidth > 0) {
-        const swing = weaponAnim > 0 ? Math.sin(weaponAnim * Math.PI) : 0;
+        const swing = weaponAnim > 0
+          ? (weaponAnim > 0.78 ? 1.0 : Math.pow(weaponAnim / 0.78, 1.55))
+          : 0;
         const idleSize = Math.min(188, propBase * 0.44);
         const hitSize = Math.min(345, propBase * 0.80) * (weaponHeavy ? 1.28 : 1.0);
         const wSize = idleSize + (hitSize - idleSize) * swing;
