@@ -2587,6 +2587,9 @@
       if (availH < neededStackH) suppressDeityForOverlap = true;
     }
 
+    // 讀取左側 HTML 道具欄（sidePropRail）實際外框，避免角色長台詞泡泡與名牌被道具欄蓋住
+    const railRect = sidePropRail ? sidePropRail.getBoundingClientRect() : null;
+
     for (let i = floatTexts.length - 1; i >= 0; i--) {
       const ft = floatTexts[i];
       ft.life -= dt;
@@ -2594,11 +2597,23 @@
       ctx.save();
       ctx.globalAlpha = Math.min(1, ft.life / 0.3);
       const isWideScr = vw > vh;
-      const ledPitch = isWideScr ? 2.3 : 1.95;
-      const maxBubbleW = Math.min(vw - 24, isWideScr ? 540 : 352);
-      const maxCharsPerLine = Math.max(8, Math.floor((maxBubbleW - 44) / (12 * ledPitch)));
+      const tailH = 16;
+      const minSafeTop = (deityBannerTimer > 0 && !suppressDeityForOverlap)
+        ? (topHudBottom + 138)
+        : (topHudBottom + 20);
+      const targetBottomY = activeCharTopY - 18;
+      // 判斷角色泡泡預計垂直範圍是否與左側道具欄重疊；若有重疊，按道具欄實際右緣＋雲弧外凸安全間距重算左界與可用寬度
+      const estTop = Math.max(minSafeTop, targetBottomY - 120);
+      const estBot = targetBottomY;
+      const overlapsRail = !!(railRect && railRect.width > 0 && estBot >= railRect.top - 10 && (estTop - 18) <= railRect.bottom + 10);
+      const safeLeft = overlapsRail ? Math.ceil(railRect.right) + 12 : 14;
+      const safeRight = vw - 14;
+      const availW = Math.max(168, safeRight - safeLeft);
+      const ledPitch = isWideScr ? 2.25 : (availW < 310 ? 1.72 : 1.95);
+      const maxBubbleW = Math.min(availW, isWideScr ? 540 : 352);
+      const maxCharsPerLine = Math.max(7, Math.floor((maxBubbleW - 38) / (12 * ledPitch)));
 
-      // 平衡雙行折行：避免折行後第二行只剩 1-3 個字，優先在標點後斷行且上下寬度對稱
+      // 平衡折行：先按扣除道具欄後的實際可用寬度折行，優先於標點後斷行並確保每行完整不截字
       const chars = Array.from(ft.text || "");
       const lines = [];
       if (chars.length <= maxCharsPerLine) {
@@ -2620,8 +2635,16 @@
           lines.push(chars.slice(0, bestIdx).join("").trim());
           lines.push(chars.slice(bestIdx).join("").trim());
         } else {
-          for (let pos = 0; pos < chars.length; pos += maxCharsPerLine) {
-            lines.push(chars.slice(pos, pos + maxCharsPerLine).join(""));
+          let pos = 0;
+          while (pos < chars.length) {
+            let end = Math.min(chars.length, pos + maxCharsPerLine);
+            if (end < chars.length) {
+              for (let k = end; k > pos + Math.floor(maxCharsPerLine * 0.55); k--) {
+                if (/[！，。？：、]/.test(chars[k - 1])) { end = k; break; }
+              }
+            }
+            lines.push(chars.slice(pos, end).join("").trim());
+            pos = end;
           }
         }
       }
@@ -2634,20 +2657,15 @@
         pad: 2
       })).filter(Boolean);
 
-      const lineGap = 5;
+      const lineGap = 4;
       const contentW = lineSprites.length ? Math.max(...lineSprites.map(s => s.width)) : 140;
       const contentH = lineSprites.reduce((sum, s) => sum + s.height, 0) + Math.max(0, lineSprites.length - 1) * lineGap;
-      const bw = Math.min(maxBubbleW, Math.max(168, contentW + 38));
-      const bh = Math.max(46, contentH + 26);
-      const tailH = 16;
-      const minSafeTop = (deityBannerTimer > 0 && !suppressDeityForOverlap)
-        ? (topHudBottom + 138)
-        : (topHudBottom + 20);
+      const bw = Math.min(maxBubbleW, Math.max(156, contentW + 34));
+      const bh = Math.max(46, contentH + 24);
       const targetAnchorX = activeCharCenterX;
-      const targetBottomY = activeCharTopY - 18;
       const by = Math.max(minSafeTop, targetBottomY - bh - tailH);
-      const bx = Math.max(12, Math.min(vw - bw - 12, targetAnchorX - bw * 0.5));
-      const tailX = Math.max(bx + 28, Math.min(bx + bw - 28, targetAnchorX));
+      const bx = Math.max(safeLeft, Math.min(safeRight - bw, targetAnchorX - bw * 0.5));
+      const tailX = Math.max(bx + 26, Math.min(bx + bw - 26, targetAnchorX));
       const bounce = Math.sin(t * 5.2) * 2.2;
 
       // 繪製活潑「漫畫雲朵造型說話泡泡」（非制式方框！波浪雲朵輪廓＋彎曲對話尾巴＋說話角色表情名牌）
