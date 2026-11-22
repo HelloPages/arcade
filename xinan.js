@@ -4,6 +4,7 @@
 
   const meritEl = document.getElementById("meritCount");
   const btnSound = document.getElementById("btnSound");
+  const btnScene = document.getElementById("btnScene");
   const chipsRow = document.getElementById("chipsRow");
   const weaponRow = document.getElementById("weaponRow");
   const actionRow = document.getElementById("actionRow");
@@ -18,6 +19,12 @@
   const assetUrls = {
     bg: "./assets/xinan-temple-bg-portrait-sunny.webp?v=20261121_sunny_v1",
     bgDesktop: "./assets/xinan-temple-bg-desktop-sunny.webp?v=20261121_sunny_v1",
+    bgNight: "./assets/xinan-temple-bg-portrait-hd.webp?v=20261118_hd2k_v8",
+    bgNightDesktop: "./assets/xinan-temple-bg-desktop-hd.webp?v=20261118_hd2k_v8",
+    sceneOffice: "./assets/xinan-scene-office.webp?v=20261122_party_v1",
+    sceneFestival: "./assets/xinan-scene-festival.webp?v=20261122_party_v1",
+    sceneSkylantern: "./assets/xinan-scene-skylantern.webp?v=20261122_party_v1",
+    sceneOraclehall: "./assets/xinan-scene-oraclehall.webp?v=20261122_party_v1",
     "weapon-slipper": "./assets/v2/weapon-slipper.webp",
     "weapon-clog": "./assets/v2/weapon-clog.webp",
     "weapon-mallet": "./assets/v2/weapon-mallet.webp",
@@ -246,15 +253,82 @@
   window.addEventListener("resize", resize);
   resize();
 
-  // --- 粒子、衝擊波與飄字 ---
+  // --- 粒子、衝擊波、尾牙級可愛爆笑物件雨與飄字 ---
   const particles = [];
   const shockwaves = [];
+  const funDrops = [];
   const floatTexts = [];
   let shake = 0;
   let comboBadgeTimer = 0;
+  let ambientDropTimer = 0;
+
+  const CONFETTI_COLORS = ["#ffdc16", "#ff327b", "#15f6b7", "#24bdff", "#ff7535", "#faefff", "#a66aff"];
+  const FUN_ICONS = {
+    slap: ["🧋", "🖥️", "🩴", "🪙", "☕", "🧧", "⭐", "😂", "💖", "🎉"],
+    bless: ["🌸", "🏮", "🪙", "🧧", "🎐", "✨", "💖", "🍊", "🎉"],
+    oracle: ["🪙", "🎋", "🧧", "✨", "⭐", "🏮", "💖", "🎉"]
+  };
 
   function spawnShockwave(x, y, color = "#ffd466", maxR = 110, lineW = 4) {
     shockwaves.push({ x, y, color, r: 12, maxR, lineW, life: 0.42, maxLife: 0.42 });
+  }
+
+  function spawnAmbientDrop(modeKey = mode) {
+    if (funDrops.length > 95) return;
+    const isConfetti = Math.random() < 0.48;
+    const pool = FUN_ICONS[modeKey] || FUN_ICONS.slap;
+    funDrops.push({
+      kind: isConfetti ? "confetti" : "icon",
+      icon: isConfetti ? "" : pool[Math.floor(Math.random() * pool.length)],
+      color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+      x: 18 + Math.random() * (vw - 36),
+      y: -24,
+      vx: (Math.random() - 0.5) * 44,
+      vy: 68 + Math.random() * 88,
+      gravity: 18,
+      size: isConfetti ? (7 + Math.random() * 6) : (20 + Math.random() * 12),
+      rot: Math.random() * Math.PI * 2,
+      vrot: (Math.random() - 0.5) * 5.2,
+      sway: Math.random() * 6.28,
+      life: 6.5,
+      maxLife: 6.5
+    });
+  }
+
+  // 仿尾牙抽獎雙側禮炮煙火＋角色後方爆笑物件噴泉
+  function spawnFestiveShower(modeKey = mode, intensity = 1) {
+    const pool = FUN_ICONS[modeKey] || FUN_ICONS.slap;
+    const count = Math.min(34, Math.round(12 * intensity));
+    const origins = [
+      { x: vw * 0.14, y: vh * 0.58, dir: 1 },
+      { x: vw * 0.86, y: vh * 0.58, dir: -1 },
+      { x: vw * 0.50, y: Math.min(vh * 0.62, bgTableSurfaceY - 30), dir: 0 }
+    ];
+    for (let i = 0; i < count; i++) {
+      if (funDrops.length > 130) funDrops.shift();
+      const org = origins[i % origins.length];
+      const isConfetti = i % 2 === 0;
+      const vx = org.dir === 0
+        ? (Math.random() - 0.5) * 320
+        : org.dir * (95 + Math.random() * 190);
+      const vy = -(260 + Math.random() * 260) * (intensity > 1 ? 1.15 : 1);
+      funDrops.push({
+        kind: isConfetti ? "confetti" : "icon",
+        icon: isConfetti ? "" : pool[Math.floor(Math.random() * pool.length)],
+        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+        x: org.x + (Math.random() - 0.5) * 26,
+        y: org.y + (Math.random() - 0.5) * 20,
+        vx,
+        vy,
+        gravity: 430,
+        size: isConfetti ? (8 + Math.random() * 6) : (22 + Math.random() * 12),
+        rot: Math.random() * Math.PI * 2,
+        vrot: (Math.random() - 0.5) * 9.0,
+        sway: Math.random() * 6.28,
+        life: 3.4 + Math.random() * 1.2,
+        maxLife: 4.6
+      });
+    }
   }
 
   function spawnBurst(x, y, color, count = 16, speed = 220) {
@@ -435,6 +509,7 @@
       spawnBurst(altarX, altarY - 15, selectedWeapon.color, 22, 260);
       spawnShockwave(altarX, altarY - 10, "#ffd466", 190, 6);
       spawnShockwave(altarX, altarY - 10, "#ff7256", 130, 4);
+      spawnFestiveShower("slap", 2.0);
       const heavyWord = selectedScenario.fullBody
         ? `${selectedScenario.label} 慶祝達標！`
         : `${selectedWeapon.label}鎮煞重擊！`;
@@ -449,6 +524,7 @@
       playWeaponSound(selectedWeapon.id, false);
       spawnBurst(altarX, altarY - 10, selectedWeapon.color, 14, 210);
       spawnShockwave(altarX, altarY - 12, selectedWeapon.color, 95, 3.5);
+      spawnFestiveShower("slap", 0.85);
       const sharedOfficePool = [
         "買了啦！這台 OLED 黑到像老闆的良心！",
         "240Hz 滑到滑鼠直接離家出走！買了啦！",
@@ -512,6 +588,7 @@
     });
     spawnBurst(vw * 0.5, bgTableSurfaceY - 65, selectedBless.color, 26, 220);
     spawnShockwave(vw * 0.5, bgTableSurfaceY - 20, "#ffd466", 150, 4);
+    spawnFestiveShower("bless", 1.8);
     const blessLine = !customWishLabel.trim() && selectedScenario.blessLine
       ? `${selectedScenario.blessLine}（${wishText}）`
       : `為${targetName}祈求「${wishText}」心想事成！`;
@@ -709,6 +786,44 @@
     }
   }
 
+  // --- 三大模式專屬多場景隨機輪替系統 ---
+  const SCENE_DEFS = {
+    sunny: { keyP: "bg", keyD: "bgDesktop", ratioP: 0.688, ratioD: 0.765, night: false, label: "櫻花廟埕" },
+    office: { keyP: "sceneOffice", keyD: "sceneOffice", ratioP: 0.715, ratioD: 0.715, night: false, label: "歡樂螢幕間" },
+    festival: { keyP: "sceneFestival", keyD: "sceneFestival", ratioP: 0.755, ratioD: 0.755, night: false, label: "廟口嘉年華" },
+    skylantern: { keyP: "sceneSkylantern", keyD: "sceneSkylantern", ratioP: 0.718, ratioD: 0.718, night: false, label: "天燈雲海台" },
+    oraclehall: { keyP: "sceneOraclehall", keyD: "sceneOraclehall", ratioP: 0.735, ratioD: 0.735, night: false, label: "金龍問卦殿" },
+    night: { keyP: "bgNight", keyD: "bgNightDesktop", ratioP: 0.675, ratioD: 0.665, night: true, label: "暮色雕龍殿" }
+  };
+  const MODE_SCENES = {
+    slap: ["sunny", "office", "festival"],
+    bless: ["skylantern", "sunny", "festival"],
+    oracle: ["oraclehall", "sunny", "night"]
+  };
+  let activeSceneId = MODE_SCENES.slap[Math.floor(Math.random() * MODE_SCENES.slap.length)];
+
+  function pickModeScene(targetMode, cycleNext = false) {
+    const list = MODE_SCENES[targetMode] || MODE_SCENES.slap;
+    if (cycleNext) {
+      const idx = list.indexOf(activeSceneId);
+      activeSceneId = list[(idx + 1) % list.length];
+    } else {
+      const candidates = list.filter(s => s !== activeSceneId);
+      activeSceneId = (candidates.length ? candidates : list)[Math.floor(Math.random() * (candidates.length || list.length))];
+    }
+    const def = SCENE_DEFS[activeSceneId] || SCENE_DEFS.sunny;
+    if (btnScene) btnScene.textContent = def.label;
+    loadImg(def.keyP);
+    loadImg(def.keyD);
+  }
+  if (btnScene) {
+    btnScene.textContent = (SCENE_DEFS[activeSceneId] || SCENE_DEFS.sunny).label;
+    btnScene.addEventListener("click", () => {
+      pickModeScene(mode, true);
+      spawnFestiveShower(mode, 1.0);
+    });
+  }
+
   document.querySelectorAll(".mode-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       mode = btn.dataset.mode;
@@ -719,6 +834,8 @@
       shockwaves.length = 0;
       comboBadgeTimer = 0;
       oracleStep = "ready";
+      pickModeScene(mode, false);
+      spawnFestiveShower(mode, 1.1);
       renderControls();
     });
   });
@@ -757,9 +874,12 @@
 
   function drawBackground(t) {
     const isWide = vw > vh;
-    const bg = (isWide && imgs.bgDesktop && imgs.bgDesktop.complete && imgs.bgDesktop.naturalWidth > 0)
-      ? imgs.bgDesktop
-      : imgs.bg;
+    const sc = SCENE_DEFS[activeSceneId] || SCENE_DEFS.sunny;
+    const primaryKey = isWide ? sc.keyD : sc.keyP;
+    const fallbackKey = isWide ? "bgDesktop" : "bg";
+    const bg = (imgs[primaryKey] && imgs[primaryKey].complete && imgs[primaryKey].naturalWidth > 0)
+      ? imgs[primaryKey]
+      : (imgs[fallbackKey] && imgs[fallbackKey].complete && imgs[fallbackKey].naturalWidth > 0 ? imgs[fallbackKey] : imgs.bg);
     if (bg && bg.complete && bg.naturalWidth > 0) {
       const scale = Math.max(vw / bg.naturalWidth, vh / bg.naturalHeight) * 1.02;
       const dw = bg.naturalWidth * scale;
@@ -767,14 +887,15 @@
       const dx = (vw - dw) * 0.5 + Math.sin(t * 0.35) * 5;
       const dy = (vh - dh) * 0.5 + Math.cos(t * 0.25) * 4;
       ctx.drawImage(bg, dx, dy, dw, dh);
-      // 供桌石台頂面中段 Y 座標（日間歡樂直式 0.688 / 橫式 0.765）
-      bgTableSurfaceY = dy + dh * (isWide ? 0.765 : 0.688);
-      // 明亮陽光暖光呼吸（開心歡樂日間神韻）
+      // 依當前場景精準對齊供桌／台面頂緣
+      const ratio = isWide ? sc.ratioD : sc.ratioP;
+      bgTableSurfaceY = dy + dh * ratio;
+      // 明亮陽光暖光呼吸（夜間場景則為暖燈籠光）
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
       const glowPulse = 0.06 + 0.03 * Math.sin(t * 2.0);
-      const glowCenter = ctx.createRadialGradient(vw * 0.5, dy + dh * 0.28, 10, vw * 0.5, dy + dh * 0.28, Math.min(vw, vh) * 0.52);
-      glowCenter.addColorStop(0, `rgba(255, 244, 196, ${glowPulse})`);
+      const glowCenter = ctx.createRadialGradient(vw * 0.5, dy + dh * (sc.night ? 0.44 : 0.28), 10, vw * 0.5, dy + dh * (sc.night ? 0.44 : 0.28), Math.min(vw, vh) * 0.52);
+      glowCenter.addColorStop(0, sc.night ? `rgba(255, 196, 92, ${glowPulse * 1.3})` : `rgba(255, 244, 196, ${glowPulse})`);
       glowCenter.addColorStop(1, "rgba(255, 220, 140, 0)");
       ctx.fillStyle = glowCenter;
       ctx.fillRect(0, 0, vw, vh);
@@ -782,11 +903,11 @@
 
       const grad = ctx.createRadialGradient(vw * 0.5, vh * 0.5, vh * 0.22, vw * 0.5, vh * 0.5, Math.max(vw, vh) * 0.92);
       grad.addColorStop(0, "rgba(255,250,235,0)");
-      grad.addColorStop(1, "rgba(42,26,18,0.16)");
+      grad.addColorStop(1, sc.night ? "rgba(12,10,16,0.42)" : "rgba(42,26,18,0.14)");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, vw, vh);
     } else {
-      bgTableSurfaceY = vh * 0.66;
+      bgTableSurfaceY = vh * 0.68;
       ctx.fillStyle = "#191521";
       ctx.fillRect(0, 0, vw, vh);
     }
@@ -948,6 +1069,54 @@
         const w = h * (box.w / box.h);
         activeCharTopY = feetBaseY + flyY - h;
         ctx.drawImage(vImg, box.x, box.y, box.w, box.h, -w * 0.5, -h, w, h);
+
+        // 3畝為七分半身原圖：在下緣前方繪製立體祥雲＋喜氣紅金雲紋座台自然承托，徹底消除硬切直線！
+        if (selectedScenario.id === "three_mu") {
+          ctx.save();
+          ctx.shadowBlur = 0;
+          const cw = Math.max(w * 0.72, 118);
+          // 柔和暖白粉金祥雲團（自然包覆褲緣不硬切）
+          const puffs = [
+            { x: -cw * 0.42, y: -6, r: 22 },
+            { x: -cw * 0.18, y: -12, r: 27 },
+            { x: cw * 0.08, y: -13, r: 26 },
+            { x: cw * 0.34, y: -8, r: 23 },
+            { x: cw * 0.48, y: -2, r: 17 },
+            { x: -cw * 0.52, y: -1, r: 16 }
+          ];
+          // 外層暖金微邊
+          ctx.fillStyle = "#f7d58b";
+          for (const p of puffs) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y + 2, p.r + 2.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          // 內層奶白柔雲
+          const cg = ctx.createLinearGradient(0, -34, 0, 14);
+          cg.addColorStop(0, "#fffdf7");
+          cg.addColorStop(1, "#fde8c8");
+          ctx.fillStyle = cg;
+          for (const p of puffs) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          // 中央喜氣紅金迷你福紋飾牌
+          const pw = 64, ph = 20;
+          ctx.fillStyle = "#c83e2b";
+          ctx.strokeStyle = "#f3c769";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.roundRect(-pw * 0.5, -14, pw, ph, 6);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = "#fff5d6";
+          ctx.font = "800 11px 'Noto Serif TC', serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("✦ 福 ✦", 0, -4);
+          ctx.restore();
+        }
       } else if (selectedScenario.fullBody) {
         activeCharTopY = feetBaseY + flyY - vSize * 0.92;
         const moodNow = forceMoodForTest || charMood || "normal";
@@ -1102,6 +1271,7 @@
           playBellSound(784);
           spawnBurst(blocksX, propBaseY - 24, "#ffd466", 24, 220);
           spawnShockwave(blocksX, propBaseY - 12, "#ffd466", 110, 4);
+          spawnFestiveShower("oracle", 2.0);
           showResult(
             drawnFortune.grade,
             `【${targetName}】${drawnFortune.title}`,
@@ -1179,6 +1349,37 @@
       ctx.beginPath();
       ctx.arc(sw.x, sw.y, curR, 0, Math.PI * 2);
       ctx.stroke();
+      ctx.restore();
+    }
+
+    // 持續飄落可愛爆笑主題物件＋尾牙七彩旋轉彩帶雨
+    ambientDropTimer -= dt;
+    if (ambientDropTimer <= 0) {
+      ambientDropTimer = 0.24 + Math.random() * 0.22;
+      spawnAmbientDrop(mode);
+    }
+    for (let i = funDrops.length - 1; i >= 0; i--) {
+      const d = funDrops[i];
+      d.life -= dt;
+      d.vy += d.gravity * dt;
+      d.x += (d.vx + Math.sin(t * 2.6 + d.sway) * 26) * dt;
+      d.y += d.vy * dt;
+      d.rot += d.vrot * dt;
+      if (d.life <= 0 || d.y > vh + 40) { funDrops.splice(i, 1); continue; }
+      ctx.save();
+      ctx.globalAlpha = Math.min(0.95, d.life / 0.5);
+      ctx.translate(d.x, d.y);
+      ctx.rotate(d.rot);
+      if (d.kind === "confetti") {
+        ctx.fillStyle = d.color;
+        ctx.scale(1, Math.cos(t * 7 + d.sway));
+        ctx.fillRect(-d.size * 0.55, -d.size * 0.32, d.size * 1.1, d.size * 0.64);
+      } else {
+        ctx.font = `${Math.round(d.size)}px 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(d.icon, 0, 0);
+      }
       ctx.restore();
     }
 
