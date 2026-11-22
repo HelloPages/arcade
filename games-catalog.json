@@ -1,13 +1,60 @@
 {
   "portalTitle": "經典街機遊戲館",
-  "version": "v_20261122_cuteplane_v1",
-  "updatedAt": "2026-11-22T22:00:00+08:00",
+  "version": "v_20261123_pool_1",
+  "updatedAt": "2026-11-23T04:15:03+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向與原創在地化命名（禁用真實版權遊戲名稱），並全面支援 TW / EN / KO 本土化語系切換。",
   "dailySchedule": {
-    "generateCron": "每日 04:00 依 REA_SPORTS_VS_CPU.md 自動生成單人對戰 CPU 之精緻運動競技遊戲（撞球-1、網球-1、羽球-1 等），採直覺類型-編號命名並支援 TW/EN/KO",
+    "generateCron": "每日04:00產出可單人對戰CPU的原創運動或街機競技遊戲",
     "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
   },
   "games": [
+    {
+      "id": "pool",
+      "title": "撞球-1",
+      "shortTab": "撞球-1",
+      "genre": "單人六球撞球",
+      "reaSource": "取材自六球美式落袋撞球的切球、走位與自由球規則，採原創球桌、美術與音樂。",
+      "highlights": [
+        "點桌面瞄準，或從白球反向拖曳拉桿。幽靈球輔助線可預覽切球方向。",
+        "三階CPU逐球判讀球路。先進4球獲勝，3比3時由下一球決勝。"
+      ],
+      "path": "./pool.html",
+      "addedDate": "2026-11-23",
+      "thumbnail": "assets/pool-cover.webp",
+      "artDirection": "俯視球房實體桌面，暖綠毛呢、胡桃木、嵌鑄黃銅與象牙色計分板。",
+      "i18n": {
+        "tw": {
+          "title": "撞球-1",
+          "shortTab": "撞球-1",
+          "genre": "單人六球撞球",
+          "reaSource": "取材自六球美式落袋撞球的切球、走位與自由球規則，採原創球桌、美術與音樂。",
+          "highlights": [
+            "點桌面瞄準，或從白球反向拖曳拉桿。幽靈球輔助線可預覽切球方向。",
+            "三階CPU逐球判讀球路。先進4球獲勝，3比3時由下一球決勝。"
+          ]
+        },
+        "en": {
+          "title": "Pool-1",
+          "shortTab": "Pool-1",
+          "genre": "Single-player six-ball pool",
+          "reaSource": "Inspired by six-ball pocket billiards, with cut shots, cue-ball position play and ball in hand. Original table art and music.",
+          "highlights": [
+            "Tap to aim or pull back from the cue ball. A ghost ball shows the contact point and the cut angle.",
+            "Play three CPU difficulty levels. First to four wins, with a deciding ball at 3–3."
+          ]
+        },
+        "ko": {
+          "title": "포켓볼-1",
+          "shortTab": "포켓볼-1",
+          "genre": "싱글 플레이 6볼 포켓볼",
+          "reaSource": "6볼 포켓볼의 빗겨치기, 흰 공 위치 조절, 프리볼 규칙을 바탕으로 테이블과 음악을 직접 제작했습니다.",
+          "highlights": [
+            "테이블을 눌러 조준하거나 흰 공을 뒤로 끌어 치세요. 고스트볼이 타점과 진행 방향을 보여 줍니다.",
+            "3단계 난이도의 CPU와 대결하세요. 공을 먼저 4개 넣으면 승리하며, 3 대 3에서는 다음 득점으로 결정됩니다."
+          ]
+        }
+      }
+    },
     {
       "id": "cuteplane",
       "title": "飛機射擊-5",
