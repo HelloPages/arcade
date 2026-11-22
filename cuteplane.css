@@ -1,11 +1,11 @@
 :root {
-  --ink: #2b1a12;
-  --cream: #fffaf0;
-  --sun: #ffd859;
-  --coral: #ff5e6c;
-  --sky: #25b4ff;
-  --mint: #2cd49c;
-  --border: #3a2216;
+  --ink: #2b1810;
+  --cream: #fffdf5;
+  --sun: #ffd84d;
+  --coral: #ff5768;
+  --sky: #34c6ff;
+  --mint: #38e0a8;
+  --border: #3a1f12;
 }
 
 * {
@@ -23,7 +23,7 @@ html, body {
   height: 100dvh;
   overflow: hidden;
   touch-action: none;
-  background: #48b8f0;
+  background: #9fe0ff;
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", "PingFang TC", "Apple SD Gothic Neo", sans-serif;
 }
@@ -45,7 +45,7 @@ html, body {
 
 .hidden { display: none !important; }
 
-/* 頂部輕量可愛手繪 HUD */
+/* 頂部主題造型 HUD */
 .hud-top {
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 6px);
@@ -55,99 +55,158 @@ html, body {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 6px;
+  gap: 5px;
   pointer-events: none;
 }
 
 .hud-left, .hud-center, .hud-right {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   pointer-events: auto;
 }
 
 .hud-left { flex-direction: column; align-items: flex-start; gap: 3px; }
 .hud-center { flex-direction: column; align-items: center; gap: 3px; }
 
-.score-box {
-  background: rgba(255, 250, 240, 0.92);
-  border: 2px solid var(--border);
-  border-radius: 7px;
-  padding: 2px 8px;
+/* 玩具徽章分數牌（斜切糖果緞帶造型，非單調方塊） */
+.toy-badge {
+  background: linear-gradient(180deg, #fffdf5, #fff0c2);
+  border: 2.2px solid var(--border);
+  border-radius: 10px 4px 10px 4px;
+  padding: 2px 9px;
   display: flex;
   align-items: baseline;
   gap: 5px;
+  box-shadow: 2px 2px 0 rgba(58, 31, 18, 0.25);
 }
 
 .hud-label {
   font-size: 10px;
   font-weight: 900;
-  color: #b45309;
+  color: #c2410c;
 }
 
 #scoreVal {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 900;
   color: var(--ink);
 }
 
-.stage-tag {
-  background: rgba(255, 216, 89, 0.94);
+/* 燕尾旗幟關卡條 */
+.stage-ribbon {
+  background: linear-gradient(90deg, #ffe066, #ffb703);
   border: 2px solid var(--border);
-  border-radius: 6px;
-  padding: 1px 7px;
+  border-radius: 4px 10px 10px 4px;
+  padding: 1px 10px 1px 7px;
   font-size: 10.5px;
   font-weight: 900;
   color: var(--ink);
   white-space: nowrap;
+  clip-path: polygon(0 0, 94% 0, 100% 50%, 94% 100%, 0 100%);
 }
 
 .ver-stamp {
   font-family: monospace;
   font-size: 9px;
   font-weight: 800;
-  color: rgba(43, 26, 18, 0.72);
-  background: rgba(255, 250, 240, 0.75);
+  color: rgba(43, 24, 16, 0.78);
+  background: rgba(255, 253, 245, 0.85);
   border-radius: 4px;
   padding: 0 4px;
 }
 
-.hp-bar {
+/* 雲朵愛心血條 */
+.hp-cloud {
   display: flex;
   align-items: center;
   gap: 3px;
-  background: rgba(255, 250, 240, 0.9);
+  background: #fffdf5;
   border: 2px solid var(--border);
-  border-radius: 7px;
-  padding: 2px 6px;
+  border-radius: 12px 12px 8px 8px;
+  padding: 2px 8px;
+  box-shadow: 2px 2px 0 rgba(58, 31, 18, 0.22);
 }
 
-.hp-heart {
+.hp-heart { font-size: 12px; line-height: 1; }
+.hp-heart.lost { opacity: 0.24; filter: grayscale(1); }
+
+/* 糖果軌道關卡進度條（紅白斜紋糖果管＋飛行標記＋皇冠終點） */
+.candy-track-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 124px;
+}
+
+.candy-track {
+  position: relative;
+  flex: 1;
+  height: 11px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #fffdf5,
+    #fffdf5 5px,
+    #ffe0e9 5px,
+    #ffe0e9 10px
+  );
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  overflow: visible;
+}
+
+.candy-fill {
+  height: 100%;
+  width: 8%;
+  background: repeating-linear-gradient(
+    -45deg,
+    #ff6b8b,
+    #ff6b8b 6px,
+    #ffd166 6px,
+    #ffd166 12px
+  );
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.candy-runner {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  transform: translate(-50%, -52%) rotate(-90deg);
   font-size: 12px;
   line-height: 1;
+  filter: drop-shadow(0 1px 1px rgba(58, 31, 18, 0.7));
+  transition: left 0.2s ease;
 }
-.hp-heart.lost { opacity: 0.25; filter: grayscale(1); }
 
-.wpn-tag {
-  background: rgba(255, 250, 240, 0.92);
+.candy-goal {
+  font-size: 13px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 1px rgba(58, 31, 18, 0.5));
+}
+
+.wpn-ribbon {
+  background: linear-gradient(180deg, #fffdf5, #e8f8ff);
   border: 2px solid var(--border);
-  border-radius: 7px;
-  padding: 2px 7px;
+  border-radius: 8px 3px 8px 3px;
+  padding: 1px 7px;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 900;
   color: var(--ink);
 }
-.wpn-tag img { width: 16px; height: 16px; object-fit: contain; }
+.wpn-ribbon img { width: 15px; height: 15px; object-fit: contain; }
 
-.hud-btn {
+/* 圓角徽章喇叭／全螢幕鍵 */
+.toy-icon-btn {
   appearance: none;
-  background: rgba(255, 250, 240, 0.92);
-  border: 2px solid var(--border);
-  border-radius: 7px;
+  background: linear-gradient(180deg, #fffdf5, #ffe9b8);
+  border: 2.2px solid var(--border);
+  border-radius: 10px 4px 10px 4px;
   min-width: 34px;
   height: 32px;
   padding: 0 7px;
@@ -155,21 +214,23 @@ html, body {
   font-weight: 900;
   color: var(--ink);
   cursor: pointer;
+  box-shadow: 2px 2px 0 rgba(58, 31, 18, 0.25);
 }
-.hud-btn:active { transform: scale(0.94); }
+.toy-icon-btn:active { transform: translate(1px, 1px); box-shadow: none; }
 
-/* 首領血條 */
+/* 首領糖果警戒條 */
 .boss-hud {
   position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 66px);
+  top: calc(env(safe-area-inset-top, 0px) + 74px);
   left: 50%;
   transform: translateX(-50%);
   width: min(320px, calc(100vw - 24px));
   z-index: 22;
-  background: rgba(255, 250, 240, 0.94);
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  padding: 5px 8px;
+  background: linear-gradient(180deg, #fffdf5, #ffe8ee);
+  border: 2.4px solid var(--border);
+  border-radius: 12px 4px 12px 4px;
+  padding: 5px 10px;
+  box-shadow: 3px 3px 0 rgba(58, 31, 18, 0.25);
 }
 
 .boss-title {
@@ -177,26 +238,26 @@ html, body {
   justify-content: space-between;
   font-size: 11px;
   font-weight: 900;
-  color: #b91c1c;
+  color: #be123c;
   margin-bottom: 4px;
 }
 
 .boss-track {
-  height: 10px;
+  height: 11px;
   background: #fde2e4;
-  border: 1.5px solid var(--border);
-  border-radius: 5px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
   overflow: hidden;
 }
 
 .boss-fill {
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, #ff5e6c, #ff9e44);
+  background: repeating-linear-gradient(-45deg, #ff4d6d, #ff4d6d 8px, #ff9e44 8px, #ff9e44 16px);
   transition: width 0.08s linear;
 }
 
-/* 底部角落精巧矩形戰術鍵 */
+/* 底部角落異形玩具徽章按鈕（各自有特色外型，非傳統方塊！） */
 .hud-bottom {
   position: fixed;
   left: 8px;
@@ -211,36 +272,50 @@ html, body {
 
 .tac-right {
   display: flex;
-  gap: 6px;
+  gap: 7px;
   pointer-events: auto;
 }
 
-.tac-btn {
+.toy-btn {
   pointer-events: auto;
   appearance: none;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  height: 40px;
-  padding: 0 10px;
-  border: 2px solid var(--border);
-  border-radius: 8px;
+  height: 42px;
+  padding: 0 11px;
+  border: 2.4px solid var(--border);
   font-family: inherit;
   font-size: 12px;
   font-weight: 900;
   color: var(--ink);
   cursor: pointer;
-  box-shadow: 3px 3px 0 rgba(43, 26, 18, 0.25);
+  box-shadow: 3px 3px 0 rgba(58, 31, 18, 0.28);
   transition: transform 0.1s ease;
 }
-.tac-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(43, 26, 18, 0.25); }
-.tac-btn img { width: 22px; height: 22px; object-fit: contain; pointer-events: none; }
+.toy-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(58, 31, 18, 0.28); }
+.toy-btn img { width: 23px; height: 23px; object-fit: contain; pointer-events: none; }
 
-.wpn-btn { background: linear-gradient(180deg, #fff3b0, #ffd166); }
-.shield-btn { background: linear-gradient(180deg, #d8f8ff, #7ce0ff); }
-.bomb-btn { background: linear-gradient(180deg, #ffb4a2, #ff6b6b); color: #fffaf0; }
+/* 換武器：遊樂園票券切角徽章 */
+.ticket-btn {
+  background: linear-gradient(180deg, #fff5b8, #ffc947);
+  border-radius: 12px 4px 12px 4px;
+}
 
-/* 結算彈窗 */
+/* 泡泡盾：盾牌弧底徽章 */
+.shield-crest {
+  background: linear-gradient(180deg, #e0fbff, #7ce2ff);
+  border-radius: 6px 6px 14px 14px;
+}
+
+/* 爆辣大招：熱血不對稱漫畫爆裂徽章 */
+.star-blast-btn {
+  background: linear-gradient(180deg, #ff9982, #ff4d5a);
+  color: #fffdf5;
+  border-radius: 4px 12px 4px 12px;
+}
+
+/* 結算造型卡 */
 .modal-card {
   position: fixed;
   left: 50%;
@@ -248,42 +323,25 @@ html, body {
   transform: translate(-50%, -50%);
   width: min(330px, calc(100vw - 28px));
   z-index: 40;
-  background: var(--cream);
-  border: 2.5px solid var(--border);
-  border-radius: 10px;
+  background: linear-gradient(180deg, #fffdf5, #fff3d6);
+  border: 3px solid var(--border);
+  border-radius: 16px 6px 16px 6px;
   padding: 18px 16px;
   text-align: center;
-  box-shadow: 5px 5px 0 rgba(43, 26, 18, 0.28);
+  box-shadow: 5px 5px 0 rgba(58, 31, 18, 0.28);
 }
 
 .modal-badge {
   display: inline-block;
   background: var(--sun);
   border: 2px solid var(--border);
-  border-radius: 6px;
-  padding: 2px 10px;
+  border-radius: 8px 3px 8px 3px;
+  padding: 2px 12px;
   font-size: 11px;
   font-weight: 900;
   margin-bottom: 8px;
 }
 
-.modal-card h2 {
-  font-size: 20px;
-  font-weight: 900;
-  margin-bottom: 6px;
-}
-
-.modal-card p {
-  font-size: 13px;
-  line-height: 1.5;
-  color: #5c4033;
-  margin-bottom: 14px;
-  white-space: pre-line;
-}
-
-.modal-cta {
-  width: 100%;
-  justify-content: center;
-  height: 44px;
-  font-size: 15px;
-}
+.modal-card h2 { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+.modal-card p { font-size: 13px; line-height: 1.5; color: #5c4033; margin-bottom: 14px; white-space: pre-line; }
+.modal-cta { width: 100%; justify-content: center; height: 44px; font-size: 15px; }

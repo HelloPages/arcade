@@ -4,72 +4,82 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>飛機射擊-5｜柴柴爆笑大冒險</title>
-  <link rel="stylesheet" href="./cuteplane.css?v=20261122_cuteplane_v1">
+  <link rel="stylesheet" href="./cuteplane.css?v=20261122_lollipop_v1">
 </head>
 <body>
   <div id="game-wrap">
     <canvas id="stage"></canvas>
 
-    <!-- 頂部輕量浮動 HUD（把 88%+ 視野留給豐富關卡與可愛戰機） -->
+    <!-- 頂部主題造型 HUD（糖果軌道進度＋徽章分數，完全不遮戰場） -->
     <header class="hud-top">
       <div class="hud-left">
-        <div class="score-box">
+        <div class="toy-badge score-badge">
           <span class="hud-label" id="lblScore">分數</span>
           <strong id="scoreVal">000000</strong>
         </div>
-        <div class="stage-tag" id="stageVal">1-1 甜點雲海</div>
-        <span class="ver-stamp">v_22:28</span>
+        <div class="stage-ribbon" id="stageVal">1-1 辦公室雲空</div>
+        <span class="ver-stamp">v_23:25</span>
       </div>
+
       <div class="hud-center">
-        <div class="hp-bar" id="hpBar" aria-label="愛心生命"></div>
-        <div class="wpn-tag" id="wpnVal">
+        <div class="hp-cloud" id="hpBar" aria-label="愛心生命"></div>
+        <!-- 糖果軌道關卡進度條 -->
+        <div class="candy-track-wrap" aria-label="關卡進度">
+          <div class="candy-track">
+            <div class="candy-fill" id="progressFill"></div>
+            <span class="candy-runner" id="progressRunner">✈</span>
+          </div>
+          <span class="candy-goal" title="首領">👑</span>
+        </div>
+        <div class="wpn-ribbon" id="wpnVal">
           <img id="wpnIcon" src="./assets/cuteplane/item-popcorn.webp" alt="">
           <span id="wpnText">爆米花 Lv.1</span>
         </div>
       </div>
+
       <div class="hud-right">
-        <button type="button" class="hud-btn" id="btnSound" aria-label="音效開關">🔊</button>
-        <button type="button" class="hud-btn" id="btnFs" aria-label="全螢幕">⛶</button>
+        <button type="button" class="toy-icon-btn" id="btnSound" aria-label="音效開關">🔊</button>
+        <button type="button" class="toy-icon-btn" id="btnFs" aria-label="全螢幕">⛶</button>
       </div>
     </header>
 
-    <!-- 首領血條（珍奶貓皇母艦現身時顯示） -->
+    <!-- 首領糖果警戒血條 -->
     <div class="boss-hud hidden" id="bossHud">
       <div class="boss-title">
-        <span id="bossName">👑 珍奶貓皇空中母艦</span>
+        <span id="bossName">👑 主管旋轉椅總監號</span>
         <span id="bossPhase">階段 1</span>
       </div>
       <div class="boss-track"><div class="boss-fill" id="bossFill"></div></div>
     </div>
 
-    <!-- 底部角落精巧矩形操作鍵（附實繪寶物縮圖，不遮戰場） -->
+    <!-- 底部角落異形玩具徽章按鈕（不擋棒棒糖操控區） -->
     <footer class="hud-bottom">
-      <button type="button" class="tac-btn wpn-btn" id="btnSwitchWpn">
+      <button type="button" class="toy-btn ticket-btn" id="btnSwitchWpn">
         <img id="btnWpnImg" src="./assets/cuteplane/item-popcorn.webp" alt="">
         <span id="btnWpnTxt">換武器</span>
       </button>
       <div class="tac-right">
-        <button type="button" class="tac-btn shield-btn" id="btnShield">
+        <button type="button" class="toy-btn shield-crest" id="btnShield">
           <img src="./assets/cuteplane/item-bubble.webp" alt="">
           <span id="shieldCd">泡泡盾</span>
         </button>
-        <button type="button" class="tac-btn bomb-btn" id="btnBomb">
+        <button type="button" class="toy-btn star-blast-btn" id="btnBomb">
           <img src="./assets/cuteplane/item-chili.webp" alt="">
           <span id="bombTxt">爆辣 ×<b id="bombVal">3</b></span>
         </button>
       </div>
     </footer>
 
-    <!-- 過關／再戰結算卡 -->
+    <!-- 雲朵造型結算卡 -->
     <div class="modal-card hidden" id="endModal">
-      <div class="modal-badge" id="endBadge">柴柴大勝利</div>
-      <h2 id="endTitle">天空甜點王國制霸！</h2>
+      <div class="modal-badge" id="endBadge">柴柴累翻了</div>
+      <h2 id="endTitle">差一點就喝到珍奶了！</h2>
       <p id="endBody">戰果統計</p>
-      <button type="button" class="tac-btn bomb-btn modal-cta" id="btnRestart">再飛一局 ↗</button>
+      <button type="button" class="toy-btn star-blast-btn modal-cta" id="btnRestart">再飛一局 ↗</button>
     </div>
   </div>
 
   <script src="./arcade-i18n.js?v=20261122_i18n_menu_v1"></script>
-  <script src="./cuteplane.js?v=20261122_cuteplane_v3"></script>
+  <script src="./cuteplane.js?v=20261122_lollipop_v1"></script>
 </body>
 </html>
