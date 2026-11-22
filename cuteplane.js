@@ -527,22 +527,94 @@
   }
   btnRestart.addEventListener("click", resetGame);
 
-  // --- 操作（單指拖曳跟手 + 鍵盤）---
-  let pointerActive = false;
+  // --- 操作（手機指尖上方 ~84px 可見間距＋防離手重按跳位＋四邊邊界優先保飛機完整）---
+  const HERO_SIZE = 74;
+  function getTouchOffset() {
+    // 約 84 CSS px（依機體 74px 與畫面高度微調，確保整架飛機與周圍子彈都在指尖上方清晰可見）
+    return Math.round(Math.max(80, Math.min(96, HERO_SIZE * 1.15)));
+  }
+  function getPlayerBounds() {
+    const hudEl = document.querySelector(".hud-top");
+    const hudB = hudEl ? hudEl.getBoundingClientRect().bottom : 64;
+    const botEl = document.querySelector(".hud-bottom");
+    const botTop = botEl ? botEl.getBoundingClientRect().top : (vh - 54);
+    const halfW = HERO_SIZE * 0.54;
+    const halfH = HERO_SIZE * 0.54;
+    return {
+      minX: Math.max(38, halfW + 4),
+      maxX: Math.min(vw - 38, vw - halfW - 4),
+      minY: Math.max(76, hudB + halfH + 8), // 上緣受限時優先完整保留整架飛機
+      maxY: Math.min(vh - 64, botTop - halfH - 8)
+    };
+  }
+  function clampPlayerTarget() {
+    const b = getPlayerBounds();
+    player.tx = Math.max(b.minX, Math.min(b.maxX, player.tx));
+    player.ty = Math.max(b.minY, Math.min(b.maxY, player.ty));
+  }
+
+  let activePointerId = null;
+  let activePointerType = "mouse";
+  let lastPointerX = 0;
+  let lastPointerY = 0;
+  let touchPos = null; // 僅在觸控按住時顯示輕量指尖回饋環
+
   canvas.addEventListener("pointerdown", e => {
-    pointerActive = true;
-    const offset = e.pointerType === "touch" ? 44 : 0;
-    player.tx = e.clientX;
-    player.ty = Math.max(68, e.clientY - offset);
+    activePointerId = e.pointerId;
+    activePointerType = e.pointerType || "mouse";
+    lastPointerX = e.clientX;
+    lastPointerY = e.clientY;
+    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+
+    if (activePointerType === "touch") {
+      const off = getTouchOffset();
+      touchPos = { x: e.clientX, y: e.clientY };
+      // 防離手重按瞬間水平／遠距跳位：只保留原水平位置；若手指壓到飛機上方或距離過近，才把飛機往上推到指尖上方 off px
+      const desiredMaxY = e.clientY - off;
+      if (player.ty > desiredMaxY) {
+        player.ty = desiredMaxY;
+      }
+      clampPlayerTarget();
+    } else {
+      touchPos = null;
+      player.tx = e.clientX;
+      player.ty = e.clientY;
+      clampPlayerTarget();
+    }
   });
+
   canvas.addEventListener("pointermove", e => {
-    if (!pointerActive && e.pointerType !== "mouse") return;
-    if (e.pointerType === "mouse" && e.buttons === 0) return;
-    const offset = e.pointerType === "touch" ? 44 : 0;
-    player.tx = e.clientX;
-    player.ty = Math.max(68, e.clientY - offset);
+    if (activePointerId !== null && e.pointerId !== activePointerId) return;
+    if (activePointerId === null) {
+      if (e.pointerType !== "mouse" || e.buttons === 0) return;
+    }
+    if ((e.pointerType || activePointerType) === "touch") {
+      const dx = e.clientX - lastPointerX;
+      const dy = e.clientY - lastPointerY;
+      lastPointerX = e.clientX;
+      lastPointerY = e.clientY;
+      touchPos = { x: e.clientX, y: e.clientY };
+      const off = getTouchOffset();
+      // 即時相對跟手位移，同時保證飛機始終在指尖上方 off px（到達畫面上緣時優先完整顯示飛機）
+      player.tx += dx * 1.12;
+      player.ty += dy * 1.12;
+      const maxAboveFinger = e.clientY - off;
+      if (player.ty > maxAboveFinger) player.ty = maxAboveFinger;
+      clampPlayerTarget();
+    } else {
+      player.tx = e.clientX;
+      player.ty = e.clientY;
+      clampPlayerTarget();
+    }
   });
-  window.addEventListener("pointerup", () => { pointerActive = false; });
+
+  function releasePointer(e) {
+    if (activePointerId !== null && e && e.pointerId !== undefined && e.pointerId !== activePointerId) return;
+    activePointerId = null;
+    touchPos = null;
+  }
+  window.addEventListener("pointerup", releasePointer);
+  window.addEventListener("pointercancel", releasePointer);
 
   const keys = {};
   window.addEventListener("keydown", e => {
@@ -648,7 +720,15 @@
   }
 
   window.__cuteplaneDebug = {
-    getState: () => ({ score, kills, stageNum, waveNum, bgmRunning, soundOn, pickups: pickups.length, enemies: enemies.length, boss: !!boss, hp: player.hp, wpn: WEAPONS[player.wpnIdx].id }),
+    getState: () => ({
+      score, kills, stageNum, waveNum, bgmRunning, soundOn,
+      pickups: pickups.length, enemies: enemies.length, boss: !!boss,
+      hp: player.hp, wpn: WEAPONS[player.wpnIdx].id,
+      playerX: Math.round(player.x), playerY: Math.round(player.y),
+      targetX: Math.round(player.tx), targetY: Math.round(player.ty),
+      touchOffset: getTouchOffset(),
+      bounds: getPlayerBounds()
+    }),
     spawnAllTreasures: () => {
       pickups.length = 0;
       const types = ["popcorn", "rainbow", "boba", "chili", "cake", "bubble"];
@@ -660,6 +740,18 @@
           vy: 14, type: tp, phase: i * 1.1
         });
       });
+    },
+    spawnCombatDemo: () => {
+      // 供自動視覺回歸測試：同場展示敵機、敵彈、玩家彈、爆炸光環與實繪寶物辨識度
+      eBullets.length = 0;
+      for (let i = 0; i < 6; i++) {
+        eBullets.push({
+          x: vw * (0.22 + i * 0.11),
+          y: vh * (0.44 + (i % 2) * 0.08),
+          vx: 0, vy: 45, r: 7, kind: i % 3 === 0 ? "boba" : i % 3 === 1 ? "toast" : "pink"
+        });
+      }
+      spawnBoom(vw * 0.68, vh * 0.34, "#ffd166", 18, false);
     },
     setStage: (n) => {
       prevStageIdx = (stageNum - 1) % 3;
@@ -673,10 +765,19 @@
 
   // --- 主迴圈 (60fps) ---
   let lastT = performance.now();
-  function drawBgLayer(img, alpha) {
+  // 逐場景獨立背景壓暗與降飽和設定（只作用於背景層，絕不壓暗飛機與子彈！）
+  const BG_STAGE_TUNING = [
+    { filter: "brightness(0.82) saturate(0.76) contrast(0.95)", scrim: "rgba(14, 24, 52, 0.34)" }, // 關卡1 甜點雲海（最亮，壓暗 34%）
+    { filter: "brightness(0.83) saturate(0.78) contrast(0.96)", scrim: "rgba(10, 26, 48, 0.32)" }, // 關卡2 珊瑚樂園（壓暗 32%）
+    { filter: "brightness(0.88) saturate(0.84) contrast(0.98)", scrim: "rgba(10, 12, 34, 0.25)" }  // 關卡3 星光夜市（壓暗 25%）
+  ];
+
+  function drawBgLayer(img, alpha, stageIdx) {
     if (!img || !img.complete || img.naturalWidth <= 0 || alpha <= 0) return;
+    const tune = BG_STAGE_TUNING[stageIdx % BG_STAGE_TUNING.length];
     ctx.save();
     ctx.globalAlpha = alpha;
+    ctx.filter = tune.filter;
     const scale = Math.max(vw / img.naturalWidth, vh / img.naturalHeight);
     const dw = img.naturalWidth * scale;
     const dh = img.naturalHeight * scale;
@@ -707,19 +808,19 @@
     const t = now * 0.001;
 
     if (!gameOver) {
-      // 鍵盤移動
+      // 鍵盤移動＋四邊邊界保護
       const kSpd = 380;
       if (keys.ArrowLeft || keys.KeyA) player.tx -= kSpd * dt;
       if (keys.ArrowRight || keys.KeyD) player.tx += kSpd * dt;
       if (keys.ArrowUp || keys.KeyW) player.ty -= kSpd * dt;
       if (keys.ArrowDown || keys.KeyS) player.ty += kSpd * dt;
-      player.tx = Math.max(30, Math.min(vw - 30, player.tx));
-      player.ty = Math.max(70, Math.min(vh - 64, player.ty));
+      clampPlayerTarget();
 
       const dx = player.tx - player.x;
       const dy = player.ty - player.y;
-      player.x += dx * Math.min(1, dt * 16);
-      player.y += dy * Math.min(1, dt * 16);
+      const followRate = activePointerType === "touch" && activePointerId !== null ? 28 : 20;
+      player.x += dx * Math.min(1, dt * followRate);
+      player.y += dy * Math.min(1, dt * followRate);
       player.tilt = Math.max(-0.22, Math.min(0.22, dx * 0.006));
 
       if (player.invuln > 0) player.invuln = Math.max(0, player.invuln - dt);
@@ -974,30 +1075,36 @@
     ctx.save();
     if (shake > 0) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
 
-    // 1. 三大關卡手繪豐富捲軸背景（過關平滑交錯淡入！）
+    // 1. 三大關卡手繪豐富捲軸背景（單獨降飽和＋柔和壓暗，保留可愛場景同時大幅拉高前景色差）
     const bgKeys = ["bg1", "bg2", "bg3"];
     const curIdx = (stageNum - 1) % 3;
-    if (bgFade < 1) drawBgLayer(imgs[bgKeys[prevStageIdx]], 1);
-    drawBgLayer(imgs[bgKeys[curIdx]], bgFade);
+    if (bgFade < 1) drawBgLayer(imgs[bgKeys[prevStageIdx]], 1, prevStageIdx);
+    drawBgLayer(imgs[bgKeys[curIdx]], bgFade, curIdx);
 
-    // 2. 關卡氛圍視差雲與閃亮星點
+    // 2. 低對比氛圍視差雲（刻意淡化且不使用圓點粒子，絕不與子彈混淆！）
     for (const c of clouds) {
       ctx.fillStyle = curIdx === 2
-        ? `rgba(255, 224, 150, ${c.alpha * 0.45})`
-        : `rgba(255, 255, 255, ${c.alpha})`;
+        ? `rgba(255, 224, 150, ${c.alpha * 0.20})`
+        : `rgba(255, 255, 255, ${c.alpha * 0.38})`;
       ctx.beginPath();
       ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
       ctx.fill();
     }
+    // 細長斜向微風絲（非圓形，零子彈誤認）
+    ctx.strokeStyle = curIdx === 2 ? "rgba(255, 230, 150, 0.14)" : "rgba(255, 255, 255, 0.14)";
+    ctx.lineWidth = 1.2;
     for (const s of sparkles) {
-      const a = 0.35 + 0.4 * Math.sin(t * 4 + s.phase);
-      ctx.fillStyle = curIdx === 2 ? `rgba(255, 232, 130, ${a})` : `rgba(255, 255, 255, ${a})`;
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.x, s.y + 10);
+      ctx.stroke();
     }
 
-    // 3. 6 款細緻實繪寶物（純圖示＋柔和旋轉星芒光環，完全沒有 ABCD 文字方框！）
+    // 2b. 背景專用深色遮罩（只蓋在背景與裝飾層之上、所有飛機與子彈之下！）
+    ctx.fillStyle = BG_STAGE_TUNING[curIdx].scrim;
+    ctx.fillRect(0, 0, vw, vh);
+
+    // 3. 6 款細緻實繪寶物（清楚陰影輪廓＋柔和星芒光環，完全沒有 ABCD 文字方框！）
     for (const pk of pickups) {
       const def = TREASURES[pk.type] || TREASURES.popcorn;
       const im = imgs[def.img];
@@ -1005,15 +1112,16 @@
       const rot = Math.sin(t * 3.5 + pk.phase) * 0.14;
       ctx.save();
       ctx.translate(pk.x, pk.y + bob);
-      // 柔和外光環
-      const rg = ctx.createRadialGradient(0, 0, 6, 0, 0, 32);
-      rg.addColorStop(0, def.glow + "cc");
+      const rg = ctx.createRadialGradient(0, 0, 8, 0, 0, 34);
+      rg.addColorStop(0, def.glow + "dd");
       rg.addColorStop(1, def.glow + "00");
       ctx.fillStyle = rg;
       ctx.beginPath();
-      ctx.arc(0, 0, 32, 0, Math.PI * 2);
+      ctx.arc(0, 0, 34, 0, Math.PI * 2);
       ctx.fill();
       ctx.rotate(rot);
+      ctx.shadowColor = "rgba(10, 12, 24, 0.72)";
+      ctx.shadowBlur = 8;
       if (im && im.complete && im.naturalWidth > 0) {
         const s = 48;
         const asp = im.naturalWidth / im.naturalHeight;
@@ -1024,49 +1132,65 @@
       ctx.restore();
     }
 
-    // 4. 玩家子彈（奶油爆米花／彩虹光束／波霸珍珠）
+    // 4. 玩家子彈（實心高對比核心＋清晰深色粗外框，一眼分辨！）
     for (const b of pBullets) {
       ctx.save();
       ctx.translate(b.x, b.y);
       if (b.kind === "rainbow") {
-        const colors = ["#ff5e6c", "#ffd859", "#2cd49c", "#25b4ff", "#a855f7"];
+        const colors = ["#ff5e6c", "#ffd859", "#2cd49c", "#38bdf8", "#c084fc"];
         const col = colors[Math.floor((now * 0.02) % colors.length)];
         ctx.fillStyle = col;
-        ctx.shadowColor = col;
-        ctx.shadowBlur = 12;
+        ctx.strokeStyle = "#1a0d26";
+        ctx.lineWidth = 2.8;
         ctx.beginPath();
-        ctx.roundRect(-b.r * 0.5, -16, b.r, 32, 5);
+        ctx.roundRect(-b.r * 0.55, -17, b.r * 1.1, 34, 6);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "rgba(255,255,255,0.75)";
+        ctx.beginPath();
+        ctx.roundRect(-b.r * 0.22, -13, b.r * 0.44, 26, 3);
         ctx.fill();
       } else if (b.kind === "boba") {
+        ctx.strokeStyle = "#1a0c06";
+        ctx.lineWidth = 4.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, b.r + 0.5, 0, Math.PI * 2);
+        ctx.stroke();
         ctx.fillStyle = "#3b1f12";
-        ctx.strokeStyle = "#ffd859";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#ffe066";
+        ctx.lineWidth = 2.2;
         ctx.beginPath();
         ctx.arc(0, 0, b.r, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
         ctx.fillStyle = "#ffffff";
         ctx.beginPath();
-        ctx.arc(-2.5, -2.5, 2.2, 0, Math.PI * 2);
+        ctx.arc(-2.5, -2.5, 2.5, 0, Math.PI * 2);
         ctx.fill();
       } else {
-        ctx.fillStyle = "#fff3b0";
-        ctx.strokeStyle = "#d97706";
-        ctx.lineWidth = 2;
+        ctx.fillStyle = "#fff4a3";
+        ctx.strokeStyle = "#2b1206";
+        ctx.lineWidth = 2.8;
         ctx.beginPath();
-        ctx.arc(0, 0, b.r, 0, Math.PI * 2);
+        ctx.arc(0, 0, b.r + 0.5, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(-2, -2, Math.max(2, b.r * 0.32), 0, Math.PI * 2);
+        ctx.fill();
       }
       ctx.restore();
     }
 
-    // 5. 敵機（貓咪幽浮／吐司轟炸機）
+    // 5. 敵機（清楚深色輪廓陰影，與壓暗背景明確分離）
     for (const e of enemies) {
       const im = imgs[e.kind === "toaster" ? "enemy2" : "enemy1"];
       ctx.save();
       ctx.translate(e.x, e.y);
-      if (e.hitFlash > 0) ctx.filter = "brightness(1.8)";
+      ctx.shadowColor = "rgba(8, 10, 22, 0.80)";
+      ctx.shadowBlur = 10;
+      if (e.hitFlash > 0) ctx.filter = "brightness(1.85)";
       if (im && im.complete && im.naturalWidth > 0) {
         const asp = im.naturalWidth / im.naturalHeight;
         const w = e.size * asp, h = e.size;
@@ -1079,6 +1203,8 @@
     if (boss && imgs.boss.complete && imgs.boss.naturalWidth > 0) {
       ctx.save();
       ctx.translate(boss.x, boss.y + Math.sin(t * 3) * 4);
+      ctx.shadowColor = "rgba(8, 10, 22, 0.85)";
+      ctx.shadowBlur = 14;
       if (boss.hitFlash > 0) ctx.filter = "brightness(1.75)";
       const asp = imgs.boss.naturalWidth / imgs.boss.naturalHeight;
       const w = boss.size * asp, h = boss.size;
@@ -1086,44 +1212,84 @@
       ctx.restore();
     }
 
-    // 7. 敵彈（珍珠彈／草莓彈／奶油吐司彈）
+    // 7. 敵彈（高對比雙層危險外框＋高亮白心，絕不漏看！）
     for (const eb of eBullets) {
       ctx.save();
       ctx.translate(eb.x, eb.y);
-      ctx.fillStyle = eb.kind === "boba" ? "#2e160c" : eb.kind === "toast" ? "#f59e0b" : "#ff5e9c";
-      ctx.strokeStyle = "#fffaf0";
-      ctx.lineWidth = 2;
+      const outer = eb.kind === "toast" ? "#ff7b00" : "#ff1f6b";
+      const inner = eb.kind === "boba" ? "#5a1a0c" : eb.kind === "toast" ? "#ffd166" : "#ff6ba9";
+      // 外層深色實心描邊
+      ctx.fillStyle = "#1c040d";
       ctx.beginPath();
-      ctx.arc(0, 0, eb.r, 0, Math.PI * 2);
+      ctx.arc(0, 0, eb.r + 3, 0, Math.PI * 2);
       ctx.fill();
-      ctx.stroke();
+      // 鮮明危險色環
+      ctx.fillStyle = outer;
+      ctx.beginPath();
+      ctx.arc(0, 0, eb.r + 1.2, 0, Math.PI * 2);
+      ctx.fill();
+      // 內核與高光白心
+      ctx.fillStyle = inner;
+      ctx.beginPath();
+      ctx.arc(0, 0, eb.r * 0.72, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.max(2.2, eb.r * 0.36), 0, Math.PI * 2);
+      ctx.fill();
       ctx.restore();
     }
 
-    // 8. 柴犬英雄戰機＋推進火焰＋七彩泡泡盾
+    // 8. 柴犬英雄戰機（實心深色投影＋微亮機體定位光圈＋推進火焰＋七彩泡泡盾）
     if (!gameOver && (player.invuln <= 0 || Math.floor(now / 70) % 2 === 0)) {
       ctx.save();
       ctx.translate(player.x, player.y);
       ctx.rotate(player.tilt);
+      // 柔和定位光暈（讓戰機在三種場景都一目了然）
+      const hg = ctx.createRadialGradient(0, 0, 14, 0, 0, 44);
+      hg.addColorStop(0, "rgba(255, 248, 200, 0.32)");
+      hg.addColorStop(1, "rgba(255, 248, 200, 0)");
+      ctx.fillStyle = hg;
+      ctx.beginPath();
+      ctx.arc(0, 0, 44, 0, Math.PI * 2);
+      ctx.fill();
       // 尾焰
       ctx.fillStyle = "#ff9f1c";
+      ctx.strokeStyle = "#3a1608";
+      ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.ellipse(0, 34, 8, 12 + Math.sin(t * 45) * 4, 0, 0, Math.PI * 2);
       ctx.fill();
+      ctx.stroke();
       if (imgs.hero.complete && imgs.hero.naturalWidth > 0) {
-        const s = 74;
+        ctx.shadowColor = "rgba(8, 12, 26, 0.85)";
+        ctx.shadowBlur = 11;
+        const s = HERO_SIZE;
         const asp = imgs.hero.naturalWidth / imgs.hero.naturalHeight;
         ctx.drawImage(imgs.hero, -s * asp * 0.5, -s * 0.5, s * asp, s);
       }
       if (player.shieldTime > 0) {
-        ctx.strokeStyle = `hsla(${(now * 0.25) % 360}, 95%, 70%, 0.9)`;
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = `hsla(${(now * 0.25) % 360}, 95%, 70%, 0.95)`;
         ctx.lineWidth = 4;
-        ctx.fillStyle = "rgba(100, 223, 223, 0.16)";
+        ctx.fillStyle = "rgba(100, 223, 223, 0.20)";
         ctx.beginPath();
-        ctx.arc(0, 0, 44 + Math.sin(t * 10) * 2, 0, Math.PI * 2);
+        ctx.arc(0, 0, 45 + Math.sin(t * 10) * 2, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
       }
+      ctx.restore();
+    }
+
+    // 8b. 手機觸控指尖位置輕量視覺回饋環（讓玩家明確感覺飛機穩在指尖上方 ~84px！）
+    if (touchPos) {
+      ctx.save();
+      ctx.strokeStyle = "rgba(255, 250, 220, 0.45)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.arc(touchPos.x, touchPos.y, 18, 0, Math.PI * 2);
+      ctx.stroke();
       ctx.restore();
     }
 
