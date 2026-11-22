@@ -2584,7 +2584,7 @@
       // 左上角說話者表情名牌（一眼看出是誰在講話！）
       const speakerEmoji = mode === "slap" ? (weaponAnim > 0.15 ? "😵" : "😆") : (mode === "bless" ? "🙏" : "🎋");
       const speakerName = mode === "slap"
-        ? `${speakerEmoji} ${getLocalizedScenarioName(selectedScenario)}`
+        ? `${speakerEmoji} ${(selectedScenario && selectedScenario.label) || "3畝"}`
         : (mode === "bless" ? `${speakerEmoji} 心安祈福` : `${speakerEmoji} 心安廟公`);
       ctx.font = "900 12px 'Noto Sans TC', 'PingFang TC', sans-serif";
       const tagW = Math.min(138, ctx.measureText(speakerName).width + 18);
