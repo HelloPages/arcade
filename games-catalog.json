@@ -1,10 +1,10 @@
 {
-  "portalTitle": "REA 經典街機與放置成長逆向重製中心",
-  "version": "v_20261122_frostline_2",
-  "updatedAt": "2026-11-22T04:20:48+08:00",
-  "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向，在時代、色彩、材質、字體、HUD、構圖與動效上明顯區分；禁止全館陽光海島、共用玻璃膠囊或換色模板。每日新作優先動態精細動作遊戲（禁止偷懶靜態格子益智），以實際封面與遊戲畫面比對驗收。",
+  "portalTitle": "經典街機遊戲館",
+  "version": "v_20261122_i18n_menu_v1",
+  "updatedAt": "2026-11-22T16:25:00+08:00",
+  "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向，在時代、色彩、材質、字體、HUD、構圖與動效上明顯區分；禁止全館陽光海島、共用玻璃膠囊或換色模板。每日新作優先動態精細動作遊戲（禁止偷懶靜態格子益智），並全面支援 TW / EN / KO 本土化語系切換。",
   "dailySchedule": {
-    "generateCron": "每日 04:00 自動生成具獨立美術風格、與其他館藏可明顯區分的直式手機 REA 經典動態動作復刻遊戲",
+    "generateCron": "每日 04:00 自動生成具獨立美術風格、支援 TW/EN/KO 本土化之直式手機動作遊戲",
     "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
   },
   "games": [
@@ -16,12 +16,44 @@
       "genre": "近身清版格鬥",
       "addedDate": "2026-11-22",
       "thumbnail": "assets/frostline-cover.webp",
-      "reaSource": "取材《Final Fight》的多方向走位、近身連段與波次交鋒。場景、角色、音效與程式皆為本作創作。",
+      "reaSource": "取材經典街機清版格鬥的多方向走位、近身連段與波次交鋒。場景、角色、音效與程式皆為原創。",
       "highlights": [
         "單鍵開戰，左手走位、右手按住連拳，第三拳擊退多名對手。",
         "讀招翻滾躲過震地與滑軌衝撞，抓住裝甲站長的三階段破綻。"
       ],
-      "artDirection": "1970年代冰川纜車站、歐洲手繪水粉風、冰藍鋅鋼與萊姆色工業標牌。"
+      "artDirection": "1970年代冰川纜車站、歐洲手繪水粉風、冰藍鋅鋼與萊姆色工業標牌。",
+      "i18n": {
+        "tw": {
+          "title": "《霜軌突圍》",
+          "shortTab": "霜軌突圍",
+          "genre": "近身清版格鬥",
+          "reaSource": "取材經典街機清版格鬥的多方向走位、近身連段與波次交鋒，場景與角色皆為原創。",
+          "highlights": [
+            "單鍵開戰，左手走位、右手連拳，第三擊橫掃擊退多名對手。",
+            "精準翻滾閃過震地與衝撞，抓住裝甲站長的三階段破綻。"
+          ]
+        },
+        "en": {
+          "title": "Frostline Brawl",
+          "shortTab": "Frostline Brawl",
+          "genre": "Belt-Scrolling Brawler",
+          "reaSource": "Inspired by classic arcade street brawlers with multi-lane footwork, punch combos, and wave showdowns.",
+          "highlights": [
+            "Instant action: weave with the left thumb, chain 3-hit knockback combos with the right.",
+            "Time your dodge roll past shockwaves and punish the Armored Stationmaster's three phases."
+          ]
+        },
+        "ko": {
+          "title": "서리선 돌파",
+          "shortTab": "서리선 돌파",
+          "genre": "벨트스크롤 액션 격투",
+          "reaSource": "정통 오락실 액션 격투의 다방향 무빙과 근접 콤보 감각을 오리지널 아트와 엔진으로 재해석했습니다.",
+          "highlights": [
+            "터치 한 번으로 바로 난투 시작! 3타 콤보로 몰려드는 적을 통쾌하게 날려버리세요.",
+            "구르기로 지진과 돌진을 피하고 중장갑 역장의 3단계 빈틈을 노리세요."
+          ]
+        }
+      }
     },
     {
       "id": "solar",
@@ -31,132 +63,420 @@
       "genre": "橫向捲軸動作射擊",
       "addedDate": "2026-11-21",
       "thumbnail": "assets/solar-cover.webp",
-      "reaSource": "參考《Metal Slug》的橫向跑射節奏與機械首領戰；獨立實作，角色、美術與音效皆為原創。",
+      "reaSource": "致敬經典橫向跑射節奏與機械首領戰；獨立實作，角色、美術與音效皆為原創。",
       "highlights": [
         "一鍵出擊、自動射擊；跑跳、無敵衝刺與連擊強化。",
         "越過鹽原、突破輸電線，挑戰震波、散射與過載三階段的日爐守衛。"
       ],
-      "artDirection": "歐洲科幻版畫、珊瑚色鹽塵與裝飾藝術煉爐；墨綠儀表、琥珀色控制鍵與原創機械角色。"
+      "artDirection": "歐洲科幻版畫、珊瑚色鹽塵與裝飾藝術煉爐；墨綠儀表、琥珀色控制鍵與原創機械角色。",
+      "i18n": {
+        "tw": {
+          "title": "《鹽原裂日》",
+          "shortTab": "鹽原裂日",
+          "genre": "橫向捲軸動作射擊",
+          "reaSource": "致敬經典橫向跑射節奏與機械首領戰，角色、美術與音效皆為原創。",
+          "highlights": [
+            "一鍵出擊、自動連射；支援跑跳、無敵衝刺與連擊強化。",
+            "橫越炙熱鹽原，挑戰三階段過載的巨型日爐守衛。"
+          ]
+        },
+        "en": {
+          "title": "Solar Salt Run",
+          "shortTab": "Solar Salt Run",
+          "genre": "Run-and-Gun Action",
+          "reaSource": "Fast-paced side-scrolling gunplay and mechanical boss fights with original sci-fi print artwork.",
+          "highlights": [
+            "Auto-fire ready from second one—jump, dash with i-frames, and stack firepower.",
+            "Storm across coral salt flats to take down the 3-phase Solar Furnace Guardian."
+          ]
+        },
+        "ko": {
+          "title": "소금사막 태양전선",
+          "shortTab": "소금사막 태양전선",
+          "genre": "횡스크롤 런앤건 슈팅",
+          "reaSource": "고전 횡스크롤 런앤건의 쾌속 템포와 거대 메카 보스전을 독창적인 판화풍 아트로 구현했습니다.",
+          "highlights": [
+            "자동 연사로 손쉽게 돌파! 점프와 무적 대시로 탄막을 가르세요.",
+            "작열하는 소금사막을 넘어 3단계로 폭주하는 태양로 수호자를 격파하세요."
+          ]
+        }
+      }
     },
     {
       "id": "raiden",
-      "title": "《雷霆空域：蒼穹覺醒 ULTRA》",
-      "shortTab": "⚡ 雷霆空域",
+      "title": "《雷霆空域：蒼穹覺醒》",
+      "shortTab": "雷霆空域",
       "path": "./raiden.html",
-      "genre": "經典街機雷電×彩京風格縱向捲軸空戰",
+      "genre": "縱向捲軸空戰射擊",
       "addedDate": "2026-11-20",
       "thumbnail": "assets/raiden-cover.webp",
-      "reaSource": "致敬經典街機 Raiden（雷電）／Strikers 1945 暢銷空戰架構（三色武器進化、追蹤飛彈、全屏雷霆核彈與多階段重裝空中要塞首領戰；100% 原創美術與 60fps 引擎）",
+      "reaSource": "致敬經典街機空戰架構，包含三色武器進化、追蹤飛彈、全屏雷霆核彈與多階段空中要塞首領戰。",
       "highlights": [
-        "零教學卡牆即開即戰：單指跟手拖曳自動連射、🔴烈焰火神砲／🔵電漿雷射／🟣追蹤飛彈三武器 5 段進化",
-        "高解析夕陽海峽雲海捲軸＋專屬去背雷霆戰機、紅黑攔截機與多階段巨型空中要塞首領戰"
+        "單指跟手拖曳自動連射，烈焰火神砲、電漿雷射、追蹤飛彈三武器五段進化。",
+        "高解析夕陽海峽雲海捲軸，直面多階段巨型空中要塞首領戰。"
       ],
-      "artDirection": "90 年代日本街機手繪空戰；金色夕陽海峽、碧藍浪花與蓬鬆雲海，精細機甲塗裝與雷電光效"
+      "artDirection": "90 年代日本街機手繪空戰；金色夕陽海峽、碧藍浪花與蓬鬆雲海。",
+      "i18n": {
+        "tw": {
+          "title": "《雷霆空域：蒼穹覺醒》",
+          "shortTab": "雷霆空域",
+          "genre": "縱向捲軸空戰射擊",
+          "reaSource": "致敬經典街機空戰架構，三色武器五段進化、追蹤飛彈與全屏核彈一次到位。",
+          "highlights": [
+            "單指拖曳自動開火，烈焰火神砲、電漿雷射、追蹤飛彈隨戰況切換升級。",
+            "夕陽海峽雲海疾飛，挑戰多階段重裝空中要塞。"
+          ]
+        },
+        "en": {
+          "title": "Thunder Sky: Awakening",
+          "shortTab": "Thunder Sky",
+          "genre": "Vertical Shmup",
+          "reaSource": "Tribute to 90s arcade sky shooters with tri-color weapon upgrades, homing missiles, and mega-bombs.",
+          "highlights": [
+            "Zero friction: drag with one finger to auto-fire and power up Vulcan, Plasma, or Homing rigs.",
+            "Soar over sunset straits and dismantle a multi-phase airborne fortress."
+          ]
+        },
+        "ko": {
+          "title": "천둥의 창공: 각성",
+          "shortTab": "천둥의 창공",
+          "genre": "종스크롤 탄막 슈팅",
+          "reaSource": "90년대 오락실 명작 슈팅 감성을 살린 3색 무기 진화, 유도 미사일, 전 화면 폭격 시스템.",
+          "highlights": [
+            "한 손가락 드래그 자동 사격! 발칸・플라즈마・유도 미사일 5단계 강화.",
+            "노을 진 해협 상공에서 거대 공중 요새 보스와 격돌하세요."
+          ]
+        }
+      }
     },
     {
       "id": "xinan",
       "title": "《心安宮・三儀殿》",
       "shortTab": "心安宮",
       "path": "./xinan.html",
-      "genre": "宮廟民俗動作 × 打小人・祈福天燈・問卦擲筊",
+      "genre": "民俗紓壓互動・打小人・祈福・問卦",
       "addedDate": "2026-11-17",
       "thumbnail": "assets/xinan-temple-bg-portrait-hd.webp",
-      "reaSource": "參考心安宮線上 3D 宮廟交互架構（REA 瀏覽器觀察），去除連網大廳與等待牆，原創單人 60fps 2.5D 動作儀式與專屬去背精靈／音效",
+      "reaSource": "原創台灣宮廟三儀互動舞台，免排隊即開即玩打小人、放天燈祈福與搖籤擲聖筊。",
       "highlights": [
-        "三儀合一角色互動：選定 7 位真人角色常駐青石供桌，隨時直接對該角色打小人、祈福或問卦擲筊",
-        "高解析重繪宮廟供桌背景、10 倍速輕量 WebP、平衡雙行漫畫對話泡泡與宣紙靈籤彈窗"
+        "一進場即全自動輪演爆笑三儀劇情，人為點擊立刻接手操作。",
+        "七位人氣角色常駐明亮宮廟與歡樂場景，搭配神鬼幽默廣播與滿屏慶典噴發。"
       ],
-      "artDirection": "台灣暮色宮廟青石神壇；朱紅燈籠、鎏金星火、青石浮雕與藍白拖等民俗實物繪製，極簡矩形 HUD"
+      "artDirection": "台灣喜氣明亮宮廟與歡樂慶典場景；暖紅木鎏金控制列、民俗法器與爆笑對白。",
+      "i18n": {
+        "tw": {
+          "title": "《心安宮・三儀殿》",
+          "shortTab": "心安宮",
+          "genre": "民俗紓壓・打小人・祈福・問卦",
+          "reaSource": "原創台灣宮廟三儀互動舞台，免排隊即開即玩打小人、放天燈祈福與搖籤擲聖筊。",
+          "highlights": [
+            "一進場即全自動輪演爆笑三儀劇情，人為點擊立刻接手操作。",
+            "七位角色常駐明亮宮廟與歡樂場景，神鬼幽默與慶典特效噴不停。"
+          ]
+        },
+        "en": {
+          "title": "Peaceful Temple",
+          "shortTab": "Peaceful Temple",
+          "genre": "Folk Comedy • Bonk, Bless & Oracle",
+          "reaSource": "Playful Taiwanese temple comedy stage—whack office stress, launch sky lanterns, and draw hilarious fortunes.",
+          "highlights": [
+            "Auto-plays a hilarious 3-ritual comedy show on entry; tap anywhere to take over instantly.",
+            "7 quirky crew members, lucky charm showers, and sassy deity cameos."
+          ]
+        },
+        "ko": {
+          "title": "마음편안궁・삼의전",
+          "shortTab": "마음편안궁",
+          "genre": "힐링 코미디 • 액땜・기원・운세",
+          "reaSource": "대만 전통 사당 감성을 유쾌하게 풀어낸 스트레스 해소 게임! 액땜, 풍등 기원, 오늘의 운세까지 한 번에.",
+          "highlights": [
+            "입장하자마자 3가지 코믹 의식이 자동 진행되며, 화면을 터치하면 즉시 직접 조작할 수 있습니다.",
+            "7명의 개성 만점 캐릭터와 신들의 유쾌한 참견, 쏟아지는 복주머니 파티!"
+          ]
+        }
+      }
     },
     {
       "id": "shinobi",
       "title": "《赤焰忍傳：疾風手裏劍》",
       "shortTab": "赤焰忍傳",
       "path": "./shinobi.html",
-      "genre": "浮世繪夜戰 × 60fps 動態動作跑酷斬擊",
+      "genre": "浮世繪夜戰動作跑酷斬擊",
       "addedDate": "2026-11-13",
       "thumbnail": "assets/shinobi-cover.webp",
-      "reaSource": "Sega Shinobi 經典屋簷疾走與空中二段翻滾手裏劍機制（原創 60fps 動態動作引擎與浮世繪美術）",
+      "reaSource": "致敬經典忍者屋簷疾走與二段翻滾手裏劍機制，搭配原創浮世繪夜色美術。",
       "highlights": [
-        "浮世繪金月夜色、和紙朱印捲軸 HUD 與真實 RGBA 透明 PNG 動態忍者／武士／羅剎鎧精靈",
-        "60fps 屋簷跑酷、二段翻滾手裏劍、無敵幀瞬身斬殘影、急降滑鏟與三階段首領羅剎鎧決戰"
+        "浮世繪金月夜色、和紙朱印捲軸介面與細緻去背忍者精靈。",
+        "屋簷疾跑、空中二段翻滾手裏劍、無敵瞬身斬與三階段羅剎鎧決戰。"
       ],
-      "artDirection": "戰國浮世繪金月夜色與和紙朱印卷軸；靛青夜空、緋紅圍巾、銀杏燙金，無玻璃膠囊、強調高張力打擊頓幀與殘影動效"
+      "artDirection": "戰國浮世繪金月夜色與和紙朱印卷軸；靛青夜空、緋紅圍巾與銀杏燙金。",
+      "i18n": {
+        "tw": {
+          "title": "《赤焰忍傳：疾風手裏劍》",
+          "shortTab": "赤焰忍傳",
+          "genre": "浮世繪夜戰動作跑酷",
+          "reaSource": "致敬經典忍者屋簷疾走與空中翻滾手裏劍機制，搭配原創浮世繪夜色美術。",
+          "highlights": [
+            "浮世繪金月夜色與和紙朱印捲軸介面，打擊頓幀俐落爽快。",
+            "二段翻滾手裏劍、無敵瞬身斬殘影與三階段羅剎鎧首領戰。"
+          ]
+        },
+        "en": {
+          "title": "Crimson Shinobi",
+          "shortTab": "Crimson Shinobi",
+          "genre": "Ukiyo-e Ninja Action",
+          "reaSource": "High-speed rooftop ninja runner inspired by classic shuriken action with original woodblock-style visuals.",
+          "highlights": [
+            "Golden-moon ukiyo-e rooftops, crisp hit-stop, and crimson scarf trails.",
+            "Double-flip shuriken volleys, invulnerable dash-slashes, and a 3-phase Shogun boss."
+          ]
+        },
+        "ko": {
+          "title": "붉은 불꽃 닌자전",
+          "shortTab": "붉은 불꽃 닌자전",
+          "genre": "우키요에 닌자 액션 런",
+          "reaSource": "달밤의 지붕 위를 질주하며 표창과 섬광 베기로 적을 가르는 정통 닌자 액션.",
+          "highlights": [
+            "황금빛 보름달 아래 펼쳐지는 동양화풍 야전과 짜릿한 타격감.",
+            "공중 2단 표창, 무적 섬광 베기, 그리고 3단계 나찰 갑옷 보스 결전!"
+          ]
+        }
+      }
     },
     {
       "id": "twinbee",
-      "title": "《兵蜂：晴空鈴鐺幻想曲 ULTRA》",
-      "shortTab": "🔔 兵蜂・鈴鐺幻想",
+      "title": "《兵蜂：晴空鈴鐺幻想曲》",
+      "shortTab": "兵蜂鈴鐺幻想",
       "path": "./twinbee.html",
-      "genre": "機甲賽璐璐 × 五色鈴鐺空戰",
+      "genre": "機甲賽璐璐・五色鈴鐺空戰",
       "addedDate": "2026-11-05",
       "thumbnail": "assets/redesign-twinbee-cover.webp",
-      "reaSource": "Konami TwinBee / Yahhoo! (五色鈴鐺連擊狀態轉移表：黃高分→藍加速→白雙連砲→綠殘影分身→粉薔薇護盾，與三機合體齊射系統)",
+      "reaSource": "經典五色鈴鐺連擊變色強化與三機合體齊射系統，重現輕快歡樂的空戰節奏。",
       "highlights": [
-        "寶藍發射基地、亮紅玩具機甲與明黃警示板；機隊儀表與編號技能鍵，本機候選",
-        "內建 4 大招牌必殺技（🔔 五色神鈴雨、✈️ 三機合體砲、💥 紅拳星光彈、👑 梅蘿菈聖歌）與 8 項鈴鐺機隊養成"
+        "五色神鈴連擊強化：高分、加速、雙連砲、分身與護盾隨手切換。",
+        "內建四大招牌必殺技與鈴鐺機隊養成，單手也能爽快滿屏清怪。"
       ],
-      "artDirection": "寶藍發射基地、亮紅玩具機甲與明黃警示板；機隊儀表與編號技能鍵，本機候選"
+      "artDirection": "寶藍發射基地、亮紅玩具機甲與明黃警示板；明亮賽璐璐風格。",
+      "i18n": {
+        "tw": {
+          "title": "《兵蜂：晴空鈴鐺幻想曲》",
+          "shortTab": "兵蜂鈴鐺幻想",
+          "genre": "五色鈴鐺歡樂空戰",
+          "reaSource": "經典五色鈴鐺連擊強化與三機合體齊射系統，重現輕快歡樂的空戰節奏。",
+          "highlights": [
+            "打響五色鈴鐺自由切換加速、雙連砲、分身與護盾強化。",
+            "四大必殺技與機隊養成，輕鬆享受爽快彈幕清場。"
+          ]
+        },
+        "en": {
+          "title": "Bell Squadron: Sky Fantasy",
+          "shortTab": "Bell Squadron",
+          "genre": "Cute-'em-up Air Combat",
+          "reaSource": "Bouncy arcade shooter built around juggling 5-color power bells and triple-ship formation blasts.",
+          "highlights": [
+            "Shoot floating bells to cycle speed boosts, twin cannons, clones, and shields.",
+            "Unleash 4 signature ultimates and upgrade your toy-mecha squadron."
+          ]
+        },
+        "ko": {
+          "title": "방울 편대 대작전",
+          "shortTab": "방울 편대",
+          "genre": "오색 방울 쾌속 슈팅",
+          "reaSource": "오색 방울을 쏘아 색을 바꾸며 파워업하는 경쾌한 클래식 큐트 슈팅 게임.",
+          "highlights": [
+            "방울 연타로 가속, 트윈 캐논, 분신, 실드까지 입맛대로 파워업!",
+            "4대 필살기와 편대 육성으로 시원하게 화면을 쓸어버리세요."
+          ]
+        }
+      }
     },
     {
       "id": "rainbow",
-      "title": "《彩虹泡泡龍：晴空浮空島物語 ULTRA》",
-      "shortTab": "🌈 彩虹泡泡龍",
+      "title": "《彩虹泡泡龍：浮空島物語》",
+      "shortTab": "彩虹泡泡龍",
       "path": "./rainbow.html",
-      "genre": "90 年代街機普普 × 泡泡龍養成",
+      "genre": "街機普普風・泡泡龍養成",
       "addedDate": "2026-11-03",
       "thumbnail": "assets/redesign-rainbow-cover.webp",
-      "reaSource": "Taito Bubble Bobble & Rainbow Islands (氣泡困怪上升浮力流場 vy=-95+sin(t)、七彩雙虹橋貫穿與連鎖破泡水果權重表)",
+      "reaSource": "結合氣泡困怪上升浮力、七彩雙虹橋貫穿與連鎖破泡水果爆分樂趣。",
       "highlights": [
-        "亮紫、桃紅與酸橙綠街機；漫畫角色、半色調場景、硬邊連擊與街機控制列",
-        "支援全自動射泡巡航 (Auto-Idle) 與 4 大經典必殺技（🌈 七彩雙虹橋、🫧 滿天泡泡雨、💥 全屏連鎖爆、☀️ 晴空聖光砲）"
+        "支援全自動射泡巡航，解放雙手也能看連鎖爆泡噴滿水果。",
+        "四大經典必殺技：七彩雙虹橋、滿天泡泡雨、全屏連鎖爆與晴空聖光砲。"
       ],
-      "artDirection": "亮紫、桃紅與酸橙綠街機；漫畫角色、半色調場景、硬邊連擊與街機控制列"
+      "artDirection": "亮紫、桃紅與酸橙綠街機普普風；漫畫角色與半色調場景。",
+      "i18n": {
+        "tw": {
+          "title": "《彩虹泡泡龍：浮空島物語》",
+          "shortTab": "彩虹泡泡龍",
+          "genre": "街機普普・泡泡龍動作",
+          "reaSource": "結合氣泡困怪浮力、七彩雙虹橋貫穿與連鎖破泡水果爆分樂趣。",
+          "highlights": [
+            "支援自動射泡巡航，輕鬆欣賞連鎖爆泡與滿屏水果雨。",
+            "七彩雙虹橋、滿天泡泡雨、全屏連鎖爆與晴空聖光砲四大絕招。"
+          ]
+        },
+        "en": {
+          "title": "Rainbow Bubble Islands",
+          "shortTab": "Rainbow Bubble",
+          "genre": "Pop-Art Bubble Action",
+          "reaSource": "Trap monsters in floating bubbles, chain massive fruit pops, and surf twin rainbow bridges.",
+          "highlights": [
+            "Includes Auto-Cruise mode so you can kick back or jump in anytime.",
+            "Trigger 4 colorful ultimates including Twin Rainbows and Full-Screen Pop."
+          ]
+        },
+        "ko": {
+          "title": "무지개 버블 아일랜드",
+          "shortTab": "무지개 버블",
+          "genre": "팝아트 버블 액션",
+          "reaSource": "거품에 몬스터를 가두고 무지개 다리로 연쇄 격파하는 통통 튀는 아케이드 액션.",
+          "highlights": [
+            "자동 버블 순항 지원! 손쉽게 연쇄 버블 폭발과 과일 보너스를 즐기세요.",
+            "쌍무지개 다리, 버블 폭우, 전 화면 연쇄 폭발 등 4가지 필살기!"
+          ]
+        }
+      }
     },
     {
       "id": "pinball",
-      "title": "《3D 太空彈珠台：星際軍校生 ULTRA》",
-      "shortTab": "🌌 太空彈珠台",
+      "title": "《太空彈珠台：星際軍校生》",
+      "shortTab": "太空彈珠台",
       "path": "./pinball.html",
-      "genre": "夜色機械科幻 × 太空彈珠物理",
+      "genre": "夜色機械科幻・太空彈珠物理",
       "addedDate": "2026-10-30",
       "thumbnail": "assets/redesign-pinball-cover.webp",
-      "reaSource": "Maxis/Cinematronics SpaceCadetPinball.exe (720Hz 子步進剛體碰撞、9 大晉升軍階與 6 大原作密技)",
+      "reaSource": "高頻子步進剛體碰撞物理、九大晉升軍階與經典隱藏密技，重現桌機彈珠台手感。",
       "highlights": [
-        "深海軍藍金屬艦橋、電光青導軌與紫紅反應爐；機械儀表、鋼珠與霓虹玻璃",
-        "已修復全螢幕雙重按鈕問題與下方黑底空白（雙軸 scaleX/scaleY 100% 滿版填滿視窗），並具備黑洞/蟲洞 2.0 秒免疫防卡球保護"
+        "深海軍藍艦橋、電光青導軌與紫紅反應爐，清脆撞擊回饋。",
+        "滿版自適應視窗與黑洞／蟲洞防卡球保護，手機左右點擊即可暢玩。"
       ],
-      "artDirection": "深海軍藍金屬艦橋、電光青導軌與紫紅反應爐；機械儀表、鋼珠與霓虹玻璃"
+      "artDirection": "深海軍藍金屬艦橋、電光青導軌與紫紅反應爐；霓虹玻璃與機械儀表。",
+      "i18n": {
+        "tw": {
+          "title": "《太空彈珠台：星際軍校生》",
+          "shortTab": "太空彈珠台",
+          "genre": "機械科幻・太空彈珠台",
+          "reaSource": "高頻子步進剛體碰撞物理與九大軍階晉升任務，重現經典桌機彈珠台手感。",
+          "highlights": [
+            "深藍艦橋配電光導軌與反應爐，撞擊彈跳回饋紮實俐落。",
+            "滿版自適應與蟲洞防卡球保護，手機左右觸控就能飆高分。"
+          ]
+        },
+        "en": {
+          "title": "Star Cadet Pinball",
+          "shortTab": "Star Pinball",
+          "genre": "Sci-Fi Arcade Pinball",
+          "reaSource": "Crisp 720Hz physics, 9 starfleet ranks, and classic table missions rebuilt for instant web play.",
+          "highlights": [
+            "Neon-lit starship bridge with punchy bumpers, ramps, and wormhole multipliers.",
+            "Anti-stuck wormhole safety and effortless left/right touch flippers."
+          ]
+        },
+        "ko": {
+          "title": "우주 생도 핀볼",
+          "shortTab": "우주 핀볼",
+          "genre": "SF 아케이드 핀볼",
+          "reaSource": "720Hz 정밀 물리 충돌과 9단계 우주 사관 진급 미션을 그대로 구현한 클래식 핀볼.",
+          "highlights": [
+            "네온 함교와 리액터 범퍼의 쫀득한 타격감, 웜홀 멀티플라이어!",
+            "공 끼임 방지 시스템과 간편한 좌우 터치 플리퍼로 언제든 고득점 도전."
+          ]
+        }
+      }
     },
     {
       "id": "stage3",
-      "title": "《1943：第三關・決戰巨型轟炸機亞也子》",
-      "shortTab": "☁️ 1943・亞也子",
+      "title": "《決戰亞也子・空中巨艦》",
+      "shortTab": "決戰亞也子",
       "path": "./stage3.html",
-      "genre": "戰爭電影 × 亞也子決戰",
+      "genre": "戰爭電影風・巨型轟炸機決戰",
       "addedDate": "2026-10-29",
       "thumbnail": "assets/redesign-stage3-cover.webp",
-      "reaSource": "Capcom 1943: The Battle of Midway (亞也子多部位破壞判定與雲層視差捲軸)",
+      "reaSource": "經典太平洋空戰多部位破壞判定與雷暴雲層視差捲軸。",
       "highlights": [
-        "石板灰雷暴雲海、暗紅警報與古銅機身；電影字幕、鋼鐵巨翼與多部位首領戰",
-        "手機單指按住任意位置即可飛行並自動連續開火（戰機保持於手指上方 42px 不擋視線），具備雷電必殺與迴旋閃避"
+        "石板灰雷暴雲海與鋼鐵巨翼多部位首領戰，臨場感十足。",
+        "手機單指拖曳自動開火，內建雷電必殺與迴旋閃避。"
       ],
-      "artDirection": "石板灰雷暴雲海、暗紅警報與古銅機身；電影字幕、鋼鐵巨翼與多部位首領戰"
+      "artDirection": "石板灰雷暴雲海、暗紅警報與古銅機身；戰爭電影質感。",
+      "i18n": {
+        "tw": {
+          "title": "《決戰亞也子・空中巨艦》",
+          "shortTab": "決戰亞也子",
+          "genre": "雷暴雲海・空中巨艦決戰",
+          "reaSource": "經典太平洋空戰多部位破壞判定與雷暴雲層視差捲軸。",
+          "highlights": [
+            "穿梭雷暴雲海，逐一擊破巨型轟炸機亞也子的多組砲塔與引擎。",
+            "單指按住即飛即射，支援雷電必殺與空中迴旋閃避。"
+          ]
+        },
+        "en": {
+          "title": "Sky Fortress Ayako",
+          "shortTab": "Sky Fortress Ayako",
+          "genre": "Aerial Boss Showdown",
+          "reaSource": "Classic Pacific dogfight featuring multi-part bomber destruction over stormy parallax clouds.",
+          "highlights": [
+            "Weave through thunderclouds and strip the giant Ayako bomber turret by turret.",
+            "One-finger auto-fire flight with lightning strikes and barrel-roll dodges."
+          ]
+        },
+        "ko": {
+          "title": "거대 폭격기 아야코 격추전",
+          "shortTab": "거대 폭격기 아야코",
+          "genre": "뇌운 상공 거대 보스전",
+          "reaSource": "폭풍 구름 위에서 거대 폭격기의 각 부위를 파괴하는 클래식 태평양 공중전.",
+          "highlights": [
+            "뇌운을 뚫고 거대 폭격기 아야코의 포탑과 엔진을 차례로 격파하세요.",
+            "한 손가락 자동 사격, 번개 필살기, 공중 회피 기동까지 완벽 지원."
+          ]
+        }
+      }
     },
     {
       "id": "stage2",
-      "title": "《1943：第二關・拉包爾航空戰》",
-      "shortTab": "🏝️ 1943・拉包爾",
+      "title": "《拉包爾海空決戰》",
+      "shortTab": "拉包爾海空戰",
       "path": "./stage2.html",
-      "genre": "1940 年代作戰地圖 × 拉包爾海戰",
+      "genre": "作戰地圖風・海空艦隊決戰",
       "addedDate": "2026-10-28",
       "thumbnail": "assets/redesign-stage2-cover.webp",
-      "reaSource": "Capcom 1943: The Battle of Midway (艦隊砲塔鎖定與散彈武器強化系統)",
+      "reaSource": "經典海空戰艦砲塔鎖定與散彈武器強化系統，還原熱血艦隊突破戰。",
       "highlights": [
-        "海軍藍航海圖、卡其等高線與沙色任務紙；軍用計分儀表、機艙操作與艦隊作戰",
-        "手機直式滿版單指滑動操控，支援散彈強化與艦隊主砲擊破"
+        "海軍藍航海圖與沙色任務紙質感，軍用儀表一目了然。",
+        "手機直式單指滑動操控，支援散彈強化與艦隊主砲擊破。"
       ],
-      "artDirection": "海軍藍航海圖、卡其等高線與沙色任務紙；軍用計分儀表、機艙操作與艦隊作戰"
+      "artDirection": "海軍藍航海圖、卡其等高線與沙色任務紙；軍用計分儀表。",
+      "i18n": {
+        "tw": {
+          "title": "《拉包爾海空決戰》",
+          "shortTab": "拉包爾海空戰",
+          "genre": "作戰地圖・海空艦隊戰",
+          "reaSource": "經典海空戰艦砲塔鎖定與散彈武器強化系統，還原熱血艦隊突破戰。",
+          "highlights": [
+            "復古航海作戰地圖美學，鎖定敵艦砲塔火力全開。",
+            "直式單指滑動操控，拾取散彈強化強襲敵軍主力艦隊。"
+          ]
+        },
+        "en": {
+          "title": "Rabaul Air Raid",
+          "shortTab": "Rabaul Air Raid",
+          "genre": "Naval Air-Strike Shooter",
+          "reaSource": "Tactical 1940s naval map shooter with battleship turret targeting and spread-shot upgrades.",
+          "highlights": [
+            "Vintage nautical-chart aesthetic with crisp military instrumentation.",
+            "One-thumb portrait flight—grab spread-shots and sink the enemy fleet."
+          ]
+        },
+        "ko": {
+          "title": "라바울 해상 공중전",
+          "shortTab": "라바울 해상전",
+          "genre": "작전 지도풍 해공 함대전",
+          "reaSource": "전함 포탑 조준과 산탄 강화 시스템으로 즐기는 클래식 해상 공중전.",
+          "highlights": [
+            "빈티지 해군 작전 지도 스타일과 선명한 군용 계기판 UI.",
+            "세로 화면 한 손가락 조작으로 산탄을 강화해 적 함대를 격침하세요."
+          ]
+        }
+      }
     }
   ]
 }

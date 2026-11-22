@@ -1,669 +1,432 @@
 <!DOCTYPE html>
-
-<html lang="zh-Hant">
-
+<html lang="zh-Hant" data-arcade-portal="1">
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
-<link rel="icon" href="assets/frostline-cover.webp?v=20261122_2"><title>REA遊戲館｜霜軌突圍</title>
-
+<link rel="icon" href="assets/frostline-cover.webp?v=20261122_i18n_menu_v1">
+<title>經典街機遊戲館｜霜軌突圍</title>
 <style>
-
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
-
   html,body{
-
     width:100%;height:100%;height:100dvh;overflow:hidden;touch-action:none;
-
-    background:#0ea5e9;color:#0f172a;
-
-    font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei","PingFang TC",sans-serif;
-
+    background:#171a21;color:#f4eee3;
+    font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei","PingFang TC","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   }
-
   #arcade-bar{
-
-    position:fixed;top:0;left:0;right:0;height:40px;z-index:100;
-
-    background:linear-gradient(90deg,#ffffff 0%,#e0f2fe 50%,#fef9c3 100%);
-
-    border-bottom:2px solid #38bdf8;
-
+    position:fixed;top:0;left:0;right:0;height:42px;z-index:100;
+    background:#242731;
+    border-bottom:1px solid #5f6067;
     display:flex;align-items:center;justify-content:space-between;
-
-    padding:0 6px;gap:4px;
-
-    box-shadow:0 3px 14px rgba(2,132,199,.18);
-
+    padding:0 8px;gap:6px;
   }
-
-  body.immersive-fs #arcade-bar{
-
-    display:none !important;
-
-  }
-
+  body.immersive-fs #arcade-bar{display:none !important;}
   #exit-fs-btn{
-
     position:fixed;top:calc(env(safe-area-inset-top, 0px) + 8px);right:8px;z-index:9999;
-
-    background:linear-gradient(135deg,#ec4899,#f59e0b);color:#fff;
-
-    border:2px solid #fff;border-radius:999px;
-
+    background:#343b44;color:#f3e9d6;
+    border:1px solid #d9bc8e;border-radius:6px;
     padding:5px 12px;font-size:11px;font-weight:900;
-
-    cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35);
-
-    display:none;
-
+    cursor:pointer;display:none;
   }
+  body.immersive-fs #exit-fs-btn{display:inline-flex;align-items:center;gap:4px;}
 
-  body.immersive-fs #exit-fs-btn{
-
-    display:inline-flex;align-items:center;gap:4px;
-
-  }
-
-  .brand-wrap{
-
-    display:flex;align-items:center;gap:4px;flex-shrink:0;
-
-  }
-
+  .brand-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0;}
   .logo-badge{
-
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-
-    font-weight:900;font-size:10px;letter-spacing:0.3px;
-
-    color:#fff;background:linear-gradient(135deg,#0284c7,#10b981);
-
-    border:1px solid #0ea5e9;border-radius:6px;padding:2px 6px;
-
-    cursor:pointer;
-
+    font-weight:900;font-size:12px;letter-spacing:0.3px;
+    color:#292d36;background:#e8d8b9;
+    border:1px solid #cbb68e;border-radius:6px;padding:4px 9px;
+    cursor:pointer;white-space:nowrap;
   }
 
   .tabs{
-
-    display:flex;align-items:center;gap:3px;flex:1;justify-content:flex-start;min-width:0;overflow-x:auto;
-
+    display:flex;align-items:center;gap:4px;flex:1;justify-content:flex-start;min-width:0;overflow-x:auto;
     scrollbar-width:none;
-
   }
-
   .tabs::-webkit-scrollbar{display:none;}
-
   .stage-tab{
-
-    appearance:none;border:1.5px solid #bae6fd;background:#ffffff;
-
-    color:#0369a1;border-radius:999px;padding:4px 8px;
-
-    font-size:10.5px;font-weight:900;cursor:pointer;white-space:nowrap;
-
-    transition:all .15s ease;display:inline-flex;align-items:center;gap:2px;flex-shrink:0;
-
+    appearance:none;border:1px solid #636570;background:#363945;
+    color:#e7e3dd;border-radius:6px;padding:4px 9px;
+    font-size:11.5px;font-weight:800;cursor:pointer;white-space:nowrap;
+    transition:background .14s ease,color .14s ease,border-color .14s ease;
+    display:inline-flex;align-items:center;gap:3px;flex-shrink:0;
   }
-
-  .stage-tab.active-twinbee{
-
-    background:linear-gradient(135deg,#0284c7,#f59e0b);
-
-    color:#fff;border-color:#fde047;
-
-    box-shadow:0 2px 10px rgba(245,158,11,.45);
-
-  }
-
-  .stage-tab.active-orchard{background:linear-gradient(135deg,#ffb842,#ed8b52);color:white;border-color:#f6a24f;}
-
-  .stage-tab.active-pang{background:linear-gradient(135deg,#00aaba,#16a68c);color:white;border-color:#00a5b0;box-shadow:0 2px 10px #16a68c44;}
-
-  .stage-tab.active-rainbow{
-
-    background:linear-gradient(135deg,#f59e0b,#ec4899);
-
-    color:#fff;border-color:#f43f5e;
-
-    box-shadow:0 2px 10px rgba(236,72,153,.4);
-
-  }
-
-  .stage-tab.active-pinball{
-
-    background:linear-gradient(135deg,#0284c7,#6366f1);
-
-    color:#fff;border-color:#38bdf8;
-
-    box-shadow:0 2px 10px rgba(2,132,199,.35);
-
-  }
-
-  .stage-tab.active-s2{
-
-    background:linear-gradient(180deg,#0891b2,#0369a1);
-
-    color:#fff;border-color:#67e8f9;
-
-  }
-
-  .stage-tab.active-s3{
-
-    background:linear-gradient(180deg,#ea580c,#b45309);
-
-    color:#fff;border-color:#fde047;
-
+  .stage-tab.active{
+    background:#ece5d7;color:#292d36;border-color:#e6d5b5;
   }
 
   .right-meta{
+    display:flex;align-items:center;gap:5px;flex-shrink:0;
+  }
+  .portal-select{
+    appearance:none;-webkit-appearance:none;
+    background:#333845 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23e8d8b9' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 7px center;
+    background-size:9px 6px;
+    color:#f4eee3;border:1px solid #757985;border-radius:6px;
+    padding:4px 22px 4px 8px;height:28px;
+    font-size:11.5px;font-weight:800;cursor:pointer;
+    font-family:inherit;outline:none;
+  }
+  .portal-select:focus{border-color:#e8d8b9;}
+  .portal-select option{background:#242731;color:#f4eee3;}
 
-    display:flex;align-items:center;gap:3px;flex-shrink:0;
-
+  #mobile-game-select{
+    display:none;
+    max-width:154px;
+    text-overflow:ellipsis;
+    background-color:#3a2f28;
+    border-color:#d9bc8e;
+    color:#fff5e0;
+  }
+  #lang-select{
+    min-width:56px;
+    padding:4px 20px 4px 7px;
   }
 
-  .catalog-btn{
-
-    appearance:none;font-size:10px;font-weight:900;
-
-    color:#b45309;background:#fef3c7;
-
-    border:1.5px solid #f59e0b;border-radius:999px;padding:3px 7px;white-space:nowrap;cursor:pointer;
-
+  .catalog-btn,.fs-btn{
+    appearance:none;font-size:11px;font-weight:800;height:28px;
+    color:#292e37;background:#e8d8b9;
+    border:1px solid #cbb68e;border-radius:6px;padding:0 9px;
+    white-space:nowrap;cursor:pointer;display:inline-flex;align-items:center;gap:3px;
   }
-
-  .fs-btn{
-
-    appearance:none;font-size:10px;font-weight:900;
-
-    color:#ffffff;background:linear-gradient(135deg,#0ea5e9,#10b981);
-
-    border:1.5px solid #059669;border-radius:999px;padding:3px 7px;white-space:nowrap;cursor:pointer;
-
-  }
-
   .ver-pill{
-
-    font-family:monospace;font-size:9px;font-weight:800;
-
-    color:#047857;background:#d1fae5;
-
-    border:1px solid #34d399;border-radius:999px;padding:2px 5px;white-space:nowrap;
-
+    font-family:monospace;font-size:10px;font-weight:800;
+    color:#d8d5cf;background:#333942;
+    border:1px solid #636770;border-radius:6px;padding:3px 6px;white-space:nowrap;
   }
 
   #stage-viewport{
-
-    position:fixed;top:40px;left:0;right:0;bottom:0;
-
-    background:#e0f2fe;overflow:hidden;
-
+    position:fixed;top:42px;left:0;right:0;bottom:0;
+    background:#171a21;overflow:hidden;
   }
-
-  body.immersive-fs #stage-viewport{
-
-    top:0 !important;
-
-  }
-
-  #game-frame{
-
-    width:100%;height:100%;border:none;display:block;background:#e0f2fe;
-
-  }
-
-
-
-  /* 明亮珍珠白「每日 REA 遊戲館」彈窗 */
+  body.immersive-fs #stage-viewport{top:0 !important;}
+  #game-frame{width:100%;height:100%;border:none;display:block;background:#171a21;}
 
   .catalog-modal{
-
     display:none;position:fixed;inset:0;z-index:500;
-
-    background:rgba(15,23,42,.55);backdrop-filter:blur(6px);
-
+    background:rgba(15,23,42,.62);backdrop-filter:blur(6px);
     align-items:center;justify-content:center;padding:12px;
-
   }
-
   .catalog-modal.open{display:flex;}
-
   .catalog-card{
-
-    width:100%;max-width:460px;max-height:86dvh;overflow-y:auto;
-
-    background:linear-gradient(165deg,#ffffff,#f0f9ff);
-
-    border:2px solid #38bdf8;border-radius:16px;padding:14px;
-
-    box-shadow:0 12px 42px rgba(2,132,199,.35);
-
-    color:#0f172a;
-
+    width:100%;max-width:860px;max-height:86dvh;overflow-y:auto;
+    background:#f3eee4;border:1px solid #797266;border-radius:8px;padding:16px;
+    color:#2b3036;
   }
-
   .cat-header{
-
     display:flex;align-items:center;justify-content:space-between;
-
-    border-bottom:1.5px solid #bae6fd;padding-bottom:8px;margin-bottom:10px;
-
+    border-bottom:1px solid #c6bcaa;padding-bottom:10px;margin-bottom:10px;
   }
-
-  .cat-title{font-size:15px;font-weight:900;color:#0369a1;}
-
+  .cat-title{font-size:18px;font-weight:900;color:#272d34;}
   .cat-close{
-
-    background:linear-gradient(135deg,#ec4899,#f59e0b);color:#fff;border:none;
-
-    border-radius:8px;padding:4px 10px;font-size:12px;font-weight:900;cursor:pointer;
-
+    background:#353c43;color:#fff;border:1px solid #22272c;
+    border-radius:6px;padding:5px 12px;font-size:12px;font-weight:800;cursor:pointer;
   }
-
+  .cat-lead{font-size:12px;color:#4a5159;margin-bottom:12px;line-height:1.5;font-weight:600;}
   .cat-item{
-
-    display:flex;gap:10px;background:#ffffff;
-
-    border:1.5px solid #7dd3fc;border-radius:12px;padding:9px;margin-bottom:8px;
-
-    cursor:pointer;transition:transform .12s;
-
-    box-shadow:0 3px 10px rgba(14,165,233,.1);
-
+    display:flex;gap:10px;background:#fffcf5;
+    border:1px solid #d4ccbf;border-radius:8px;padding:10px;margin-bottom:9px;
+    cursor:pointer;transition:transform .12s,border-color .12s;
   }
-
-  .cat-item:active{transform:scale(.98);}
-
+  .cat-item:hover{border-color:#9e8965;}
+  .cat-item:active{transform:scale(.99);}
   .cat-thumb{
-
-    width:60px;height:84px;border-radius:8px;object-fit:cover;border:2px solid #f59e0b;flex-shrink:0;
-
+    width:62px;height:86px;border-radius:6px;object-fit:cover;border:1px solid #cbb68e;flex-shrink:0;
   }
-
   .cat-body{flex:1;min-width:0;}
+  .cat-item-title{font-size:14px;font-weight:900;color:#1f242a;margin-bottom:3px;}
+  .cat-meta{font-size:11px;color:#6d5f47;margin-bottom:4px;font-weight:800;}
+  .cat-desc{font-size:11.5px;color:#3d444d;line-height:1.45;}
 
-  .cat-item-title{font-size:13px;font-weight:900;color:#0f172a;margin-bottom:2px;}
-
-  .cat-meta{font-size:10px;color:#059669;margin-bottom:4px;font-weight:800;}
-
-  .cat-desc{font-size:10.5px;color:#334155;line-height:1.4;}
-
-
-
-  @media (max-width:480px){
-
-    #arcade-bar{padding:0 3px;gap:2px;}
-
-    .logo-badge{font-size:8.5px;padding:2px 4px;}
-
-    .hide-xs{display:none;}
-
-    .stage-tab{padding:3px 6px;font-size:9.5px;}
-
-    .catalog-btn,.fs-btn{padding:3px 5px;font-size:9px;}
-
+  /* 手機直式／窄螢幕：隱藏擁擠橫向頁籤，改由右上角全中文／在地化下拉選單切換遊戲 */
+  @media (max-width:768px){
+    #arcade-bar{padding:0 6px;gap:4px;}
+    .tabs{display:none !important;}
+    #mobile-game-select{display:inline-block;}
+    #btn-catalog{display:none;}
     .ver-pill{display:none;}
-
+    .fs-btn .fs-label{display:none;}
+    .fs-btn{padding:0 8px;min-width:30px;justify-content:center;}
+    .logo-badge{font-size:11.5px;padding:4px 8px;}
   }
-
-  .stage-tab.active-midnight{background:#2b2c25;color:#eee5d4;border:1px solid #8e9581;border-radius:8px;box-shadow:none;}
-
-.stage-tab.active-lacquer{background:#451c24;color:#f4e9da;border:1px solid #96716e;border-radius:8px;box-shadow:none;}
-
-#tab-amber{border-radius:7px}.stage-tab.active-amber{background:#7b4b28;color:#fff0cd;border:1px solid #a87a4b;box-shadow:none;}
-
-#tab-indigo{border-radius:7px}.stage-tab.active-indigo{background:#103d76;color:#fff;border:1px solid #8aa4b8;box-shadow:none;}
-
-#tab-fossil{border-radius:7px}.stage-tab.active-fossil{background:#344e51;color:#fff;border:1px solid #8e9c9d;box-shadow:none}#tab-weave{border-radius:7px}.stage-tab.active-weave{background:#ead5dd;color:#422a40;border:1px solid #ad839d;box-shadow:none}
-#tab-shinobi{border-radius:7px}.stage-tab.active-shinobi{background:#991b1b;color:#fef3c7;border:1px solid #eab308;box-shadow:none;}
-#tab-abyss{border-radius:7px}.stage-tab.active-abyss{background:#102d2b;color:#eee4c8;border:1px solid #c98050;box-shadow:none}
-
-#tab-raiden{border-radius:7px}.stage-tab.active-raiden{background:linear-gradient(180deg,#0284c7,#0369a1);color:#fff;border:1px solid #5ce1ff}
-#tab-frostline{border-radius:7px}.stage-tab.active-frostline{background:#304952;color:#e4fc8b;border:1px solid #b3d275}
-#tab-solar{border-radius:7px}.stage-tab.active-solar{background:#973e2f;color:#fff4d4;border:1px solid #ffca7a}
-#tab-xinan{border-radius:7px}.stage-tab.active-xinan{background:#c83e2b;color:#fff7ea;border:1px solid #e7b85c;box-shadow:none}
-#tab-ridge{border-radius:7px}.stage-tab.active-ridge{background:#183ac7;color:#f3f6ed;border:1px solid #183ac7;box-shadow:none}
-#tab-chime{border-radius:7px}.stage-tab.active-chime{background:#503357;color:#f3edf5;border:1px solid #503357;box-shadow:none}
-#tab-moss{border-radius:7px}.stage-tab.active-moss{background:#12204c;color:#f5efd5;border:1px solid #12204c;box-shadow:none}
 </style>
-
-<link rel="stylesheet" href="visuals/portal.css?v=20261107-art1">
-
+<script src="./arcade-i18n.js?v=20261122_i18n_menu_v1"></script>
 </head>
-
 <body>
-
   <button id="exit-fs-btn" type="button" onclick="togglePortalFullscreen(false)">✕ 退出全螢幕</button>
 
-
-
   <header id="arcade-bar">
-
     <div class="brand-wrap">
-
-      <span class="logo-badge" onclick="toggleCatalog(true)">REA<span class="hide-xs"> 遊戲館</span></span>
-
+      <button type="button" class="logo-badge" id="brand-btn" onclick="toggleCatalog(true)">遊戲館</button>
     </div>
 
-    <div class="tabs" id="portal-tabs">
-      <button type="button" class="stage-tab active-frostline" id="tab-frostline" onclick="selectStage('frostline')">霜軌突圍</button>
-      <button type="button" class="stage-tab" id="tab-solar" onclick="selectStage('solar')">鹽原裂日</button>
-      <button type="button" class="stage-tab" id="tab-raiden" onclick="selectStage('raiden')">⚡ 雷霆空域</button>
-      <button type="button" class="stage-tab" id="tab-xinan" onclick="selectStage('xinan')">🏮 心安宮</button>
-
-      <button type="button" class="stage-tab" id="tab-shinobi" onclick="selectStage('shinobi')">🥷 赤焰忍傳</button>
-
-      <button type="button" class="stage-tab active-twinbee" id="tab-twinbee" onclick="selectStage('twinbee')">🔔 兵蜂・鈴鐺幻想</button>
-
-      <button type="button" class="stage-tab" id="tab-rainbow" onclick="selectStage('rainbow')">🌈 彩虹泡泡龍</button>
-
-      <button type="button" class="stage-tab" id="tab-pinball" onclick="selectStage('pinball')">🌌 太空彈珠台</button>
-
-      <button type="button" class="stage-tab" id="tab-s3" onclick="selectStage('stage3')">☁️ 1943・亞也子</button>
-
-      <button type="button" class="stage-tab" id="tab-s2" onclick="selectStage('stage2')">🏝️ 1943・拉包爾</button>
-
-    </div>
+    <div class="tabs" id="portal-tabs"></div>
 
     <div class="right-meta">
-
-      <button type="button" class="catalog-btn" id="btn-catalog" onclick="toggleCatalog(true)">📚 遊戲館</button>
-
-      <button type="button" class="fs-btn" id="standalone-link" onclick="togglePortalFullscreen()">⛶ 全螢幕</button>
-
-      <span class="ver-pill" id="portal-version">2026.11.22</span>
-
+      <select id="lang-select" class="portal-select" aria-label="語言切換">
+        <option value="tw">TW</option>
+        <option value="en">EN</option>
+        <option value="ko">KO</option>
+      </select>
+      <select id="mobile-game-select" class="portal-select" aria-label="切換遊戲"></select>
+      <button type="button" class="catalog-btn" id="btn-catalog" onclick="toggleCatalog(true)">遊戲總覽</button>
+      <button type="button" class="fs-btn" id="standalone-link" onclick="togglePortalFullscreen()">⛶ <span class="fs-label">全螢幕</span></button>
+      <span class="ver-pill" id="portal-version">v_16:25</span>
     </div>
-
   </header>
 
-
-
   <main id="stage-viewport">
-
-    <iframe id="game-frame" src="./frostline.html?embed=1&v=v_20261122_frostline_2" title="霜軌突圍" allow="autoplay; fullscreen"></iframe>
-
+    <iframe id="game-frame" src="" title="遊戲畫面" allow="autoplay; fullscreen"></iframe>
   </main>
 
-
-
   <div class="catalog-modal" id="catalogModal">
-
     <div class="catalog-card">
-
       <div class="cat-header">
-
-        <div class="cat-title">REA 遊戲館・各自精彩</div>
-
-        <button class="cat-close" type="button" onclick="toggleCatalog(false)">✕ 關閉</button>
-
+        <div class="cat-title" id="catTitle">經典街機遊戲館</div>
+        <button class="cat-close" id="catCloseBtn" type="button" onclick="toggleCatalog(false)">✕ 關閉</button>
       </div>
-
-      <div style="font-size:11px;color:#0369a1;margin-bottom:8px;font-weight:700;">
-
-        每一款都有自己的世界。水彩、旅行版畫、漫畫、剪紙、夜色機械與戰爭電影，依玩法建立獨立美術。每日 <b>04:00</b> 自動生成新作，<b>07:00</b> 透過 LINE 推播介紹：
-
-      </div>
-
+      <div class="cat-lead" id="catLead">每一款皆具獨立美術風格與即時手感，點擊即可切換開玩。支援繁體中文、English 與 한국어 即時切換。</div>
       <div id="catalogList"></div>
-
     </div>
-
   </div>
 
-
-
   <script>
-
-    const VERSION_STAMP = "v_20261122_frostline_2";
-
+    const VERSION_STAMP = "v_20261122_i18n_menu_v1";
     const frame = document.getElementById("game-frame");
+    const tabsEl = document.getElementById("portal-tabs");
+    const mobileSelect = document.getElementById("mobile-game-select");
+    const langSelect = document.getElementById("lang-select");
+    const catalogListEl = document.getElementById("catalogList");
 
-    const tabTwinbee = document.getElementById("tab-twinbee");
+    const PORTAL_COPY = {
+      tw: {
+        portalName: "經典街機遊戲館",
+        brandShort: "遊戲館",
+        catalogBtn: "遊戲總覽",
+        fullscreen: "全螢幕",
+        exitFs: "✕ 退出全螢幕",
+        closeBtn: "✕ 關閉",
+        catTitle: "經典街機遊戲館・全部作品",
+        catLead: "每一款皆有獨立美術與即時手感，點選卡片或右上角選單即可切換；支援 TW / EN / KO 本土化語系切換。",
+        addedLabel: "上架",
+        sourceLabel: "設計特色",
+        ariaLang: "切換語言",
+        ariaGames: "切換遊戲"
+      },
+      en: {
+        portalName: "Classic Arcade Hall",
+        brandShort: "Arcade",
+        catalogBtn: "Catalog",
+        fullscreen: "Full",
+        exitFs: "✕ Exit Fullscreen",
+        closeBtn: "✕ Close",
+        catTitle: "Classic Arcade Hall — All Games",
+        catLead: "Every title features its own art style and instant pick-up-and-play action. Switch between TW / EN / KO anytime.",
+        addedLabel: "Added",
+        sourceLabel: "Highlights",
+        ariaLang: "Switch language",
+        ariaGames: "Choose a game"
+      },
+      ko: {
+        portalName: "클래식 아케이드 홀",
+        brandShort: "게임관",
+        catalogBtn: "전체 목록",
+        fullscreen: "전체화면",
+        exitFs: "✕ 전체화면 종료",
+        closeBtn: "✕ 닫기",
+        catTitle: "클래식 아케이드 홀・전체 게임",
+        catLead: "모든 작품이 고유한 아트 스타일과 즉각적인 손맛을 담고 있습니다. TW / EN / KO 현지화 언어를 자유롭게 전환해 보세요.",
+        addedLabel: "추가일",
+        sourceLabel: "게임 특징",
+        ariaLang: "언어 전환",
+        ariaGames: "게임 선택"
+      }
+    };
 
-    const tabRainbow = document.getElementById("tab-rainbow");
+    // 內建即時備援清單（確保首幀無閃爍；games-catalog.json 載入後會自動同步最新與未來新增遊戲）
+    let catalogGames = [
+      { id: "frostline", path: "./frostline.html", shortTab: "霜軌突圍", title: "《霜軌突圍》", i18n: { tw: { shortTab: "霜軌突圍", title: "《霜軌突圍》" }, en: { shortTab: "Frostline Brawl", title: "Frostline Brawl" }, ko: { shortTab: "서리선 돌파", title: "서리선 돌파" } } },
+      { id: "solar", path: "./solar.html", shortTab: "鹽原裂日", title: "《鹽原裂日》", i18n: { tw: { shortTab: "鹽原裂日", title: "《鹽原裂日》" }, en: { shortTab: "Solar Salt Run", title: "Solar Salt Run" }, ko: { shortTab: "소금사막 태양전선", title: "소금사막 태양전선" } } },
+      { id: "raiden", path: "./raiden.html", shortTab: "雷霆空域", title: "《雷霆空域：蒼穹覺醒》", i18n: { tw: { shortTab: "雷霆空域", title: "《雷霆空域：蒼穹覺醒》" }, en: { shortTab: "Thunder Sky", title: "Thunder Sky: Awakening" }, ko: { shortTab: "천둥의 창공", title: "천둥의 창공: 각성" } } },
+      { id: "xinan", path: "./xinan.html", shortTab: "心安宮", title: "《心安宮・三儀殿》", i18n: { tw: { shortTab: "心安宮", title: "《心安宮・三儀殿》" }, en: { shortTab: "Peaceful Temple", title: "Peaceful Temple" }, ko: { shortTab: "마음편안궁", title: "마음편안궁・삼의전" } } },
+      { id: "shinobi", path: "./shinobi.html", shortTab: "赤焰忍傳", title: "《赤焰忍傳：疾風手裏劍》", i18n: { tw: { shortTab: "赤焰忍傳", title: "《赤焰忍傳：疾風手裏劍》" }, en: { shortTab: "Crimson Shinobi", title: "Crimson Shinobi" }, ko: { shortTab: "붉은 불꽃 닌자전", title: "붉은 불꽃 닌자전" } } },
+      { id: "twinbee", path: "./twinbee.html", shortTab: "兵蜂鈴鐺幻想", title: "《兵蜂：晴空鈴鐺幻想曲》", i18n: { tw: { shortTab: "兵蜂鈴鐺幻想", title: "《兵蜂：晴空鈴鐺幻想曲》" }, en: { shortTab: "Bell Squadron", title: "Bell Squadron: Sky Fantasy" }, ko: { shortTab: "방울 편대", title: "방울 편대 대작전" } } },
+      { id: "rainbow", path: "./rainbow.html", shortTab: "彩虹泡泡龍", title: "《彩虹泡泡龍：浮空島物語》", i18n: { tw: { shortTab: "彩虹泡泡龍", title: "《彩虹泡泡龍：浮空島物語》" }, en: { shortTab: "Rainbow Bubble", title: "Rainbow Bubble Islands" }, ko: { shortTab: "무지개 버블", title: "무지개 버블 아일랜드" } } },
+      { id: "pinball", path: "./pinball.html", shortTab: "太空彈珠台", title: "《太空彈珠台：星際軍校生》", i18n: { tw: { shortTab: "太空彈珠台", title: "《太空彈珠台：星際軍校生》" }, en: { shortTab: "Star Pinball", title: "Star Cadet Pinball" }, ko: { shortTab: "우주 핀볼", title: "우주 생도 핀볼" } } },
+      { id: "stage3", path: "./stage3.html", shortTab: "決戰亞也子", title: "《決戰亞也子・空中巨艦》", i18n: { tw: { shortTab: "決戰亞也子", title: "《決戰亞也子・空中巨艦》" }, en: { shortTab: "Sky Fortress Ayako", title: "Sky Fortress Ayako" }, ko: { shortTab: "거대 폭격기 아야코", title: "거대 폭격기 아야코 격추전" } } },
+      { id: "stage2", path: "./stage2.html", shortTab: "拉包爾海空戰", title: "《拉包爾海空決戰》", i18n: { tw: { shortTab: "拉包爾海空戰", title: "《拉包爾海空決戰》" }, en: { shortTab: "Rabaul Air Raid", title: "Rabaul Air Raid" }, ko: { shortTab: "라바울 해상전", title: "라바울 해상 공중전" } } }
+    ];
 
-    const tabPinball = document.getElementById("tab-pinball");
+    let activeStageId = "";
 
-    const tab2 = document.getElementById("tab-s2");
-
-    const tab3 = document.getElementById("tab-s3");
-
-    frame.addEventListener('load',()=>frame.contentWindow?.postMessage({type:'PARENT_FS_STATE',value:document.body.classList.contains('immersive-fs')},location.origin));
-
-
-
-    function togglePortalFullscreen(forceState){
-
-      const wantFs = typeof forceState === "boolean" ? forceState : !document.body.classList.contains("immersive-fs");
-
-      document.body.classList.toggle("immersive-fs", wantFs);
-
-      try {
-
-        if(wantFs){
-
-          const el = document.documentElement;
-
-          if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
-
-          else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-
-        } else {
-
-          if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
-
-          else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
-
-        }
-
-      } catch(e){}
-
-      try {
-
-        if(frame.contentWindow){
-
-          frame.contentWindow.postMessage({ type: "PARENT_FS_STATE", value: wantFs }, "*");
-
-        }
-
-      } catch(e){}
-
+    function getLang() {
+      return window.ArcadeI18n ? window.ArcadeI18n.getLang() : "tw";
     }
 
+    function getGameCopy(g, lang) {
+      const loc = (g.i18n && (g.i18n[lang] || g.i18n.tw)) || {};
+      const cleanTwTab = String(loc.shortTab || g.shortTab || g.title || g.id).replace(/[《》]/g, "").trim();
+      return {
+        shortTab: cleanTwTab,
+        title: loc.title || g.title || cleanTwTab,
+        genre: loc.genre || g.genre || "",
+        reaSource: loc.reaSource || g.reaSource || "",
+        highlights: loc.highlights || g.highlights || []
+      };
+    }
 
-
-    window.addEventListener("message", (e) => {
-
-      if(e.origin === location.origin && e.source === frame.contentWindow && e.data && e.data.type === "TOGGLE_IMMERSIVE_FS"){
-
-        const nextVal = typeof e.data.active === "boolean" ? e.data.active : Boolean(e.data.value);
-
-        togglePortalFullscreen(nextVal);
-
+    function renderPortalChrome() {
+      const lang = getLang();
+      const copy = PORTAL_COPY[lang] || PORTAL_COPY.tw;
+      if (langSelect) {
+        langSelect.value = lang;
+        langSelect.setAttribute("aria-label", copy.ariaLang);
       }
+      if (mobileSelect) mobileSelect.setAttribute("aria-label", copy.ariaGames);
+      document.getElementById("brand-btn").textContent = copy.brandShort;
+      document.getElementById("btn-catalog").textContent = copy.catalogBtn;
+      document.querySelector("#standalone-link .fs-label").textContent = copy.fullscreen;
+      document.getElementById("exit-fs-btn").textContent = copy.exitFs;
+      document.getElementById("catTitle").textContent = copy.catTitle;
+      document.getElementById("catLead").textContent = copy.catLead;
+      document.getElementById("catCloseBtn").textContent = copy.closeBtn;
 
+      // Desktop tabs
+      tabsEl.innerHTML = catalogGames.map(g => {
+        const gc = getGameCopy(g, lang);
+        const cls = g.id === activeStageId ? "stage-tab active" : "stage-tab";
+        return `<button type="button" class="${cls}" id="tab-${g.id}" data-stage="${g.id}">${gc.shortTab}</button>`;
+      }).join("");
+      tabsEl.querySelectorAll(".stage-tab").forEach(btn => {
+        btn.addEventListener("click", () => selectStage(btn.dataset.stage));
+      });
+
+      // Mobile top-right dropdown (pure Chinese in TW, localized in EN/KO)
+      mobileSelect.innerHTML = catalogGames.map(g => {
+        const gc = getGameCopy(g, lang);
+        const sel = g.id === activeStageId ? " selected" : "";
+        return `<option value="${g.id}"${sel}>${gc.shortTab}</option>`;
+      }).join("");
+      if (activeStageId) mobileSelect.value = activeStageId;
+
+      // Catalog modal cards
+      catalogListEl.innerHTML = catalogGames.map(g => {
+        const gc = getGameCopy(g, lang);
+        const thumb = g.thumbnail ? `<img class="cat-thumb" loading="lazy" decoding="async" src="${g.thumbnail}?v=${VERSION_STAMP}" alt="${gc.title}">` : "";
+        const datePart = g.addedDate ? ` ｜ ${copy.addedLabel}：${g.addedDate}` : "";
+        const hi = Array.isArray(gc.highlights) && gc.highlights.length ? `<br>• ${gc.highlights.join(" / ")}` : "";
+        return `
+          <div class="cat-item" data-stage="${g.id}">
+            ${thumb}
+            <div class="cat-body">
+              <div class="cat-item-title">${gc.title}</div>
+              <div class="cat-meta">${gc.genre}${datePart}</div>
+              <div class="cat-desc">• <b>${copy.sourceLabel}</b>：${gc.reaSource}${hi}</div>
+            </div>
+          </div>`;
+      }).join("");
+      catalogListEl.querySelectorAll(".cat-item").forEach(card => {
+        card.addEventListener("click", () => selectStage(card.dataset.stage));
+      });
+
+      const activeGame = catalogGames.find(g => g.id === activeStageId);
+      if (activeGame) {
+        const gc = getGameCopy(activeGame, lang);
+        document.title = `${copy.portalName}｜${gc.shortTab}`;
+        frame.title = gc.title;
+      }
+    }
+
+    function selectStage(stage) {
+      let target = stage;
+      if (target === "2") target = "stage2";
+      if (target === "3") target = "stage3";
+      const game = catalogGames.find(g => g.id === target) || catalogGames[0];
+      if (!game) return;
+      activeStageId = game.id;
+      const lang = getLang();
+      const basePath = game.path || `./${game.id}.html`;
+      const sep = basePath.includes("?") ? "&" : "?";
+      const source = `${basePath}${sep}embed=1&lang=${lang}&v=${VERSION_STAMP}`;
+      if (frame.getAttribute("src") !== source) {
+        frame.src = source;
+      }
+      renderPortalChrome();
+      const activeTab = document.getElementById(`tab-${game.id}`);
+      if (activeTab) activeTab.scrollIntoView({ block: "nearest", inline: "nearest" });
+      toggleCatalog(false);
+      setTimeout(() => { try { frame.focus(); } catch (e) {} }, 120);
+    }
+
+    function toggleCatalog(open) {
+      document.getElementById("catalogModal").classList.toggle("open", Boolean(open));
+    }
+
+    function togglePortalFullscreen(forceState) {
+      const wantFs = typeof forceState === "boolean" ? forceState : !document.body.classList.contains("immersive-fs");
+      document.body.classList.toggle("immersive-fs", wantFs);
+      try {
+        if (wantFs) {
+          const el = document.documentElement;
+          if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+          else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        } else {
+          if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        }
+      } catch (e) {}
+      try {
+        frame.contentWindow?.postMessage({ type: "PARENT_FS_STATE", value: wantFs }, "*");
+      } catch (e) {}
+    }
+
+    frame.addEventListener("load", () => {
+      try {
+        frame.contentWindow?.postMessage({ type: "PARENT_FS_STATE", value: document.body.classList.contains("immersive-fs") }, "*");
+        frame.contentWindow?.postMessage({ type: "ARCADE_SET_LANG", lang: getLang() }, "*");
+      } catch (e) {}
     });
 
-
-
-    function selectStage(stage){
-      const tabFrostline = document.getElementById('tab-frostline');
-      tabFrostline.className = 'stage-tab';
-      if (stage === 'frostline') {
-        document.querySelectorAll('.stage-tab').forEach(tab => tab.className = 'stage-tab');
-        const source = './frostline.html?embed=1&v=' + VERSION_STAMP;
-        if (frame.getAttribute('src') !== source) frame.src = source;
-        frame.title = '霜軌突圍';
-        tabFrostline.className = 'stage-tab active-frostline';
-        tabFrostline.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-        toggleCatalog(false);
-        return;
+    window.addEventListener("message", (e) => {
+      if (e.origin === location.origin && e.source === frame.contentWindow && e.data && e.data.type === "TOGGLE_IMMERSIVE_FS") {
+        const nextVal = typeof e.data.active === "boolean" ? e.data.active : Boolean(e.data.value);
+        togglePortalFullscreen(nextVal);
       }
-      const tabSolar = document.getElementById('tab-solar');
-      tabSolar.className = 'stage-tab';
-      if (stage === 'solar') {
-        document.querySelectorAll('.stage-tab').forEach(tab => tab.className = 'stage-tab');
-        const source = './solar.html?embed=1&v=' + VERSION_STAMP;
-        if (frame.getAttribute('src') !== source) frame.src = source;
-        frame.title = '鹽原裂日';
-        tabSolar.className = 'stage-tab active-solar';
-        tabSolar.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-        toggleCatalog(false);
-        return;
+    });
+
+    mobileSelect.addEventListener("change", () => {
+      selectStage(mobileSelect.value);
+    });
+
+    langSelect.addEventListener("change", () => {
+      if (window.ArcadeI18n) {
+        window.ArcadeI18n.setLang(langSelect.value, { broadcastIframe: frame });
       }
-      const tabRaiden = document.getElementById("tab-raiden"); if(tabRaiden) tabRaiden.className="stage-tab";
-      if(stage==="raiden"){document.querySelectorAll(".stage-tab").forEach(b=>b.className="stage-tab");frame.src="./raiden.html?embed=1&v="+VERSION_STAMP;frame.title="雷霆空域：蒼穹覺醒 ULTRA";if(tabRaiden){tabRaiden.className="stage-tab active-raiden";tabRaiden.scrollIntoView({block:"nearest",inline:"nearest"});}toggleCatalog(false);setTimeout(()=>{try{frame.focus();}catch(e){}},120);return;}
-      const tabXinan = document.getElementById("tab-xinan"); if(tabXinan) tabXinan.className="stage-tab";
-      if(stage==="xinan"){document.querySelectorAll(".stage-tab").forEach(b=>b.className="stage-tab");frame.src="./xinan.html?embed=1&v="+VERSION_STAMP;frame.title="心安宮・三儀殿";if(tabXinan){tabXinan.className="stage-tab active-xinan";tabXinan.scrollIntoView({block:"nearest",inline:"nearest"});}toggleCatalog(false);setTimeout(()=>{try{frame.focus();}catch(e){}},120);return;}
+    });
 
-      const tabShinobi = document.getElementById('tab-shinobi');
-      if(tabShinobi) tabShinobi.className='stage-tab';
-      if(stage==='shinobi'){document.querySelectorAll('.stage-tab').forEach(b=>b.className='stage-tab');frame.src='./shinobi.html?embed=1&v='+VERSION_STAMP;frame.title='赤焰忍傳：疾風手裏劍';if(tabShinobi){tabShinobi.className='stage-tab active-shinobi';tabShinobi.scrollIntoView({block:'nearest',inline:'nearest'});}toggleCatalog(false);setTimeout(()=>{try{frame.focus();}catch(e){}},120);return;}
-
-      if(tabTwinbee) tabTwinbee.className = 'stage-tab';
-
-      tabRainbow.className = "stage-tab";
-
-      tabPinball.className = "stage-tab";
-
-      tab2.className = "stage-tab";
-
-      tab3.className = "stage-tab";
-
-      if(stage === 'twinbee'){
-
-        frame.src = './twinbee.html?embed=1&v=' + VERSION_STAMP;
-
-        if(tabTwinbee) tabTwinbee.className = 'stage-tab active-twinbee';
-
-      } else if(stage === "stage2"){
-
-        frame.src = "./stage2.html?embed=1&v=" + VERSION_STAMP;
-
-        tab2.className = "stage-tab active-s2";
-
-      } else if(stage === "stage3"){
-
-        frame.src = "./stage3.html?embed=1&v=" + VERSION_STAMP;
-
-        tab3.className = "stage-tab active-s3";
-
-      } else if(stage === "pinball"){
-
-        frame.src = "./pinball.html?embed=1&v=" + VERSION_STAMP;
-
-        tabPinball.className = "stage-tab active-pinball";
-
-      } else if(stage === "rainbow"){
-
-        frame.src = "./rainbow.html?embed=1&v=" + VERSION_STAMP;
-
-        tabRainbow.className = "stage-tab active-rainbow";
-
-      } else {
-
-        frame.src = "./twinbee.html?embed=1&v=" + VERSION_STAMP;
-
-        if(tabTwinbee) tabTwinbee.className = "stage-tab active-twinbee";
-
-      }
-
-      frame.title = stage === 'garden' ? '晴空花園：花盆推推樂' : stage === 'capybara' ? '水豚晴旅：海島跳跳渡假' : stage === 'twinbee' ? '兵蜂・晴空鈴鐺幻想曲遊戲畫面' : stage === 'orchard' ? '晴空果園遊戲畫面' : stage === 'pang' ? '晴空海島遊戲畫面' : '經典街機遊戲畫面';
-
-      document.querySelector('.stage-tab[class*="active-"]')?.scrollIntoView({block:'nearest',inline:'nearest'});
-
-      toggleCatalog(false);
-
-      setTimeout(() => { try { frame.focus(); } catch(e){} }, 120);
-
+    if (window.ArcadeI18n) {
+      window.ArcadeI18n.onChange(() => {
+        renderPortalChrome();
+        try { frame.contentWindow?.postMessage({ type: "ARCADE_SET_LANG", lang: getLang() }, "*"); } catch (e) {}
+      });
     }
 
-
-
-    function toggleCatalog(open){
-
-      document.getElementById("catalogModal").classList.toggle("open", Boolean(open));
-
-    }
-
-
-
-    fetch("./games-catalog.json?v=" + VERSION_STAMP)
-
-      .then(r => r.json())
-
-      .then(data => {
-
-        const listEl = document.getElementById("catalogList");
-
-        if(!listEl || !Array.isArray(data.games)) return;
-
-        listEl.innerHTML = data.games.map(g => `
-
-          <div class="cat-item" onclick="selectStage('${g.id}')">
-
-            <img class="cat-thumb" loading="lazy" decoding="async" src="${g.thumbnail}?v=${VERSION_STAMP}" alt="${g.title}">
-
-            <div class="cat-body">
-
-              <div class="cat-item-title">${g.title}</div>
-
-              <div class="cat-meta">${g.genre} ｜ 新增日期：${g.addedDate}</div>
-
-              <div class="cat-desc">• <b>${(g.id === 'solar' || g.id === 'frostline') ? '玩法靈感' : 'REA 逆向基底'}</b>：${g.reaSource}<br>• ${(g.highlights || []).join("；")}</div>
-
-            </div>
-
-          </div>
-
-        `).join("");
-
-      })
-
-      .catch(() => {});
-
-
-
+    // 初始化先套用 URL 指定的遊戲
     const params = new URLSearchParams(location.search);
+    const initialStage = params.get("stage") || location.hash.replace("#", "") || "frostline";
+    selectStage(initialStage);
 
-    const st = params.get("stage") || location.hash.replace("#", "");
-
-    if(!st || st==='frostline'){ selectStage('frostline'); } else if(st==='solar'){ selectStage('solar'); } else if(st==='raiden'){ selectStage('raiden'); } else if(st==='shinobi'){ selectStage('shinobi'); } else if(st==='xinan'){ selectStage('xinan'); } else
-
-    if(st === "2" || st === "stage2"){
-
-      selectStage("stage2");
-
-    } else if(st === "3" || st === "stage3"){
-
-      selectStage("stage3");
-
-    } else if(st === "pinball"){
-
-      selectStage("pinball");
-
-    } else if(st === "rainbow"){
-
-      selectStage("rainbow");
-
-    } else if(st === "twinbee"){
-
-      selectStage("twinbee");
-
-    } else {
-
-      selectStage("shinobi");
-
-    }
-
+    // 載入完整 games-catalog.json（自動納入未來每日 04:00 新增的所有新作）
+    fetch("./games-catalog.json?v=" + VERSION_STAMP)
+      .then(r => r.json())
+      .then(data => {
+        if (!Array.isArray(data.games) || !data.games.length) return;
+        catalogGames = data.games;
+        if (!catalogGames.some(g => g.id === activeStageId)) {
+          selectStage(catalogGames[0].id);
+        } else {
+          renderPortalChrome();
+        }
+      })
+      .catch(() => {});
   </script>
-
 </body>
-
 </html>
-

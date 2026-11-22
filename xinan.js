@@ -487,9 +487,136 @@
   let theaterTimer = 1.6;
   let theaterBeat = 0;
 
+  // --- 心安宮 TW / EN / KO 本土化語系字典（非逐字直譯）---
+  const XINAN_I18N = {
+    tw: {
+      brand: "心安宮",
+      seal: "殿",
+      merit: "心安",
+      modeSlap: "打小人",
+      modeBless: "祈福",
+      modeOracle: "問卦",
+      sceneBtn: "換景",
+      autoOn: "自動:演",
+      autoOff: "自動:停",
+      swapPrefix: "換:",
+      slapCta: (w) => `${w}連擊！`,
+      ultReady: "鎮煞重擊！",
+      ultCharge: (c) => `重擊 ${c}/10`,
+      blessCta: (n) => `為 ${n} 放祈福 ↗`,
+      oracleStep1: (n) => `① 為 ${n} 誠心搖籤`,
+      oracleStep2: (n) => `② 為 ${n} 擲聖筊解籤`,
+      oracleShaking: (n) => `為 ${n} 誠心搖籤中...`,
+      oracleThrowing: "聖筊高拋落下中...",
+      closeResult: "收下祝福",
+      bannerAutoOn: "🎬 自動劇情重新開演！隨時點畫面即可接手",
+      bannerAutoOff: "🖐️ 已暫停自動劇情，換你親自開玩！",
+      bannerScene: (lbl) => `🏮 已切換場景：${lbl}`,
+      names: { three_mu: "3畝", kenny: "肯尼", judy: "啾底", tony: "偷泥", shrimp: "蝦婷", junior: "學妹", sara: "沙拉" },
+      weapons: { slipper: "藍白拖", clog: "紅木屐", mallet: "虎頭鎚", fan: "桃木扇" },
+      blessings: { lantern: "平安天燈", wealth: "招財進寶", career: "貴人相助", health: "健康平安" },
+      scenes: { sunny: "櫻花廟埕", office: "歡樂螢幕間", festival: "廟口嘉年華", skylantern: "天燈雲海台", oraclehall: "金龍問卦殿", night: "暮色雕龍殿" }
+    },
+    en: {
+      brand: "Peaceful Temple",
+      seal: "ZEN",
+      merit: "Zen",
+      modeSlap: "Bonk!",
+      modeBless: "Bless",
+      modeOracle: "Oracle",
+      sceneBtn: "Scene",
+      autoOn: "Auto: ON",
+      autoOff: "Auto: OFF",
+      swapPrefix: "Swap:",
+      slapCta: (w) => `${w} Bonk!`,
+      ultReady: "MEGA BONK!",
+      ultCharge: (c) => `Ult ${c}/10`,
+      blessCta: (n) => `Bless ${n} ↗`,
+      oracleStep1: (n) => `① Shake Lot for ${n}`,
+      oracleStep2: (n) => `② Toss Blocks`,
+      oracleShaking: (n) => `Shaking lot for ${n}...`,
+      oracleThrowing: "Tossing lucky blocks...",
+      closeResult: "Claim Blessing",
+      bannerAutoOn: "🎬 Auto-comedy resumed! Tap anywhere to take over.",
+      bannerAutoOff: "🖐️ Auto-show paused — you're in full control!",
+      bannerScene: (lbl) => `🏮 Stage switched: ${lbl}`,
+      names: { three_mu: "3Mu", kenny: "Kenny", judy: "Judy", tony: "Tony", shrimp: "Shrimp", junior: "Junior", sara: "Sara" },
+      weapons: { slipper: "Slipper", clog: "Wood Clog", mallet: "Tiger Mallet", fan: "Lucky Fan" },
+      blessings: { lantern: "Sky Lantern", wealth: "Jackpot", career: "Promotion", health: "Good Vibes" },
+      scenes: { sunny: "Blossom Courtyard", office: "Monitor Showroom", festival: "Temple Carnival", skylantern: "Lantern Terrace", oraclehall: "Dragon Oracle Hall", night: "Twilight Shrine" }
+    },
+    ko: {
+      brand: "마음편안궁",
+      seal: "궁",
+      merit: "평온",
+      modeSlap: "액땜",
+      modeBless: "기원",
+      modeOracle: "운세",
+      sceneBtn: "배경",
+      autoOn: "자동:켜짐",
+      autoOff: "자동:꺼짐",
+      swapPrefix: "교체:",
+      slapCta: (w) => `${w} 연타!`,
+      ultReady: "초강력 액땜!",
+      ultCharge: (c) => `필살 ${c}/10`,
+      blessCta: (n) => `${n} 복 빌어주기 ↗`,
+      oracleStep1: (n) => `① ${n} 운세 뽑기`,
+      oracleStep2: (n) => `② 신점 산통 던지기`,
+      oracleShaking: (n) => `${n} 점괘 흔드는 중...`,
+      oracleThrowing: "산통이 날아오르는 중...",
+      closeResult: "복 받기",
+      bannerAutoOn: "🎬 자동 코미디가 다시 시작됩니다! 터치하면 즉시 직접 조작.",
+      bannerAutoOff: "🖐️ 자동 모드 일시정지 — 이제 직접 플레이하세요!",
+      bannerScene: (lbl) => `🏮 배경 전환: ${lbl}`,
+      names: { three_mu: "3무", kenny: "케니", judy: "주디", tony: "토니", shrimp: "슈림프", junior: "후배", sara: "사라" },
+      weapons: { slipper: "슬리퍼", clog: "나막신", mallet: "호랑이망치", fan: "복부채" },
+      blessings: { lantern: "소원 풍등", wealth: "재물운", career: "귀인운", health: "건강운" },
+      scenes: { sunny: "벚꽃 사당 마당", office: "즐거운 모니터 룸", festival: "사당 축제 광장", skylantern: "풍등 구름 전망대", oraclehall: "황금용 운세전", night: "황혼 용조각전" }
+    }
+  };
+
+  function getXinanLang() {
+    return (window.ArcadeI18n && window.ArcadeI18n.getLang()) || "tw";
+  }
+  function xt() {
+    return XINAN_I18N[getXinanLang()] || XINAN_I18N.tw;
+  }
+  function getLocalizedCharName(s) {
+    return (xt().names && xt().names[s.id]) || s.label;
+  }
+  function getLocalizedWeaponName(w) {
+    return (xt().weapons && xt().weapons[w.id]) || w.label;
+  }
+  function getLocalizedBlessName(b) {
+    return (xt().blessings && xt().blessings[b.id]) || b.label;
+  }
+  function getLocalizedSceneName(id) {
+    return (xt().scenes && xt().scenes[id]) || (SCENE_DEFS[id]?.label || "");
+  }
+
+  function applyXinanStaticChrome() {
+    const t = xt();
+    const h1 = document.querySelector(".brand-text h1");
+    const seal = document.querySelector(".brand-seal");
+    const mLbl = document.querySelector(".merit-label");
+    if (h1) h1.textContent = t.brand;
+    if (seal) seal.textContent = t.seal;
+    if (mLbl) mLbl.textContent = t.merit;
+    const mSlap = document.querySelector('.mode-btn[data-mode="slap"]');
+    const mBless = document.querySelector('.mode-btn[data-mode="bless"]');
+    const mOracle = document.querySelector('.mode-btn[data-mode="oracle"]');
+    if (mSlap) mSlap.textContent = t.modeSlap;
+    if (mBless) mBless.textContent = t.modeBless;
+    if (mOracle) mOracle.textContent = t.modeOracle;
+    if (btnScene) btnScene.textContent = t.sceneBtn;
+    if (btnCloseResult) btnCloseResult.textContent = t.closeResult;
+    syncAutoBtn();
+  }
+
   function syncAutoBtn() {
     if (!btnAuto) return;
-    btnAuto.textContent = autoTheater ? "自動:演" : "自動:停";
+    const t = xt();
+    btnAuto.textContent = autoTheater ? t.autoOn : t.autoOff;
     btnAuto.classList.toggle("auto-on", autoTheater);
   }
 
@@ -707,24 +834,26 @@
     chipsRow.innerHTML = "";
     if (weaponRow) weaponRow.innerHTML = "";
     actionRow.innerHTML = "";
+    const t = xt();
 
     // 第 1 排角色列：7 位角色單排等寬 7 格
     slapScenarios.forEach(s => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "chip-btn" + (selectedScenario.id === s.id && !customTargetLabel ? " active" : "");
-      b.textContent = s.label;
+      b.textContent = getLocalizedCharName(s);
       b.onclick = () => { stopAutoOnUserAction(); selectedScenario = s; customTargetLabel = ""; renderControls(); };
       chipsRow.appendChild(b);
     });
 
-    const targetName = getTargetName();
+    const targetName = customTargetLabel || getLocalizedCharName(selectedScenario);
 
     if (mode === "slap") {
+      const wLabel = getLocalizedWeaponName(selectedWeapon);
       const wCycle = document.createElement("button");
       wCycle.type = "button";
       wCycle.className = "rect-btn cycle-nudge";
-      wCycle.textContent = `換:${selectedWeapon.label}`;
+      wCycle.textContent = `${t.swapPrefix}${wLabel}`;
       wCycle.onclick = () => {
         stopAutoOnUserAction();
         const idx = weapons.findIndex(w => w.id === selectedWeapon.id);
@@ -738,7 +867,7 @@
       slapBtn.type = "button";
       slapBtn.id = "btnPrimaryAction";
       slapBtn.className = "rect-btn primary-btn cta-alive";
-      slapBtn.textContent = `${selectedWeapon.label}連擊！`;
+      slapBtn.textContent = t.slapCta(wLabel);
       slapBtn.onclick = () => { stopAutoOnUserAction(); performSlap(false); };
       actionRow.appendChild(slapBtn);
 
@@ -746,15 +875,16 @@
       ultBtn.type = "button";
       ultBtn.id = "btnUltimateSlap";
       ultBtn.className = "rect-btn " + (slapCharge >= 10 ? "gold-btn ult-ready" : "");
-      ultBtn.textContent = slapCharge >= 10 ? "鎮煞重擊！" : `重擊 ${slapCharge}/10`;
+      ultBtn.textContent = slapCharge >= 10 ? t.ultReady : t.ultCharge(slapCharge);
       ultBtn.disabled = slapCharge < 10;
       ultBtn.onclick = () => { stopAutoOnUserAction(); performSlap(true); };
       actionRow.appendChild(ultBtn);
     } else if (mode === "bless") {
+      const bLabel = getLocalizedBlessName(selectedBless);
       const bCycle = document.createElement("button");
       bCycle.type = "button";
       bCycle.className = "rect-btn cycle-nudge";
-      bCycle.textContent = `換:${selectedBless.label}`;
+      bCycle.textContent = `${t.swapPrefix}${bLabel}`;
       bCycle.onclick = () => {
         stopAutoOnUserAction();
         const idx = blessScenarios.findIndex(s => s.id === selectedBless.id);
@@ -768,7 +898,7 @@
       blessBtn.type = "button";
       blessBtn.id = "btnPrimaryAction";
       blessBtn.className = "rect-btn gold-btn cta-alive";
-      blessBtn.textContent = `為 ${targetName} 放祈福 ↗`;
+      blessBtn.textContent = t.blessCta(targetName);
       blessBtn.onclick = () => { stopAutoOnUserAction(); launchBlessing(); };
       actionRow.appendChild(blessBtn);
     } else if (mode === "oracle") {
@@ -777,12 +907,12 @@
       btn.id = "btnPrimaryAction";
       btn.className = "rect-btn " + (oracleStep === "drawn" ? "gold-btn ult-ready cta-alive" : "primary-btn cta-alive");
       btn.textContent = oracleStep === "drawn"
-        ? `② 為 ${targetName} 擲聖筊解籤`
+        ? t.oracleStep2(targetName)
         : oracleStep === "shaking"
-          ? `為 ${targetName} 誠心搖籤中...`
+          ? t.oracleShaking(targetName)
           : oracleStep === "throwing"
-            ? "聖筊高拋落下中..."
-            : `① 為 ${targetName} 誠心搖籤`;
+            ? t.oracleThrowing
+            : t.oracleStep1(targetName);
       btn.disabled = oracleStep === "shaking" || oracleStep === "throwing";
       btn.onclick = () => {
         stopAutoOnUserAction();
@@ -819,7 +949,7 @@
       activeSceneId = (candidates.length ? candidates : list)[Math.floor(Math.random() * (candidates.length || list.length))];
     }
     const def = SCENE_DEFS[activeSceneId] || SCENE_DEFS.sunny;
-    if (btnScene) btnScene.textContent = "換景";
+    if (btnScene) btnScene.textContent = xt().sceneBtn;
     loadImg(def.keyP);
     loadImg(def.keyD);
   }
@@ -840,13 +970,12 @@
   }
 
   if (btnScene) {
-    btnScene.textContent = "換景";
+    btnScene.textContent = xt().sceneBtn;
     btnScene.addEventListener("click", () => {
       stopAutoOnUserAction();
       pickModeScene(mode, true);
       spawnFestiveShower(mode, 1.0);
-      const def = SCENE_DEFS[activeSceneId] || SCENE_DEFS.sunny;
-      showDeityBanner(`🏮 已切換場景：${def.label}`);
+      showDeityBanner(xt().bannerScene(getLocalizedSceneName(activeSceneId)));
     });
   }
 
@@ -859,10 +988,18 @@
         resultCard.classList.add("hidden");
         if (oracleStep === "done") oracleStep = "ready";
         theaterTimer = 0.25;
-        showDeityBanner("🎬 自動劇情重新開演！隨時點畫面即可接手");
+        showDeityBanner(xt().bannerAutoOn);
       } else {
-        showDeityBanner("🖐️ 已暫停自動劇情，換你親自開玩！");
+        showDeityBanner(xt().bannerAutoOff);
       }
+      renderControls();
+    });
+  }
+
+  applyXinanStaticChrome();
+  if (window.ArcadeI18n) {
+    window.ArcadeI18n.onChange(() => {
+      applyXinanStaticChrome();
       renderControls();
     });
   }
