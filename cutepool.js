@@ -240,10 +240,62 @@
     cpuPlan: null
   };
 
-  // 視覺特效陣列（粒子、星星光環、飄字）
+  // 視覺特效與娛樂互動陣列（粒子、星星光環、飄字、高速星塵拖尾、場上幸運驚喜星、巨無霸袋口回合）
   const effects = [];
   const sparkles = [];
   const floaters = [];
+  const trails = [];
+  let luckyStar = null;
+  let bigPocketTurns = 0;
+
+  const QUIPS = {
+    tw: {
+      playerScore: ['🐶「漂亮！糖果球乖乖進袋！」', '🐶「手感發燙啦！再進一顆！」', '🐶「太甜了！柴柴開掛中 ✨」'],
+      cpuScore: ['🐱「哼哼，機器貓計算零誤差！」', '🐱「這顆葡萄切球漂亮吧？」'],
+      cpuTurn: ['🐱「輪到我囉～看我的紫電球桿！」', '🐱「瞄準中…準備好接招了嗎？」'],
+      scratch: ['🐶「嗚哇！柴犬白球掉進星星袋啦！」', '🐱「哈哈！謝謝送我自由球～」'],
+      luckyBig: ['🌟 吃到幸運星！袋口變超大（持續2回合）！'],
+      luckyBumper: ['⭐ BOING！被可愛星星彈飛啦！']
+    },
+    en: {
+      playerScore: ['🐶 "Sweet shot! Candy pocketed!"', '🐶 "On fire! Keep rolling ✨"'],
+      cpuScore: ['🐱 "Purr-fect calculation!"', '🐱 "Watch my Robo-Cat cue!"'],
+      cpuTurn: ['🐱 "My turn! Purple lightning cue ready!"'],
+      scratch: ['🐶 "Oops! Shiba cue ball fell in!"'],
+      luckyBig: ['🌟 Lucky Star! GIANT POCKETS for 2 turns!'],
+      luckyBumper: ['⭐ BOING! Star bounce!']
+    },
+    ko: {
+      playerScore: ['🐶 "나이스 샷! 캔디 공 쏙!"', '🐶 "완전 달콤해! 한 번 더 ✨"'],
+      cpuScore: ['🐱 "후훗, 로보냥 완벽 계산!"'],
+      cpuTurn: ['🐱 "내 차례! 보라 번개 큐대 출격!"'],
+      scratch: ['🐶 "으악! 시바 흰 공이 빠졌어!"'],
+      luckyBig: ['🌟 행운의 별! 2턴 동안 포켓 초대형 확장!'],
+      luckyBumper: ['⭐ 통통! 별 범퍼 대반격!']
+    }
+  };
+  function randomQuip(kind) {
+    const pool = (QUIPS[lang] && QUIPS[lang][kind]) || QUIPS.tw[kind] || [];
+    return pool.length ? pool[Math.floor(Math.random() * pool.length)] : '';
+  }
+  function showRawNotice(text, ms = 2200) {
+    if (!text) return;
+    statusOverride = { text, until: performance.now() + ms };
+    updateHUD();
+  }
+  function spawnLuckyStar() {
+    if (!bumpersOn) { luckyStar = null; return; }
+    for (let tries = 0; tries < 24; tries++) {
+      const lx = 75 + Math.random() * (world.w - 150);
+      const ly = 95 + Math.random() * (world.h - 190);
+      const pt = { x: lx, y: ly };
+      if (world.balls.every(b => !b.inPlay || dist(pt, b) > BALL_R * 2.8) &&
+          world.bumpers.every(bm => dist(pt, bm) > bm.r + 36)) {
+        luckyStar = { x: lx, y: ly, r: 18, phase: Math.random() * 6.28 };
+        return;
+      }
+    }
+  }
 
   // 視口與轉換
   let viewRect = { x: 20, y: 80, w: 350, h: 640 };
@@ -356,6 +408,9 @@
     statusOverride = null;
     setPower(0.80);
     setSpin({ x: 0, y: 0 });
+    bigPocketTurns = 0;
+    trails.length = 0;
+    spawnLuckyStar();
     updateHUD();
   }
 
@@ -367,7 +422,7 @@
     canvas.height = Math.round(bh * dpr);
 
     const vertical = bh >= bw * 0.92;
-    const topSafe = 94;
+    const topSafe = bw < 780 ? 132 : 94;
     const botSafe = 82;
     const sideSafe = 18;
     const availW = Math.max(180, bw - sideSafe * 2);
@@ -519,13 +574,32 @@
         const damp = Math.pow(0.42, sdt);
         b.vx *= damp;
         b.vy *= damp;
-        if (Math.hypot(b.vx, b.vy) < 9) { b.vx = 0; b.vy = 0; }
-        else moving = true;
+        const spdNow = Math.hypot(b.vx, b.vy);
+        if (spdNow < 9) { b.vx = 0; b.vy = 0; }
+        else {
+          moving = true;
+          if (s === 0 && spdNow > 240 && Math.random() < 0.55) {
+            const stTrail = BALL_STYLES[b.id] || BALL_STYLES[1];
+            trails.push({ x: b.x, y: b.y, r: 5 + Math.random() * 4, color: stTrail.color, age: 0, maxAge: 0.34 });
+          }
+        }
 
-        // 進袋檢測（先於牆壁反彈，超大可愛袋口超爽快！）
+        // 場上幸運驚喜星收集（觸發巨無霸大袋口！）
+        if (bumpersOn && luckyStar && dist(b, luckyStar) < BALL_R + luckyStar.r) {
+          const lx = luckyStar.x, ly = luckyStar.y;
+          luckyStar = null;
+          bigPocketTurns = 2;
+          sound.playWin();
+          spawnPopBurst(lx, ly, '#ffd13b', true);
+          spawnFloater(lx, ly - 18, 'BIG POCKETS! 🌟', '#ff477e');
+          showRawNotice(randomQuip('luckyBig'), 2600);
+        }
+
+        // 進袋檢測（先於牆壁反彈；巨無霸袋口啟動時袋口額外加大 +11px！）
+        const activePocketR = POCKET_R + (bigPocketTurns > 0 ? 11 : 0);
         let pocketed = false;
         for (const pk of world.pockets) {
-          if (dist(b, pk) < POCKET_R) {
+          if (dist(b, pk) < activePocketR) {
             pocketed = true;
             if (b.id === 0) {
               b.inPlay = false; b.vx = 0; b.vy = 0;
@@ -618,6 +692,8 @@
   }
 
   function finishTurn() {
+    if (bigPocketTurns > 0) bigPocketTurns -= 1;
+    if (bumpersOn && !luckyStar && Math.random() < 0.55) spawnLuckyStar();
     // 檢查勝負（先進 4 球或桌上無目標球時高分者勝）
     const remaining = world.balls.filter(b => b.id !== 0 && b.inPlay).length;
     if (world.score[0] >= WIN_SCORE || world.score[1] >= WIN_SCORE || remaining === 0) {
@@ -663,11 +739,13 @@
     if (world.turnPocketed > 0) {
       if (world.turn === 0) {
         world.phase = 'aim';
-        showNotice(world.combo > 1 ? 'combo' : 'point', world.combo);
+        if (world.combo > 1) showNotice('combo', world.combo);
+        else showRawNotice(randomQuip('playerScore'));
       } else {
         world.phase = 'cpu';
         world.cpuTimer = 0;
         world.cpuPlan = planCpuShot();
+        showRawNotice(randomQuip('cpuScore'));
       }
       updateHUD();
       return;
@@ -683,7 +761,7 @@
       world.phase = 'cpu';
       world.cpuTimer = 0;
       world.cpuPlan = planCpuShot();
-      showNotice('turn');
+      showRawNotice(randomQuip('cpuTurn'));
     }
     updateHUD();
   }
@@ -810,7 +888,7 @@
     ctx.restore();
   }
 
-  function drawCandyCueStick(angle, pullPx, isPulling) {
+  function drawCandyCueStick(angle, pullPx, isPulling, isCpu = false) {
     ctx.save();
     ctx.translate(world.cue.x, world.cue.y);
     ctx.rotate(angle);
@@ -818,9 +896,9 @@
     const len = 248;
     const butt = tip - len;
 
-    // 拉桿蓄力金色發光提示外框
+    // 拉桿蓄力發光提示外框
     if (isPulling) {
-      ctx.strokeStyle = 'rgba(255, 224, 90, 0.85)';
+      ctx.strokeStyle = isCpu ? 'rgba(167, 139, 250, 0.85)' : 'rgba(255, 224, 90, 0.85)';
       ctx.lineWidth = 5;
       ctx.beginPath();
       ctx.roundRect(butt - 4, -11, len + 8, 22, 10);
@@ -833,7 +911,9 @@
     ctx.roundRect(butt + 2, 2, len, 11, 5);
     ctx.fill();
 
-    // 糖果粉白條紋球桿主體（統一 2.4px 描邊）
+    // 雙方球桿明顯區分：
+    // 玩家＝草莓粉白條紋糖果魔杖＋薄荷藍握把＋金色星星尾飾
+    // CPU＝葡萄紫×閃電黃機器貓球桿＋深紫科技握把＋紫金菱鑽尾飾
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(butt, -8);
@@ -841,30 +921,27 @@
     ctx.lineTo(tip - 2, 4);
     ctx.lineTo(butt, 8);
     ctx.closePath();
-    ctx.fillStyle = '#fff9f0';
+    ctx.fillStyle = isCpu ? '#3b1d6e' : '#fff9f0';
     ctx.fill();
     ctx.save();
     ctx.clip();
-    // 可愛斜條紋糖果裝飾
-    ctx.fillStyle = '#ff6b9d';
+    ctx.fillStyle = isCpu ? '#fde047' : '#ff6b9d';
     for (let sx = butt - 10; sx < tip; sx += 24) {
       ctx.beginPath();
       ctx.moveTo(sx, -12);
-      ctx.lineTo(sx + 10, -12);
-      ctx.lineTo(sx + 18, 12);
+      ctx.lineTo(sx + (isCpu ? 8 : 10), -12);
+      ctx.lineTo(sx + (isCpu ? 16 : 18), 12);
       ctx.lineTo(sx + 8, 12);
       ctx.closePath();
       ctx.fill();
     }
-    // 尾端薄荷握把段
-    ctx.fillStyle = '#38bdf8';
+    ctx.fillStyle = isCpu ? '#1e1b4b' : '#38bdf8';
     ctx.fillRect(butt, -10, 62, 20);
-    ctx.fillStyle = '#ffd13b';
+    ctx.fillStyle = isCpu ? '#38e8ff' : '#ffd13b';
     ctx.fillRect(butt + 60, -10, 8, 20);
-    // 桿頭黃銅與藍巧克
-    ctx.fillStyle = '#ffd13b';
+    ctx.fillStyle = isCpu ? '#e2e8f0' : '#ffd13b';
     ctx.fillRect(tip - 13, -6, 8, 12);
-    ctx.fillStyle = '#ff477e';
+    ctx.fillStyle = isCpu ? '#a855f7' : '#ff477e';
     ctx.fillRect(tip - 5, -6, 5, 12);
     ctx.restore();
     ctx.beginPath();
@@ -877,11 +954,20 @@
     ctx.lineWidth = STROKE_W;
     ctx.stroke();
 
-    // 球桿尾端可愛星星飾球
-    ctx.fillStyle = '#ffd13b';
-    drawStar(butt - 2, 0, 5, 11, 5.2, 0);
-    ctx.fill();
-    ctx.stroke();
+    // 尾飾造型也不同：玩家金色五角星 vs CPU 紫青科技菱鑽
+    if (isCpu) {
+      ctx.fillStyle = '#38e8ff';
+      ctx.beginPath();
+      ctx.moveTo(butt - 13, 0); ctx.lineTo(butt - 2, -10);
+      ctx.lineTo(butt + 7, 0); ctx.lineTo(butt - 2, 10);
+      ctx.closePath();
+      ctx.fill(); ctx.stroke();
+    } else {
+      ctx.fillStyle = '#ffd13b';
+      drawStar(butt - 2, 0, 5, 11, 5.2, 0);
+      ctx.fill();
+      ctx.stroke();
+    }
 
     ctx.restore();
   }
@@ -959,20 +1045,53 @@
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // 3. 超可愛星星甜甜圈大袋口
+    // 3. 超可愛星星甜甜圈大袋口（巨無霸袋口啟動時自動發光膨脹！）
+    const drawPocketR = POCKET_R + (bigPocketTurns > 0 ? 10 : 0);
     for (const pk of world.pockets) {
-      ctx.fillStyle = theme.pocketOuter;
+      ctx.fillStyle = bigPocketTurns > 0 ? '#fde047' : theme.pocketOuter;
       ctx.strokeStyle = INK;
       ctx.lineWidth = STROKE_W;
-      ctx.beginPath(); ctx.arc(pk.x, pk.y, POCKET_R + 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(pk.x, pk.y, drawPocketR + 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
       ctx.fillStyle = theme.pocketInner;
-      ctx.beginPath(); ctx.arc(pk.x, pk.y, POCKET_R - 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(pk.x, pk.y, drawPocketR - 3, 0, Math.PI * 2); ctx.fill();
 
       // 袋口小星星裝飾
-      ctx.fillStyle = 'rgba(255, 240, 170, 0.35)';
-      drawStar(pk.x, pk.y, 5, 11, 5, tNow * 0.6);
+      ctx.fillStyle = bigPocketTurns > 0 ? 'rgba(255, 230, 100, 0.72)' : 'rgba(255, 240, 170, 0.35)';
+      drawStar(pk.x, pk.y, 5, bigPocketTurns > 0 ? 15 : 11, 5, tNow * (bigPocketTurns > 0 ? 2.2 : 0.6));
       ctx.fill();
+    }
+
+    // 4a. 場上可收集「幸運驚喜星」（巨無霸袋口道具）
+    if (bumpersOn && luckyStar) {
+      const bob = Math.sin(tNow * 5 + luckyStar.phase) * 3;
+      ctx.save();
+      ctx.translate(luckyStar.x, luckyStar.y + bob);
+      ctx.fillStyle = 'rgba(255, 224, 102, 0.32)';
+      ctx.beginPath(); ctx.arc(0, 0, luckyStar.r + 7 + Math.sin(tNow * 7) * 2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff59d';
+      ctx.strokeStyle = INK;
+      ctx.lineWidth = STROKE_W;
+      drawStar(0, 0, 5, luckyStar.r, luckyStar.r * 0.5, tNow * 1.4);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ff477e';
+      ctx.font = '900 11px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('★', 0, 1);
+      ctx.restore();
+    }
+
+    // 4b. 高速糖果球星塵拖尾
+    for (let i = trails.length - 1; i >= 0; i--) {
+      const tr = trails[i];
+      tr.age += dt;
+      if (tr.age >= tr.maxAge) { trails.splice(i, 1); continue; }
+      const p = 1 - tr.age / tr.maxAge;
+      ctx.save();
+      ctx.globalAlpha = p * 0.45;
+      ctx.fillStyle = tr.color;
+      ctx.beginPath(); ctx.arc(tr.x, tr.y, tr.r * p, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
     }
 
     // 4. 可愛彈跳星機關（開啟時）
@@ -1057,7 +1176,7 @@
       const pullPx = world.phase === 'aim'
         ? (isPulling ? getPower() * 62 : 0)
         : Math.sin(Math.PI * Math.min(1, world.cpuTimer / 0.85)) * 38;
-      drawCandyCueStick(world.angle, pullPx, isPulling);
+      drawCandyCueStick(world.angle, pullPx, isPulling, world.phase === 'cpu');
     }
 
     // 8. 進袋與撞擊星光特效
@@ -1252,6 +1371,10 @@
     $('cpuScore').querySelector('b').textContent = String(world.score[1]);
     $('playerScore').classList.toggle('active', world.turn === 0 && world.phase !== 'end');
     $('cpuScore').classList.toggle('active', world.turn === 1 && world.phase !== 'end');
+    const pPips = document.querySelectorAll('#playerPips span');
+    pPips.forEach((sp, i) => sp.classList.toggle('lit', i < world.score[0]));
+    const cPips = document.querySelectorAll('#cpuPips span');
+    cPips.forEach((sp, i) => sp.classList.toggle('lit', i < world.score[1]));
 
     const playable = world.phase === 'aim' && !world.ballInHand && !paused;
     $('btnShoot').disabled = !playable;

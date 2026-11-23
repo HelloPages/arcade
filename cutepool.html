@@ -6,34 +6,52 @@
   <meta name="theme-color" content="#ff8fb1">
   <title>撞球-2｜糖果奇幻撞球</title>
   <link rel="icon" href="./assets/cutepool-cover.webp">
-  <link rel="stylesheet" href="./cutepool.css?v=20261123_cutepool_v1">
+  <link rel="stylesheet" href="./cutepool.css?v=20261123_cutepool_v2">
 </head>
 <body data-i18n-skip>
   <main id="app">
     <canvas id="stage" tabindex="0" aria-label="糖果奇幻撞球桌"></canvas>
 
-    <!-- 頂部可愛積木計分與控制列 -->
+    <!-- 頂部可愛積木 HUD：品牌＋工具鈕＋高辨識度「🐶 你 VS 🐱 CPU」糖果對戰計分板 -->
     <header class="top-hud">
-      <div class="brand-badge">
-        <span class="brand-ball" aria-hidden="true">★</span>
-        <div class="brand-text">
-          <strong data-copy="title">糖果撞球</strong>
-          <span class="ver-stamp">v_16:35</span>
+      <div class="hud-row-main">
+        <div class="brand-badge">
+          <span class="brand-ball" aria-hidden="true">★</span>
+          <div class="brand-text">
+            <strong data-copy="title">糖果撞球</strong>
+            <span class="ver-stamp">v_17:25</span>
+          </div>
+        </div>
+
+        <div class="top-btns">
+          <button type="button" id="btnTheme" class="icon-btn" title="換桌布" aria-label="換桌布">🎨</button>
+          <button type="button" id="btnBumper" class="icon-btn on" title="派對機關開關" aria-label="派對機關開關">⭐</button>
+          <button type="button" id="btnSound" class="icon-btn" title="音效" aria-label="音效" aria-pressed="false">🔊</button>
+          <button type="button" id="btnPause" class="icon-btn" title="選單" aria-label="選單">☰</button>
+          <button type="button" id="btnFs" class="icon-btn" title="全螢幕" aria-label="全螢幕">⛶</button>
         </div>
       </div>
 
-      <div class="score-pill" aria-live="polite">
-        <span id="playerScore" class="score-side active"><em data-copy="you">你</em><b>0</b></span>
-        <span class="score-sep">:</span>
-        <span id="cpuScore" class="score-side"><b>0</b><em>CPU</em></span>
-      </div>
+      <div class="vs-scoreboard" aria-live="polite">
+        <div id="playerScore" class="vs-side vs-player active">
+          <span class="vs-avatar" aria-hidden="true">🐶</span>
+          <div class="vs-meta">
+            <div class="vs-label-row"><span class="vs-turn-dot"></span><em data-copy="you">你</em></div>
+            <div class="vs-pips" id="playerPips"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <b class="vs-num">0</b>
+        </div>
 
-      <div class="top-btns">
-        <button type="button" id="btnTheme" class="icon-btn" title="換桌布" aria-label="換桌布">🎨</button>
-        <button type="button" id="btnBumper" class="icon-btn on" title="彈跳星機關" aria-label="彈跳星機關">⭐</button>
-        <button type="button" id="btnSound" class="icon-btn" title="音效" aria-label="音效" aria-pressed="false">🔊</button>
-        <button type="button" id="btnPause" class="icon-btn" title="選單" aria-label="選單">☰</button>
-        <button type="button" id="btnFs" class="icon-btn" title="全螢幕" aria-label="全螢幕">⛶</button>
+        <span class="vs-badge" aria-hidden="true">VS</span>
+
+        <div id="cpuScore" class="vs-side vs-cpu">
+          <b class="vs-num">0</b>
+          <div class="vs-meta vs-meta-right">
+            <div class="vs-label-row"><em>CPU</em><span class="vs-turn-dot"></span></div>
+            <div class="vs-pips" id="cpuPips"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <span class="vs-avatar vs-avatar-cpu" aria-hidden="true">🐱</span>
+        </div>
       </div>
     </header>
 
@@ -105,6 +123,6 @@
   </main>
 
   <script src="./arcade-i18n.js?v=20261122_i18n_menu_v1"></script>
-  <script src="./cutepool.js?v=20261123_cutepool_v1"></script>
+  <script src="./cutepool.js?v=20261123_cutepool_v2"></script>
 </body>
 </html>

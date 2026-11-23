@@ -295,23 +295,43 @@
         ctx.stroke();
       }
       const shaft = ctx.createLinearGradient(0, -6, 0, 6);
-      shaft.addColorStop(0, '#674122');
-      shaft.addColorStop(0.36, '#f2d49d');
-      shaft.addColorStop(0.51, '#e9bc78');
-      shaft.addColorStop(1, '#69401f');
+      if (player) {
+        // 玩家球桿：經典暖金楓木＋深紅木握把＋黃銅飾環＋藍巧克頭
+        shaft.addColorStop(0, '#674122');
+        shaft.addColorStop(0.36, '#f2d49d');
+        shaft.addColorStop(0.51, '#e9bc78');
+        shaft.addColorStop(1, '#69401f');
+      } else {
+        // CPU 球桿：曜石黑碳纖桿身＋冰藍電鍍金屬環＋銀灰握把，與玩家明顯區分！
+        shaft.addColorStop(0, '#101826');
+        shaft.addColorStop(0.36, '#4b637d');
+        shaft.addColorStop(0.54, '#1f2e42');
+        shaft.addColorStop(1, '#090e17');
+      }
       ctx.fillStyle = '#0a211b76';
       ctx.fillRect(butt, 2, 235, 6);
       ctx.fillStyle = shaft;
       ctx.beginPath();
       ctx.moveTo(butt, -6); ctx.lineTo(tip - 2, -2.5); ctx.lineTo(tip - 2, 2.5); ctx.lineTo(butt, 6);
       ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#482019';
-      ctx.fillRect(butt + 5, -5.4, 64, 10.8);
-      ctx.fillStyle = '#dcb87d';
-      ctx.fillRect(butt + 12, -5.7, 2, 11.4);
-      ctx.fillRect(butt + 63, -5.4, 2, 10.8);
-      ctx.fillStyle = '#e8d8bc'; ctx.fillRect(tip - 10, -2.6, 7, 5.2);
-      ctx.fillStyle = '#456b70'; ctx.fillRect(tip - 3, -2.8, 3, 5.6);
+      if (player) {
+        ctx.fillStyle = '#482019';
+        ctx.fillRect(butt + 5, -5.4, 64, 10.8);
+        ctx.fillStyle = '#dcb87d';
+        ctx.fillRect(butt + 12, -5.7, 2.5, 11.4);
+        ctx.fillRect(butt + 63, -5.4, 2.5, 10.8);
+        ctx.fillStyle = '#e8d8bc'; ctx.fillRect(tip - 10, -2.6, 7, 5.2);
+        ctx.fillStyle = '#456b70'; ctx.fillRect(tip - 3, -2.8, 3, 5.6);
+      } else {
+        ctx.fillStyle = '#14263b';
+        ctx.fillRect(butt + 5, -5.4, 68, 10.8);
+        ctx.fillStyle = '#38e8ff';
+        ctx.fillRect(butt + 11, -5.8, 3.2, 11.6);
+        ctx.fillRect(butt + 42, -5.5, 2.6, 11.0);
+        ctx.fillRect(butt + 67, -5.4, 3.2, 10.8);
+        ctx.fillStyle = '#cbd5e1'; ctx.fillRect(tip - 10, -2.6, 7, 5.2);
+        ctx.fillStyle = '#0ea5e9'; ctx.fillRect(tip - 3, -2.8, 3, 5.6);
+      }
       ctx.restore();
     }
 
