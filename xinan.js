@@ -2391,13 +2391,18 @@
         const bobY = Math.sin(t * 2.8) * 4 * (1 - swing);
         const drawW = wSize * aspect * comicScaleX;
         const drawH = wSize * comicScaleY;
+        // 以實際旋轉角度 wRot 計算完整可見外接矩形（涵蓋藍白拖、紅椅、電蚊拍、紅電鍋旋轉與放大後之真實範圍）
+        const cosR = Math.abs(Math.cos(wRot));
+        const sinR = Math.abs(Math.sin(wRot));
+        const rotW = drawW * cosR + drawH * sinR;
+        const rotH = drawW * sinR + drawH * cosR;
         activeWeaponBox = {
           id: selectedWeapon.id,
           isOverhead: isOverheadDrop,
-          left: Math.round(wxPos - drawW * 0.5),
-          right: Math.round(wxPos + drawW * 0.5),
-          top: Math.round(wyPos + bobY - drawH * 0.5),
-          bottom: Math.round(wyPos + bobY + drawH * 0.5)
+          left: Math.round(wxPos - rotW * 0.5),
+          right: Math.round(wxPos + rotW * 0.5),
+          top: Math.round(wyPos + bobY - rotH * 0.5),
+          bottom: Math.round(wyPos + bobY + rotH * 0.5)
         };
         lastLayoutBoxes.weapon = activeWeaponBox;
         lastLayoutBoxes.charTopY = Math.round(activeCharTopY);
@@ -2735,27 +2740,27 @@
     }
     ctx.globalAlpha = 1;
 
-    // 偵測是否需要錯時避讓：考慮「頭頂武器（紅電鍋）」與「跳起後角色頭頂」，確保角色泡泡絕不遮武器、且不與頂部神明泡泡碰撞！
+    // 偵測是否需要錯時避讓：將「全部 4 款武器旋轉／放大後的真實上緣」與「跳起後角色頭頂」全部納入避讓，
+    // 確保藍白拖、紅椅、電蚊拍、紅電鍋在待機／一般攻擊／重擊全程均絕不被角色泡泡覆蓋，且不與頂部神明泡泡碰撞！
     const topHudBottom = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 14;
-    const overheadWeapon = (mode === "slap" && lastLayoutBoxes.weapon && lastLayoutBoxes.weapon.isOverhead)
-      ? lastLayoutBoxes.weapon
-      : null;
-    const bubbleAnchorBottom = overheadWeapon
-      ? Math.min(activeCharTopY - 18, overheadWeapon.top - 12)
+    const activeWpn = (mode === "slap" && lastLayoutBoxes.weapon) ? lastLayoutBoxes.weapon : null;
+    const bubbleAnchorBottom = activeWpn
+      ? Math.min(activeCharTopY - 18, activeWpn.top - 14)
       : (activeCharTopY - 18);
 
     let suppressDeityForOverlap = false;
     const activeFloat = floatTexts.length > 0 ? floatTexts[floatTexts.length - 1] : null;
     if (deityBannerTimer > 0 && deityBannerText && activeFloat) {
-      // 估計神明泡泡高度（約 104px）＋ 角色泡泡含名牌與尾巴高度（約 106px）＋ 安全間距 28px
-      const neededStackH = 104 + 28 + 106;
-      const availH = (bubbleAnchorBottom + 6) - (topHudBottom + 10);
+      // 估計神明泡泡高度（約 108px）＋ 角色泡泡含名牌與尾巴高度（約 110px）＋ 安全間距 28px
+      const neededStackH = 108 + 28 + 110;
+      const availH = (bubbleAnchorBottom + 4) - (topHudBottom + 10);
       if (availH < neededStackH) suppressDeityForOverlap = true;
     }
 
     // 讀取左側 HTML 道具欄（sidePropRail）實際外框，避免角色長台詞泡泡與名牌被道具欄蓋住
     const railRect = sidePropRail ? sidePropRail.getBoundingClientRect() : null;
     lastLayoutBoxes.bubble = null;
+    lastLayoutBoxes.deityActive = false;
 
     for (let i = floatTexts.length - 1; i >= 0; i--) {
       const ft = floatTexts[i];
@@ -2764,21 +2769,25 @@
       ctx.save();
       ctx.globalAlpha = Math.min(1, ft.life / 0.3);
       const isWideScr = vw > vh;
-      const tailH = 16;
+      const tailH = 14;
       const minSafeTop = (deityBannerTimer > 0 && !suppressDeityForOverlap)
         ? (topHudBottom + 138)
-        : (topHudBottom + 20);
+        : (topHudBottom + 18);
       const targetBottomY = bubbleAnchorBottom;
+      // 若重擊跳至最高點導致上方空間極度緊縮，動態調降字距確保整個泡泡仍嚴格位於 targetBottomY 之上而不反向蓋回武器！
+      const availVertH = Math.max(46, targetBottomY - minSafeTop - tailH);
+      const tightVert = availVertH < 88;
       // 判斷角色泡泡預計垂直範圍是否與左側道具欄重疊；若有重疊，按道具欄實際右緣＋雲弧外凸安全間距重算左界與可用寬度
-      const estTop = Math.max(minSafeTop, targetBottomY - 115);
+      const estTop = Math.max(minSafeTop, targetBottomY - Math.min(115, availVertH + tailH));
       const estBot = targetBottomY;
       const overlapsRail = !!(railRect && railRect.width > 0 && estBot >= railRect.top - 10 && (estTop - 18) <= railRect.bottom + 10);
       const safeLeft = overlapsRail ? Math.ceil(railRect.right) + 12 : 14;
       const safeRight = vw - 14;
       const availW = Math.max(168, safeRight - safeLeft);
-      const ledPitch = isWideScr ? 2.25 : (availW < 310 ? 1.72 : 1.92);
+      const basePitch = isWideScr ? 2.25 : (availW < 310 ? 1.72 : 1.92);
+      const ledPitch = tightVert ? Math.min(basePitch, 1.52) : basePitch;
       const maxBubbleW = Math.min(availW, isWideScr ? 540 : 352);
-      const maxCharsPerLine = Math.max(7, Math.floor((maxBubbleW - 38) / (12 * ledPitch)));
+      const maxCharsPerLine = Math.max(7, Math.floor((maxBubbleW - 36) / (12 * ledPitch)));
 
       // 平衡折行：先按扣除道具欄後的實際可用寬度折行，優先於標點後斷行並確保每行完整不截字
       const chars = Array.from(ft.text || "");
@@ -2824,16 +2833,17 @@
         pad: 2
       })).filter(Boolean);
 
-      const lineGap = 4;
+      const lineGap = tightVert ? 2 : 4;
       const contentW = lineSprites.length ? Math.max(...lineSprites.map(s => s.width)) : 140;
       const contentH = lineSprites.reduce((sum, s) => sum + s.height, 0) + Math.max(0, lineSprites.length - 1) * lineGap;
-      const bw = Math.min(maxBubbleW, Math.max(156, contentW + 34));
-      const bh = Math.max(46, contentH + 24);
+      const bw = Math.min(maxBubbleW, Math.max(156, contentW + 32));
+      const bh = Math.min(availVertH, Math.max(40, contentH + (tightVert ? 16 : 24)));
       const targetAnchorX = activeCharCenterX;
-      const by = Math.max(minSafeTop, targetBottomY - bh - tailH);
+      // 嚴格確保泡泡底緣（含尾巴）絕不低於 targetBottomY（武器上緣上方），同時不壓到頂部 HUD
+      const by = Math.max(topHudBottom + 16, Math.min(targetBottomY - bh - tailH, Math.max(minSafeTop, targetBottomY - bh - tailH)));
       const bx = Math.max(safeLeft, Math.min(safeRight - bw, targetAnchorX - bw * 0.5));
       const tailX = Math.max(bx + 26, Math.min(bx + bw - 26, targetAnchorX));
-      const bounce = Math.sin(t * 5.2) * 2.2;
+      const bounce = Math.sin(t * 5.2) * 1.8;
       lastLayoutBoxes.bubble = {
         left: Math.round(bx),
         right: Math.round(bx + bw),
@@ -2933,6 +2943,7 @@
 
     // 神鬼幽默突發劇情：最上方「活潑不規則漫畫雲朵說話泡泡」（若與跳起角色泡泡空間衝突則自動錯時暫避，永不重疊！）
     if (deityBannerTimer > 0 && deityBannerText && !suppressDeityForOverlap) {
+      lastLayoutBoxes.deityActive = true;
       deityBannerTimer = Math.max(0, deityBannerTimer - dt);
       const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 14;
       const isWideScr = vw > vh;
@@ -3087,7 +3098,7 @@
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_08:15:00",
+    getVersion: () => "v_08:25:00",
     setMood: (m) => { forceMoodForTest = m; },
     setWeapon: (id) => {
       const found = weapons.find(w => w.id === id);
