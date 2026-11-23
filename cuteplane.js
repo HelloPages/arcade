@@ -1281,7 +1281,7 @@
       ctx.translate(jib, 0);
       ctx.fillStyle = "#e2e8f0";
       ctx.strokeStyle = "#231814";
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.4;
       ctx.beginPath();
       ctx.roundRect(-28, -24, 56, 48, 8);
       ctx.fill(); ctx.stroke();
@@ -1302,7 +1302,7 @@
       // 瘋狂旋轉辦公椅（五爪滑輪＋鮮紅坐墊旋轉！）
       ctx.rotate(e.rot);
       ctx.strokeStyle = "#231814";
-      ctx.lineWidth = 3.5;
+      ctx.lineWidth = 2.4;
       for (let i = 0; i < 5; i++) {
         const a = (Math.PI * 2 * i) / 5;
         ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * 26, Math.sin(a) * 26); ctx.stroke();
@@ -1318,7 +1318,7 @@
       const flap = Math.sin(t * 18 + e.phase) * 10;
       ctx.fillStyle = "#34d399";
       ctx.strokeStyle = "#1c2b22";
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.4;
       // 雙翼
       ctx.beginPath();
       ctx.moveTo(0, -6);
@@ -1341,7 +1341,7 @@
       ctx.rotate(Math.sin(t * 10 + e.phase) * 0.18);
       ctx.fillStyle = "#fef3c7";
       ctx.strokeStyle = "#2b1810";
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.4;
       ctx.beginPath(); ctx.ellipse(0, 0, 20, 25, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       ctx.fillStyle = "#34d399";
       ctx.beginPath(); ctx.arc(-7, -7, 5, 0, Math.PI * 2); ctx.arc(8, 5, 6, 0, Math.PI * 2); ctx.fill();
@@ -1376,7 +1376,7 @@
       ctx.rotate(Math.sin(t * 2.4) * 0.12);
       ctx.fillStyle = "#b91c1c";
       ctx.strokeStyle = "#2b1208";
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 2.4;
       // 豪華寬大椅背與扶手砲
       ctx.beginPath(); ctx.roundRect(-72, -56, 144, 92, 24); ctx.fill(); ctx.stroke();
       ctx.fillStyle = "#f59e0b";
@@ -1391,7 +1391,7 @@
     } else if (b.kind === "boss_dino") {
       // 關卡 2 頭目：暴龍泳圈大王（戴墨鏡＋套超大黃色小鴨泳圈！）
       ctx.strokeStyle = "#1c2b22";
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 2.4;
       // 黃色游泳圈
       ctx.fillStyle = "#ffd84d";
       ctx.beginPath(); ctx.ellipse(0, 12, 82, 46, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
@@ -1411,72 +1411,139 @@
     ctx.restore();
   }
 
-  // 繪製連接飛機尾端的「真實互動棒棒糖操控把手」
+  // 繪製連接飛機尾端的「高質感立體螺旋棒棒糖操控把手」（白紙棒＋紅色蝴蝶結＋真實雙色螺旋糖紋＋玻璃高光）
   function drawLollipopHandle(t) {
     const tailX = player.x;
     const tailY = player.y + 30;
     const head = getLollipopHeadPos();
-    const gripScale = lollipopGrabbed ? 1.14 : (1.0 + Math.sin(t * 4.5) * 0.04);
+    const gripScale = lollipopGrabbed ? 1.12 : (1.0 + Math.sin(t * 4.2) * 0.035);
+    const stickAngle = Math.atan2(head.y - tailY, head.x - tailX);
+    const stickLen = Math.hypot(head.x - tailX, head.y - tailY);
 
     ctx.save();
-    // 1. 粉白條紋糖棒（從飛機尾端接到棒棒糖頭）
+    // 1. 立體白紙棒棒糖棍（帶圓柱漸層陰影與細緻外框，不再像虛線繩子）
+    ctx.save();
+    ctx.translate(tailX, tailY);
+    ctx.rotate(stickAngle);
+    const stickGrad = ctx.createLinearGradient(0, -4.2, 0, 4.2);
+    stickGrad.addColorStop(0, "#cbd5e1");
+    stickGrad.addColorStop(0.32, "#ffffff");
+    stickGrad.addColorStop(0.70, "#f8fafc");
+    stickGrad.addColorStop(1, "#94a3b8");
+    ctx.fillStyle = stickGrad;
     ctx.strokeStyle = "#3a1f12";
-    ctx.lineWidth = 9;
-    ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(tailX, tailY); ctx.lineTo(head.x, head.y); ctx.stroke();
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.roundRect(0, -4, Math.max(8, stickLen - LOLLIPOP_R * 0.65), 8, 4);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
 
-    ctx.strokeStyle = "#fffdf5";
-    ctx.lineWidth = 5.5;
-    ctx.beginPath(); ctx.moveTo(tailX, tailY); ctx.lineTo(head.x, head.y); ctx.stroke();
-
-    ctx.strokeStyle = "#ff7aa2";
-    ctx.lineWidth = 4;
-    ctx.setLineDash([6, 6]);
-    ctx.beginPath(); ctx.moveTo(tailX, tailY); ctx.lineTo(head.x, head.y); ctx.stroke();
-    ctx.setLineDash([]);
-
-    // 2. 彩色棒棒糖頭（按住拖曳把手！）
+    // 2. 糖果本體＋緞帶蝴蝶結
     ctx.translate(head.x, head.y);
     ctx.scale(gripScale, gripScale);
+
+    // 拖曳互動光環（輕柔不干擾彈幕）
     if (lollipopGrabbed) {
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
-      ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(0, 0, LOLLIPOP_R + 7, 0, Math.PI * 2); ctx.stroke();
-    }
-    // 糖果底圓＋深色外框
-    ctx.fillStyle = "#ff5789";
-    ctx.strokeStyle = "#3a1f12";
-    ctx.lineWidth = 3.2;
-    ctx.beginPath(); ctx.arc(0, 0, LOLLIPOP_R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    // 旋轉雙色螺旋糖紋（超可愛！）
-    ctx.save();
-    ctx.rotate(t * (lollipopGrabbed ? 4.5 : 1.8));
-    const swirlColors = ["#ffd84d", "#fffdf5", "#48cae4"];
-    for (let s = 0; s < 3; s++) {
-      ctx.rotate((Math.PI * 2) / 3);
-      ctx.strokeStyle = swirlColors[s];
-      ctx.lineWidth = 4.2;
-      ctx.lineCap = "round";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.88)";
+      ctx.lineWidth = 2.4;
       ctx.beginPath();
-      for (let a = 0; a < 2.6; a += 0.2) {
-        const rr = a * 7.2;
-        if (a === 0) ctx.moveTo(0, 0);
-        else ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr);
-      }
+      ctx.arc(0, 0, LOLLIPOP_R + 6, 0, Math.PI * 2);
       ctx.stroke();
     }
+
+    // 可愛立體紅粉蝴蝶結（綁在棒棒糖與糖棒銜接處）
+    ctx.save();
+    ctx.rotate(stickAngle - Math.PI * 0.5);
+    ctx.translate(0, -LOLLIPOP_R + 1);
+    ctx.fillStyle = "#ff4d79";
+    ctx.strokeStyle = "#3a1f12";
+    ctx.lineWidth = 2.4;
+    // 左翼
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(-11, -7, -12, 1);
+    ctx.quadraticCurveTo(-11, 7, 0, 2);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    // 右翼
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(11, -7, 12, 1);
+    ctx.quadraticCurveTo(11, 7, 0, 2);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    // 中央結心
+    ctx.fillStyle = "#ffd166";
+    ctx.beginPath();
+    ctx.arc(0, 1, 3.6, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
     ctx.restore();
-    // 糖果亮面高光點
-    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
-    ctx.beginPath(); ctx.ellipse(-7, -8, 6, 3.2, -0.6, 0, Math.PI * 2); ctx.fill();
+
+    // 糖果底圓＋真實阿基米德雙色螺旋紋（裁切於圓內，草莓紅×奶油白）
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(0, 0, LOLLIPOP_R, 0, Math.PI * 2);
+    ctx.clip();
+
+    ctx.fillStyle = "#fff8ee";
+    ctx.fillRect(-LOLLIPOP_R, -LOLLIPOP_R, LOLLIPOP_R * 2, LOLLIPOP_R * 2);
+
+    ctx.save();
+    ctx.rotate(t * (lollipopGrabbed ? 3.2 : 1.1));
+    // 兩條交錯旋轉的草莓紅與蜜桃粉厚糖條，構成逼真棒棒糖漩渦
+    const drawSpiralRibbon = (startAngle, color, width) => {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      const maxTheta = Math.PI * 5.2;
+      for (let a = 0; a <= maxTheta; a += 0.14) {
+        const rr = (a / maxTheta) * (LOLLIPOP_R + 3);
+        const px = Math.cos(a + startAngle) * rr;
+        const py = Math.sin(a + startAngle) * rr;
+        if (a === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    };
+    drawSpiralRibbon(0, "#ff3b6b", 5.2);
+    drawSpiralRibbon(Math.PI, "#ff85a2", 4.4);
+    ctx.restore();
+
+    // 立體球面邊緣陰影（呈現飽滿糖果厚度）
+    const candyShade = ctx.createRadialGradient(-LOLLIPOP_R * 0.3, -LOLLIPOP_R * 0.3, LOLLIPOP_R * 0.15, 0, 0, LOLLIPOP_R);
+    candyShade.addColorStop(0, "rgba(255, 255, 255, 0.26)");
+    candyShade.addColorStop(0.68, "rgba(255, 255, 255, 0)");
+    candyShade.addColorStop(1, "rgba(130, 18, 48, 0.34)");
+    ctx.fillStyle = candyShade;
+    ctx.beginPath(); ctx.arc(0, 0, LOLLIPOP_R, 0, Math.PI * 2); ctx.fill();
+
+    // 玻璃感弧形高光＋反光小點
+    ctx.fillStyle = "rgba(255, 255, 255, 0.88)";
+    ctx.beginPath();
+    ctx.ellipse(-7, -8, 6.5, 3.0, -0.68, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
+    ctx.beginPath();
+    ctx.arc(-11.5, -2.5, 2.0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 外層深可可色細緻描邊
+    ctx.strokeStyle = "#3a1f12";
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.arc(0, 0, LOLLIPOP_R, 0, Math.PI * 2);
+    ctx.stroke();
     ctx.restore();
   }
 
-  // --- 清淡乾淨柔和粉彩背景繪製（完全撤掉灰濁深色遮罩！）---
+  // --- 精緻手繪俯視地圖繪製（保留豐富插畫細節＋柔和透亮分層，不搶前景彈幕與寶物風采）---
   const PASTEL_STAGES = [
-    { filter: "saturate(0.60) contrast(0.84) brightness(1.07)", wash: "rgba(214, 242, 255, 0.16)" }, // 關卡1：清爽淡藍奶油
-    { filter: "saturate(0.62) contrast(0.85) brightness(1.05)", wash: "rgba(205, 252, 240, 0.15)" }, // 關卡2：清透薄荷水藍
-    { filter: "saturate(0.76) contrast(0.90) brightness(1.02)", wash: "rgba(232, 214, 255, 0.08)" }  // 關卡3：柔和星光薰衣草
+    { filter: "saturate(0.88) contrast(0.94) brightness(1.03)", wash: "rgba(220, 244, 255, 0.12)" }, // 關卡1：甜點雲海王國
+    { filter: "saturate(0.88) contrast(0.94) brightness(1.02)", wash: "rgba(208, 248, 244, 0.12)" }, // 關卡2：珊瑚鯨魚海島
+    { filter: "saturate(0.92) contrast(0.96) brightness(1.04)", wash: "rgba(18, 14, 48, 0.12)" }    // 關卡3：星光夜市空城
   ];
 
   function drawBgLayer(img, alpha, stageIdx) {
@@ -1501,6 +1568,9 @@
         ctx.restore();
       }
     }
+    ctx.filter = "none";
+    ctx.fillStyle = cfg.wash;
+    ctx.fillRect(0, 0, vw, vh);
     ctx.restore();
   }
 
@@ -2226,14 +2296,21 @@
     }
 
     const curIdx = (stageNum - 1) % 3;
-    if (bgFade < 1) drawWonderWorldScene(prevStageIdx, 1);
-    drawWonderWorldScene(curIdx, bgFade);
+    const stageBgImgs = [imgs.bg1, imgs.bg2, imgs.bg3];
+    const prevImg = stageBgImgs[prevStageIdx % 3];
+    const curImg = stageBgImgs[curIdx];
+    if (bgFade < 1) {
+      if (prevImg && prevImg.complete && prevImg.naturalWidth > 0) drawBgLayer(prevImg, 1, prevStageIdx);
+      else drawWonderWorldScene(prevStageIdx, 1);
+    }
+    if (curImg && curImg.complete && curImg.naturalWidth > 0) drawBgLayer(curImg, bgFade, curIdx);
+    else drawWonderWorldScene(curIdx, bgFade);
 
     // 1c. 可擊破奇想彩蛋物件（巨型咖啡機／彩虹氣球束／招財轉蛋機）
     for (const bp of bonusProps) {
       ctx.save();
       ctx.translate(bp.x, bp.y);
-      ctx.strokeStyle = "#2b1810"; ctx.lineWidth = 3;
+      ctx.strokeStyle = "#2b1810"; ctx.lineWidth = 2.4;
       if (bp.hitFlash > 0) ctx.filter = "brightness(1.7)";
       if (bp.kind === "coffeemachine") {
         ctx.fillStyle = "#fb7185"; ctx.beginPath(); ctx.roundRect(-22, -24, 44, 48, 8); ctx.fill(); ctx.stroke();
@@ -2250,14 +2327,32 @@
       ctx.restore();
     }
 
-    // 2. 11 款豐富寶物（6 款實繪 WebP ＋ 5 款精細向量可愛寶物：金幣／星星糖／磁鐵／彩虹禮盒／魔法泡泡）
+    // 2. 可吃寶物統一「翠綠×金光安全光環＋旋轉虛線框」（一眼就能和紅黑危險敵彈區隔！）
     for (const pk of pickups) {
       const def = TREASURES[pk.type] || TREASURES.popcorn;
+      const bobY = Math.sin(t * 6 + pk.phase) * 3;
       ctx.save();
-      ctx.translate(pk.x, pk.y + Math.sin(t * 6 + pk.phase) * 3);
+      ctx.translate(pk.x, pk.y + bobY);
+
+      // 安全可吃外環：明亮薄荷翠綠底暈＋旋轉金色虛線框，絕對不會誤認為敵人子彈
+      const haloR = def.vector ? 21 : 26;
+      ctx.fillStyle = "rgba(46, 232, 138, 0.24)";
+      ctx.beginPath(); ctx.arc(0, 0, haloR, 0, Math.PI * 2); ctx.fill();
+      ctx.save();
+      ctx.rotate(t * 2.2 + pk.phase);
+      ctx.strokeStyle = "#ffe066";
+      ctx.lineWidth = 2.4;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath(); ctx.arc(0, 0, haloR, 0, Math.PI * 2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = "#2ee88a";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.arc(0, 0, haloR - 3.5, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+
       ctx.rotate(Math.sin(t * 3.5 + pk.phase) * 0.14);
-      ctx.shadowColor = "rgba(35, 18, 10, 0.55)";
-      ctx.shadowBlur = 6;
+      ctx.shadowColor = "rgba(18, 92, 54, 0.55)";
+      ctx.shadowBlur = 7;
       if (!def.vector && def.img && imgs[def.img] && imgs[def.img].complete && imgs[def.img].naturalWidth > 0) {
         const im = imgs[def.img], s = 48, asp = im.naturalWidth / im.naturalHeight;
         const w = asp >= 1 ? s : s * asp, h = asp >= 1 ? s / asp : s;
@@ -2266,13 +2361,13 @@
         // 閃亮旋轉金幣
         const wScale = 0.65 + 0.35 * Math.abs(Math.cos(t * 6 + pk.phase));
         ctx.scale(wScale, 1);
-        ctx.fillStyle = "#ffd84d"; ctx.strokeStyle = "#5c2d0c"; ctx.lineWidth = 3;
+        ctx.fillStyle = "#ffd84d"; ctx.strokeStyle = "#5c2d0c"; ctx.lineWidth = 2.4;
         ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = "#fff9db"; ctx.font = "900 14px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText("★", 0, 1);
       } else if (pk.type === "starcandy") {
         // 可愛彩繪星星糖（金平糖）
-        ctx.fillStyle = "#ff8fab"; ctx.strokeStyle = "#3a1f12"; ctx.lineWidth = 2.8;
+        ctx.fillStyle = "#ff8fab"; ctx.strokeStyle = "#3a1f12"; ctx.lineWidth = 2.4;
         ctx.beginPath();
         for (let i = 0; i < 10; i++) {
           const r = i % 2 === 0 ? 16 : 8, a = (Math.PI * 2 * i) / 10 - Math.PI * 0.5;
@@ -2289,12 +2384,12 @@
         ctx.fillStyle = "#e2e8f0"; ctx.fillRect(-15, -12, 6, 8); ctx.fillRect(9, -12, 6, 8);
       } else if (pk.type === "giftbox") {
         // 彩虹驚喜禮盒
-        ctx.fillStyle = "#c084fc"; ctx.strokeStyle = "#2b1810"; ctx.lineWidth = 3;
+        ctx.fillStyle = "#c084fc"; ctx.strokeStyle = "#2b1810"; ctx.lineWidth = 2.4;
         ctx.beginPath(); ctx.roundRect(-16, -15, 32, 30, 6); ctx.fill(); ctx.stroke();
         ctx.fillStyle = "#ffd84d"; ctx.fillRect(-4, -15, 8, 30); ctx.fillRect(-16, -4, 32, 8);
       } else {
         // 魔法困敵泡泡球
-        ctx.fillStyle = "rgba(125, 211, 252, 0.55)"; ctx.strokeStyle = "#0284c7"; ctx.lineWidth = 3;
+        ctx.fillStyle = "rgba(125, 211, 252, 0.55)"; ctx.strokeStyle = "#0284c7"; ctx.lineWidth = 2.4;
         ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(-5, -5, 4.5, 0, Math.PI * 2); ctx.fill();
       }
@@ -2309,19 +2404,19 @@
         const colors = ["#ff3864", "#ffbe0b", "#10b981", "#0ea5e9", "#9333ea"];
         ctx.fillStyle = colors[Math.floor((now * 0.02) % colors.length)];
         ctx.strokeStyle = "#1f0e2e";
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.4;
         ctx.beginPath(); ctx.roundRect(-b.r * 0.55, -17, b.r * 1.1, 34, 6); ctx.fill(); ctx.stroke();
       } else if (b.kind === "boba") {
         ctx.fillStyle = "#3b1b0e";
         ctx.strokeStyle = "#ffbe0b";
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.4;
         ctx.beginPath(); ctx.arc(0, 0, b.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = "#fff";
         ctx.beginPath(); ctx.arc(-2.5, -2.5, 2.5, 0, Math.PI * 2); ctx.fill();
       } else {
         ctx.fillStyle = "#ffca28";
         ctx.strokeStyle = "#2b1206";
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.4;
         ctx.beginPath(); ctx.arc(0, 0, b.r + 0.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = "#fffdf5";
         ctx.beginPath(); ctx.arc(-2, -2, Math.max(2.2, b.r * 0.35), 0, Math.PI * 2); ctx.fill();
@@ -2338,7 +2433,7 @@
         const br = e.size * 0.62 + Math.sin(t * 10) * 2;
         ctx.fillStyle = "rgba(125, 228, 255, 0.30)";
         ctx.strokeStyle = `hsla(${(now * 0.28) % 360}, 95%, 62%, 0.95)`;
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = 2.4;
         ctx.beginPath(); ctx.arc(0, 0, br, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
         ctx.beginPath(); ctx.ellipse(-br * 0.34, -br * 0.34, br * 0.24, br * 0.12, -0.6, 0, Math.PI * 2); ctx.fill();
@@ -2353,20 +2448,20 @@
       ctx.translate(tb.x, tb.y);
       ctx.fillStyle = "rgba(144, 224, 239, 0.38)";
       ctx.strokeStyle = `hsla(${(now * 0.3 + tb.phase * 50) % 360}, 95%, 60%, 0.95)`;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.4;
       ctx.beginPath(); ctx.arc(0, 0, tb.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       ctx.fillStyle = "#ffffff";
       ctx.beginPath(); ctx.arc(-tb.r * 0.32, -tb.r * 0.32, 4.5, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
 
-    // 4c. 尾牙抽獎感：彩虹橢圓光圈＋短彩帶（刻意繪在敵彈與戰機下層，密集吸寶時絕不遮擋危險子彈！）
+    // 4c. 背景慶祝裝飾（嚴格降透明、縮小尺寸，絕不與可吃寶物或危險敵彈混淆！）
     for (const rr of rainbowRings) {
       const p = 1 - rr.life / rr.maxLife;
       ctx.save();
-      ctx.globalAlpha = Math.max(0, (1 - p) * 0.78);
-      ctx.strokeStyle = `hsl(${(rr.hue + p * 180) % 360}, 95%, 58%)`;
-      ctx.lineWidth = 4.0 * (1 - p * 0.5);
+      ctx.globalAlpha = Math.max(0, (1 - p) * 0.30);
+      ctx.strokeStyle = `hsl(${(rr.hue + p * 180) % 360}, 85%, 64%)`;
+      ctx.lineWidth = 2.6 * (1 - p * 0.5);
       ctx.beginPath();
       ctx.ellipse(rr.x, rr.y, rr.rx + (rr.maxRx - rr.rx) * p, rr.ry + (rr.maxRy - rr.ry) * p, 0, 0, Math.PI * 2);
       ctx.stroke();
@@ -2374,34 +2469,56 @@
     }
     for (const c of confetti) {
       ctx.save();
-      ctx.globalAlpha = Math.max(0, (c.life / c.maxLife) * 0.88);
+      ctx.globalAlpha = Math.max(0, (c.life / c.maxLife) * 0.28);
       ctx.translate(c.x, c.y);
       ctx.rotate(c.rot);
       ctx.fillStyle = c.color;
-      ctx.fillRect(-c.w * 0.5, -c.h * 0.5, c.w, c.h);
+      ctx.fillRect(-c.w * 0.36, -c.h * 0.36, c.w * 0.72, c.h * 0.72);
       ctx.restore();
     }
 
-    // 5. 高對比實色敵彈（含暴走影印機公文彈＋深色實框高飽和危險彈！永遠在最上層清楚可見）
+    // 5. 高警戒「必須閃避」危險敵彈（紅黑尖刺外框＋脈衝警戒紅光＋白亮核心，永遠位於最上層一目了然！）
+    const dangerPulse = 1 + Math.sin(t * 18) * 0.14;
     for (const eb of eBullets) {
       ctx.save();
       ctx.translate(eb.x, eb.y);
+      const rad = Math.max(7.5, eb.r + 1.5);
+      // 外層警戒紅光暈
+      ctx.fillStyle = "rgba(255, 0, 58, 0.34)";
+      ctx.beginPath(); ctx.arc(0, 0, (rad + 6) * dangerPulse, 0, Math.PI * 2); ctx.fill();
       if (eb.kind === "memo") {
-        ctx.rotate(t * 7 + eb.x);
+        // 公文危險彈加上鮮紅菱形警戒背板與紅叉，絕不誤當可吃道具
+        ctx.rotate(t * 6 + eb.x);
+        ctx.fillStyle = "#1a0308";
+        ctx.beginPath();
+        ctx.moveTo(0, -14); ctx.lineTo(14, 0); ctx.lineTo(0, 14); ctx.lineTo(-14, 0);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#ff0040";
+        ctx.beginPath();
+        ctx.moveTo(0, -11); ctx.lineTo(11, 0); ctx.lineTo(0, 11); ctx.lineTo(-11, 0);
+        ctx.closePath(); ctx.fill();
         ctx.fillStyle = "#fffdf5";
-        ctx.strokeStyle = "#d90429";
-        ctx.lineWidth = 2.6;
-        ctx.beginPath(); ctx.roundRect(-8, -10, 16, 20, 3); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = "#ef233c";
-        ctx.fillRect(-4, -5, 8, 2.5);
-        ctx.fillRect(-4, 0, 8, 2.5);
+        ctx.fillRect(-5, -6, 10, 12);
+        ctx.strokeStyle = "#d90429"; ctx.lineWidth = 2.4;
+        ctx.beginPath(); ctx.moveTo(-3, -3); ctx.lineTo(3, 3); ctx.moveTo(3, -3); ctx.lineTo(-3, 3); ctx.stroke();
       } else {
-        ctx.fillStyle = "#1f0510";
-        ctx.beginPath(); ctx.arc(0, 0, eb.r + 3.2, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = eb.kind === "toast" ? "#ff6d00" : "#ff0054";
-        ctx.beginPath(); ctx.arc(0, 0, eb.r + 1.0, 0, Math.PI * 2); ctx.fill();
+        // 旋轉四角尖刺黑紅危險彈（與圓潤綠金寶物形成強烈形狀＋色相對比）
+        ctx.save();
+        ctx.rotate(t * 5);
+        ctx.fillStyle = "#18020a";
+        ctx.beginPath();
+        for (let i = 0; i < 8; i++) {
+          const rr = i % 2 === 0 ? rad + 5.2 : rad + 1.4;
+          const aa = (Math.PI * i) / 4;
+          if (i === 0) ctx.moveTo(Math.cos(aa) * rr, Math.sin(aa) * rr);
+          else ctx.lineTo(Math.cos(aa) * rr, Math.sin(aa) * rr);
+        }
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+        ctx.fillStyle = eb.kind === "toast" ? "#ff3d00" : "#ff0044";
+        ctx.beginPath(); ctx.arc(0, 0, rad + 0.6, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#ffffff";
-        ctx.beginPath(); ctx.arc(0, 0, Math.max(2.6, eb.r * 0.42), 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(0, 0, Math.max(3.0, rad * 0.44), 0, Math.PI * 2); ctx.fill();
       }
       ctx.restore();
     }
@@ -2417,14 +2534,14 @@
         ctx.rotate(player.tilt);
         if (player.magnetTime > 0) {
           ctx.strokeStyle = "rgba(255, 87, 137, 0.55)";
-          ctx.lineWidth = 3;
+          ctx.lineWidth = 2.4;
           ctx.setLineDash([7, 5]);
           ctx.beginPath(); ctx.arc(0, 0, 56 + Math.sin(t * 12) * 4, 0, Math.PI * 2); ctx.stroke();
           ctx.setLineDash([]);
         }
         ctx.fillStyle = "#ff7b00";
         ctx.strokeStyle = "#3a1608";
-        ctx.lineWidth = 2.2;
+        ctx.lineWidth = 2.4;
         ctx.beginPath(); ctx.ellipse(0, 32, 8, 11 + Math.sin(t * 45) * 3.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         if (imgs.hero.complete && imgs.hero.naturalWidth > 0) {
           ctx.shadowColor = "rgba(35, 18, 10, 0.58)";
@@ -2435,7 +2552,7 @@
         if (player.shieldTime > 0) {
           ctx.shadowBlur = 0;
           ctx.strokeStyle = `hsla(${(now * 0.25) % 360}, 95%, 52%, 0.95)`;
-          ctx.lineWidth = 4.5;
+          ctx.lineWidth = 2.4;
           ctx.fillStyle = "rgba(72, 202, 228, 0.22)";
           ctx.beginPath(); ctx.arc(0, 0, 45 + Math.sin(t * 10) * 2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         }
@@ -2452,9 +2569,9 @@
       ctx.restore();
     }
     for (const p of particles) {
-      ctx.save(); ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
-      ctx.fillStyle = p.color; ctx.strokeStyle = "#2b1810"; ctx.lineWidth = 1.4;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.save(); ctx.globalAlpha = Math.max(0, (p.life / p.maxLife) * 0.55);
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 0.85, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
 

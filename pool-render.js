@@ -281,12 +281,19 @@
         ctx.stroke();
       }
 
-      const pull = player ? (pulling ? power * 27 : 0) : Math.sin(Math.PI * Math.min(1, match.clock / match.cpuWait)) * 24;
+      const pull = player ? (pulling ? power * 54 : 0) : Math.sin(Math.PI * Math.min(1, match.clock / match.cpuWait)) * 24;
       ctx.save();
       ctx.translate(cue.x, cue.y);
       ctx.rotate(angle);
       const tip = -RADIUS - 7 - pull;
       const butt = tip - 234;
+      if (player && pulling) {
+        ctx.strokeStyle = 'rgba(255, 224, 130, 0.58)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(butt - 3, -9, 238, 18, 8);
+        ctx.stroke();
+      }
       const shaft = ctx.createLinearGradient(0, -6, 0, 6);
       shaft.addColorStop(0, '#674122');
       shaft.addColorStop(0.36, '#f2d49d');

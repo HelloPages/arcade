@@ -2516,10 +2516,10 @@
           ? Math.min(144, propBase * 0.35) * (weaponHeavy ? 1.12 : 1.0)
           : Math.min(148, propBase * 0.35) * (weaponHeavy ? 1.14 : 1.0);
         const wSize = idleSize + (hitSize - idleSize) * swing;
-        let wxPos, wyPos, wRot, comicScaleX, comicScaleY;
+        let wxPos, wyPos, wRot, comicScaleX, comicScaleY, wFlipX = 1;
 
         if (isOverheadDrop) {
-          // 經典紅電鍋：懸浮在角色頭頂正上方蓄勢，點擊瞬間垂直狠狠往下砸頭頂（不遮臉，且對話泡泡退讓至電鍋上方！）
+          // 經典紅電鍋：懸浮在角色頭頂正上方蓄勢，點擊瞬間垂直狠狠往下砸頭頂（鍋底朝下砸中，且對話泡泡退讓至電鍋上方！）
           const topStartY = Math.max(hudBottom + 56, activeCharTopY - idleSize * 0.64);
           const headHitY = activeCharTopY - 8;
           wxPos = altarX;
@@ -2528,14 +2528,25 @@
           comicScaleX = 1 + swing * (weaponHeavy ? 0.22 : 0.16);
           comicScaleY = 1 - swing * (weaponHeavy ? 0.16 : 0.11);
         } else {
-          // 藍白拖／紅塑膠椅／電蚊拍：待機持握在人物右下方肩側，揮擊敲在右頰邊緣，整張臉始終清楚可見！
+          // 側揮三武器依各自原圖受力面精準對齊：
+          // 1) 藍白拖（原圖左下鞋尖、右上後跟、右下藍鞋底）：順時針旋 +90° 以上使「後跟在右下握持、前端鞋尖朝左上、藍鞋底正對人物」，揮擊時以前端鞋底實打拍中！
+          // 2) 阿嬤電蚊拍（原圖左下握把、右上電網）：水平翻轉使「握把在右下握持、電網拍面朝左上」，揮擊時以電網面正面拍中！
+          // 3) 辦桌紅椅：側傾揮擊以平坦椅面砸向人物！
           const restX = Math.min(vw - idleSize * 0.50, altarX + Math.max(108, vSize * 0.58));
           const restY = altarY + vSize * 0.05;
           const hitX = Math.min(vw - hitSize * 0.42, altarX + Math.max(66, vSize * 0.38));
           const hitY = altarY - vSize * 0.06;
           wxPos = restX + (hitX - restX) * swing;
           wyPos = restY + (hitY - restY) * swing;
-          wRot = 0.42 - swing * 1.10 + Math.sin(t * 3.1) * 0.05 * (1 - swing);
+          const idleWobble = Math.sin(t * 3.1) * 0.05 * (1 - swing);
+          if (selectedWeapon.id === "slipper") {
+            wRot = 2.02 - swing * 0.96 + idleWobble;
+          } else if (selectedWeapon.id === "zapper") {
+            wFlipX = -1;
+            wRot = 0.36 - swing * 0.98 + idleWobble;
+          } else {
+            wRot = 0.38 - swing * 1.18 + idleWobble;
+          }
           comicScaleX = 1 + swing * (weaponHeavy ? 0.18 : 0.12);
           comicScaleY = 1 - swing * 0.08;
         }
@@ -2584,7 +2595,7 @@
         }
         ctx.translate(wxPos, wyPos + bobY);
         ctx.rotate(wRot);
-        ctx.scale(comicScaleX, comicScaleY);
+        ctx.scale(comicScaleX * wFlipX, comicScaleY);
         ctx.shadowColor = weaponHeavy ? "#ffd466" : "rgba(0,0,0,0.34)";
         ctx.shadowBlur = weaponHeavy ? 26 : 12;
         ctx.shadowOffsetY = weaponHeavy ? 0 : 6;
@@ -3350,7 +3361,7 @@
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_15:55:00",
+    getVersion: () => "v_16:25:00",
     setScene: (id) => {
       if (SCENE_DEFS[id]) { activeSceneId = id; loadImg(SCENE_DEFS[id].keyP); loadImg(SCENE_DEFS[id].keyD); }
     },

@@ -14,8 +14,8 @@
       title: '撞球-1', table: '撞球桌', you: '你', spin: '旋球', power: '力道', break: '開球', shoot: '出桿', pause: '暫停',
       mute: '靜音', unmute: '開啟聲音', fullscreen: '全螢幕', exitFull: '離開全螢幕', opponent: 'CPU難度', rookie: '初級', club: '中級', pro: '高手',
       resume: '繼續', rematch: '再來一局', language: '語言', close: '關閉', center: '置中', contact: '母球擊點',
-      spinGuide: '上推跟球，下拉回帶，左右加塞。', guide: '先進4球獲勝。拖曳母球反向拉桿，或點球桌瞄準再出桿。犯規後對手可自由擺白球。',
-      breakHint: '點球桌瞄準，按開球', aim: '輪到你', cpu: 'CPU瞄準中', rolling: '球路進行中', place: '點空位擺白球',
+      spinGuide: '上推跟球，下拉回帶，左右加塞。', guide: '先進4球獲勝。點球桌瞄準，再按住球桿往後拉蓄力（放開或往前推桿即可出球），也可直接拖下方力道條按出桿。犯規後對手可自由擺白球。',
+      breakHint: '點球桌瞄準，拖球桿往後拉或按開球', aim: '輪到你・拉球桿或按出桿', cpu: 'CPU瞄準中', rolling: '球路進行中', place: '點空位擺白球',
       scratch: '白球落袋・對手自由球', miss: '白球未碰球・對手自由球', noRail: '未碰庫也未進球・對手自由球', turn: '換手',
       point: '進球・繼續出桿', combo: '連進{n}球', tiebreak: '3比3・下一球定勝負',
       won: '你贏了', lost: 'CPU獲勝', streak: '連勝{n}場', best: '最佳{n}場',
@@ -24,8 +24,8 @@
       title: 'Pool-1', table: 'Pool table', you: 'YOU', spin: 'Spin', power: 'Power', break: 'Break', shoot: 'Shoot', pause: 'Pause',
       mute: 'Mute', unmute: 'Unmute', fullscreen: 'Fullscreen', exitFull: 'Exit fullscreen', opponent: 'CPU difficulty', rookie: 'Rookie', club: 'Club', pro: 'Expert',
       resume: 'Resume', rematch: 'Rematch', language: 'Language', close: 'Close', center: 'Center', contact: 'Cue ball contact point',
-      spinGuide: 'Top for follow, bottom for draw, left or right for side spin.', guide: 'First to pocket four balls wins. Drag back from the cue ball, or tap to aim and press Shoot. Fouls give the opponent ball in hand.',
-      breakHint: 'Tap the table to aim, then break', aim: 'Your turn', cpu: 'CPU is lining up a shot', rolling: 'Balls in play', place: 'Tap an open spot for the cue ball',
+      spinGuide: 'Top for follow, bottom for draw, left or right for side spin.', guide: 'First to pocket four balls wins. Tap to aim, then pull the cue stick back and release (or push forward) to shoot. Fouls give the opponent ball in hand.',
+      breakHint: 'Tap to aim, pull cue stick or press Break', aim: 'Your turn · pull cue or Shoot', cpu: 'CPU is lining up a shot', rolling: 'Balls in play', place: 'Tap an open spot for the cue ball',
       scratch: 'Scratch · opponent has ball in hand', miss: 'No ball hit · opponent has ball in hand', noRail: 'No cushion or pocket · opponent has ball in hand', turn: 'Turn over',
       point: 'Pocketed · shoot again', combo: '{n} balls in a row', tiebreak: '3–3 · next ball wins',
       won: 'You win', lost: 'CPU wins', streak: '{n} win streak', best: 'Best {n}',
@@ -34,8 +34,8 @@
       title: '포켓볼-1', table: '포켓볼 테이블', you: '나', spin: '회전', power: '세기', break: '브레이크', shoot: '치기', pause: '일시정지',
       mute: '음소거', unmute: '소리 켜기', fullscreen: '전체 화면', exitFull: '전체 화면 종료', opponent: 'CPU 난이도', rookie: '초급', club: '중급', pro: '고급',
       resume: '계속하기', rematch: '한 판 더', language: '언어', close: '닫기', center: '가운데', contact: '흰 공의 타점',
-      spinGuide: '위는 밀어치기, 아래는 끌어치기, 좌우는 옆회전입니다.', guide: '공을 먼저 4개 넣으면 이깁니다. 흰 공에서 뒤로 끌거나 테이블을 눌러 조준한 뒤 치세요. 파울이 나면 상대가 흰 공을 놓을 수 있습니다.',
-      breakHint: '테이블을 눌러 조준하고 브레이크', aim: '내 차례', cpu: 'CPU 조준 중', rolling: '공이 굴러가는 중', place: '빈 곳을 눌러 흰 공 놓기',
+      spinGuide: '위는 밀어치기, 아래는 끌어치기, 좌우는 옆회전입니다.', guide: '공을 먼저 4개 넣으면 이깁니다. 테이블을 눌러 조준한 뒤 큐대를 뒤로 당겼다 놓거나 앞으로 밀어 치세요. 파울이 나면 상대가 흰 공을 놓을 수 있습니다.',
+      breakHint: '조준 후 큐대를 뒤로 당기거나 브레이크', aim: '내 차례 · 큐대 당겨 치기', cpu: 'CPU 조준 중', rolling: '공이 굴러가는 중', place: '빈 곳을 눌러 흰 공 놓기',
       scratch: '흰 공이 들어갔습니다 · 상대 프리볼', miss: '공을 맞히지 못했습니다 · 상대 프리볼', noRail: '쿠션과 포켓을 놓쳤습니다 · 상대 프리볼', turn: '차례 교대',
       point: '득점 · 한 번 더', combo: '{n}개 연속 득점', tiebreak: '3 대 3 · 다음 득점으로 승부',
       won: '승리', lost: 'CPU 승리', streak: '{n}연승', best: '최고 {n}연승',
@@ -306,16 +306,38 @@
       y: (event.clientY - dom.top - renderer.rect.y) / renderer.scale };
   }
 
+  function isOnCueStick(point) {
+    const vx = point.x - match.cue.x;
+    const vy = point.y - match.cue.y;
+    const bx = -Math.cos(match.angle);
+    const by = -Math.sin(match.angle);
+    const proj = vx * bx + vy * by;
+    const perp = Math.abs(vx * (-by) + vy * bx);
+    return (proj >= RADIUS * 0.5 && proj <= 275 && perp <= 26);
+  }
+
   canvas.addEventListener('pointerdown', event => {
     if (!event.isPrimary || event.button !== 0 || paused || match.phase !== 'aim') return;
     sound.wake();
     toggleSpin(false);
     const point = canvasPoint(event);
-    const onCue = distance(point, match.cue) < RADIUS + 16;
-    pointer = { id: event.pointerId, cue: onCue, pulled: false, angle: match.angle };
+    const onBall = distance(point, match.cue) < RADIUS + 16;
+    const onStick = !match.ballInHand && isOnCueStick(point);
+    pointer = {
+      id: event.pointerId,
+      cue: onBall || onStick,
+      stick: onStick && !onBall,
+      start: point,
+      pulled: false,
+      lastBack: 0,
+      maxBack: 0,
+      peakPower: power(),
+      angle: match.angle,
+      struck: false
+    };
     canvas.setPointerCapture(event.pointerId);
     if (match.ballInHand) placement = point;
-    else if (!onCue) match.angle = Math.atan2(point.y - match.cue.y, point.x - match.cue.x);
+    else if (!pointer.cue) match.angle = Math.atan2(point.y - match.cue.y, point.x - match.cue.x);
   });
 
   canvas.addEventListener('pointermove', event => {
@@ -324,13 +346,48 @@
       if (event.pointerType === 'mouse' && match.ballInHand && match.phase === 'aim') placement = point;
       return;
     }
-    const length = distance(point, match.cue);
-    if (match.ballInHand) placement = point;
-    else if (!pointer.cue) match.angle = Math.atan2(point.y - match.cue.y, point.x - match.cue.x);
-    else if (length > 18 || pointer.pulled) {
-      pointer.pulled = true;
-      if (length > 6) match.angle = Math.atan2(match.cue.y - point.y, match.cue.x - point.x);
-      setPower(clamp((length - 12) / 132, MIN_POWER, 1));
+    if (pointer.struck) return;
+    if (match.ballInHand) {
+      placement = point;
+      return;
+    }
+    if (!pointer.cue) {
+      match.angle = Math.atan2(point.y - match.cue.y, point.x - match.cue.x);
+      return;
+    }
+    if (pointer.stick) {
+      // 直接抓球桿身往後拉蓄力（鎖定瞄準角度不抖動），同步即時更新下方力道條與百分比數值；
+      // 支援「拉後放開出桿」或「拉後順手往前推桿撞球」兩種直覺操作！
+      const bx = -Math.cos(pointer.angle);
+      const by = -Math.sin(pointer.angle);
+      const back = (point.x - pointer.start.x) * bx + (point.y - pointer.start.y) * by;
+      const forwardPush = pointer.lastBack - back;
+      pointer.lastBack = back;
+      if (back > 6 || pointer.pulled) {
+        pointer.pulled = true;
+        const clampedBack = Math.max(0, back);
+        if (clampedBack > pointer.maxBack) {
+          pointer.maxBack = clampedBack;
+          pointer.peakPower = clamp(clampedBack / 138, MIN_POWER, 1);
+        }
+        const liveStrength = clamp(clampedBack / 138, MIN_POWER, 1);
+        setPower(liveStrength);
+        // 若已明顯往後拉蓄力（> 26px），接著順手往前推桿過起點（forwardPush > 5）即直接推桿出球！
+        if (pointer.maxBack > 26 && back <= 4 && forwardPush > 5) {
+          pointer.struck = true;
+          setPower(pointer.peakPower);
+          shoot(pointer.peakPower);
+          return;
+        }
+      }
+    } else {
+      // 抓白球反向拖曳（既有手感完整保留，同步即時更新力道數值）
+      const length = distance(point, match.cue);
+      if (length > 18 || pointer.pulled) {
+        pointer.pulled = true;
+        if (length > 6) match.angle = Math.atan2(match.cue.y - point.y, match.cue.x - point.x);
+        setPower(clamp((length - 12) / 132, MIN_POWER, 1));
+      }
     }
   });
 
@@ -338,6 +395,7 @@
     if (!pointer || pointer.id !== event.pointerId) return;
     const previous = pointer;
     pointer = null;
+    if (previous.struck) return;
     if (cancelled) {
       placement = null;
       match.angle = previous.angle;
@@ -348,6 +406,8 @@
         placement = statusOverride = null;
         updateHUD();
       }
+    } else if (previous.stick) {
+      if (previous.pulled && previous.lastBack > 14) shoot(power());
     } else if (previous.pulled && distance(canvasPoint(event), match.cue) > 24) shoot();
   }
 
