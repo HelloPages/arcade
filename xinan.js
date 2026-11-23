@@ -2760,6 +2760,7 @@
     // 讀取左側 HTML 道具欄（sidePropRail）實際外框，避免角色長台詞泡泡與名牌被道具欄蓋住
     const railRect = sidePropRail ? sidePropRail.getBoundingClientRect() : null;
     lastLayoutBoxes.bubble = null;
+    lastLayoutBoxes.deity = null;
     lastLayoutBoxes.deityActive = false;
 
     for (let i = floatTexts.length - 1; i >= 0; i--) {
@@ -2774,22 +2775,39 @@
         ? (topHudBottom + 138)
         : (topHudBottom + 18);
       const targetBottomY = bubbleAnchorBottom;
-      // 若重擊跳至最高點導致上方空間極度緊縮，動態調降字距確保整個泡泡仍嚴格位於 targetBottomY 之上而不反向蓋回武器！
-      const availVertH = Math.max(46, targetBottomY - minSafeTop - tailH);
-      const tightVert = availVertH < 88;
-      // 判斷角色泡泡預計垂直範圍是否與左側道具欄重疊；若有重疊，按道具欄實際右緣＋雲弧外凸安全間距重算左界與可用寬度
-      const estTop = Math.max(minSafeTop, targetBottomY - Math.min(115, availVertH + tailH));
+      const availVertH = targetBottomY - (topHudBottom + 18) - tailH;
+
+      // 當上方高度不足以在不重疊武器／頂部 HUD 的情況下置中放置泡泡（例如 1280×720 紅電鍋重擊最高點），
+      // 優先切換為「側向安全位置」（人物與武器右側或左側寬廣空域），保留完整可讀台詞且與武器／臉／側欄零交集！
+      const railSafeLeft = (railRect && railRect.width > 0) ? (Math.ceil(railRect.right) + 14) : 14;
+      const safeRight = vw - 16;
+      const obsLeft = Math.min(activeWpn ? activeWpn.left : (altarX - 95), altarX - vSize * 0.40);
+      const obsRight = Math.max(activeWpn ? activeWpn.right : (altarX + 95), altarX + vSize * 0.40);
+      const rightSideSpace = safeRight - (obsRight + 24);
+      const leftSideSpace = (obsLeft - 24) - railSafeLeft;
+      const useSidePlacement = (availVertH < 72) && (rightSideSpace >= 175 || leftSideSpace >= 175);
+      const sideDir = useSidePlacement ? (rightSideSpace >= leftSideSpace ? "right" : "left") : "top";
+
+      const estTop = Math.max(minSafeTop, targetBottomY - Math.min(115, Math.max(46, availVertH) + tailH));
       const estBot = targetBottomY;
       const overlapsRail = !!(railRect && railRect.width > 0 && estBot >= railRect.top - 10 && (estTop - 18) <= railRect.bottom + 10);
-      const safeLeft = overlapsRail ? Math.ceil(railRect.right) + 12 : 14;
-      const safeRight = vw - 14;
-      const availW = Math.max(168, safeRight - safeLeft);
-      const basePitch = isWideScr ? 2.25 : (availW < 310 ? 1.72 : 1.92);
+      let safeLeft = overlapsRail ? railSafeLeft : 14;
+      let availW = Math.max(168, safeRight - safeLeft);
+      if (sideDir === "right") {
+        safeLeft = Math.ceil(obsRight) + 24;
+        availW = Math.max(170, safeRight - safeLeft);
+      } else if (sideDir === "left") {
+        safeLeft = railSafeLeft;
+        availW = Math.max(170, Math.floor(obsLeft) - 24 - safeLeft);
+      }
+
+      const tightVert = !useSidePlacement && availVertH < 88;
+      const basePitch = isWideScr ? 2.15 : (availW < 310 ? 1.72 : 1.92);
       const ledPitch = tightVert ? Math.min(basePitch, 1.52) : basePitch;
-      const maxBubbleW = Math.min(availW, isWideScr ? 540 : 352);
+      const maxBubbleW = Math.min(availW, isWideScr ? 440 : 352);
       const maxCharsPerLine = Math.max(7, Math.floor((maxBubbleW - 36) / (12 * ledPitch)));
 
-      // 平衡折行：先按扣除道具欄後的實際可用寬度折行，優先於標點後斷行並確保每行完整不截字
+      // 平衡折行：先按實際可用寬度折行，優先於標點後斷行並確保每行完整不截字
       const chars = Array.from(ft.text || "");
       const lines = [];
       if (chars.length <= maxCharsPerLine) {
@@ -2837,17 +2855,27 @@
       const contentW = lineSprites.length ? Math.max(...lineSprites.map(s => s.width)) : 140;
       const contentH = lineSprites.reduce((sum, s) => sum + s.height, 0) + Math.max(0, lineSprites.length - 1) * lineGap;
       const bw = Math.min(maxBubbleW, Math.max(156, contentW + 32));
-      const bh = Math.min(availVertH, Math.max(40, contentH + (tightVert ? 16 : 24)));
+      const bh = useSidePlacement
+        ? Math.max(46, contentH + 24)
+        : Math.min(Math.max(46, availVertH), Math.max(40, contentH + (tightVert ? 16 : 24)));
       const targetAnchorX = activeCharCenterX;
-      // 嚴格確保泡泡底緣（含尾巴）絕不低於 targetBottomY（武器上緣上方），同時不壓到頂部 HUD
-      const by = Math.max(topHudBottom + 16, Math.min(targetBottomY - bh - tailH, Math.max(minSafeTop, targetBottomY - bh - tailH)));
-      const bx = Math.max(safeLeft, Math.min(safeRight - bw, targetAnchorX - bw * 0.5));
+      let bx, by;
+      if (sideDir === "right") {
+        bx = safeLeft;
+        by = Math.max(topHudBottom + 24, Math.min(vh - 170 - bh, activeCharTopY - 10));
+      } else if (sideDir === "left") {
+        bx = Math.max(railSafeLeft, Math.floor(obsLeft) - 24 - bw);
+        by = Math.max(topHudBottom + 24, Math.min(vh - 170 - bh, activeCharTopY - 10));
+      } else {
+        by = Math.max(topHudBottom + 16, Math.min(targetBottomY - bh - tailH, Math.max(minSafeTop, targetBottomY - bh - tailH)));
+        bx = Math.max(safeLeft, Math.min(safeRight - bw, targetAnchorX - bw * 0.5));
+      }
       const tailX = Math.max(bx + 26, Math.min(bx + bw - 26, targetAnchorX));
       const bounce = Math.sin(t * 5.2) * 1.8;
       lastLayoutBoxes.bubble = {
-        left: Math.round(bx),
-        right: Math.round(bx + bw),
-        top: Math.round(by - 17),
+        left: Math.round(bx - 10),
+        right: Math.round(bx + bw + 10),
+        top: Math.round(by - 18),
         bottom: Math.round(by + bh + tailH)
       };
 
@@ -2993,10 +3021,35 @@
       const contentH = dSprites.reduce((sum, s) => sum + s.height, 0) + Math.max(0, dSprites.length - 1) * lineGap;
       const bw = Math.min(maxBubbleW, Math.max(196, contentW + 40));
       const bh = Math.max(46, contentH + 26);
-      const bx = vw * 0.5 - bw * 0.5;
-      // 嚴格留在頂部牌匾下方、且不壓到人物臉部
+      let bx = vw * 0.5 - bw * 0.5;
+      // 嚴格留在頂部牌匾下方，並直接檢查武器外框（例如 1280×720 單獨顯示神明泡泡時紅電鍋鍋蓋在正中央！）
       const maxTopY = Math.max(hudB, activeCharTopY - bh - 26);
-      const by = Math.min(hudB + 10, maxTopY);
+      let by = Math.min(hudB + 10, maxTopY);
+      const dWpn = (mode === "slap" && lastLayoutBoxes.weapon) ? lastLayoutBoxes.weapon : null;
+      if (dWpn) {
+        const dBot = by + bh + 12;
+        const dLeft = bx - 10, dRight = bx + bw + 10;
+        const hitsWpn = dBot > dWpn.top - 8 && by - 16 < dWpn.bottom + 8 && dRight > dWpn.left - 8 && dLeft < dWpn.right + 8;
+        if (hitsWpn) {
+          // 若武器在中央上方（如 1280×720 紅電鍋），優先移到武器左側或右側上空，保持神明泡泡與武器零交集！
+          const dRailLeft = (railRect && railRect.width > 0) ? (Math.ceil(railRect.right) + 18) : 18;
+          const leftSlot = (dWpn.left - 24) - dRailLeft;
+          const rightSlot = (vw - 18) - (dWpn.right + 24);
+          if (leftSlot >= bw) {
+            bx = Math.max(dRailLeft, dWpn.left - 24 - bw);
+          } else if (rightSlot >= bw) {
+            bx = Math.min(vw - 18 - bw, dWpn.right + 24);
+          } else {
+            by = Math.max(hudB, dWpn.top - bh - 16);
+          }
+        }
+      }
+      lastLayoutBoxes.deity = {
+        left: Math.round(bx - 10),
+        right: Math.round(bx + bw + 10),
+        top: Math.round(by - 16),
+        bottom: Math.round(by + bh + 10)
+      };
       const bob = Math.sin(t * 4.2) * 1.8;
 
       ctx.save();
@@ -3098,7 +3151,7 @@
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_08:25:00",
+    getVersion: () => "v_08:35:00",
     setMood: (m) => { forceMoodForTest = m; },
     setWeapon: (id) => {
       const found = weapons.find(w => w.id === id);
