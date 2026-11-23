@@ -1815,16 +1815,42 @@
       }
     }
 
-    // 角色頭像裁切繪製：從 normal 透明全身圖以 alpha>16 外框精準裁切頭臉區，不拉伸、不裁切頭頂
+    // 各角色頭像精準 ROI（相對於原圖寬高比例：cx, cy 為圓心、h 為正方形邊長佔原圖高度比；完整包含頭頂、五官與下巴，完全不更動原圖）
+    const CHIP_AVATAR_ROI = {
+      "3畝":    { cx: 0.48, cy: 0.29,  h: 0.58 },
+      "Kenny":  { cx: 0.49, cy: 0.295, h: 0.49 },
+      "Judy":   { cx: 0.50, cy: 0.305, h: 0.52 },
+      "Tony":   { cx: 0.49, cy: 0.275, h: 0.48 },
+      "Shrimp": { cx: 0.50, cy: 0.27,  h: 0.48 },
+      "Junior": { cx: 0.49, cy: 0.285, h: 0.49 },
+      "Sara":   { cx: 0.50, cy: 0.30,  h: 0.27 },
+      "RuiRui": { cx: 0.49, cy: 0.13,  h: 0.26 },
+      "WanWan": { cx: 0.50, cy: 0.13,  h: 0.26 }
+    };
+
+    function computeChipAvatarRect(im, charKey) {
+      const nw = im.naturalWidth;
+      const nh = im.naturalHeight;
+      const spec = CHIP_AVATAR_ROI[charKey];
+      if (spec) {
+        const size = Math.min(nw, nh, Math.round(nh * spec.h));
+        const sx = Math.max(0, Math.min(nw - size, Math.round(nw * spec.cx - size * 0.5)));
+        const sy = Math.max(0, Math.min(nh - size, Math.round(nh * spec.cy - size * 0.5)));
+        return { sx, sy, sw: size, sh: size };
+      }
+      const box = getOpaqueBox(im) || { x: 0, y: 0, w: nw, h: nh };
+      const size = Math.min(nw, nh, Math.max(box.h * 0.52, box.w * 0.88));
+      const sx = Math.max(0, Math.min(nw - size, box.x + (box.w - size) * 0.5));
+      const sy = Math.max(0, Math.min(nh - size, box.y - size * 0.03));
+      return { sx, sy, sw: size, sh: size };
+    }
+
+    // 角色頭像裁切繪製：依各角色精準 ROI 裁切完整頭臉（含頭頂、五官與下巴），等比縮放不拉伸
     function drawChipAvatar(cv, charKey) {
       if (!cv || !charKey) return;
       const im = loadImg(`${charKey}_normal`);
       if (!im || !im.complete || !im.naturalWidth) return;
-      const box = getOpaqueBox(im) || { x: 0, y: 0, w: im.naturalWidth, h: im.naturalHeight };
-      const cropH = Math.min(box.h * 0.44, box.w * 0.88);
-      const cropW = cropH;
-      const sx = Math.max(0, Math.min(im.naturalWidth - cropW, box.x + (box.w - cropW) * 0.5));
-      const sy = Math.max(0, box.y - cropH * 0.04);
+      const { sx, sy, sw, sh } = computeChipAvatarRect(im, charKey);
       const dprAv = Math.min(window.devicePixelRatio || 1, 2);
       const sz = Math.round(28 * dprAv);
       if (cv.width !== sz || cv.height !== sz) { cv.width = sz; cv.height = sz; }
@@ -1834,7 +1860,7 @@
       g.beginPath();
       g.arc(sz * 0.5, sz * 0.5, sz * 0.5, 0, Math.PI * 2);
       g.clip();
-      g.drawImage(im, sx, sy, cropW, cropH, 0, 0, sz, sz);
+      g.drawImage(im, sx, sy, sw, sh, 0, 0, sz, sz);
       g.restore();
     }
     window.__refreshChipAvatars = function () {
@@ -3324,7 +3350,7 @@
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_15:45:00",
+    getVersion: () => "v_15:55:00",
     setScene: (id) => {
       if (SCENE_DEFS[id]) { activeSceneId = id; loadImg(SCENE_DEFS[id].keyP); loadImg(SCENE_DEFS[id].keyD); }
     },
