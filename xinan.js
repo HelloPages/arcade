@@ -1424,7 +1424,17 @@
   }
 
   const btnFs = document.getElementById("btnFs");
-  const isLobbyEmbed = location.search.includes("embed=1");
+  // 精準解析 embed=1 參數，且僅在「確實位於大廳 iframe（window.self !== window.top）」時隱藏內頁全螢幕鈕；
+  // 若使用者直接單獨開啟 xinan.html?embed=1（頂層視窗），仍正常顯示並可進退全螢幕。
+  const isLobbyEmbed = (() => {
+    try {
+      const sp = new URLSearchParams(location.search);
+      if (sp.get("embed") !== "1") return false;
+      try { return window.self !== window.top; } catch { return true; }
+    } catch {
+      return false;
+    }
+  })();
 
   function getFullscreenElement() {
     return document.fullscreenElement || document.webkitFullscreenElement || null;
@@ -3269,7 +3279,7 @@
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_11:35:00",
+    getVersion: () => "v_11:48:00",
     setScene: (id) => {
       if (SCENE_DEFS[id]) { activeSceneId = id; loadImg(SCENE_DEFS[id].keyP); loadImg(SCENE_DEFS[id].keyD); }
     },
