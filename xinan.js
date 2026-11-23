@@ -1423,13 +1423,92 @@
     syncAutoBtn();
   }
 
-  function updateFsPadding() {
-    const inEmbed = location.search.includes("embed=1");
-    const maybeFs = inEmbed && (!!document.fullscreenElement || window.innerHeight >= (window.screen?.height || 9999) - 90);
-    document.body.classList.toggle("in-fs", maybeFs);
+  const btnFs = document.getElementById("btnFs");
+  const isLobbyEmbed = location.search.includes("embed=1");
+
+  function getFullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
   }
+
+  function syncFsButtonUI() {
+    if (!btnFs) return;
+    if (isLobbyEmbed) {
+      btnFs.classList.add("hidden");
+      return;
+    }
+    btnFs.classList.remove("hidden");
+    const active = !!getFullscreenElement();
+    btnFs.classList.toggle("is-fs", active);
+    btnFs.setAttribute("aria-pressed", active ? "true" : "false");
+    btnFs.setAttribute("aria-label", active ? "退出全螢幕" : "進入全螢幕");
+    btnFs.title = active ? "退出全螢幕" : "進入全螢幕";
+    btnFs.textContent = active ? "✕" : "⛶";
+  }
+
+  function updateFsPadding() {
+    const maybeFs = isLobbyEmbed && (!!getFullscreenElement() || window.innerHeight >= (window.screen?.height || 9999) - 90);
+    document.body.classList.toggle("in-fs", maybeFs);
+    syncFsButtonUI();
+  }
+
+  function handleFsChange() {
+    updateFsPadding();
+    resize();
+    requestAnimationFrame(() => resize());
+  }
+
+  if (btnFs) {
+    btnFs.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (isLobbyEmbed) return;
+      const fsEl = getFullscreenElement();
+      if (fsEl) {
+        const exitFn = document.exitFullscreen || document.webkitExitFullscreen;
+        if (typeof exitFn !== "function") {
+          showDeityBanner("目前瀏覽器不支援程式退出全螢幕，請按系統返回或 Esc 鍵");
+          syncFsButtonUI();
+          return;
+        }
+        try {
+          const p = exitFn.call(document);
+          if (p && typeof p.catch === "function") {
+            p.catch(() => {
+              showDeityBanner("退出全螢幕失敗，請按系統返回或 Esc 鍵");
+              syncFsButtonUI();
+            });
+          }
+        } catch {
+          showDeityBanner("退出全螢幕失敗，請按系統返回或 Esc 鍵");
+          syncFsButtonUI();
+        }
+        return;
+      }
+
+      const target = document.documentElement;
+      const reqFn = target.requestFullscreen || target.webkitRequestFullscreen;
+      if (typeof reqFn !== "function") {
+        showDeityBanner("目前瀏覽器不支援全螢幕 API，請改用瀏覽器選單或旋轉螢幕");
+        syncFsButtonUI();
+        return;
+      }
+      try {
+        const p = reqFn.call(target);
+        if (p && typeof p.catch === "function") {
+          p.catch(() => {
+            showDeityBanner("瀏覽器拒絕全螢幕請求，請確認權限或改用瀏覽器選單");
+            syncFsButtonUI();
+          });
+        }
+      } catch {
+        showDeityBanner("瀏覽器拒絕全螢幕請求，請確認權限或改用瀏覽器選單");
+        syncFsButtonUI();
+      }
+    });
+  }
+
   window.addEventListener("resize", updateFsPadding);
-  document.addEventListener("fullscreenchange", updateFsPadding);
+  document.addEventListener("fullscreenchange", handleFsChange);
+  document.addEventListener("webkitfullscreenchange", handleFsChange);
   updateFsPadding();
 
   function setCharMood(nextMood, duration = 1.2) {
@@ -3190,7 +3269,7 @@
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_08:42:00",
+    getVersion: () => "v_11:35:00",
     setScene: (id) => {
       if (SCENE_DEFS[id]) { activeSceneId = id; loadImg(SCENE_DEFS[id].keyP); loadImg(SCENE_DEFS[id].keyD); }
     },
@@ -3205,6 +3284,7 @@
       bgmRunning,
       soundOn,
       audioUnlocked,
+      isFullscreen: !!getFullscreenElement(),
       ctxState: audioCtx ? audioCtx.state : "none",
       weapon: selectedWeapon.id,
       scenario: selectedScenario.id,

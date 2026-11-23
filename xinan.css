@@ -279,6 +279,94 @@ body.in-fs .top-hud {
   display: none;
 }
 
+/* 獨立頁廟會宮燈風格全螢幕鈕（與音效宮燈成對，大廳內嵌 embed=1 時自動隱藏） */
+.bell-fs-btn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid #ffd978;
+  background: radial-gradient(circle at 35% 30%, #f26142 0%, #b52416 68%, #6d120a 100%);
+  color: #fff5d6;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #5a1109;
+  transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.bell-fs-btn::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 5px;
+  background: #f0c368;
+  border-radius: 3px 3px 0 0;
+}
+
+.bell-fs-btn.is-fs {
+  border-color: #fff6b8;
+  background: radial-gradient(circle at 35% 30%, #e59c24 0%, #9b4f0b 70%, #5c2804 100%);
+  color: #fffbe0;
+}
+
+.bell-fs-btn:active {
+  transform: scale(0.92);
+}
+
+.bell-fs-btn.hidden {
+  display: none;
+}
+
+/* 320px 超窄手機不重疊保護 */
+@media (max-width: 360px) {
+  .top-hud {
+    left: 5px;
+    right: 5px;
+  }
+  .temple-plaque {
+    gap: 4px;
+    padding: 5px 7px 4px 6px;
+  }
+  .brand-seal {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+  .led-brand-canvas {
+    height: 20px;
+  }
+  .top-right-charms {
+    gap: 4px;
+  }
+  .merit-talisman {
+    gap: 3px;
+    padding: 4px 6px 7px 6px;
+  }
+  .talisman-seal {
+    width: 15px;
+    height: 15px;
+    font-size: 9px;
+  }
+  .merit-led-canvas {
+    height: 18px;
+    padding: 1px 4px;
+  }
+  .bell-sound-btn,
+  .bell-fs-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+}
+
 /* 全功能集中於下方：融入廟宇暖木紅金雕花牌匾質感 */
 .bottom-dock {
   position: fixed;
