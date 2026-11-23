@@ -175,10 +175,18 @@
     return !!(soundOn && audioCtx && audioCtx.state === "running");
   }
 
+  const SVG_SOUND_ON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.8 5.8a9 9 0 0 1 0 12.4"/></svg>`;
+  const SVG_SOUND_WAIT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6"/></svg>`;
+  const SVG_SOUND_OFF = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>`;
+  const SVG_FS_ENTER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 9 4 4 9 4"/><polyline points="15 4 20 4 20 9"/><polyline points="20 15 20 20 15 20"/><polyline points="9 20 4 20 4 15"/></svg>`;
+  const SVG_FS_EXIT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 4 9 9 4 9"/><polyline points="20 9 15 9 15 4"/><polyline points="15 20 15 15 20 15"/><polyline points="4 15 9 15 9 20"/></svg>`;
+
   function syncSoundUI() {
     const running = isAudioActuallyRunning();
     if (btnSound) {
-      btnSound.textContent = !soundOn ? "🔇" : (running ? "🔊" : "🔈");
+      btnSound.innerHTML = !soundOn ? SVG_SOUND_OFF : (running ? SVG_SOUND_ON : SVG_SOUND_WAIT);
+      btnSound.dataset.iconState = !soundOn ? "muted" : (running ? "on" : "wait");
+      btnSound.classList.toggle("is-muted", !soundOn);
       btnSound.setAttribute("aria-label", !soundOn ? "靜音" : (running ? "音效開" : "點一下開聲音"));
     }
     if (soundUnlockPill) {
@@ -1010,8 +1018,10 @@
       if (!brandMarqueeSprite) return;
     }
     const sp = brandMarqueeSprite;
-    const viewW = vw <= 360 ? 96 : (vw <= 430 ? 124 : 176);
-    const viewH = Math.max(24, Math.ceil(sp.height));
+    const wrapEl = document.getElementById("plaqueLedWrap");
+    const measuredW = wrapEl ? Math.floor(wrapEl.clientWidth) : 0;
+    const viewW = Math.max(96, measuredW || (vw <= 360 ? 112 : (vw <= 430 ? 156 : 260)));
+    const viewH = Math.max(22, Math.ceil(sp.height));
     const dprLed = Math.min(window.devicePixelRatio || 1, 2);
     const cw = Math.max(1, Math.ceil(viewW * dprLed));
     const ch = Math.max(1, Math.ceil(viewH * dprLed));
@@ -1209,10 +1219,12 @@
       vx: (Math.random() - 0.5) * 44,
       vy: 68 + Math.random() * 88,
       gravity: 18,
-      size: isConfetti ? (7 + Math.random() * 6) : (20 + Math.random() * 12),
+      size: isConfetti ? (7 + Math.random() * 6) : (21 + Math.random() * 11),
       rot: Math.random() * Math.PI * 2,
       vrot: (Math.random() - 0.5) * 5.2,
       sway: Math.random() * 6.28,
+      layer: Math.random() < 0.55 ? "front" : "back",
+      bounced: false,
       life: 6.5,
       maxLife: 6.5
     });
@@ -1248,6 +1260,8 @@
         rot: Math.random() * Math.PI * 2,
         vrot: (Math.random() - 0.5) * 9.0,
         sway: Math.random() * 6.28,
+        layer: i % 2 === 0 ? "front" : "back",
+        bounced: false,
         life: 3.4 + Math.random() * 1.2,
         maxLife: 4.6
       });
@@ -1577,7 +1591,7 @@
     btnFs.setAttribute("aria-pressed", active ? "true" : "false");
     btnFs.setAttribute("aria-label", active ? "退出全螢幕" : "進入全螢幕");
     btnFs.title = active ? "退出全螢幕" : "進入全螢幕";
-    btnFs.textContent = active ? "✕" : "⛶";
+    btnFs.innerHTML = active ? SVG_FS_EXIT : SVG_FS_ENTER;
   }
 
   function updateFsPadding() {
@@ -1698,6 +1712,7 @@
       slapCombo += 1;
       comboBadgeTimer = 2.2;
       slapCharge = Math.min(10, slapCharge + 1);
+      if (selectedWeapon.id === "stool") villainFly = 1.05;
       setCharMood("hurt_cry", 1.25);
       addMerit(selectedWeapon.power);
       playWeaponSound(selectedWeapon.id, false);
@@ -2254,30 +2269,123 @@
       ctx.fillRect(0, 0, vw, vh);
     }
 
-    // 動態金色斜射聖光束（讓神壇畫面充滿生命力與層次感）
-    ctx.save();
-    ctx.globalCompositeOperation = "lighter";
-    for (let i = 0; i < 4; i++) {
-      const rayX = vw * (0.16 + i * 0.23) + Math.sin(t * 0.45 + i * 1.4) * 24;
-      const rayW = Math.min(95, vw * 0.16);
-      const rayGrad = ctx.createLinearGradient(rayX, 0, rayX + 70, vh * 0.72);
-      const alpha = (0.045 + 0.022 * Math.sin(t * 1.2 + i * 1.8));
-      rayGrad.addColorStop(0, `rgba(255, 240, 185, ${alpha})`);
-      rayGrad.addColorStop(1, "rgba(255, 220, 140, 0)");
-      ctx.fillStyle = rayGrad;
-      ctx.beginPath();
-      ctx.moveTo(rayX - rayW * 0.3, 0);
-      ctx.lineTo(rayX + rayW * 0.5, 0);
-      ctx.lineTo(rayX + rayW * 1.15, vh * 0.75);
-      ctx.lineTo(rayX - rayW * 0.1, vh * 0.75);
-      ctx.closePath();
-      ctx.fill();
+    // 背景情境光效（移除生硬條狀直射燈光）：
+    // 白天＝佛光普照（柔和暖金同心蓮花光環）；晚上＝復古迪斯可銀色反光鏡球＋滿場旋轉銀金光斑！
+    const hudSafeY = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 54) + 6;
+    if (sc.night) {
+      // 復古迪斯可舞廳銀色鏡面球（掛於屋簷中上方）＋滿場旋轉反光光斑
+      const ballX = vw * 0.5;
+      const ballY = hudSafeY + 24;
+      const ballR = Math.min(24, Math.max(16, vw * 0.045));
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const spotCols = ["#ffffff", "#e2f1ff", "#ffe999", "#e0c3ff", "#b8f3ff"];
+      for (let i = 0; i < 34; i++) {
+        const ang = (i * 2.39996) + t * (0.38 + (i % 4) * 0.09);
+        const orbitR = (0.14 + ((i * 0.17) % 0.78)) * Math.max(vw, vh) * 0.56;
+        const sx = ballX + Math.cos(ang) * orbitR * 0.95;
+        const sy = ballY + 28 + Math.abs(Math.sin(ang * 0.72 + i)) * (vh * 0.66);
+        const twinkle = 0.25 + 0.55 * Math.pow(0.5 + 0.5 * Math.sin(t * 4.2 + i * 1.9), 2);
+        const sr = 2.6 + (i % 4) * 1.8;
+        ctx.fillStyle = spotCols[i % spotCols.length];
+        ctx.globalAlpha = twinkle * 0.62;
+        ctx.beginPath();
+        if (i % 3 === 0) {
+          ctx.moveTo(sx, sy - sr * 1.3); ctx.lineTo(sx + sr, sy);
+          ctx.lineTo(sx, sy + sr * 1.3); ctx.lineTo(sx - sr, sy);
+          ctx.closePath();
+        } else {
+          ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+        }
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // 鏡球吊鍊與立體銀面格子球體
+      ctx.save();
+      ctx.strokeStyle = "#cbd5e1";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(ballX, 0); ctx.lineTo(ballX, ballY - ballR); ctx.stroke();
+      const bgBall = ctx.createRadialGradient(ballX - ballR * 0.32, ballY - ballR * 0.35, 2, ballX, ballY, ballR);
+      bgBall.addColorStop(0, "#ffffff");
+      bgBall.addColorStop(0.45, "#cbd5e1");
+      bgBall.addColorStop(0.85, "#64748b");
+      bgBall.addColorStop(1, "#334155");
+      ctx.fillStyle = bgBall;
+      ctx.beginPath(); ctx.arc(ballX, ballY, ballR, 0, Math.PI * 2); ctx.fill();
+      ctx.save();
+      ctx.beginPath(); ctx.arc(ballX, ballY, ballR, 0, Math.PI * 2); ctx.clip();
+      ctx.strokeStyle = "rgba(15, 23, 42, 0.35)";
+      ctx.lineWidth = 1;
+      for (let r = -ballR; r <= ballR; r += 6) {
+        ctx.beginPath(); ctx.moveTo(ballX - ballR, ballY + r); ctx.lineTo(ballX + ballR, ballY + r); ctx.stroke();
+      }
+      const shiftX = ((t * 18) % 7);
+      for (let c = -ballR - 7; c <= ballR + 7; c += 7) {
+        ctx.beginPath(); ctx.moveTo(ballX + c + shiftX, ballY - ballR); ctx.lineTo(ballX + c + shiftX, ballY + ballR); ctx.stroke();
+      }
+      // 鏡面閃光方格
+      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.fillRect(ballX - 7 + ((t * 14) % 10), ballY - 6, 5, 5);
+      ctx.fillRect(ballX + 2 - ((t * 11) % 8), ballY + 2, 4, 4);
+      ctx.restore();
+      ctx.restore();
+    } else {
+      // 白天：柔和莊嚴又喜氣的「佛光普照」同心暖金蓮花聖光輪
+      const haloX = vw * 0.5;
+      const haloY = Math.min(vh * 0.44, bgTableSurfaceY - 120);
+      const haloR = Math.min(vw, vh) * 0.48;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const buddhaGrad = ctx.createRadialGradient(haloX, haloY, 12, haloX, haloY, haloR);
+      buddhaGrad.addColorStop(0, "rgba(255, 250, 214, 0.32)");
+      buddhaGrad.addColorStop(0.38, "rgba(255, 224, 122, 0.16)");
+      buddhaGrad.addColorStop(0.72, "rgba(255, 198, 92, 0.06)");
+      buddhaGrad.addColorStop(1, "rgba(255, 198, 92, 0)");
+      ctx.fillStyle = buddhaGrad;
+      ctx.beginPath(); ctx.arc(haloX, haloY, haloR, 0, Math.PI * 2); ctx.fill();
+      // 緩慢旋轉的淡金蓮花圓輪
+      ctx.translate(haloX, haloY);
+      ctx.rotate(t * 0.14);
+      ctx.strokeStyle = "rgba(255, 232, 148, 0.22)";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, 0, haloR * 0.42, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, haloR * 0.56, 0, Math.PI * 2); ctx.stroke();
+      for (let p = 0; p < 12; p++) {
+        const pa = (Math.PI * 2 * p) / 12;
+        ctx.save();
+        ctx.rotate(pa);
+        ctx.beginPath();
+        ctx.ellipse(haloR * 0.49, 0, haloR * 0.09, haloR * 0.038, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+      ctx.restore();
     }
-    ctx.restore();
+
+    // 先繪製「背景層」台灣廟宇可愛小物（在人物之後，100% 實色不半透明）
+    for (let i = 0; i < funDrops.length; i++) {
+      const d = funDrops[i];
+      if (d.layer !== "back") continue;
+      ctx.save();
+      ctx.globalAlpha = d.life < 0.32 ? Math.max(0, d.life / 0.32) : 1.0;
+      ctx.translate(d.x, d.y);
+      ctx.rotate(d.rot);
+      if (d.kind === "confetti") {
+        ctx.fillStyle = d.color;
+        ctx.scale(1, Math.cos(t * 7 + d.sway));
+        ctx.fillRect(-d.size * 0.55, -d.size * 0.32, d.size * 1.1, d.size * 0.64);
+      } else {
+        ctx.font = `${Math.round(d.size)}px 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(d.icon, 0, 0);
+      }
+      ctx.restore();
+    }
 
     // 左右上角輕輕搖曳的喜氣紅金燈籠（不擋 HUD 與角色，增加宮廟慶典立體感）
     ctx.save();
-    const hudSafeY = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 54) + 6;
     for (const side of [-1, 1]) {
       const lx = side < 0 ? 22 : vw - 22;
       const sway = Math.sin(t * 1.65 + side) * 0.08;
@@ -2646,13 +2754,14 @@
             wyPos = restY + (hitY - restY) * swing;
             wRot = 0.86 - swing * 1.68 + idleWobble;
           } else {
-            const restX = Math.min(vw - idleSize * 0.50, altarX + Math.max(108, vSize * 0.58));
-            const restY = altarY + vSize * 0.05;
-            const hitX = Math.min(vw - hitSize * 0.42, altarX + Math.max(66, vSize * 0.38));
-            const hitY = altarY - vSize * 0.06;
+            // 辦桌紅椅：蹲在角色屁股下方蓄勢，點擊時朝屁股由下往上狠狠頂起，把人直接頂飛到半空！
+            const restX = Math.min(vw - idleSize * 0.50, altarX + Math.max(76, vSize * 0.36));
+            const restY = bgTableSurfaceY - idleSize * 0.28;
+            const hitX = altarX + vSize * 0.04;
+            const hitY = bgTableSurfaceY - vSize * 0.36;
             wxPos = restX + (hitX - restX) * swing;
             wyPos = restY + (hitY - restY) * swing;
-            wRot = 0.38 - swing * 1.18 + idleWobble;
+            wRot = -0.14 + swing * 0.22 + idleWobble;
           }
           comicScaleX = 1 + swing * (weaponHeavy ? 0.18 : 0.12);
           comicScaleY = 1 - swing * 0.08;
@@ -2970,16 +3079,33 @@
       partyCannonTimer = 2.4 + Math.random() * 1.1;
       spawnFestiveShower(mode, 0.85);
     }
+    const charHitCx = vw * 0.5;
+    const charHitTop = activeCharTopY || (bgTableSurfaceY - 220);
+    const charHitW = Math.min(95, vw * 0.22);
     for (let i = funDrops.length - 1; i >= 0; i--) {
       const d = funDrops[i];
       d.life -= dt;
       d.vy += d.gravity * dt;
-      d.x += (d.vx + Math.sin(t * 2.6 + d.sway) * 26) * dt;
+      d.x += (d.vx + Math.sin(t * 2.6 + d.sway) * 22) * dt;
       d.y += d.vy * dt;
       d.rot += d.vrot * dt;
+      // 前景台灣廟宇小物砸到人物頭肩時真的往兩側彈開＋旋轉彈飛！
+      if (!d.bounced && d.layer !== "back" && d.vy > 0 &&
+          Math.abs(d.x - charHitCx) < charHitW &&
+          d.y > charHitTop + 8 && d.y < charHitTop + 130) {
+        d.bounced = true;
+        const dir = d.x < charHitCx ? -1 : 1;
+        d.vy = -Math.max(125, Math.abs(d.vy) * 0.78);
+        d.vx = dir * (115 + Math.random() * 105);
+        d.gravity = Math.max(d.gravity, 340);
+        d.vrot = dir * (9 + Math.random() * 6);
+        spawnBurst(d.x, d.y, "#ffe58f", 5, 90);
+      }
       if (d.life <= 0 || d.y > vh + 40) { funDrops.splice(i, 1); continue; }
+      if (d.layer === "back") continue; // 背景層已繪製於人物後方
       ctx.save();
-      ctx.globalAlpha = Math.min(0.95, d.life / 0.5);
+      // 100% 實色不半透明（僅最後 0.3s 柔和收尾）；前景與背景層次分明
+      ctx.globalAlpha = d.life < 0.32 ? Math.max(0, d.life / 0.32) : 1.0;
       ctx.translate(d.x, d.y);
       ctx.rotate(d.rot);
       if (d.kind === "confetti") {
@@ -3419,7 +3545,7 @@
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_17:05:00",
+    getVersion: () => "v_17:35:00",
     setScene: (id) => {
       if (SCENE_DEFS[id]) { activeSceneId = id; loadImg(SCENE_DEFS[id].keyP); loadImg(SCENE_DEFS[id].keyD); }
     },
