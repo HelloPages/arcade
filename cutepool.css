@@ -1,0 +1,471 @@
+:root {
+  --ink: #3a1f12;
+  --cream: #fffdf7;
+  --berry: #ff5c8a;
+  --lemon: #ffd13b;
+  --mint: #34d399;
+  --sky: #38bdf8;
+  --card-shadow: 4px 4px 0 rgba(58, 31, 18, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #ffeef5;
+  font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
+  color: var(--ink);
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* 頂部可愛積木 HUD */
+.top-hud {
+  position: absolute;
+  top: max(8px, env(safe-area-inset-top));
+  left: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.top-hud > * {
+  pointer-events: auto;
+}
+
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--cream);
+  border: 2.4px solid var(--ink);
+  border-radius: 10px;
+  padding: 4px 9px 4px 6px;
+  box-shadow: var(--card-shadow);
+}
+
+.brand-ball {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ff85a2, #ff477e);
+  border: 2px solid var(--ink);
+  color: #fffdf7;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.08;
+}
+
+.brand-text strong {
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.ver-stamp {
+  font-size: 9px;
+  font-weight: 700;
+  color: #8c5a46;
+}
+
+.score-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--cream);
+  border: 2.4px solid var(--ink);
+  border-radius: 10px;
+  padding: 4px 10px;
+  box-shadow: var(--card-shadow);
+}
+
+.score-side {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.score-side em {
+  font-style: normal;
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.score-side b {
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.score-side.active {
+  background: #ffe3ec;
+  outline: 2px solid var(--berry);
+}
+
+.score-sep {
+  font-weight: 900;
+  opacity: 0.6;
+}
+
+.top-btns {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  border: 2.4px solid var(--ink);
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 rgba(58, 31, 18, 0.22);
+  padding: 0;
+}
+
+.icon-btn.on {
+  background: #fff1a8;
+}
+
+.icon-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+body.embedded #btnFs {
+  display: none;
+}
+
+/* 狀態提示條 */
+.status-bar {
+  position: absolute;
+  top: calc(max(8px, env(safe-area-inset-top)) + 48px);
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 28px);
+  background: rgba(255, 253, 247, 0.94);
+  border: 2.4px solid var(--ink);
+  border-radius: 9px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  z-index: 9;
+}
+
+/* 底部操作列（圓角矩形按鈕，絕不使用膠囊） */
+.bottom-bar {
+  position: absolute;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  left: 10px;
+  right: 10px;
+  max-width: 660px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 253, 247, 0.96);
+  border: 2.4px solid var(--ink);
+  border-radius: 12px;
+  padding: 7px 9px;
+  box-shadow: var(--card-shadow);
+  z-index: 10;
+}
+
+.rect-btn {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 9px;
+  border: 2.4px solid var(--ink);
+  background: #fff5d6;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.rect-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.rect-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.primary-btn {
+  background: linear-gradient(180deg, #ff7aa2, #ff477e);
+  color: #fffdf7;
+  min-width: 84px;
+}
+
+.spin-btn {
+  background: #e0f7ff;
+  min-width: 68px;
+}
+
+.spin-icon {
+  font-size: 16px;
+}
+
+.power-box {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-weight: 900;
+}
+
+.power-lbl {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+#powerRange {
+  flex: 1;
+  min-width: 60px;
+  accent-color: #ff477e;
+  height: 22px;
+  cursor: pointer;
+}
+
+#powerVal {
+  min-width: 42px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 900;
+  color: #d6285a;
+}
+
+/* 彈出卡片（單層平面邊框＋右下錯位陰影，絕不嵌套立體） */
+.pop-card {
+  background: var(--cream);
+  border: 2.4px solid var(--ink);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: var(--card-shadow);
+}
+
+.spin-panel {
+  position: absolute;
+  left: 12px;
+  bottom: calc(max(10px, env(safe-area-inset-bottom)) + 68px);
+  width: 196px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 20;
+}
+
+.spin-panel[hidden], .modal-overlay[hidden] {
+  display: none;
+}
+
+.pop-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mini-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 2px solid var(--ink);
+  background: #ffe3ec;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.spin-pad {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 32%, #ffffff, #ffeef4 68%, #f7cbd8 100%);
+  border: 2.4px solid var(--ink);
+  cursor: pointer;
+  touch-action: none;
+}
+
+.spin-pad::before, .spin-pad::after {
+  content: "";
+  position: absolute;
+  background: rgba(58, 31, 18, 0.16);
+}
+
+.spin-pad::before {
+  left: 50%; top: 10%; bottom: 10%; width: 1.5px; transform: translateX(-50%);
+}
+
+.spin-pad::after {
+  top: 50%; left: 10%; right: 10%; height: 1.5px; transform: translateY(-50%);
+}
+
+.spin-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--berry);
+  border: 2px solid var(--ink);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.pop-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #6b4230;
+  text-align: center;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(58, 31, 18, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 30;
+}
+
+.modal-card {
+  width: min(350px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-badge {
+  align-self: center;
+  background: #fff1a8;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.modal-card h2 {
+  margin: 0;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.modal-score {
+  margin: 0;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 900;
+  color: #e63973;
+}
+
+.modal-streak {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #7c4d3a;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.setting-row select {
+  min-height: 38px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 2px solid var(--ink);
+  background: #ffffff;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+@media (max-width: 440px) {
+  .top-hud { left: 6px; right: 6px; gap: 4px; }
+  .brand-badge { padding: 3px 6px 3px 4px; gap: 4px; }
+  .brand-ball { width: 20px; height: 20px; font-size: 11px; }
+  .brand-text strong { font-size: 11px; }
+  .ver-stamp { font-size: 8px; }
+  .score-pill { padding: 2px 6px; gap: 3px; }
+  .score-side { padding: 1px 4px; gap: 2px; font-size: 11px; }
+  .score-side b { font-size: 14px; }
+  .top-btns { gap: 3px; }
+  .icon-btn { width: 30px; height: 30px; font-size: 13px; border-radius: 7px; }
+  .bottom-bar { padding: 6px 7px; gap: 6px; }
+  .rect-btn { padding: 0 9px; font-size: 13px; }
+  .spin-btn { min-width: 58px; }
+  .primary-btn { min-width: 72px; }
+}

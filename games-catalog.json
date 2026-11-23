@@ -1,13 +1,60 @@
 {
   "portalTitle": "經典街機遊戲館",
-  "version": "v_20261123_pool_1",
-  "updatedAt": "2026-11-23T04:15:03+08:00",
+  "version": "v_20261123_cutepool_2",
+  "updatedAt": "2026-11-23T16:35:00+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向與原創在地化命名（禁用真實版權遊戲名稱），並全面支援 TW / EN / KO 本土化語系切換。",
   "dailySchedule": {
     "generateCron": "每日04:00產出可單人對戰CPU的原創運動或街機競技遊戲",
     "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
   },
   "games": [
+    {
+      "id": "cutepool",
+      "title": "撞球-2",
+      "shortTab": "撞球-2",
+      "genre": "可愛多彩糖果撞球",
+      "reaSource": "不拘泥真實比例的繽紛可愛糖果撞球！放大 Q 彈表情球、星星大袋口、三色糖果桌與彈跳星機關，輕鬆上手超舒壓。",
+      "highlights": [
+        "按住糖果球桿直接往後拉蓄力（下方力道數值即時變動），放開或順手往前推桿即可出球！",
+        "三款多彩球桌（薄荷蘇打／草莓奶油／星空馬卡龍）＋彈跳星機關自由開關，支援三階可愛 CPU 與三語切換。"
+      ],
+      "path": "./cutepool.html",
+      "addedDate": "2026-11-23",
+      "thumbnail": "assets/cutepool-cover.webp",
+      "artDirection": "繽紛粉彩糖果遊樂園撞球，統一 2.4px 暖深可可漫畫描邊、Q 彈會眨眼表情大球與星星甜甜圈袋口。",
+      "i18n": {
+        "tw": {
+          "title": "撞球-2",
+          "shortTab": "撞球-2",
+          "genre": "可愛多彩糖果撞球",
+          "reaSource": "不拘泥真實比例的繽紛可愛糖果撞球！放大 Q 彈表情球、星星大袋口、三色糖果桌與彈跳星機關，輕鬆上手超舒壓。",
+          "highlights": [
+            "按住糖果球桿直接往後拉蓄力（下方力道數值即時變動），放開或順手往前推桿即可出球！",
+            "三款多彩球桌（薄荷蘇打／草莓奶油／星空馬卡龍）＋彈跳星機關自由開關，支援三階可愛 CPU 與三語切換。"
+          ]
+        },
+        "en": {
+          "title": "Candy Pool-2",
+          "shortTab": "Pool-2",
+          "genre": "Colorful Kawaii Candy Pool",
+          "reaSource": "Stylized non-realistic kawaii candy pool with oversized smiling bouncy balls, generous star pockets, 3 pastel table themes, and bouncy star bumpers!",
+          "highlights": [
+            "Pull the candy cue stick back directly (live power gauge!) and release or push forward to shoot.",
+            "Switch between Mint Soda, Strawberry Cream, and Starlight Macaron tables with optional Bouncy Star bumpers."
+          ]
+        },
+        "ko": {
+          "title": "캔디 포켓볼-2",
+          "shortTab": "포켓볼-2",
+          "genre": "귀엽고 알록달록한 캔디 포켓볼",
+          "reaSource": "실제 비율에 얽매이지 않는 통통 튀는 귀염 캔디 포켓볼! 표정이 살아있는 큰 캔디 공, 별 포켓, 3색 파스텔 테이블과 통통 별 범퍼!",
+          "highlights": [
+            "캔디 큐대를 직접 뒤로 당겨 세기를 조절하고 놓거나 앞으로 밀어 치세요!",
+            "민트 소다・딸기 크림・별빛 마카롱 3가지 테이블 테마와 통통 별 범퍼 자유 전환."
+          ]
+        }
+      }
+    },
     {
       "id": "pool",
       "title": "撞球-1",
