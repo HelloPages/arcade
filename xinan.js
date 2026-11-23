@@ -2851,23 +2851,46 @@
         pad: 2
       })).filter(Boolean);
 
-      const lineGap = tightVert ? 2 : 4;
+      const lineGap = 4;
       const contentW = lineSprites.length ? Math.max(...lineSprites.map(s => s.width)) : 140;
       const contentH = lineSprites.reduce((sum, s) => sum + s.height, 0) + Math.max(0, lineSprites.length - 1) * lineGap;
       const bw = Math.min(maxBubbleW, Math.max(156, contentW + 32));
-      const bh = useSidePlacement
-        ? Math.max(46, contentH + 24)
-        : Math.min(Math.max(46, availVertH), Math.max(40, contentH + (tightVert ? 16 : 24)));
+      // 保留正文完整所需高度，絕不硬縮外框把文字擠到名牌上！
+      const bh = Math.max(46, contentH + 24);
       const targetAnchorX = activeCharCenterX;
+
+      // 判定最終安全放置方向：
+      // 1) 上方足夠容納完整高度 bh + tailH -> "top"
+      // 2) 上方不足但左右空域 >= 175px -> "right" / "left"（桌面寬螢幕）
+      // 3) 上方不足且左右皆 < 175px -> "bottom"（窄螢幕第三退路：置於人物下方、底欄上方的安全區，尾巴朝上指向說話者！）
+      let finalDir = sideDir;
+      if (finalDir === "top" && (targetBottomY - bh - tailH) < (topHudBottom + 18)) {
+        if (rightSideSpace >= 175 || leftSideSpace >= 175) {
+          finalDir = rightSideSpace >= leftSideSpace ? "right" : "left";
+        } else {
+          finalDir = "bottom";
+        }
+      }
+
       let bx, by;
-      if (sideDir === "right") {
-        bx = safeLeft;
+      if (finalDir === "right") {
+        bx = Math.min(safeRight - bw, Math.ceil(obsRight) + 24);
         by = Math.max(topHudBottom + 24, Math.min(vh - 170 - bh, activeCharTopY - 10));
-      } else if (sideDir === "left") {
+      } else if (finalDir === "left") {
         bx = Math.max(railSafeLeft, Math.floor(obsLeft) - 24 - bw);
         by = Math.max(topHudBottom + 24, Math.min(vh - 170 - bh, activeCharTopY - 10));
+      } else if (finalDir === "bottom") {
+        const dockTop = (document.querySelector(".bottom-dock")?.getBoundingClientRect().top || (vh - 125));
+        const comboReserve = (comboBadgeTimer > 0 && slapCombo >= 2) ? 50 : 12;
+        const maxBottomY = dockTop - comboReserve - bh - 6;
+        // 放在人物腳底附近／供桌安全區，確保在臉部之下、底部按鈕之上，且若與側欄重疊則避開側欄右緣
+        by = Math.max(feetBaseY - 14, Math.min(maxBottomY, feetBaseY + 18));
+        if (by + bh > dockTop - 10) by = Math.max(activeCharTopY + vSize * 0.56, dockTop - bh - 12);
+        const botOverlapsRail = !!(railRect && railRect.width > 0 && (by - 18) <= railRect.bottom + 8 && (by + bh) >= railRect.top - 8);
+        const botSafeLeft = botOverlapsRail ? railSafeLeft : 14;
+        bx = Math.max(botSafeLeft, Math.min(safeRight - bw, targetAnchorX - bw * 0.5));
       } else {
-        by = Math.max(topHudBottom + 16, Math.min(targetBottomY - bh - tailH, Math.max(minSafeTop, targetBottomY - bh - tailH)));
+        by = Math.max(minSafeTop, targetBottomY - bh - tailH);
         bx = Math.max(safeLeft, Math.min(safeRight - bw, targetAnchorX - bw * 0.5));
       }
       const tailX = Math.max(bx + 26, Math.min(bx + bw - 26, targetAnchorX));
@@ -2875,22 +2898,30 @@
       lastLayoutBoxes.bubble = {
         left: Math.round(bx - 10),
         right: Math.round(bx + bw + 10),
-        top: Math.round(by - 18),
-        bottom: Math.round(by + bh + tailH)
+        top: Math.round(by - (finalDir === "bottom" ? Math.max(18, tailH + 4) : 18)),
+        bottom: Math.round(by + bh + (finalDir === "bottom" ? 10 : tailH)),
+        dir: finalDir
       };
 
-      // 繪製活潑「漫畫雲朵造型說話泡泡」（非制式方框！波浪雲朵輪廓＋彎曲對話尾巴＋說話角色表情名牌）
+      // 繪製活潑「漫畫雲朵造型說話泡泡」（波浪雲朵輪廓＋指向說話者的彎曲尾巴＋角色表情名牌）
       ctx.save();
       ctx.translate(0, bounce);
       ctx.beginPath();
       const topBumps = Math.max(4, Math.round(bw / 46));
       const sideBumps = Math.max(2, Math.round(bh / 32));
-      // 上緣波浪雲弧
+      // 上緣波浪雲弧（若為 bottom 退路，於上緣繪製朝上指向說話者的漫畫尾巴！）
       ctx.moveTo(bx + 14, by + 4);
-      for (let b = 0; b < topBumps; b++) {
-        const x1 = bx + 14 + ((bw - 28) * (b + 0.5)) / topBumps;
-        const x2 = bx + 14 + ((bw - 28) * (b + 1)) / topBumps;
-        ctx.quadraticCurveTo(x1, by - 9, x2, by + 4);
+      if (finalDir === "bottom") {
+        ctx.quadraticCurveTo(bx + 26, by - 8, tailX - 12, by + 2);
+        ctx.quadraticCurveTo(tailX - 5, by - tailH * 0.55, tailX + 2, by - tailH);
+        ctx.quadraticCurveTo(tailX + 5, by - tailH * 0.40, tailX + 13, by + 2);
+        ctx.quadraticCurveTo(bx + bw - 26, by - 8, bx + bw - 14, by + 4);
+      } else {
+        for (let b = 0; b < topBumps; b++) {
+          const x1 = bx + 14 + ((bw - 28) * (b + 0.5)) / topBumps;
+          const x2 = bx + 14 + ((bw - 28) * (b + 1)) / topBumps;
+          ctx.quadraticCurveTo(x1, by - 9, x2, by + 4);
+        }
       }
       // 右緣波浪雲弧
       for (let b = 0; b < sideBumps; b++) {
@@ -2898,11 +2929,19 @@
         const y2 = by + 4 + ((bh - 8) * (b + 1)) / sideBumps;
         ctx.quadraticCurveTo(bx + bw + 9, y1, bx + bw - 14, y2);
       }
-      // 下緣波浪雲弧（中間留出彎曲漫畫對話尾巴）
-      ctx.quadraticCurveTo(bx + bw - 26, by + bh + 8, tailX + 13, by + bh - 2);
-      ctx.quadraticCurveTo(tailX + 7, by + bh + tailH * 0.72, tailX - 2, by + bh + tailH);
-      ctx.quadraticCurveTo(tailX - 4, by + bh + tailH * 0.42, tailX - 12, by + bh - 2);
-      ctx.quadraticCurveTo(bx + 26, by + bh + 8, bx + 14, by + bh - 4);
+      // 下緣波浪雲弧（top／side 時留出朝下尾巴；bottom 時改為完整波浪底緣）
+      if (finalDir === "bottom") {
+        for (let b = topBumps - 1; b >= 0; b--) {
+          const x1 = bx + 14 + ((bw - 28) * (b + 0.5)) / topBumps;
+          const x2 = bx + 14 + ((bw - 28) * b) / topBumps;
+          ctx.quadraticCurveTo(x1, by + bh + 9, x2, by + bh - 4);
+        }
+      } else {
+        ctx.quadraticCurveTo(bx + bw - 26, by + bh + 8, tailX + 13, by + bh - 2);
+        ctx.quadraticCurveTo(tailX + 7, by + bh + tailH * 0.72, tailX - 2, by + bh + tailH);
+        ctx.quadraticCurveTo(tailX - 4, by + bh + tailH * 0.42, tailX - 12, by + bh - 2);
+        ctx.quadraticCurveTo(bx + 26, by + bh + 8, bx + 14, by + bh - 4);
+      }
       // 左緣波浪雲弧
       for (let b = sideBumps - 1; b >= 0; b--) {
         const y1 = by + 4 + ((bh - 8) * (b + 0.5)) / sideBumps;
@@ -3151,7 +3190,10 @@
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_08:35:00",
+    getVersion: () => "v_08:42:00",
+    setScene: (id) => {
+      if (SCENE_DEFS[id]) { activeSceneId = id; loadImg(SCENE_DEFS[id].keyP); loadImg(SCENE_DEFS[id].keyD); }
+    },
     setMood: (m) => { forceMoodForTest = m; },
     setWeapon: (id) => {
       const found = weapons.find(w => w.id === id);
