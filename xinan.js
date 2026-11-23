@@ -793,9 +793,9 @@
 
   const CONFETTI_COLORS = ["#ffdc16", "#ff327b", "#15f6b7", "#24bdff", "#ff7535", "#faefff", "#a66aff"];
   const FUN_ICONS = {
-    slap: ["🩴", "🪑", "⚡", "🍚", "🧋", "🧧", "🪙", "🎉", "😂", "💖", "⭐", "✨"],
-    bless: ["🏮", "🧧", "🪙", "🌸", "🎐", "✨", "💖", "🍊", "🎉", "🌈"],
-    oracle: ["🎋", "🧧", "🪙", "✨", "⭐", "🏮", "💖", "🎉", "🎊"]
+    slap:   ["🏮", "🧧", "🪙", "🍊", "🍍", "🍑", "🪷", "🎐", "🌸", "🧨", "🎋"],
+    bless:  ["🏮", "🧧", "🪙", "🪷", "🍊", "🍍", "🍑", "🎐", "🌸", "🎋"],
+    oracle: ["🎋", "🏮", "🧧", "🪙", "🪷", "🍊", "🍍", "🎐", "🌸", "🧨"]
   };
 
   function spawnShockwave(x, y, color = "#ffd466", maxR = 110, lineW = 4) {
@@ -979,26 +979,119 @@
     return res;
   }
 
-  function renderBrandLedCanvas(label) {
-    const c = document.getElementById("ledBrandCanvas");
-    if (!c) return;
-    const text = label || (typeof xt === "function" ? xt().brand : "心安宮") || "心安宮";
-    const sp = getLedTextSprite(text, {
-      pitch: 2.2,
+  // 左上角心安宮「台式廟會捲動圓點 LED 跑馬燈」（誇張爆笑傳說文案，不嚴肅、非玩法教學，無「殿」字印章）
+  const BRAND_MARQUEE_I18N = {
+    tw: "心安宮 ★ 專治老闆念經・水逆退散・加班鬼閃邊・神明掛保證笑到心安理得・天天準時下班喝珍奶 ★ ",
+    en: "Lucky Zen Shrine ★ Curing boss lectures, retrograde chaos & overtime ghosts since forever ★ 100% hilarious peace of mind! ★ ",
+    ko: "마음안심궁 ★ 상사 잔소리 퇴치・야근 귀신 격퇴・신령님 보증 폭소 마음안정 전문・오늘도 칼퇴하고 버블티! ★ "
+  };
+  let brandMarqueeSprite = null;
+  let brandMarqueeLang = "";
+
+  function renderBrandLedCanvas() {
+    const lang = (typeof getXinanLang === "function" ? getXinanLang() : "tw") || "tw";
+    const text = BRAND_MARQUEE_I18N[lang] || BRAND_MARQUEE_I18N.tw;
+    brandMarqueeLang = lang;
+    brandMarqueeSprite = getLedTextSprite(text, {
+      pitch: 1.95,
       color: "#ffe46b",
       glow: "rgba(255, 198, 56, 0.45)",
       dimDot: true,
       pad: 2
     });
-    if (!sp) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    c.width = Math.max(1, Math.ceil(sp.width * dpr));
-    c.height = Math.max(1, Math.ceil(sp.height * dpr));
-    c.style.width = `${sp.width}px`;
-    c.style.height = `${sp.height}px`;
+    tickBrandLedMarquee(performance.now() * 0.001);
+  }
+
+  function tickBrandLedMarquee(tSec) {
+    const c = document.getElementById("ledBrandCanvas");
+    if (!c) return;
+    if (!brandMarqueeSprite) {
+      renderBrandLedCanvas();
+      if (!brandMarqueeSprite) return;
+    }
+    const sp = brandMarqueeSprite;
+    const viewW = vw <= 360 ? 96 : (vw <= 430 ? 124 : 176);
+    const viewH = Math.max(24, Math.ceil(sp.height));
+    const dprLed = Math.min(window.devicePixelRatio || 1, 2);
+    const cw = Math.max(1, Math.ceil(viewW * dprLed));
+    const ch = Math.max(1, Math.ceil(viewH * dprLed));
+    if (c.width !== cw || c.height !== ch) {
+      c.width = cw;
+      c.height = ch;
+      c.style.width = `${viewW}px`;
+      c.style.height = `${viewH}px`;
+    }
     const g = c.getContext("2d");
-    g.clearRect(0, 0, c.width, c.height);
-    g.drawImage(sp.canvas, 0, 0);
+    g.setTransform(dprLed, 0, 0, dprLed, 0, 0);
+    g.clearRect(0, 0, viewW, viewH);
+    const cycleW = Math.max(1, sp.width + 24);
+    const scrollX = (tSec * 36) % cycleW;
+    const drawY = Math.round((viewH - sp.height) * 0.5);
+    g.drawImage(sp.canvas, -scrollX, drawY, sp.width, sp.height);
+    if (sp.width - scrollX < viewW) {
+      g.drawImage(sp.canvas, cycleW - scrollX, drawY, sp.width, sp.height);
+    }
+  }
+
+  // 智慧折行引擎：保留英數詞組完整不斷字（例如 OLED、240Hz、4K、Type-C、PPT、VIP），按視覺寬度平衡折行且禁行首標點
+  function wrapBubbleText(rawText, maxUnits, maxLines = 3) {
+    const str = String(rawText || "").trim();
+    if (!str) return [];
+    const tokens = [];
+    const re = /[A-Za-z0-9]+(?:[-+./%][A-Za-z0-9]+)*|\s+|./gu;
+    let m;
+    while ((m = re.exec(str)) !== null) {
+      const tok = m[0];
+      let u = 0;
+      for (const ch of tok) {
+        if (/\s/.test(ch)) u += 0.35;
+        else if (/[\x20-\x7E]/.test(ch)) u += 0.56;
+        else u += 1.0;
+      }
+      tokens.push({ text: tok, units: u });
+    }
+    const totalU = tokens.reduce((s, tk) => s + tk.units, 0);
+    if (totalU <= maxUnits) return [str];
+
+    const noLeadPunct = /^[！，。？：、；」』）~!?.,:;)]$/;
+    // 若兩行可容納，尋找視覺寬度最平衡且優先落於標點後的切點（絕不切開英數詞組）
+    if (totalU <= maxUnits * 1.92) {
+      let bestIdx = -1, bestScore = Infinity, acc = 0;
+      for (let i = 0; i < tokens.length - 1; i++) {
+        acc += tokens[i].units;
+        const rest = totalU - acc;
+        if (acc > maxUnits || rest > maxUnits) continue;
+        if (noLeadPunct.test(tokens[i + 1].text)) continue;
+        const punctBonus = /[！，。？：、；]/.test(tokens[i].text) ? -2.8 : 0;
+        const spaceBonus = /^\s+$/.test(tokens[i].text) ? -0.6 : 0;
+        const score = Math.abs(acc - rest) + punctBonus + spaceBonus;
+        if (score < bestScore) { bestScore = score; bestIdx = i + 1; }
+      }
+      if (bestIdx > 0) {
+        return [
+          tokens.slice(0, bestIdx).map(t => t.text).join("").trim(),
+          tokens.slice(bestIdx).map(t => t.text).join("").trim()
+        ].filter(Boolean);
+      }
+    }
+
+    // 多行貪婪折行（保護英數詞組與行尾標點）
+    const out = [];
+    let cur = "", curU = 0;
+    for (let i = 0; i < tokens.length; i++) {
+      const tk = tokens[i];
+      if (!cur && /^\s+$/.test(tk.text)) continue;
+      if (cur && curU + tk.units > maxUnits && !noLeadPunct.test(tk.text) && out.length < maxLines - 1) {
+        out.push(cur.trim());
+        cur = /^\s+$/.test(tk.text) ? "" : tk.text;
+        curU = /^\s+$/.test(tk.text) ? 0 : tk.units;
+      } else {
+        cur += tk.text;
+        curU += tk.units;
+      }
+    }
+    if (cur.trim()) out.push(cur.trim());
+    return out;
   }
 
   function renderMeritLedCanvas() {
@@ -2528,23 +2621,37 @@
           comicScaleX = 1 + swing * (weaponHeavy ? 0.22 : 0.16);
           comicScaleY = 1 - swing * (weaponHeavy ? 0.16 : 0.11);
         } else {
-          // 側揮三武器依各自原圖受力面精準對齊：
-          // 1) 藍白拖（原圖左下鞋尖、右上後跟、右下藍鞋底）：順時針旋 +90° 以上使「後跟在右下握持、前端鞋尖朝左上、藍鞋底正對人物」，揮擊時以前端鞋底實打拍中！
-          // 2) 阿嬤電蚊拍（原圖左下握把、右上電網）：水平翻轉使「握把在右下握持、電網拍面朝左上」，揮擊時以電網面正面拍中！
+          // 側揮／高舉下拍三武器依各自原圖受力面精準對齊：
+          // 1) 藍白拖（原圖左下鞋頭、右上後跟、右下藍鞋底）：+45°(0.785rad) 時「鞋頭朝左、後跟朝右、藍鞋底正朝下」；
+          //    待機高舉於角色右上方蓄勢（wRot=+1.52rad），揮擊時大弧度由上往下平拍頭頂（wRot=+0.44rad），以鞋頭與藍鞋底由上往下拍人！
+          // 2) 阿嬤電蚊拍（原圖左下握把、右上電網）：水平翻轉使握把在右下、電網朝左上；
+          //    同樣高舉於右上方蓄勢（wRot=+0.86rad），揮擊時以 ~96° 大弧度由上往下狠狠揮拍（wRot=-0.82rad），拍人而非戳人！
           // 3) 辦桌紅椅：側傾揮擊以平坦椅面砸向人物！
-          const restX = Math.min(vw - idleSize * 0.50, altarX + Math.max(108, vSize * 0.58));
-          const restY = altarY + vSize * 0.05;
-          const hitX = Math.min(vw - hitSize * 0.42, altarX + Math.max(66, vSize * 0.38));
-          const hitY = altarY - vSize * 0.06;
-          wxPos = restX + (hitX - restX) * swing;
-          wyPos = restY + (hitY - restY) * swing;
           const idleWobble = Math.sin(t * 3.1) * 0.05 * (1 - swing);
           if (selectedWeapon.id === "slipper") {
-            wRot = 2.02 - swing * 0.96 + idleWobble;
+            const restX = Math.min(vw - idleSize * 0.52, altarX + Math.max(96, vSize * 0.50));
+            const restY = Math.max(hudBottom + idleSize * 0.45, activeCharTopY - idleSize * 0.42);
+            const hitX = Math.min(vw - hitSize * 0.44, altarX + Math.max(32, vSize * 0.18));
+            const hitY = activeCharTopY + vSize * 0.04;
+            wxPos = restX + (hitX - restX) * swing;
+            wyPos = restY + (hitY - restY) * swing;
+            wRot = 1.52 - swing * 1.08 + idleWobble;
           } else if (selectedWeapon.id === "zapper") {
             wFlipX = -1;
-            wRot = 0.36 - swing * 0.98 + idleWobble;
+            const restX = Math.min(vw - idleSize * 0.52, altarX + Math.max(96, vSize * 0.50));
+            const restY = Math.max(hudBottom + idleSize * 0.45, activeCharTopY - idleSize * 0.36);
+            const hitX = Math.min(vw - hitSize * 0.44, altarX + Math.max(34, vSize * 0.19));
+            const hitY = activeCharTopY + vSize * 0.06;
+            wxPos = restX + (hitX - restX) * swing;
+            wyPos = restY + (hitY - restY) * swing;
+            wRot = 0.86 - swing * 1.68 + idleWobble;
           } else {
+            const restX = Math.min(vw - idleSize * 0.50, altarX + Math.max(108, vSize * 0.58));
+            const restY = altarY + vSize * 0.05;
+            const hitX = Math.min(vw - hitSize * 0.42, altarX + Math.max(66, vSize * 0.38));
+            const hitY = altarY - vSize * 0.06;
+            wxPos = restX + (hitX - restX) * swing;
+            wyPos = restY + (hitY - restY) * swing;
             wRot = 0.38 - swing * 1.18 + idleWobble;
           }
           comicScaleX = 1 + swing * (weaponHeavy ? 0.18 : 0.12);
@@ -2972,41 +3079,8 @@
       const maxBubbleW = Math.min(availW, isWideScr ? 440 : 352);
       const maxCharsPerLine = Math.max(7, Math.floor((maxBubbleW - 36) / (12 * ledPitch)));
 
-      // 平衡折行：先按實際可用寬度折行，優先於標點後斷行並確保每行完整不截字
-      const chars = Array.from(ft.text || "");
-      const lines = [];
-      if (chars.length <= maxCharsPerLine) {
-        lines.push(ft.text);
-      } else {
-        let bestIdx = Math.ceil(chars.length / 2);
-        let bestScore = Infinity;
-        for (let idx = 3; idx <= chars.length - 3; idx++) {
-          if (idx > maxCharsPerLine || (chars.length - idx) > maxCharsPerLine) continue;
-          const prevCh = chars[idx - 1];
-          const punctBonus = /[！，。？：、]/.test(prevCh) ? -5 : 0;
-          const score = Math.abs(idx - (chars.length - idx)) + punctBonus;
-          if (score < bestScore) {
-            bestScore = score;
-            bestIdx = idx;
-          }
-        }
-        if (bestScore < Infinity) {
-          lines.push(chars.slice(0, bestIdx).join("").trim());
-          lines.push(chars.slice(bestIdx).join("").trim());
-        } else {
-          let pos = 0;
-          while (pos < chars.length) {
-            let end = Math.min(chars.length, pos + maxCharsPerLine);
-            if (end < chars.length) {
-              for (let k = end; k > pos + Math.floor(maxCharsPerLine * 0.55); k--) {
-                if (/[！，。？：、]/.test(chars[k - 1])) { end = k; break; }
-              }
-            }
-            lines.push(chars.slice(pos, end).join("").trim());
-            pos = end;
-          }
-        }
-      }
+      // 智慧折行：保留 OLED/240Hz/4K/Type-C 等英數詞組不斷字，依視覺寬度平衡斷行且禁行首標點
+      const lines = wrapBubbleText(ft.text || "", maxCharsPerLine, 3);
 
       const lineSprites = lines.map(ln => getLedTextSprite(ln, {
         pitch: ledPitch,
@@ -3196,24 +3270,7 @@
       bodyText = bodyText.replace(/^[「『"]+|[」』"]+$/g, "").trim() || deityBannerText;
 
       const maxCharsPerLine = Math.max(9, Math.floor((maxBubbleW - 44) / (12 * ledPitch)));
-      const chars = Array.from(bodyText);
-      const dLines = [];
-      if (chars.length <= maxCharsPerLine) {
-        dLines.push(bodyText);
-      } else {
-        let pos = 0;
-        while (pos < chars.length && dLines.length < 3) {
-          let end = Math.min(chars.length, pos + maxCharsPerLine);
-          if (end < chars.length) {
-            // 優先於標點後折行，讓每行自然易讀
-            for (let k = end; k > pos + Math.floor(maxCharsPerLine * 0.55); k--) {
-              if (/[！，。？：、]/.test(chars[k - 1])) { end = k; break; }
-            }
-          }
-          dLines.push(chars.slice(pos, end).join("").trim());
-          pos = end;
-        }
-      }
+      const dLines = wrapBubbleText(bodyText, maxCharsPerLine, 3);
 
       const dSprites = dLines.map(ln => getLedTextSprite(ln, {
         pitch: ledPitch,
@@ -3356,12 +3413,13 @@
     }
 
     ctx.restore();
+    tickBrandLedMarquee(t);
     requestAnimationFrame(frame);
   }
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_16:25:00",
+    getVersion: () => "v_17:05:00",
     setScene: (id) => {
       if (SCENE_DEFS[id]) { activeSceneId = id; loadImg(SCENE_DEFS[id].keyP); loadImg(SCENE_DEFS[id].keyD); }
     },
