@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>心安宮・三儀殿｜打小人・祈福・問卦</title>
-  <link rel="stylesheet" href="./xinan.css?v=20261123_cast9_v1">
+  <link rel="stylesheet" href="./xinan.css?v=20261123_cast9_r3_v1">
 </head>
 <body>
   <div id="app">
@@ -17,7 +17,7 @@
         <span class="brand-seal">殿</span>
         <div class="plaque-led-wrap">
           <canvas id="ledBrandCanvas" class="led-brand-canvas" width="96" height="30" aria-label="心安宮"></canvas>
-          <span class="sub">v_15:05:00</span>
+          <span class="sub">v_15:45:00</span>
         </div>
       </div>
       <div class="top-right-charms">
@@ -55,12 +55,15 @@
         <button type="button" class="mode-btn util-btn" id="btnScene">換景</button>
         <button type="button" class="mode-btn util-btn auto-on" id="btnAuto">自動:演</button>
       </div>
-      <div class="chips-row" id="chipsRow"></div>
+      <div class="chips-strip-wrap">
+        <div class="chips-row" id="chipsRow" role="listbox" aria-label="選擇角色（共9位，可橫向滑動）"></div>
+        <button type="button" class="chips-scroll-cue" id="chipsScrollCue" aria-label="滑動看更多角色" title="看更多角色">›</button>
+      </div>
       <div class="action-row" id="actionRow"></div>
     </footer>
   </div>
 
   <script src="./arcade-i18n.js?v=20261122_i18n_menu_v1"></script>
-  <script src="./xinan.js?v=20261123_cast9_v1"></script>
+  <script src="./xinan.js?v=20261123_cast9_r3_v1"></script>
 </body>
 </html>

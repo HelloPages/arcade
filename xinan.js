@@ -39,10 +39,10 @@
     "oracle-blocks": "./assets/v2/oracle-blocks.webp",
     "oracle-stick": "./assets/v2/oracle-stick.webp",
     "oracle-censer": "./assets/v2/oracle-censer.webp",
-    "3畝_normal": "./assets/office-fullbody-webp/3畝_normal.webp?v=20261123_cast9_v1",
-    "3畝_happy": "./assets/office-fullbody-webp/3畝_happy.webp?v=20261123_cast9_v1",
-    "3畝_hurt_cry": "./assets/office-fullbody-webp/3畝_hurt_cry.webp?v=20261123_cast9_v1",
-    "3畝_innocent": "./assets/office-fullbody-webp/3畝_innocent.webp?v=20261123_cast9_v1",
+    "3畝_normal": "./assets/office-fullbody-webp/3畝_normal.webp?v=20261123_cast9_r3_v1",
+    "3畝_happy": "./assets/office-fullbody-webp/3畝_happy.webp?v=20261123_cast9_r3_v1",
+    "3畝_hurt_cry": "./assets/office-fullbody-webp/3畝_hurt_cry.webp?v=20261123_cast9_r3_v1",
+    "3畝_innocent": "./assets/office-fullbody-webp/3畝_innocent.webp?v=20261123_cast9_r3_v1",
     "Kenny_normal": "./assets/office-fullbody-webp/Kenny_normal.webp?v=20261118_hd2k_v8",
     "Kenny_happy": "./assets/office-fullbody-webp/Kenny_happy.webp?v=20261118_hd2k_v8",
     "Kenny_hurt_cry": "./assets/office-fullbody-webp/Kenny_hurt_cry.webp?v=20261118_hd2k_v8",
@@ -67,14 +67,14 @@
     "Sara_happy": "./assets/office-fullbody-webp/Sara_happy.webp?v=20261118_hd2k_v8",
     "Sara_hurt_cry": "./assets/office-fullbody-webp/Sara_hurt_cry.webp?v=20261118_hd2k_v8",
     "Sara_innocent": "./assets/office-fullbody-webp/Sara_innocent.webp?v=20261118_hd2k_v8",
-    "RuiRui_normal": "./assets/office-fullbody-webp/RuiRui_normal.webp?v=20261123_cast9_v1",
-    "RuiRui_happy": "./assets/office-fullbody-webp/RuiRui_happy.webp?v=20261123_cast9_v1",
-    "RuiRui_hurt_cry": "./assets/office-fullbody-webp/RuiRui_hurt_cry.webp?v=20261123_cast9_v1",
-    "RuiRui_innocent": "./assets/office-fullbody-webp/RuiRui_innocent.webp?v=20261123_cast9_v1",
-    "WanWan_normal": "./assets/office-fullbody-webp/WanWan_normal.webp?v=20261123_cast9_v1",
-    "WanWan_happy": "./assets/office-fullbody-webp/WanWan_happy.webp?v=20261123_cast9_v1",
-    "WanWan_hurt_cry": "./assets/office-fullbody-webp/WanWan_hurt_cry.webp?v=20261123_cast9_v1",
-    "WanWan_innocent": "./assets/office-fullbody-webp/WanWan_innocent.webp?v=20261123_cast9_v1"
+    "RuiRui_normal": "./assets/office-fullbody-webp/RuiRui_normal.webp?v=20261123_cast9_r3_v1",
+    "RuiRui_happy": "./assets/office-fullbody-webp/RuiRui_happy.webp?v=20261123_cast9_r3_v1",
+    "RuiRui_hurt_cry": "./assets/office-fullbody-webp/RuiRui_hurt_cry.webp?v=20261123_cast9_r3_v1",
+    "RuiRui_innocent": "./assets/office-fullbody-webp/RuiRui_innocent.webp?v=20261123_cast9_r3_v1",
+    "WanWan_normal": "./assets/office-fullbody-webp/WanWan_normal.webp?v=20261123_cast9_r3_v1",
+    "WanWan_happy": "./assets/office-fullbody-webp/WanWan_happy.webp?v=20261123_cast9_r3_v1",
+    "WanWan_hurt_cry": "./assets/office-fullbody-webp/WanWan_hurt_cry.webp?v=20261123_cast9_r3_v1",
+    "WanWan_innocent": "./assets/office-fullbody-webp/WanWan_innocent.webp?v=20261123_cast9_r3_v1"
   };
   const imgs = {};
   const opaqueBoxCache = {};
@@ -120,6 +120,11 @@
     if (imgs[k]) return imgs[k];
     const im = new Image();
     im.decoding = "async";
+    if (k.endsWith("_normal")) {
+      im.addEventListener("load", () => {
+        if (typeof window.__refreshChipAvatars === "function") window.__refreshChipAvatars();
+      }, { once: true });
+    }
     im.src = assetUrls[k];
     imgs[k] = im;
     return im;
@@ -137,7 +142,8 @@
   const immediateKeys = [
     bgKey,
     "weapon-slipper", "weapon-stool", "weapon-zapper", "weapon-cooker",
-    "Tony_normal", "Tony_happy", "Tony_hurt_cry", "Tony_innocent"
+    "Tony_normal", "Tony_happy", "Tony_hurt_cry", "Tony_innocent",
+    "3畝_normal", "Kenny_normal", "Judy_normal", "Shrimp_normal", "Junior_normal", "Sara_normal", "RuiRui_normal", "WanWan_normal"
   ];
   immediateKeys.forEach(loadImg);
   if (imgs[bgKey]) {
@@ -1184,7 +1190,7 @@
   }));
 
   // =========================================================
-  // 1. 打小人（正式七人固定順序：3畝、肯尼、啾底、偷泥、蝦婷、學妹、沙拉）
+  // 1. 打小人（正式九人固定順序：3畝、肯尼、啾底、偷泥、蝦婷、學妹、沙拉、芮芮、婉婉）
   //    預設啟動對象：偷泥 + 藍白拖
   // =========================================================
   const slapScenarios = [
@@ -1252,22 +1258,22 @@
       blessLine: "沙拉祝願：團隊默契滿分！"
     },
     {
-      id: "rui_rui", label: "芮芮", charKey: "RuiRui", fullBody: true, assetStatus: "approved", color: "#9c84b8",
-      officeEvents: [
-        "這台螢幕畫質超亮眼，作業畫圖都變超好看！",
-        "誰偷吃我的草莓布丁？快點自己舉手承認！",
-        "低藍光護眼螢幕開起來，今天也要開心過關！"
-      ],
-      blessLine: "芮芮加油：好運乖乖來報到！"
-    },
-    {
-      id: "wan_wan", label: "婉婉", charKey: "WanWan", fullBody: true, assetStatus: "approved", color: "#5e94c8",
+      id: "rui_rui", label: "芮芮", charKey: "RuiRui", fullBody: true, assetStatus: "approved", color: "#5e94c8",
       officeEvents: [
         "耶！新螢幕色彩超鮮豔，拍照比耶最上鏡！",
         "卡關了嗎？先來心安宮敲兩下補滿元氣！",
         "240Hz 順到飛起來，今天全部任務一次搞定！"
       ],
-      blessLine: "婉婉祝福：每天開心笑嘻嘻！"
+      blessLine: "芮芮祝福：每天開心笑嘻嘻！"
+    },
+    {
+      id: "wan_wan", label: "婉婉", charKey: "WanWan", fullBody: true, assetStatus: "approved", color: "#9c84b8",
+      officeEvents: [
+        "這台螢幕畫質超亮眼，作業畫圖都變超好看！",
+        "誰偷吃我的草莓布丁？快點自己舉手承認！",
+        "低藍光護眼螢幕開起來，今天也要開心過關！"
+      ],
+      blessLine: "婉婉加油：好運乖乖來報到！"
     }
   ];
   const weapons = [
@@ -1580,7 +1586,8 @@
       slapCombo += 5;
       comboBadgeTimer = 2.6;
       villainFly = 1;
-      setCharMood("happy", 1.8);
+      // 重擊與普通打擊一律先呈現明顯哭臉（hurt_cry），稍後再過渡回委屈／正常；開心保留給祈福與好籤
+      setCharMood("hurt_cry", 1.85);
       addMerit(15);
       playWeaponSound(selectedWeapon.id, true);
       playBellSound(392);
@@ -1590,7 +1597,7 @@
       spawnShockwave(altarX, altarY - 10, "#ff7256", 130, 4);
       spawnFestiveShower("slap", 2.0);
       const heavyWord = selectedScenario.fullBody
-        ? `${selectedScenario.label} 慶祝達標！`
+        ? `${selectedScenario.label} 嗚嗚求饒中！`
         : `${selectedWeapon.label}鎮煞重擊！`;
       spawnFloatText(altarX, altarY - 95, heavyWord, "#ffd466", 25);
       renderControls();
@@ -1598,7 +1605,7 @@
       slapCombo += 1;
       comboBadgeTimer = 2.2;
       slapCharge = Math.min(10, slapCharge + 1);
-      setCharMood("hurt_cry", 0.9);
+      setCharMood("hurt_cry", 1.25);
       addMerit(selectedWeapon.power);
       playWeaponSound(selectedWeapon.id, false);
       spawnBurst(altarX, altarY - 10, selectedWeapon.color, 14, 210);
@@ -1808,18 +1815,71 @@
       }
     }
 
-    // 第 1 排角色列：7 位角色單排等寬 7 格（圓點 LED 燈珠字）
+    // 角色頭像裁切繪製：從 normal 透明全身圖以 alpha>16 外框精準裁切頭臉區，不拉伸、不裁切頭頂
+    function drawChipAvatar(cv, charKey) {
+      if (!cv || !charKey) return;
+      const im = loadImg(`${charKey}_normal`);
+      if (!im || !im.complete || !im.naturalWidth) return;
+      const box = getOpaqueBox(im) || { x: 0, y: 0, w: im.naturalWidth, h: im.naturalHeight };
+      const cropH = Math.min(box.h * 0.44, box.w * 0.88);
+      const cropW = cropH;
+      const sx = Math.max(0, Math.min(im.naturalWidth - cropW, box.x + (box.w - cropW) * 0.5));
+      const sy = Math.max(0, box.y - cropH * 0.04);
+      const dprAv = Math.min(window.devicePixelRatio || 1, 2);
+      const sz = Math.round(28 * dprAv);
+      if (cv.width !== sz || cv.height !== sz) { cv.width = sz; cv.height = sz; }
+      const g = cv.getContext("2d");
+      g.clearRect(0, 0, sz, sz);
+      g.save();
+      g.beginPath();
+      g.arc(sz * 0.5, sz * 0.5, sz * 0.5, 0, Math.PI * 2);
+      g.clip();
+      g.drawImage(im, sx, sy, cropW, cropH, 0, 0, sz, sz);
+      g.restore();
+    }
+    window.__refreshChipAvatars = function () {
+      document.querySelectorAll("canvas.chip-avatar-canvas[data-char-key]").forEach(cv => {
+        drawChipAvatar(cv, cv.dataset.charKey);
+      });
+    };
+
+    // 第 1 排角色列：九位角色「大頭照＋圓點 LED 綽號」（手機單列橫滑＋至少 48px 觸控區＋選中明顯金框）
     slapScenarios.forEach(s => {
       const b = document.createElement("button");
       b.type = "button";
       const isAct = selectedScenario.id === s.id && !customTargetLabel;
       b.className = "chip-btn" + (isAct ? " active" : "");
-      renderDomLedLabel(b, getLocalizedCharName(s), {
-        pitch: 1.32,
-        color: isAct ? "#fff6b0" : "#ffd980"
+      b.setAttribute("role", "option");
+      b.setAttribute("aria-selected", isAct ? "true" : "false");
+      const av = document.createElement("canvas");
+      av.className = "chip-avatar-canvas";
+      av.dataset.charKey = s.charKey;
+      av.width = 56;
+      av.height = 56;
+      b.appendChild(av);
+      drawChipAvatar(av, s.charKey);
+
+      const nm = document.createElement("span");
+      nm.className = "chip-led-name";
+      renderDomLedLabel(nm, getLocalizedCharName(s), {
+        pitch: 1.15,
+        color: isAct ? "#fff6b0" : "#ffd980",
+        dimDot: false
       });
-      b.onclick = () => { stopAutoOnUserAction(); selectedScenario = s; customTargetLabel = ""; renderControls(); };
+      b.appendChild(nm);
+      b.setAttribute("aria-label", getLocalizedCharName(s));
+      b.onclick = () => {
+        stopAutoOnUserAction();
+        selectedScenario = s;
+        customTargetLabel = "";
+        renderControls();
+      };
       chipsRow.appendChild(b);
+      if (isAct && chipsRow.scrollWidth > chipsRow.clientWidth + 4) {
+        requestAnimationFrame(() => {
+          try { b.scrollIntoView({ inline: "nearest", block: "nearest", behavior: "smooth" }); } catch {}
+        });
+      }
     });
 
     // 同步左側道具欄短字為圓點 LED
@@ -3264,7 +3324,7 @@
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_15:05:00",
+    getVersion: () => "v_15:45:00",
     setScene: (id) => {
       if (SCENE_DEFS[id]) { activeSceneId = id; loadImg(SCENE_DEFS[id].keyP); loadImg(SCENE_DEFS[id].keyD); }
     },
@@ -3324,6 +3384,22 @@
     },
     showTestBanner: (txt) => showDeityBanner(txt || "文昌帝君：「簡報第 18 版終於過關，拜託別再改字體！」", 8)
   };
+  const chipsScrollCue = document.getElementById("chipsScrollCue");
+  if (chipsScrollCue && chipsRow) {
+    const syncScrollCue = () => {
+      const canScrollRight = chipsRow.scrollLeft + chipsRow.clientWidth < chipsRow.scrollWidth - 6;
+      chipsScrollCue.textContent = canScrollRight ? "›" : "‹";
+      chipsScrollCue.setAttribute("aria-label", canScrollRight ? "往右看更多角色" : "回到前面角色");
+    };
+    chipsRow.addEventListener("scroll", syncScrollCue, { passive: true });
+    window.addEventListener("resize", syncScrollCue);
+    chipsScrollCue.addEventListener("click", () => {
+      const canScrollRight = chipsRow.scrollLeft + chipsRow.clientWidth < chipsRow.scrollWidth - 6;
+      chipsRow.scrollBy({ left: canScrollRight ? 180 : -chipsRow.scrollWidth, behavior: "smooth" });
+    });
+    setTimeout(syncScrollCue, 150);
+  }
+
   refreshAllLedDomLabels();
   syncSoundUI();
   requestAnimationFrame(frame);

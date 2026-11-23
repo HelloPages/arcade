@@ -393,15 +393,60 @@ body.in-fs .top-hud {
   gap: 4px;
 }
 
+.chips-strip-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .chips-row {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 5px;
+  padding: 2px 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chips-row::-webkit-scrollbar {
+  display: none;
+}
+
+.chips-scroll-cue {
+  flex: 0 0 auto;
+  width: 24px;
+  min-height: 46px;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 3px;
+  place-items: center;
+  border-radius: 6px;
+  border: 1px solid rgba(240, 195, 104, 0.58);
+  background: linear-gradient(180deg, #5e1a10 0%, #2d0b08 100%);
+  color: #ffe88a;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 0;
+  animation: gentleNudge 2.4s ease-in-out infinite;
+}
+
+.chips-scroll-cue:active {
+  transform: scale(0.92);
 }
 
 @media (min-width: 640px) {
   .chips-row {
+    display: grid;
     grid-template-columns: repeat(9, minmax(0, 1fr));
+    overflow: visible;
+  }
+  .chips-scroll-cue {
+    display: none;
   }
 }
 
@@ -456,21 +501,53 @@ body.in-fs .top-hud {
 }
 
 .chip-btn {
-  padding: 3px 2px;
-  min-height: 28px;
+  flex: 0 0 auto;
+  min-width: 50px;
+  min-height: 48px;
+  padding: 3px 4px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  scroll-snap-align: start;
   font-size: 11px;
   font-weight: 700;
-  border: 1px solid rgba(240, 195, 104, 0.32);
+  border: 1px solid rgba(240, 195, 104, 0.34);
   background: #200b0e;
   color: #fff4dd;
   text-overflow: ellipsis;
 }
 
+.chip-avatar-canvas {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(240, 195, 104, 0.56);
+  background: radial-gradient(circle at 50% 35%, #4a231c 0%, #1c0b0e 100%);
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.chip-led-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+}
+
 .chip-btn.active {
-  background: linear-gradient(180deg, #5e1b10 0%, #310a08 100%);
-  border: 1.5px solid #ffe399;
+  background: linear-gradient(180deg, #6b1a10 0%, #340b08 100%);
+  border: 2px solid #ffe478;
+  box-shadow: 0 0 0 1px rgba(255, 228, 120, 0.48) inset;
   color: #ffe98a;
   font-weight: 900;
+}
+
+.chip-btn.active .chip-avatar-canvas {
+  border-color: #fff5ba;
 }
 
 .rect-btn {
