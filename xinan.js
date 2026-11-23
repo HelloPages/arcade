@@ -138,23 +138,65 @@
   }
   setTimeout(preloadRestCast, 1200);
 
-  // --- 復古電玩 8-bit Chiptune BGM ＋ 零延遲跟手打擊音效引擎 ---
+  // --- 復古電玩 8-bit Chiptune BGM ＋ 零延遲跟手打擊音效引擎（統一經由 masterGain + AnalyserNode 輸出）---
+  const soundUnlockPill = document.getElementById("soundUnlockPill");
   let audioCtx = null;
+  let masterGain = null;
+  let audioAnalyser = null;
+  let audioPcmBuf = null;
   let noiseBuffer = null;
   let soundOn = true;
   let bgmTimerId = null;
   let bgmNextNoteTime = 0;
   let bgmStep = 0;
   let bgmRunning = false;
+  let audioUnlocked = false;
+  let lastAudioError = "";
+
+  function audioOut(ac) {
+    return masterGain || ac.destination;
+  }
+
+  function isAudioActuallyRunning() {
+    return !!(soundOn && audioCtx && audioCtx.state === "running");
+  }
+
+  function syncSoundUI() {
+    const running = isAudioActuallyRunning();
+    if (btnSound) {
+      btnSound.textContent = !soundOn ? "🔇" : (running ? "🔊" : "🔈");
+      btnSound.setAttribute("aria-label", !soundOn ? "靜音" : (running ? "音效開" : "點一下開聲音"));
+    }
+    if (soundUnlockPill) {
+      // 僅在「使用者未靜音，但瀏覽器尚未解鎖或背景切回待解鎖」時顯示輕量一次開聲提示
+      const needTap = soundOn && !running;
+      soundUnlockPill.classList.toggle("hidden", !needTap);
+    }
+  }
 
   function ensureAudio() {
     if (!soundOn) return null;
     if (!audioCtx) {
       const AC = window.AudioContext || window.webkitAudioContext;
-      if (AC) audioCtx = new AC();
-    }
-    if (audioCtx && audioCtx.state === "suspended") {
-      audioCtx.resume().catch(() => {});
+      if (AC) {
+        audioCtx = new AC();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(1.0, audioCtx.currentTime);
+        audioAnalyser = audioCtx.createAnalyser();
+        audioAnalyser.fftSize = 256;
+        audioPcmBuf = new Float32Array(audioAnalyser.fftSize);
+        masterGain.connect(audioAnalyser);
+        audioAnalyser.connect(audioCtx.destination);
+        audioCtx.onstatechange = () => {
+          if (audioCtx && audioCtx.state === "running") {
+            audioUnlocked = true;
+            if (soundOn && !document.hidden) startRetroBgm();
+          } else {
+            stopRetroBgm();
+          }
+          syncSoundUI();
+        };
+      }
     }
     if (audioCtx && !noiseBuffer) {
       const len = Math.floor(audioCtx.sampleRate * 0.18);
@@ -163,6 +205,23 @@
       for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
     }
     return audioCtx;
+  }
+
+  function measureAudioOutput() {
+    if (!audioAnalyser || !audioPcmBuf || !audioCtx || audioCtx.state !== "running") {
+      return { rms: 0, peak: 0 };
+    }
+    audioAnalyser.getFloatTimeDomainData(audioPcmBuf);
+    let sumSq = 0, peak = 0;
+    for (let i = 0; i < audioPcmBuf.length; i++) {
+      const v = Math.abs(audioPcmBuf[i]);
+      sumSq += v * v;
+      if (v > peak) peak = v;
+    }
+    return {
+      rms: +Math.sqrt(sumSq / audioPcmBuf.length).toFixed(5),
+      peak: +peak.toFixed(5)
+    };
   }
 
   // 朗朗上口 144 BPM 復古街機五聲道喜氣旋律（64 步八分音符循環，A段俏皮＋B段高潮）
@@ -227,7 +286,7 @@
       g.gain.setValueAtTime(0.0001, time);
       g.gain.linearRampToValueAtTime(0.017, time + 0.01);
       g.gain.exponentialRampToValueAtTime(0.0005, time + stepDur * 0.92);
-      osc.connect(g).connect(ac.destination);
+      osc.connect(g).connect(audioOut(ac));
       osc.start(time);
       osc.stop(time + stepDur * 0.95);
     }
@@ -241,7 +300,7 @@
       g.gain.setValueAtTime(0.0001, time);
       g.gain.linearRampToValueAtTime(0.007, time + 0.014);
       g.gain.exponentialRampToValueAtTime(0.0004, time + stepDur * 0.85);
-      osc.connect(g).connect(ac.destination);
+      osc.connect(g).connect(audioOut(ac));
       osc.start(time);
       osc.stop(time + stepDur * 0.88);
     }
@@ -258,7 +317,7 @@
         g.gain.setValueAtTime(0.0001, at);
         g.gain.linearRampToValueAtTime(0.007, at + 0.008);
         g.gain.exponentialRampToValueAtTime(0.0004, at + stepDur * 0.46);
-        osc.connect(g).connect(ac.destination);
+        osc.connect(g).connect(audioOut(ac));
         osc.start(at);
         osc.stop(at + stepDur * 0.48);
       }
@@ -273,7 +332,7 @@
       g.gain.setValueAtTime(0.0001, time);
       g.gain.linearRampToValueAtTime(0.034, time + 0.01);
       g.gain.exponentialRampToValueAtTime(0.0008, time + stepDur * 1.45);
-      osc.connect(g).connect(ac.destination);
+      osc.connect(g).connect(audioOut(ac));
       osc.start(time);
       osc.stop(time + stepDur * 1.5);
     }
@@ -287,7 +346,7 @@
       osc.frequency.exponentialRampToValueAtTime(42, time + 0.075);
       g.gain.setValueAtTime(0.030, time);
       g.gain.exponentialRampToValueAtTime(0.0008, time + 0.085);
-      osc.connect(g).connect(ac.destination);
+      osc.connect(g).connect(audioOut(ac));
       osc.start(time);
       osc.stop(time + 0.09);
     } else if (step % 4 === 2 && noiseBuffer) {
@@ -299,7 +358,7 @@
       const g = ac.createGain();
       g.gain.setValueAtTime(0.013, time);
       g.gain.exponentialRampToValueAtTime(0.0004, time + 0.065);
-      src.connect(bp).connect(g).connect(ac.destination);
+      src.connect(bp).connect(g).connect(audioOut(ac));
       src.start(time);
       src.stop(time + 0.07);
     }
@@ -312,7 +371,7 @@
       const g = ac.createGain();
       g.gain.setValueAtTime(0.007, time);
       g.gain.exponentialRampToValueAtTime(0.0004, time + 0.032);
-      src.connect(filt).connect(g).connect(ac.destination);
+      src.connect(filt).connect(g).connect(audioOut(ac));
       src.start(time);
       src.stop(time + 0.036);
     }
@@ -323,27 +382,50 @@
       bell.frequency.setValueAtTime(1567.98, time);
       bg.gain.setValueAtTime(0.009, time);
       bg.gain.exponentialRampToValueAtTime(0.0003, time + 0.22);
-      bell.connect(bg).connect(ac.destination);
+      bell.connect(bg).connect(audioOut(ac));
       bell.start(time);
       bell.stop(time + 0.24);
     }
   }
 
   function startRetroBgm() {
-    if (!soundOn || bgmRunning) return;
+    if (!soundOn || document.hidden) return;
     const ac = ensureAudio();
     if (!ac) return;
+    // 嚴格檢查：僅在 AudioContext 真正處於 running 才設 bgmRunning = true，絕不假設已啟動！
+    if (ac.state !== "running") {
+      syncSoundUI();
+      return;
+    }
+    if (masterGain) masterGain.gain.setValueAtTime(1.0, ac.currentTime);
+    if (bgmRunning && bgmTimerId) {
+      syncSoundUI();
+      return;
+    }
     bgmRunning = true;
-    bgmNextNoteTime = ac.currentTime + 0.04;
+    bgmNextNoteTime = ac.currentTime + 0.03;
     const stepDur = 60 / 144 / 2;
+    // 立刻排程第一個音符，確保解鎖當下零延遲發聲
+    scheduleBgmStep(ac, bgmStep, bgmNextNoteTime);
+    bgmNextNoteTime += stepDur;
+    bgmStep = (bgmStep + 1) % BGM_LEAD.length;
+
     bgmTimerId = setInterval(() => {
-      if (!soundOn || !audioCtx || audioCtx.state !== "running") return;
+      if (!soundOn || !audioCtx || audioCtx.state !== "running" || document.hidden) {
+        stopRetroBgm();
+        syncSoundUI();
+        return;
+      }
+      if (bgmNextNoteTime < audioCtx.currentTime - 0.25) {
+        bgmNextNoteTime = audioCtx.currentTime + 0.02;
+      }
       while (bgmNextNoteTime < audioCtx.currentTime + 0.14) {
         scheduleBgmStep(audioCtx, bgmStep, bgmNextNoteTime);
         bgmNextNoteTime += stepDur;
         bgmStep = (bgmStep + 1) % BGM_LEAD.length;
       }
     }, 45);
+    syncSoundUI();
   }
 
   function stopRetroBgm() {
@@ -355,34 +437,69 @@
   }
 
   // 第一次互動即自動解鎖並開啟復古電玩 BGM；離開分頁／切換網頁／跳出視窗立刻停止音樂！
-  let audioUnlocked = false;
   function pauseAudioOnLeave() {
     stopRetroBgm();
-    if (audioCtx && audioCtx.state === "running") {
-      audioCtx.suspend().catch(() => {});
+    if (audioCtx && masterGain) {
+      try { masterGain.gain.setValueAtTime(0, audioCtx.currentTime); } catch {}
     }
+    if (audioCtx && audioCtx.state === "running") {
+      audioCtx.suspend().catch(err => { lastAudioError = String(err || ""); });
+    }
+    syncSoundUI();
   }
   function resumeAudioOnReturn() {
-    if (document.hidden || !soundOn || !audioUnlocked) return;
+    if (document.hidden || !soundOn || !audioUnlocked) {
+      syncSoundUI();
+      return;
+    }
     const ac = ensureAudio();
-    if (ac && ac.state === "suspended") {
-      ac.resume().then(() => { if (!document.hidden && soundOn) startRetroBgm(); }).catch(() => {});
-    } else if (ac) {
+    if (!ac) { syncSoundUI(); return; }
+    if (masterGain) masterGain.gain.setValueAtTime(1.0, ac.currentTime);
+    if (ac.state === "running") {
       startRetroBgm();
+    } else {
+      ac.resume().then(() => {
+        if (!document.hidden && soundOn && ac.state === "running") {
+          audioUnlocked = true;
+          startRetroBgm();
+        }
+        syncSoundUI();
+      }).catch(err => {
+        lastAudioError = String(err || "");
+        syncSoundUI();
+      });
     }
   }
-  function unlockAudioOnGesture() {
-    audioUnlocked = true;
+  function unlockAudioOnGesture(e) {
+    // 若點的是喇叭鈕或開聲提示鈕，交由按鈕自身 click handler 精確處理，避免 pointerdown 先跑造成 click 誤切靜音！
+    if (e && e.target && e.target.closest && (e.target.closest("#btnSound") || e.target.closest("#soundUnlockPill"))) {
+      return;
+    }
     if (!soundOn || document.hidden) return;
     const ac = ensureAudio();
-    if (ac && ac.state === "suspended") {
-      ac.resume().then(() => { if (!document.hidden && soundOn) startRetroBgm(); }).catch(() => {});
-    } else if (ac) {
+    if (!ac) return;
+    if (masterGain) masterGain.gain.setValueAtTime(1.0, ac.currentTime);
+    if (ac.state === "running") {
+      audioUnlocked = true;
       startRetroBgm();
+      syncSoundUI();
+      return;
     }
+    ac.resume().then(() => {
+      if (!document.hidden && soundOn && ac.state === "running") {
+        audioUnlocked = true;
+        startRetroBgm();
+      }
+      syncSoundUI();
+    }).catch(err => {
+      lastAudioError = String(err || "");
+      syncSoundUI();
+    });
   }
-  window.addEventListener("pointerdown", unlockAudioOnGesture, { passive: true });
-  window.addEventListener("keydown", unlockAudioOnGesture, { passive: true });
+  window.addEventListener("pointerdown", unlockAudioOnGesture, { passive: true, capture: true });
+  window.addEventListener("touchend", unlockAudioOnGesture, { passive: true, capture: true });
+  window.addEventListener("click", unlockAudioOnGesture, { passive: true, capture: true });
+  window.addEventListener("keydown", unlockAudioOnGesture, { passive: true, capture: true });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) pauseAudioOnLeave();
     else resumeAudioOnReturn();
@@ -404,7 +521,7 @@
     const g = ac.createGain();
     g.gain.setValueAtTime(vol, now);
     g.gain.exponentialRampToValueAtTime(0.001, now + dur);
-    src.connect(bp).connect(g).connect(ac.destination);
+    src.connect(bp).connect(g).connect(audioOut(ac));
     src.start(now);
     src.stop(now + dur + 0.01);
   }
@@ -423,7 +540,7 @@
     punch.frequency.exponentialRampToValueAtTime(44, now + 0.11);
     pg.gain.setValueAtTime(heavy ? 0.55 : 0.36, now);
     pg.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-    punch.connect(pg).connect(ac.destination);
+    punch.connect(pg).connect(audioOut(ac));
     punch.start(now); punch.stop(now + 0.13);
 
     const comboHz = COMBO_PENTATONIC[slapCombo % COMBO_PENTATONIC.length];
@@ -433,7 +550,7 @@
     chime.frequency.setValueAtTime(comboHz, now);
     cg.gain.setValueAtTime(0.18, now);
     cg.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
-    chime.connect(cg).connect(ac.destination);
+    chime.connect(cg).connect(audioOut(ac));
     chime.start(now); chime.stop(now + 0.15);
 
     // 2. 各台式武器專屬復古電玩多層次打擊聲（全面加強音量與存在感）
@@ -445,7 +562,7 @@
         o.frequency.setValueAtTime(f, now + idx * 0.025);
         g.gain.setValueAtTime(0.22, now + idx * 0.025);
         g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.025 + 0.28);
-        o.connect(g).connect(ac.destination);
+        o.connect(g).connect(audioOut(ac));
         o.start(now + idx * 0.025);
         o.stop(now + idx * 0.025 + 0.30);
       });
@@ -461,7 +578,7 @@
         o.frequency.exponentialRampToValueAtTime(f * 0.35, now + i * 0.020 + 0.052);
         g.gain.setValueAtTime(0.28, now + i * 0.020);
         g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.020 + 0.058);
-        o.connect(g).connect(ac.destination);
+        o.connect(g).connect(audioOut(ac));
         o.start(now + i * 0.020); o.stop(now + i * 0.020 + 0.062);
       });
     } else if (weaponId === "cooker") {
@@ -473,7 +590,7 @@
       thud.frequency.exponentialRampToValueAtTime(52, now + 0.11);
       tg.gain.setValueAtTime(0.46, now);
       tg.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-      thud.connect(tg).connect(ac.destination);
+      thud.connect(tg).connect(audioOut(ac));
       thud.start(now); thud.stop(now + 0.13);
 
       [1318.5, 2637.0].forEach((f, i) => {
@@ -483,7 +600,7 @@
         ding.frequency.setValueAtTime(f, now + 0.012);
         dg.gain.setValueAtTime(i === 0 ? 0.42 : 0.20, now + 0.012);
         dg.gain.exponentialRampToValueAtTime(0.001, now + 0.52);
-        ding.connect(dg).connect(ac.destination);
+        ding.connect(dg).connect(audioOut(ac));
         ding.start(now + 0.012); ding.stop(now + 0.54);
       });
       if (noiseBuffer) {
@@ -495,7 +612,7 @@
         const hg = ac.createGain();
         hg.gain.setValueAtTime(0.11, now + 0.04);
         hg.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-        hiss.connect(hp).connect(hg).connect(ac.destination);
+        hiss.connect(hp).connect(hg).connect(audioOut(ac));
         hiss.start(now + 0.04); hiss.stop(now + 0.23);
       }
     } else if (weaponId === "stool") {
@@ -506,7 +623,7 @@
       o1.frequency.exponentialRampToValueAtTime(84, now + 0.12);
       g1.gain.setValueAtTime(0.38, now);
       g1.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
-      o1.connect(g1).connect(ac.destination);
+      o1.connect(g1).connect(audioOut(ac));
       o1.start(now); o1.stop(now + 0.14);
 
       const o2 = ac.createOscillator();
@@ -516,7 +633,7 @@
       o2.frequency.exponentialRampToValueAtTime(170, now + 0.11);
       g2.gain.setValueAtTime(0.32, now + 0.032);
       g2.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-      o2.connect(g2).connect(ac.destination);
+      o2.connect(g2).connect(audioOut(ac));
       o2.start(now + 0.032); o2.stop(now + 0.125);
     } else {
       const o = ac.createOscillator();
@@ -526,7 +643,7 @@
       o.frequency.exponentialRampToValueAtTime(62, now + 0.095);
       g.gain.setValueAtTime(0.48, now);
       g.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
-      o.connect(g).connect(ac.destination);
+      o.connect(g).connect(audioOut(ac));
       o.start(now); o.stop(now + 0.115);
 
       const boing = ac.createOscillator();
@@ -536,7 +653,7 @@
       boing.frequency.exponentialRampToValueAtTime(560, now + 0.12);
       bg.gain.setValueAtTime(0.18, now + 0.03);
       bg.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
-      boing.connect(bg).connect(ac.destination);
+      boing.connect(bg).connect(audioOut(ac));
       boing.start(now + 0.03); boing.stop(now + 0.135);
     }
   }
@@ -553,7 +670,7 @@
     gain.gain.setValueAtTime(0.18, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
     osc.connect(gain); osc2.connect(gain);
-    gain.connect(ac.destination);
+    gain.connect(audioOut(ac));
     osc.start(now); osc2.start(now);
     osc.stop(now + 0.95); osc2.stop(now + 0.95);
   }
@@ -568,21 +685,58 @@
     osc.frequency.exponentialRampToValueAtTime(240, now + 0.055);
     gain.gain.setValueAtTime(0.14, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
-    osc.connect(gain).connect(ac.destination);
+    osc.connect(gain).connect(audioOut(ac));
     osc.start(now); osc.stop(now + 0.07);
   }
 
-  btnSound.addEventListener("click", () => {
-    soundOn = !soundOn;
-    btnSound.textContent = soundOn ? "🔊" : "🔇";
-    btnSound.setAttribute("aria-label", soundOn ? "音效開" : "靜音");
-    if (soundOn) {
-      unlockAudioOnGesture();
+  function explicitEnableSound() {
+    soundOn = true;
+    const ac = ensureAudio();
+    if (!ac) { syncSoundUI(); return; }
+    if (masterGain) masterGain.gain.setValueAtTime(1.0, ac.currentTime);
+    if (ac.state === "running") {
+      audioUnlocked = true;
+      startRetroBgm();
       playWoodClack();
-    } else {
-      stopRetroBgm();
+      syncSoundUI();
+      return;
     }
+    ac.resume().then(() => {
+      if (!document.hidden && soundOn && ac.state === "running") {
+        audioUnlocked = true;
+        startRetroBgm();
+        playWoodClack();
+      }
+      syncSoundUI();
+    }).catch(err => {
+      lastAudioError = String(err || "");
+      syncSoundUI();
+    });
+  }
+
+  btnSound.addEventListener("click", (e) => {
+    e.stopPropagation();
+    // 關鍵修正：若目前未靜音但瀏覽器尚未解鎖 AudioContext（例如首次點按或背景返回待解鎖），
+    // 點按喇叭應「明確解鎖開聲」而不是把 soundOn 反向切成靜音！
+    if (!soundOn || !audioCtx || audioCtx.state !== "running") {
+      explicitEnableSound();
+      return;
+    }
+    soundOn = false;
+    stopRetroBgm();
+    if (audioCtx && masterGain) {
+      try { masterGain.gain.setValueAtTime(0, audioCtx.currentTime); } catch {}
+    }
+    syncSoundUI();
   });
+
+  if (soundUnlockPill) {
+    soundUnlockPill.addEventListener("click", (e) => {
+      e.stopPropagation();
+      explicitEnableSound();
+    });
+  }
+  syncSoundUI();
 
   // --- 狀態 ---
   const STORAGE_KEY = "xinan_temple_merit_v1";
@@ -1288,20 +1442,7 @@
     return imgs[`${charKey}_${mood}`] || imgs[`${charKey}_normal`];
   }
 
-  window.__xinanDebug = {
-    setMood: (m) => { forceMoodForTest = m; },
-    getState: () => ({
-      mode,
-      autoTheater,
-      bgmRunning,
-      soundOn,
-      scenario: selectedScenario.id,
-      mood: forceMoodForTest || charMood,
-      merit,
-      slapCombo,
-      slapCharge
-    })
-  };
+  let lastLayoutBoxes = { weapon: null, bubble: null, charTopY: 0, deityActive: false };
 
   function performSlap(heavy = false) {
     if (!resultCard.classList.contains("hidden")) return;
@@ -1716,6 +1857,7 @@
     btnAuto.addEventListener("click", () => {
       autoTheater = !autoTheater;
       syncAutoBtn();
+      if (soundOn && !isAudioActuallyRunning()) explicitEnableSound();
       if (autoTheater) {
         resultCard.classList.add("hidden");
         if (oracleStep === "done") oracleStep = "ready";
@@ -2206,6 +2348,8 @@
       // 人物下方不再顯示多餘名字標籤牌，保持手機與桌面神壇乾淨清爽
 
       // 台式搞笑武器揮擊：縮小並調整待機／落點位置，待機與打擊瞬間都不遮住人物臉部！
+      // 同步記錄 activeWeaponBox 供角色對話泡泡避讓，確保紅電鍋（頭頂垂直重砸）與側揮武器絕不被對話框蓋住！
+      let activeWeaponBox = null;
       const wImg = imgs[selectedWeapon.sprite];
       if (wImg && wImg.complete && wImg.naturalWidth > 0) {
         const swing = weaponAnim > 0
@@ -2213,23 +2357,23 @@
           : 0;
         const isOverheadDrop = selectedWeapon.id === "cooker";
         const idleSize = isOverheadDrop
-          ? Math.min(112, propBase * 0.27)
+          ? Math.min(102, propBase * 0.25)
           : Math.min(104, propBase * 0.25);
         const hitSize = isOverheadDrop
-          ? Math.min(162, propBase * 0.39) * (weaponHeavy ? 1.15 : 1.0)
+          ? Math.min(144, propBase * 0.35) * (weaponHeavy ? 1.12 : 1.0)
           : Math.min(148, propBase * 0.35) * (weaponHeavy ? 1.14 : 1.0);
         const wSize = idleSize + (hitSize - idleSize) * swing;
         let wxPos, wyPos, wRot, comicScaleX, comicScaleY;
 
         if (isOverheadDrop) {
-          // 經典紅電鍋：懸浮在角色頭頂正上方蓄勢，點擊瞬間垂直狠狠往下砸頭頂（不遮臉）！
-          const topStartY = Math.max(hudBottom + 56, activeCharTopY - vSize * 0.44);
-          const headHitY = activeCharTopY - 4;
+          // 經典紅電鍋：懸浮在角色頭頂正上方蓄勢，點擊瞬間垂直狠狠往下砸頭頂（不遮臉，且對話泡泡退讓至電鍋上方！）
+          const topStartY = Math.max(hudBottom + 56, activeCharTopY - idleSize * 0.64);
+          const headHitY = activeCharTopY - 8;
           wxPos = altarX;
           wyPos = topStartY + (headHitY - topStartY) * swing;
           wRot = Math.sin(t * 2.6) * 0.06 * (1 - swing);
-          comicScaleX = 1 + swing * (weaponHeavy ? 0.24 : 0.18);
-          comicScaleY = 1 - swing * (weaponHeavy ? 0.18 : 0.12);
+          comicScaleX = 1 + swing * (weaponHeavy ? 0.22 : 0.16);
+          comicScaleY = 1 - swing * (weaponHeavy ? 0.16 : 0.11);
         } else {
           // 藍白拖／紅塑膠椅／電蚊拍：待機持握在人物右下方肩側，揮擊敲在右頰邊緣，整張臉始終清楚可見！
           const restX = Math.min(vw - idleSize * 0.50, altarX + Math.max(108, vSize * 0.58));
@@ -2242,6 +2386,21 @@
           comicScaleX = 1 + swing * (weaponHeavy ? 0.18 : 0.12);
           comicScaleY = 1 - swing * 0.08;
         }
+
+        const aspect = wImg.naturalWidth / wImg.naturalHeight;
+        const bobY = Math.sin(t * 2.8) * 4 * (1 - swing);
+        const drawW = wSize * aspect * comicScaleX;
+        const drawH = wSize * comicScaleY;
+        activeWeaponBox = {
+          id: selectedWeapon.id,
+          isOverhead: isOverheadDrop,
+          left: Math.round(wxPos - drawW * 0.5),
+          right: Math.round(wxPos + drawW * 0.5),
+          top: Math.round(wyPos + bobY - drawH * 0.5),
+          bottom: Math.round(wyPos + bobY + drawH * 0.5)
+        };
+        lastLayoutBoxes.weapon = activeWeaponBox;
+        lastLayoutBoxes.charTopY = Math.round(activeCharTopY);
 
         ctx.save();
         if (swing > 0.10) {
@@ -2265,15 +2424,16 @@
             ctx.stroke();
           }
         }
-        ctx.translate(wxPos, wyPos + Math.sin(t * 2.8) * 4 * (1 - swing));
+        ctx.translate(wxPos, wyPos + bobY);
         ctx.rotate(wRot);
         ctx.scale(comicScaleX, comicScaleY);
         ctx.shadowColor = weaponHeavy ? "#ffd466" : "rgba(0,0,0,0.34)";
         ctx.shadowBlur = weaponHeavy ? 26 : 12;
         ctx.shadowOffsetY = weaponHeavy ? 0 : 6;
-        const aspect = wImg.naturalWidth / wImg.naturalHeight;
         ctx.drawImage(wImg, -wSize * aspect * 0.5, -wSize * 0.5, wSize * aspect, wSize);
         ctx.restore();
+      } else {
+        lastLayoutBoxes.weapon = null;
       }
 
       // 誇張漫畫撞擊集中線＋暖金閃光（每一下敲擊都有超爽街機打擊爆發感）
@@ -2575,20 +2735,27 @@
     }
     ctx.globalAlpha = 1;
 
-    // 偵測是否需要錯時避讓：當角色跳起或上方空間不足以「零重疊」同時容納神明泡泡＋角色泡泡時，
-    // 優先完整顯示角色台詞泡泡（暫停頂部神明泡泡計時並錯時退讓），等角色泡泡結束再接續顯示神明泡泡！
+    // 偵測是否需要錯時避讓：考慮「頭頂武器（紅電鍋）」與「跳起後角色頭頂」，確保角色泡泡絕不遮武器、且不與頂部神明泡泡碰撞！
     const topHudBottom = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 14;
+    const overheadWeapon = (mode === "slap" && lastLayoutBoxes.weapon && lastLayoutBoxes.weapon.isOverhead)
+      ? lastLayoutBoxes.weapon
+      : null;
+    const bubbleAnchorBottom = overheadWeapon
+      ? Math.min(activeCharTopY - 18, overheadWeapon.top - 12)
+      : (activeCharTopY - 18);
+
     let suppressDeityForOverlap = false;
     const activeFloat = floatTexts.length > 0 ? floatTexts[floatTexts.length - 1] : null;
     if (deityBannerTimer > 0 && deityBannerText && activeFloat) {
       // 估計神明泡泡高度（約 104px）＋ 角色泡泡含名牌與尾巴高度（約 106px）＋ 安全間距 28px
       const neededStackH = 104 + 28 + 106;
-      const availH = (activeCharTopY - 12) - (topHudBottom + 10);
+      const availH = (bubbleAnchorBottom + 6) - (topHudBottom + 10);
       if (availH < neededStackH) suppressDeityForOverlap = true;
     }
 
     // 讀取左側 HTML 道具欄（sidePropRail）實際外框，避免角色長台詞泡泡與名牌被道具欄蓋住
     const railRect = sidePropRail ? sidePropRail.getBoundingClientRect() : null;
+    lastLayoutBoxes.bubble = null;
 
     for (let i = floatTexts.length - 1; i >= 0; i--) {
       const ft = floatTexts[i];
@@ -2601,15 +2768,15 @@
       const minSafeTop = (deityBannerTimer > 0 && !suppressDeityForOverlap)
         ? (topHudBottom + 138)
         : (topHudBottom + 20);
-      const targetBottomY = activeCharTopY - 18;
+      const targetBottomY = bubbleAnchorBottom;
       // 判斷角色泡泡預計垂直範圍是否與左側道具欄重疊；若有重疊，按道具欄實際右緣＋雲弧外凸安全間距重算左界與可用寬度
-      const estTop = Math.max(minSafeTop, targetBottomY - 120);
+      const estTop = Math.max(minSafeTop, targetBottomY - 115);
       const estBot = targetBottomY;
       const overlapsRail = !!(railRect && railRect.width > 0 && estBot >= railRect.top - 10 && (estTop - 18) <= railRect.bottom + 10);
       const safeLeft = overlapsRail ? Math.ceil(railRect.right) + 12 : 14;
       const safeRight = vw - 14;
       const availW = Math.max(168, safeRight - safeLeft);
-      const ledPitch = isWideScr ? 2.25 : (availW < 310 ? 1.72 : 1.95);
+      const ledPitch = isWideScr ? 2.25 : (availW < 310 ? 1.72 : 1.92);
       const maxBubbleW = Math.min(availW, isWideScr ? 540 : 352);
       const maxCharsPerLine = Math.max(7, Math.floor((maxBubbleW - 38) / (12 * ledPitch)));
 
@@ -2667,6 +2834,12 @@
       const bx = Math.max(safeLeft, Math.min(safeRight - bw, targetAnchorX - bw * 0.5));
       const tailX = Math.max(bx + 26, Math.min(bx + bw - 26, targetAnchorX));
       const bounce = Math.sin(t * 5.2) * 2.2;
+      lastLayoutBoxes.bubble = {
+        left: Math.round(bx),
+        right: Math.round(bx + bw),
+        top: Math.round(by - 17),
+        bottom: Math.round(by + bh + tailH)
+      };
 
       // 繪製活潑「漫畫雲朵造型說話泡泡」（非制式方框！波浪雲朵輪廓＋彎曲對話尾巴＋說話角色表情名牌）
       ctx.save();
@@ -2912,9 +3085,41 @@
     requestAnimationFrame(frame);
   }
 
-  // 供自動化測試核對圓點 LED 字形完整性與待機／一般攻擊／重擊互動狀態
+  // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_00:10:00",
+    getVersion: () => "v_08:15:00",
+    setMood: (m) => { forceMoodForTest = m; },
+    setWeapon: (id) => {
+      const found = weapons.find(w => w.id === id);
+      if (found) { selectedWeapon = found; renderControls(); }
+    },
+    getState: () => ({
+      mode,
+      autoTheater,
+      bgmRunning,
+      soundOn,
+      audioUnlocked,
+      ctxState: audioCtx ? audioCtx.state : "none",
+      weapon: selectedWeapon.id,
+      scenario: selectedScenario.id,
+      mood: forceMoodForTest || charMood,
+      merit,
+      slapCombo,
+      slapCharge
+    }),
+    getAudioStatus: () => ({
+      soundOn,
+      audioUnlocked,
+      ctxState: audioCtx ? audioCtx.state : "none",
+      bgmRunning,
+      bgmStep,
+      autoTheater,
+      soundBtnIcon: btnSound ? btnSound.textContent : "",
+      unlockPillVisible: !!(soundUnlockPill && !soundUnlockPill.classList.contains("hidden")),
+      lastAudioError,
+      ...measureAudioOutput()
+    }),
+    getLayoutBoxes: () => ({ ...lastLayoutBoxes }),
     isLedFontLoaded: () => !!(document.fonts && document.fonts.check("12px 'FusionPixel12'")),
     testLedGlyphs: (text) => {
       const chars = Array.from(String(text || ""));
@@ -2935,6 +3140,7 @@
     showTestBanner: (txt) => showDeityBanner(txt || "文昌帝君：「簡報第 18 版終於過關，拜託別再改字體！」", 8)
   };
   refreshAllLedDomLabels();
+  syncSoundUI();
   requestAnimationFrame(frame);
 })();
 
