@@ -39,10 +39,10 @@
     "oracle-blocks": "./assets/v2/oracle-blocks.webp",
     "oracle-stick": "./assets/v2/oracle-stick.webp",
     "oracle-censer": "./assets/v2/oracle-censer.webp",
-    "3畝_normal": "./assets/office-fullbody-webp/3畝_normal.webp?v=20261121_3mu_v2",
-    "3畝_happy": "./assets/office-fullbody-webp/3畝_happy.webp?v=20261121_3mu_v2",
-    "3畝_hurt_cry": "./assets/office-fullbody-webp/3畝_hurt_cry.webp?v=20261121_3mu_v2",
-    "3畝_innocent": "./assets/office-fullbody-webp/3畝_innocent.webp?v=20261121_3mu_v2",
+    "3畝_normal": "./assets/office-fullbody-webp/3畝_normal.webp?v=20261123_cast9_v1",
+    "3畝_happy": "./assets/office-fullbody-webp/3畝_happy.webp?v=20261123_cast9_v1",
+    "3畝_hurt_cry": "./assets/office-fullbody-webp/3畝_hurt_cry.webp?v=20261123_cast9_v1",
+    "3畝_innocent": "./assets/office-fullbody-webp/3畝_innocent.webp?v=20261123_cast9_v1",
     "Kenny_normal": "./assets/office-fullbody-webp/Kenny_normal.webp?v=20261118_hd2k_v8",
     "Kenny_happy": "./assets/office-fullbody-webp/Kenny_happy.webp?v=20261118_hd2k_v8",
     "Kenny_hurt_cry": "./assets/office-fullbody-webp/Kenny_hurt_cry.webp?v=20261118_hd2k_v8",
@@ -66,7 +66,15 @@
     "Sara_normal": "./assets/office-fullbody-webp/Sara_normal.webp?v=20261118_hd2k_v8",
     "Sara_happy": "./assets/office-fullbody-webp/Sara_happy.webp?v=20261118_hd2k_v8",
     "Sara_hurt_cry": "./assets/office-fullbody-webp/Sara_hurt_cry.webp?v=20261118_hd2k_v8",
-    "Sara_innocent": "./assets/office-fullbody-webp/Sara_innocent.webp?v=20261118_hd2k_v8"
+    "Sara_innocent": "./assets/office-fullbody-webp/Sara_innocent.webp?v=20261118_hd2k_v8",
+    "RuiRui_normal": "./assets/office-fullbody-webp/RuiRui_normal.webp?v=20261123_cast9_v1",
+    "RuiRui_happy": "./assets/office-fullbody-webp/RuiRui_happy.webp?v=20261123_cast9_v1",
+    "RuiRui_hurt_cry": "./assets/office-fullbody-webp/RuiRui_hurt_cry.webp?v=20261123_cast9_v1",
+    "RuiRui_innocent": "./assets/office-fullbody-webp/RuiRui_innocent.webp?v=20261123_cast9_v1",
+    "WanWan_normal": "./assets/office-fullbody-webp/WanWan_normal.webp?v=20261123_cast9_v1",
+    "WanWan_happy": "./assets/office-fullbody-webp/WanWan_happy.webp?v=20261123_cast9_v1",
+    "WanWan_hurt_cry": "./assets/office-fullbody-webp/WanWan_hurt_cry.webp?v=20261123_cast9_v1",
+    "WanWan_innocent": "./assets/office-fullbody-webp/WanWan_innocent.webp?v=20261123_cast9_v1"
   };
   const imgs = {};
   const opaqueBoxCache = {};
@@ -1242,6 +1250,24 @@
         "買了啦！這台掛牆上連神明都說讚！"
       ],
       blessLine: "沙拉祝願：團隊默契滿分！"
+    },
+    {
+      id: "rui_rui", label: "芮芮", charKey: "RuiRui", fullBody: true, assetStatus: "approved", color: "#9c84b8",
+      officeEvents: [
+        "這台螢幕畫質超亮眼，作業畫圖都變超好看！",
+        "誰偷吃我的草莓布丁？快點自己舉手承認！",
+        "低藍光護眼螢幕開起來，今天也要開心過關！"
+      ],
+      blessLine: "芮芮加油：好運乖乖來報到！"
+    },
+    {
+      id: "wan_wan", label: "婉婉", charKey: "WanWan", fullBody: true, assetStatus: "approved", color: "#5e94c8",
+      officeEvents: [
+        "耶！新螢幕色彩超鮮豔，拍照比耶最上鏡！",
+        "卡關了嗎？先來心安宮敲兩下補滿元氣！",
+        "240Hz 順到飛起來，今天全部任務一次搞定！"
+      ],
+      blessLine: "婉婉祝福：每天開心笑嘻嘻！"
     }
   ];
   const weapons = [
@@ -1308,7 +1334,7 @@
       bannerAutoOn: "🎬 自動劇情重新開演！隨時點畫面即可接手",
       bannerAutoOff: "🖐️ 已暫停自動劇情，換你親自開玩！",
       bannerScene: (lbl) => `🏮 已切換場景：${lbl}`,
-      names: { three_mu: "3畝", kenny: "肯尼", judy: "啾底", tony: "偷泥", shrimp: "蝦婷", junior: "學妹", sara: "沙拉" },
+      names: { three_mu: "3畝", kenny: "肯尼", judy: "啾底", tony: "偷泥", shrimp: "蝦婷", junior: "學妹", sara: "沙拉", rui_rui: "芮芮", wan_wan: "婉婉" },
       weapons: { slipper: "巨型藍白拖", stool: "辦桌紅椅", zapper: "阿嬤電蚊拍", cooker: "經典紅電鍋" },
       blessings: { lantern: "平安天燈", wealth: "招財進寶", career: "貴人相助", health: "健康平安" },
       scenes: { sunny: "櫻花廟埕", office: "歡樂螢幕間", festival: "廟口嘉年華", skylantern: "天燈雲海台", oraclehall: "金龍問卦殿", night: "暮色雕龍殿" }
@@ -1336,7 +1362,7 @@
       bannerAutoOn: "🎬 Auto-comedy resumed! Tap anywhere to take over.",
       bannerAutoOff: "🖐️ Auto-show paused — you're in full control!",
       bannerScene: (lbl) => `🏮 Stage switched: ${lbl}`,
-      names: { three_mu: "3Mu", kenny: "Kenny", judy: "Judy", tony: "Tony", shrimp: "Shrimp", junior: "Junior", sara: "Sara" },
+      names: { three_mu: "3Mu", kenny: "Kenny", judy: "Judy", tony: "Tony", shrimp: "Shrimp", junior: "Junior", sara: "Sara", rui_rui: "RuiRui", wan_wan: "WanWan" },
       weapons: { slipper: "Mega Slipper", stool: "Red Stool", zapper: "Bug Zapper", cooker: "Rice Cooker" },
       blessings: { lantern: "Sky Lantern", wealth: "Jackpot", career: "Promotion", health: "Good Vibes" },
       scenes: { sunny: "Blossom Courtyard", office: "Monitor Showroom", festival: "Temple Carnival", skylantern: "Lantern Terrace", oraclehall: "Dragon Oracle Hall", night: "Twilight Shrine" }
@@ -1364,7 +1390,7 @@
       bannerAutoOn: "🎬 자동 코미디가 다시 시작됩니다! 터치하면 즉시 직접 조작.",
       bannerAutoOff: "🖐️ 자동 모드 일시정지 — 이제 직접 플레이하세요!",
       bannerScene: (lbl) => `🏮 배경 전환: ${lbl}`,
-      names: { three_mu: "3무", kenny: "케니", judy: "주디", tony: "토니", shrimp: "슈림프", junior: "후배", sara: "사라" },
+      names: { three_mu: "3무", kenny: "케니", judy: "주디", tony: "토니", shrimp: "슈림프", junior: "후배", sara: "사라", rui_rui: "루이루이", wan_wan: "완완" },
       weapons: { slipper: "초대형 슬리퍼", stool: "빨간 의자", zapper: "전기 모기채", cooker: "빨간 밥솥" },
       blessings: { lantern: "소원 풍등", wealth: "재물운", career: "귀인운", health: "건강운" },
       scenes: { sunny: "벚꽃 사당 마당", office: "즐거운 모니터 룸", festival: "사당 축제 광장", skylantern: "풍등 구름 전망대", oraclehall: "황금용 운세전", night: "황혼 용조각전" }
@@ -2361,54 +2387,6 @@
         const w = h * (box.w / box.h);
         activeCharTopY = feetBaseY + flyY - h;
         ctx.drawImage(vImg, box.x, box.y, box.w, box.h, -w * 0.5, -h, w, h);
-
-        // 3畝為七分半身原圖：在下緣前方繪製立體祥雲＋喜氣紅金雲紋座台自然承托，徹底消除硬切直線！
-        if (selectedScenario.id === "three_mu") {
-          ctx.save();
-          ctx.shadowBlur = 0;
-          const cw = Math.max(w * 0.72, 118);
-          // 柔和暖白粉金祥雲團（自然包覆褲緣不硬切）
-          const puffs = [
-            { x: -cw * 0.42, y: -6, r: 22 },
-            { x: -cw * 0.18, y: -12, r: 27 },
-            { x: cw * 0.08, y: -13, r: 26 },
-            { x: cw * 0.34, y: -8, r: 23 },
-            { x: cw * 0.48, y: -2, r: 17 },
-            { x: -cw * 0.52, y: -1, r: 16 }
-          ];
-          // 外層暖金微邊
-          ctx.fillStyle = "#f7d58b";
-          for (const p of puffs) {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y + 2, p.r + 2.5, 0, Math.PI * 2);
-            ctx.fill();
-          }
-          // 內層奶白柔雲
-          const cg = ctx.createLinearGradient(0, -34, 0, 14);
-          cg.addColorStop(0, "#fffdf7");
-          cg.addColorStop(1, "#fde8c8");
-          ctx.fillStyle = cg;
-          for (const p of puffs) {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fill();
-          }
-          // 中央喜氣紅金迷你福紋飾牌
-          const pw = 64, ph = 20;
-          ctx.fillStyle = "#c83e2b";
-          ctx.strokeStyle = "#f3c769";
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.roundRect(-pw * 0.5, -14, pw, ph, 6);
-          ctx.fill();
-          ctx.stroke();
-          ctx.fillStyle = "#fff5d6";
-          ctx.font = "800 11px 'Noto Serif TC', serif";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText("✦ 福 ✦", 0, -4);
-          ctx.restore();
-        }
       } else if (selectedScenario.fullBody) {
         activeCharTopY = feetBaseY + flyY - vSize * 0.92;
         const moodNow = forceMoodForTest || charMood || "normal";
@@ -2851,6 +2829,7 @@
     lastLayoutBoxes.bubble = null;
     lastLayoutBoxes.deity = null;
     lastLayoutBoxes.deityActive = false;
+    lastLayoutBoxes.bubbles = [];
 
     for (let i = floatTexts.length - 1; i >= 0; i--) {
       const ft = floatTexts[i];
@@ -2984,13 +2963,16 @@
       }
       const tailX = Math.max(bx + 26, Math.min(bx + bw - 26, targetAnchorX));
       const bounce = Math.sin(t * 5.2) * 1.8;
-      lastLayoutBoxes.bubble = {
+      const charBubbleBox = {
+        kind: "character",
         left: Math.round(bx - 10),
         right: Math.round(bx + bw + 10),
         top: Math.round(by - (finalDir === "bottom" ? Math.max(18, tailH + 4) : 18)),
         bottom: Math.round(by + bh + (finalDir === "bottom" ? 10 : tailH)),
         dir: finalDir
       };
+      lastLayoutBoxes.bubble = charBubbleBox;
+      lastLayoutBoxes.bubbles.push(charBubbleBox);
 
       // 繪製活潑「漫畫雲朵造型說話泡泡」（波浪雲朵輪廓＋指向說話者的彎曲尾巴＋角色表情名牌）
       ctx.save();
@@ -3103,7 +3085,7 @@
       deityBannerTimer = Math.max(0, deityBannerTimer - dt);
       const hudB = (document.querySelector(".top-hud")?.getBoundingClientRect().bottom || 58) + 14;
       const isWideScr = vw > vh;
-      const ledPitch = isWideScr ? 2.05 : 1.78;
+      const ledPitch = isWideScr ? 2.05 : (vh <= 620 ? 1.48 : 1.78);
       const maxBubbleW = Math.min(vw - 24, isWideScr ? 540 : 358);
 
       // 拆出神明說話者前綴（例如「文昌帝君：「...」」→ 名牌「文昌帝君」＋多行台詞）
@@ -3172,12 +3154,15 @@
           }
         }
       }
-      lastLayoutBoxes.deity = {
+      const deityBubbleBox = {
+        kind: "deity",
         left: Math.round(bx - 10),
         right: Math.round(bx + bw + 10),
         top: Math.round(by - 16),
         bottom: Math.round(by + bh + 10)
       };
+      lastLayoutBoxes.deity = deityBubbleBox;
+      lastLayoutBoxes.bubbles.push(deityBubbleBox);
       const bob = Math.sin(t * 4.2) * 1.8;
 
       ctx.save();
@@ -3279,9 +3264,13 @@
 
   // 單一整合測試與診斷介面（涵蓋狀態、實際音訊波形輸出、武器與泡泡邊界、LED 字形與互動）
   window.__xinanDebug = {
-    getVersion: () => "v_11:48:00",
+    getVersion: () => "v_15:05:00",
     setScene: (id) => {
       if (SCENE_DEFS[id]) { activeSceneId = id; loadImg(SCENE_DEFS[id].keyP); loadImg(SCENE_DEFS[id].keyD); }
+    },
+    setScenario: (id) => {
+      const found = slapScenarios.find(s => s.id === id);
+      if (found) { selectedScenario = found; customTargetLabel = ""; renderControls(); }
     },
     setMood: (m) => { forceMoodForTest = m; },
     setWeapon: (id) => {
