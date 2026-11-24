@@ -590,7 +590,7 @@
     ctx.fillStyle = isPlayer ? '#c95d36' : '#e6b84c';
     ctx.fillRect(-10 * sc, -h * 0.94, 20 * sc, 3.8 * sc);
 
-    // 網球拍（含流暢揮拍弧線殘影）
+    // 網球拍（含細緻拍網紋與流暢揮拍弧線殘影）
     const sw = actor.swing;
     const side = actor.swingSide || 1;
     const rAng = side * (0.45 - sw * 1.9);
@@ -598,65 +598,140 @@
     ctx.translate(side * 12 * sc, -h * 0.56);
     ctx.rotate(rAng);
     if (sw > 0.15) {
-      ctx.strokeStyle = actor.swingKind === 'smash' ? `rgba(255, 224, 102, ${sw * 0.8})` : `rgba(255, 255, 255, ${sw * 0.65})`;
-      ctx.lineWidth = 4 * sc;
-      ctx.beginPath(); ctx.arc(0, 0, 26 * sc, -0.7, 0.7); ctx.stroke();
+      ctx.strokeStyle = actor.swingKind === 'smash' ? `rgba(255, 224, 102, ${sw * 0.85})` : `rgba(255, 255, 255, ${sw * 0.68})`;
+      ctx.lineWidth = 4.5 * sc;
+      ctx.beginPath(); ctx.arc(0, 0, 27 * sc, -0.75, 0.75); ctx.stroke();
     }
-    ctx.strokeStyle = '#2d3748';
-    ctx.lineWidth = Math.max(2, 3.2 * sc);
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -18 * sc); ctx.stroke();
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = Math.max(2.2, 3.4 * sc);
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -17 * sc); ctx.stroke();
+    // 拍面與拍網格線
+    ctx.save();
+    ctx.beginPath(); ctx.ellipse(0, -27 * sc, 9.5 * sc, 12.5 * sc, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.22)'; ctx.fill();
+    ctx.clip();
+    ctx.strokeStyle = 'rgba(255,255,255,0.52)';
+    ctx.lineWidth = Math.max(0.7, 0.9 * sc);
+    for (let sx = -6; sx <= 6; sx += 3) {
+      ctx.beginPath(); ctx.moveTo(sx * sc, -40 * sc); ctx.lineTo(sx * sc, -14 * sc); ctx.stroke();
+    }
+    for (let sy = -36; sy <= -18; sy += 4) {
+      ctx.beginPath(); ctx.moveTo(-10 * sc, sy * sc); ctx.lineTo(10 * sc, sy * sc); ctx.stroke();
+    }
+    ctx.restore();
     ctx.strokeStyle = isPlayer ? '#e63946' : '#f4d37a';
-    ctx.fillStyle = 'rgba(255,255,255,0.22)';
-    ctx.beginPath(); ctx.ellipse(0, -27 * sc, 9 * sc, 12 * sc, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.lineWidth = Math.max(2, 2.8 * sc);
+    ctx.beginPath(); ctx.ellipse(0, -27 * sc, 9.5 * sc, 12.5 * sc, 0, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
 
     ctx.restore();
   }
 
+  // 程序化微細球場顆粒紋理（只生成一次，零效能損耗）
+  const grainCanvas = document.createElement('canvas');
+  grainCanvas.width = 96; grainCanvas.height = 96;
+  const gctx = grainCanvas.getContext('2d');
+  for (let i = 0; i < 650; i++) {
+    const gx = Math.random() * 96, gy = Math.random() * 96;
+    gctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.045)' : 'rgba(0,0,0,0.055)';
+    gctx.fillRect(gx, gy, 1.5, 1.5);
+  }
+  const grainPattern = ctx.createPattern(grainCanvas, 'repeat');
+
   function render(dt) {
     const surf = SURFACES[surfaceIdx];
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.save();
     if (screenShake > 0) {
       ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
     }
 
-    // 1. 場館外圍擋板與地面
+    // 1. 大滿貫場館外圍地面與看台氛圍
     const bgGrad = ctx.createLinearGradient(0, 0, 0, vh);
     bgGrad.addColorStop(0, surf.outerB);
     bgGrad.addColorStop(0.28, surf.outerA);
     bgGrad.addColorStop(1, surf.outerB);
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, vw, vh);
+    if (grainPattern) {
+      ctx.save(); ctx.globalAlpha = 0.45; ctx.fillStyle = grainPattern; ctx.fillRect(0, 0, vw, vh); ctx.restore();
+    }
 
-    // 2. 2.5D 透視主球場（佔可視畫面 85%+！）
+    // 2. 2.5D 透視主球場（佔可視畫面 80%+！）
     const tl = project(-1.0, 0.0), tr = project(1.0, 0.0);
     const bl = project(-1.0, 1.0), br = project(1.0, 1.0);
+    const otlRaw = project(-1.26, 0.0), otrRaw = project(1.26, 0.0);
+    const otl = { x: otlRaw.x, y: otlRaw.y - 14 };
+    const otr = { x: otrRaw.x, y: otrRaw.y - 14 };
+    const obl = project(-1.26, 1.10), obr = project(1.26, 1.10);
+
+    // 遠端大滿貫看台階梯與深綠擋板（不搶主球場焦點，增加空間縱深）
+    const standTopY = Math.max(0, otl.y - 42);
+    if (Number.isFinite(standTopY) && Number.isFinite(otl.y) && otl.y > standTopY) {
+      const standGrad = ctx.createLinearGradient(0, standTopY, 0, otl.y);
+      standGrad.addColorStop(0, 'rgba(7, 18, 14, 0.82)');
+      standGrad.addColorStop(1, 'rgba(15, 36, 26, 0.55)');
+      ctx.fillStyle = standGrad;
+      ctx.fillRect(0, standTopY, vw, otl.y - standTopY);
+    }
+    for (let row = 0; row < 4; row++) {
+      const ry = standTopY + 7 + row * 9;
+      ctx.strokeStyle = 'rgba(255, 245, 220, 0.07)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(vw, ry); ctx.stroke();
+    }
+    // 球場後側圍牆擋板（帶金線飾條）
+    ctx.fillStyle = surfaceIdx === 2 ? '#112240' : '#133325';
+    ctx.fillRect(otl.x - 18, otl.y - 12, (otr.x - otl.x) + 36, 13);
+    ctx.strokeStyle = 'rgba(244, 211, 122, 0.55)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(otl.x - 18, otl.y - 12, (otr.x - otl.x) + 36, 13);
+
+    // 球場外圍發球區緩衝帶＋淡淡內陰影
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.16)';
+    ctx.beginPath(); ctx.moveTo(otl.x, otl.y); ctx.lineTo(otr.x, otr.y); ctx.lineTo(obr.x, obr.y); ctx.lineTo(obl.x, obl.y); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.10)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // 主球場材質漸層＋微顆粒紋理
     const cGrad = ctx.createLinearGradient(0, tl.y, 0, bl.y);
     cGrad.addColorStop(0, surf.courtB);
     cGrad.addColorStop(0.5, surf.courtA);
     cGrad.addColorStop(1, surf.courtB);
-
-    // 球場外圍發球區邊界
-    const otl = project(-1.24, -0.10), otr = project(1.24, -0.10);
-    const obl = project(-1.24, 1.12), obr = project(1.24, 1.12);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.14)';
-    ctx.beginPath(); ctx.moveTo(otl.x, otl.y); ctx.lineTo(otr.x, otr.y); ctx.lineTo(obr.x, obr.y); ctx.lineTo(obl.x, obl.y); ctx.closePath(); ctx.fill();
-
-    // 主球場材質
     ctx.fillStyle = cGrad;
     ctx.beginPath(); ctx.moveTo(tl.x, tl.y); ctx.lineTo(tr.x, tr.y); ctx.lineTo(br.x, br.y); ctx.lineTo(bl.x, bl.y); ctx.closePath(); ctx.fill();
 
-    // 溫網草地細緻割草紋／紅土粉感線條
+    // 溫網草地細緻割草紋／紅土粉感線條＋顆粒質感
     ctx.save();
     ctx.beginPath(); ctx.moveTo(tl.x, tl.y); ctx.lineTo(tr.x, tr.y); ctx.lineTo(br.x, br.y); ctx.lineTo(bl.x, bl.y); ctx.closePath(); ctx.clip();
     for (let s = 0; s < 10; s++) {
       if (s % 2 === 0) continue;
       const y0 = s / 10, y1 = (s + 1) / 10;
       const a = project(-1.05, y0), b2 = project(1.05, y0), c2 = project(1.05, y1), d2 = project(-1.05, y1);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.045)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b2.x, b2.y); ctx.lineTo(c2.x, c2.y); ctx.lineTo(d2.x, d2.y); ctx.closePath(); ctx.fill();
     }
+    if (grainPattern) {
+      ctx.fillStyle = grainPattern;
+      ctx.fillRect(0, 0, vw, vh);
+    }
+    ctx.restore();
+
+    // 右側網邊主審高椅（經典大滿貫氛圍點綴）
+    const umpPos = project(1.20, NET_Y, 0);
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.26)';
+    ctx.beginPath(); ctx.ellipse(umpPos.x + 5, umpPos.y + 4, 13 * umpPos.scale, 5 * umpPos.scale, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2.2 * umpPos.scale;
+    ctx.beginPath();
+    ctx.moveTo(umpPos.x - 6 * umpPos.scale, umpPos.y + 2); ctx.lineTo(umpPos.x - 4 * umpPos.scale, umpPos.y - 28 * umpPos.scale);
+    ctx.moveTo(umpPos.x + 6 * umpPos.scale, umpPos.y + 2); ctx.lineTo(umpPos.x + 4 * umpPos.scale, umpPos.y - 28 * umpPos.scale);
+    ctx.stroke();
+    ctx.fillStyle = '#1e3a2f'; ctx.strokeStyle = '#f4d37a'; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.roundRect(umpPos.x - 8 * umpPos.scale, umpPos.y - 36 * umpPos.scale, 16 * umpPos.scale, 10 * umpPos.scale, 3); ctx.fill(); ctx.stroke();
     ctx.restore();
 
     // 清晰白色粉筆球場標線（單打邊線、雙打邊線、發球線、中線）
@@ -700,16 +775,27 @@
     ctx.beginPath(); ctx.moveTo(nlG.x, nlG.y + 4); ctx.lineTo(nrG.x, nrG.y + 4); ctx.lineTo(nrG.x, nrG.y + 10); ctx.lineTo(nlG.x, nlG.y + 10); ctx.closePath(); ctx.fill();
     ctx.fillStyle = 'rgba(25, 34, 30, 0.34)';
     ctx.beginPath(); ctx.moveTo(nlT.x, nlT.y); ctx.lineTo(nrT.x, nrT.y); ctx.lineTo(nrG.x, nrG.y); ctx.lineTo(nlG.x, nlG.y); ctx.closePath(); ctx.fill();
-    // 網格線
+    // 交叉網格線＋中央白綁帶
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.26)';
     ctx.lineWidth = 1;
-    for (let i = 1; i < 18; i++) {
-      const f = i / 18;
+    for (let i = 1; i < 20; i++) {
+      const f = i / 20;
       ctx.beginPath();
       ctx.moveTo(nlT.x + (nrT.x - nlT.x) * f, nlT.y);
       ctx.lineTo(nlG.x + (nrG.x - nlG.x) * f, nlG.y);
       ctx.stroke();
     }
+    for (let r = 1; r <= 3; r++) {
+      const rf = r / 4;
+      ctx.beginPath();
+      ctx.moveTo(nlT.x, nlT.y + (nlG.y - nlT.y) * rf);
+      ctx.lineTo(nrT.x, nrT.y + (nrG.y - nrT.y) * rf);
+      ctx.stroke();
+    }
+    const midNetX = (nlT.x + nrT.x) * 0.5;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+    ctx.lineWidth = 2.6;
+    ctx.beginPath(); ctx.moveTo(midNetX, nlT.y); ctx.lineTo(midNetX, nlG.y); ctx.stroke();
     // 白色網帶與兩側鐵柱
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 4;
@@ -752,14 +838,34 @@
         ctx.beginPath(); ctx.arc(tp.x, tp.y, (3 + 5 * f) * tp.scale, 0, Math.PI * 2); ctx.fill();
       }
     }
-    const ballRad = Math.max(5.5, 8.5 * bp.scale);
-    ctx.fillStyle = '#d9ff3b';
+    const ballRad = Math.max(5.5, 8.8 * bp.scale);
+    const ballGrad = ctx.createRadialGradient(bp.x - ballRad * 0.3, bp.y - ballRad * 0.3, ballRad * 0.12, bp.x, bp.y, ballRad);
+    ballGrad.addColorStop(0, '#f4ff8f');
+    ballGrad.addColorStop(0.55, '#d9ff3b');
+    ballGrad.addColorStop(1, '#8fb81a');
+    ctx.fillStyle = ballGrad;
     ctx.strokeStyle = '#1b2b18';
-    ctx.lineWidth = 1.8;
+    ctx.lineWidth = 1.6;
     ctx.beginPath(); ctx.arc(bp.x, bp.y, ballRad, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // 網球白色弧形縫線
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+    ctx.lineWidth = Math.max(1, 1.2 * bp.scale);
+    ctx.beginPath(); ctx.arc(bp.x - ballRad * 0.35, bp.y, ballRad * 0.55, -0.75, 0.75); ctx.stroke();
 
     // 8. 繪製前景玩家選手
     drawPlayerSprite(state.player, true);
+
+    // 8.5 溫暖大滿貫陽光光暈／夜場頂燈氛圍
+    const lightGrad = ctx.createRadialGradient(vw * 0.16, 0, 20, vw * 0.25, vh * 0.22, Math.max(vw, vh) * 0.75);
+    if (surfaceIdx === 2) {
+      lightGrad.addColorStop(0, 'rgba(125, 211, 252, 0.14)');
+      lightGrad.addColorStop(1, 'rgba(125, 211, 252, 0)');
+    } else {
+      lightGrad.addColorStop(0, 'rgba(255, 244, 204, 0.16)');
+      lightGrad.addColorStop(1, 'rgba(255, 244, 204, 0)');
+    }
+    ctx.fillStyle = lightGrad;
+    ctx.fillRect(0, 0, vw, vh);
 
     // 9. 場上擊球判定飄字
     for (let i = callouts.length - 1; i >= 0; i--) {
@@ -901,7 +1007,7 @@
 
   // 診斷介面（供自動化驗收檢查球場比例與狀態）
   window.__tennisDebug = {
-    getState: () => ({ phase: state.phase, score: [...state.score], rally: state.rally, surface: SURFACES[surfaceIdx].id, version: 'v_09:45' }),
+    getState: () => ({ phase: state.phase, score: [...state.score], rally: state.rally, surface: SURFACES[surfaceIdx].id, version: 'v_18:55' }),
     getCourtCoverage: () => {
       const m = getCourtMetrics();
       const courtH = m.botY - m.topY;

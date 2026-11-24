@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>1943 第二關・拉包爾 | STAGE 2 RABAUL</title>
+<title>飛機射擊-4｜海空艦隊戰</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;background:#0a0a12;height:100%;overflow:hidden;touch-action:none;
@@ -38,9 +38,9 @@
   }
   #wrap{position:fixed;top:36px;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;}
   body.embedded #wrap{top:0;}
-  canvas{background:#000;image-rendering:pixelated;box-shadow:0 0 40px #000 inset;border-radius:6px;}
+  canvas{background:#0b2338;box-shadow:0 0 40px rgba(0,0,0,.85);border-radius:6px;}
   #crt{position:fixed;inset:0;pointer-events:none;
-    background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 4px);mix-blend-mode:multiply;opacity:.5;}
+    background:radial-gradient(ellipse at center,transparent 62%,rgba(4,12,24,.34) 100%);}
 </style>
 </head>
 <body>
@@ -55,7 +55,7 @@
     <a class="nav-pill s2 active" href="./stage2.html">🏝️ 第二關・拉包爾</a>
     <a class="nav-pill s3" href="./stage3.html">☁️ 第三關・亞也子</a>
   </div>
-  <span class="ver-tag" id="version-stamp">v_19:15:20</span>
+  <span class="ver-tag" id="version-stamp">v_18:55:00</span>
 </header>
 <div id="wrap"><canvas id="game" width="480" height="640"></canvas></div>
 <div id="crt"></div>
@@ -106,34 +106,84 @@ const SND={
   start:()=>{tone(659,.1,"square",.06); setTimeout(()=>tone(988,.2,"square",.06),110);}
 };
 
-/* ---------- 精靈預繪（純程式像素畫） ---------- */
-function sprite(w,h,fn){const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d");fn(g);return c;}
-const sprPlayer=sprite(36,36,g=>{ // P-38 雙尾boom戰鬥機（機頭朝上）
-  g.fillStyle="#8a97a8"; // 雙boom
-  g.fillRect(8,10,5,20); g.fillRect(23,10,5,20);
-  g.fillStyle="#6b7686"; g.fillRect(9,28,3,5); g.fillRect(24,28,3,5); // 尾翼
-  g.fillStyle="#9aa8ba"; g.fillRect(15,6,6,24); g.fillRect(16,2,4,8); // 中央nacelle
-  g.fillStyle="#7d8a9b"; g.fillRect(4,16,28,6); // 主翼
-  g.fillStyle="#222"; g.fillRect(16,8,4,5); // 座艙
-  g.fillStyle="#c0392b"; g.fillRect(9,12,3,3); g.fillRect(24,12,3,3); // 機鼻Gun口装饰
-  g.fillStyle="#ddd"; g.fillRect(17,0,2,3);
+/* ---------- 精靈預繪（4x 超取樣高畫質金屬漸層機體） ---------- */
+const SPR_SCALE=4;
+function sprite(w,h,fn){
+  const c=document.createElement("canvas");
+  c.width=w*SPR_SCALE;c.height=h*SPR_SCALE;c._lw=w;c._lh=h;
+  const g=c.getContext("2d");
+  g.scale(SPR_SCALE,SPR_SCALE);
+  g.imageSmoothingEnabled=true;g.imageSmoothingQuality="high";
+  fn(g);return c;
+}
+const sprPlayer=sprite(36,36,g=>{ // 高畫質銀翼雙尾戰鬥機
+  // 螺旋槳模糊光環
+  g.fillStyle="rgba(224,242,254,0.48)";
+  g.beginPath();g.ellipse(10.5,8.2,4.6,1.3,0,0,Math.PI*2);g.fill();
+  g.beginPath();g.ellipse(25.5,8.2,4.6,1.3,0,0,Math.PI*2);g.fill();
+  // 主翼（金屬漸層 + 描邊）
+  const wingG=g.createLinearGradient(3,15,33,22);
+  wingG.addColorStop(0,"#cbd5e1");wingG.addColorStop(0.5,"#f1f5f9");wingG.addColorStop(1,"#94a3b8");
+  g.fillStyle=wingG;
+  g.beginPath();g.moveTo(18,13.5);g.lineTo(34,17.5);g.lineTo(33,21.5);g.lineTo(18,22.5);g.lineTo(3,21.5);g.lineTo(2,17.5);g.closePath();g.fill();
+  g.strokeStyle="#1e293b";g.lineWidth=0.9;g.stroke();
+  // 翼尖紅紋與國徽星標
+  g.fillStyle="#ef4444";g.fillRect(3,17.8,3.2,3.4);g.fillRect(29.8,17.8,3.2,3.4);
+  g.fillStyle="#1d4ed8";g.beginPath();g.arc(7.5,19.4,1.9,0,Math.PI*2);g.fill();
+  g.fillStyle="#fff";g.beginPath();g.arc(7.5,19.4,0.8,0,Math.PI*2);g.fill();
+  // 水平尾翼
+  g.fillStyle="#94a3b8";g.fillRect(9.5,29.5,17,3.2);g.strokeRect(9.5,29.5,17,3.2);
+  // 雙尾撐（立體圓柱漸層）
+  for(const bx of [10.5,25.5]){
+    const bg=g.createLinearGradient(bx-2.5,0,bx+2.5,0);
+    bg.addColorStop(0,"#64748b");bg.addColorStop(0.5,"#e2e8f0");bg.addColorStop(1,"#475569");
+    g.fillStyle=bg;
+    g.beginPath();g.roundRect(bx-2.3,8.5,4.6,24.5,2);g.fill();g.stroke();
+    g.fillStyle="#dc2626";g.beginPath();g.arc(bx,9.4,2.1,Math.PI,0);g.fill();
+  }
+  // 中央機身
+  const bodyG=g.createLinearGradient(14,0,22,0);
+  bodyG.addColorStop(0,"#64748b");bodyG.addColorStop(0.5,"#f8fafc");bodyG.addColorStop(1,"#475569");
+  g.fillStyle=bodyG;
+  g.beginPath();g.moveTo(18,1.5);g.quadraticCurveTo(21.5,5,21.2,23);g.lineTo(18,26.5);g.lineTo(14.8,23);g.quadraticCurveTo(14.5,5,18,1.5);g.closePath();g.fill();g.stroke();
+  // 機鼻金光
+  g.fillStyle="#fde047";g.fillRect(17.1,1,1.8,3.2);
+  // 玻璃座艙罩（反光）
+  const cg=g.createLinearGradient(16,8,20,16);
+  cg.addColorStop(0,"#7dd3fc");cg.addColorStop(0.5,"#0284c7");cg.addColorStop(1,"#0c4a6e");
+  g.fillStyle=cg;g.beginPath();g.ellipse(18,12.5,2.2,4.4,0,0,Math.PI*2);g.fill();
+  g.fillStyle="rgba(255,255,255,0.75)";g.beginPath();g.ellipse(17.3,11.2,0.8,1.9,0,0,Math.PI*2);g.fill();
 });
-function sprZero(){ // 零式戰鬥機（機頭朝下）
+function sprZero(){ // 高畫質敵方截擊機（機頭朝下）
   return sprite(34,30,g=>{
-    g.fillStyle="#5d6b3a"; g.fillRect(13,4,8,22);
-    g.fillStyle="#4c5a30"; g.fillRect(2,10,30,7); // 主翼
-    g.fillStyle="#3f4b28"; g.fillRect(8,2,18,4); g.fillRect(8,24,18,4);
-    g.fillStyle="#20260f"; g.fillRect(14,24,6,5); // 尾
-    g.fillStyle="#c0392b"; g.beginPath(); g.arc(17,13,4.5,0,7); g.fill(); // 日丸
-    g.fillStyle="#eee"; g.beginPath(); g.arc(17,13,1.6,0,7); g.fill();
-    g.fillStyle="#e8e4c9"; g.fillRect(16,1,2,3);
+    const wg=g.createLinearGradient(2,10,32,18);
+    wg.addColorStop(0,"#4d6b38");wg.addColorStop(0.5,"#749956");wg.addColorStop(1,"#3f592d");
+    g.fillStyle=wg;
+    g.beginPath();g.moveTo(17,9);g.lineTo(32,12.5);g.lineTo(31,17);g.lineTo(17,18.5);g.lineTo(3,17);g.lineTo(2,12.5);g.closePath();g.fill();
+    g.strokeStyle="#1a2613";g.lineWidth=0.9;g.stroke();
+    // 尾翼
+    g.fillStyle="#4c6b36";g.beginPath();g.roundRect(10,2.5,14,3.4,1.5);g.fill();g.stroke();
+    // 機身
+    const bg=g.createLinearGradient(13.5,0,20.5,0);
+    bg.addColorStop(0,"#3a4f29");bg.addColorStop(0.5,"#86ab66");bg.addColorStop(1,"#2f4221");
+    g.fillStyle=bg;
+    g.beginPath();g.moveTo(17,28.5);g.quadraticCurveTo(20.6,22,19.8,4);g.lineTo(17,2);g.lineTo(14.2,4);g.quadraticCurveTo(13.4,22,17,28.5);g.closePath();g.fill();g.stroke();
+    // 引擎罩與螺旋槳
+    g.fillStyle="#1e293b";g.beginPath();g.arc(17,26.5,2.5,0,Math.PI);g.fill();
+    g.fillStyle="rgba(255,255,255,0.45)";g.beginPath();g.ellipse(17,28.6,5,1.1,0,0,Math.PI*2);g.fill();
+    // 翼面標誌與座艙
+    g.fillStyle="#dc2626";g.beginPath();g.arc(8.5,14.5,2.8,0,Math.PI*2);g.fill();
+    g.beginPath();g.arc(25.5,14.5,2.8,0,Math.PI*2);g.fill();
+    g.fillStyle="#38bdf8";g.beginPath();g.ellipse(17,14,1.9,3.6,0,0,Math.PI*2);g.fill();
+    g.fillStyle="rgba(255,255,255,0.7)";g.beginPath();g.ellipse(16.4,13.2,0.7,1.4,0,0,Math.PI*2);g.fill();
   });
 }
 const sprZeroDown=sprZero();
 function rotateSprite(src,ang){
+  const lw=src._lw||src.width, lh=src._lh||src.height;
   const s=Math.max(src.width,src.height);
-  const c=document.createElement("canvas"); c.width=c.height=s;
-  const g=c.getContext("2d");
+  const c=document.createElement("canvas"); c.width=c.height=s; c._lw=Math.max(lw,lh); c._lh=c._lw;
+  const g=c.getContext("2d"); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
   g.translate(s/2,s/2); g.rotate(ang); g.drawImage(src,-src.width/2,-src.height/2);
   return c;
 }
@@ -148,36 +198,52 @@ const clamp=(v,a,b)=>v<a?a:(v>b?b:v);
 const dist2=(a,b)=>{const dx=a.x-b.x,dy=a.y-b.y;return dx*dx+dy*dy;};
 function circleHit(a,b){const r=a.r+b.r;return dist2(a,b)<r*r;}
 
-/* ---------- 背景：叢林與機場（預繪無縫圖塊） ---------- */
-const BGH=640, bg=document.createElement("canvas");
-bg.width=W; bg.height=BGH;
+/* ---------- 背景：2x 高畫質熱帶群島與海軍作戰水道 ---------- */
+const BGH=640, BGS=2, bg=document.createElement("canvas");
+bg.width=W*BGS; bg.height=BGH*BGS;
 (function drawBG(){
   const g=bg.getContext("2d");
-  g.fillStyle="#274d24"; g.fillRect(0,0,W,BGH);
-  // 河川
-  g.strokeStyle="#3a6f8f"; g.lineWidth=42; g.beginPath();
+  g.scale(BGS,BGS);
+  // 豐富叢林底色漸層
+  const baseG=g.createLinearGradient(0,0,W,BGH);
+  baseG.addColorStop(0,"#1e5631");baseG.addColorStop(0.5,"#2a6f3d");baseG.addColorStop(1,"#1b4d2b");
+  g.fillStyle=baseG; g.fillRect(0,0,W,BGH);
+  // 陽光碧藍河川（含淺灘、水光與浪紋）
+  g.lineCap="round";
+  g.strokeStyle="#c7b27c"; g.lineWidth=54; g.beginPath();
   g.moveTo(-20,120); g.bezierCurveTo(160,220,320,40,500,180); g.stroke();
-  g.strokeStyle="#4d87a8"; g.lineWidth=30; g.stroke();
-  // 樹冠
-  for(let i=0;i<460;i++){
-    const x=rnd(0,W),y=rnd(0,BGH),r=rnd(9,22),c=ri(0,3);
-    g.fillStyle=["#1d3a1b","#2c5228","#356b30","#1a3018"][c];
-    g.beginPath(); g.arc(x,y,r,0,7); g.fill();
+  g.strokeStyle="#1e7ba8"; g.lineWidth=42; g.stroke();
+  g.strokeStyle="#38bdf8"; g.lineWidth=26; g.globalAlpha=0.55; g.stroke();
+  g.strokeStyle="#bae6fd"; g.lineWidth=8; g.globalAlpha=0.35; g.stroke();
+  g.globalAlpha=1;
+  // 立體層次樹冠（含陰影與陽光高光）
+  for(let i=0;i<420;i++){
+    const x=rnd(0,W),y=rnd(0,BGH),r=rnd(9,20);
+    g.fillStyle="rgba(8,28,16,0.34)";
+    g.beginPath(); g.arc(x+3,y+4,r,0,Math.PI*2); g.fill();
+    const cg=g.createRadialGradient(x-r*0.3,y-r*0.3,r*0.1,x,y,r);
+    const cols=[["#4ade80","#166534"],["#65a30d","#1e4620"],["#22c55e","#14532d"],["#84cc16","#275325"]][ri(0,3)];
+    cg.addColorStop(0,cols[0]); cg.addColorStop(1,cols[1]);
+    g.fillStyle=cg; g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fill();
   }
-  // 機場跑道（斜向）
+  // 精緻機場跑道（混凝土紋理＋標線）
   g.save(); g.translate(330,430); g.rotate(-0.5);
-  g.fillStyle="#5c5148"; g.fillRect(-26,-130,52,260);
-  g.fillStyle="#6e6258"; g.fillRect(-26,-130,52,8);
-  g.strokeStyle="#c9bd9c"; g.lineWidth=3; g.setLineDash([14,12]);
-  g.beginPath(); g.moveTo(0,-124); g.lineTo(0,124); g.stroke(); g.setLineDash([]);
+  g.fillStyle="rgba(0,0,0,0.28)"; g.fillRect(-24,-128,56,264);
+  const rwG=g.createLinearGradient(-26,0,26,0);
+  rwG.addColorStop(0,"#64748b");rwG.addColorStop(0.5,"#94a3b8");rwG.addColorStop(1,"#475569");
+  g.fillStyle=rwG; g.fillRect(-26,-130,52,260);
+  g.fillStyle="#e2e8f0";
+  for(let k=-20;k<=20;k+=8){ g.fillRect(k,-126,4,14); g.fillRect(k,112,4,14); }
+  g.strokeStyle="#fef08a"; g.lineWidth=2.5; g.setLineDash([14,10]);
+  g.beginPath(); g.moveTo(0,-105); g.lineTo(0,105); g.stroke(); g.setLineDash([]);
   g.restore();
   // 停機坪
-  g.fillStyle="#4a423a"; g.fillRect(250,520,120,70);
-  // 烟霧火山
-  g.fillStyle="#3b4652"; g.beginPath(); g.moveTo(20,0); g.lineTo(90,0); g.lineTo(55,70); g.closePath(); g.fill();
-  g.fillStyle="rgba(200,200,210,.18)"; g.beginPath(); g.arc(55,90,26,0,7); g.arc(70,120,18,0,7); g.fill();
-  // 雜草雜訊
-  for(let i=0;i<700;i++){ g.fillStyle=`rgba(0,0,0,${rnd(.04,.12)})`; g.fillRect(rnd(0,W),rnd(0,BGH),2,2); }
+  g.fillStyle="#475569"; g.fillRect(250,520,120,70);
+  g.strokeStyle="#cbd5e1"; g.lineWidth=1.5; g.strokeRect(254,524,112,62);
+  // 陽光高空薄霧
+  const sunG=g.createRadialGradient(W*0.2,BGH*0.25,10,W*0.2,BGH*0.25,260);
+  sunG.addColorStop(0,"rgba(254,249,195,0.14)"); sunG.addColorStop(1,"rgba(254,249,195,0)");
+  g.fillStyle=sunG; g.fillRect(0,0,W,BGH);
 })();
 
 /* ---------- 遊戲狀態 ---------- */
@@ -536,13 +602,18 @@ function gameOver(){ state=ST.OVER; if(score>hiScore){hiScore=score;localStorage
 function winStage(){ state=ST.WIN; score+=Math.floor(timer)*20; if(score>hiScore){hiScore=score;localStorage.setItem("r1943hi",score);} }
 
 /* ---------- 繪製 ---------- */
+let stageDpr=1;
 function draw(){
+  ctx.setTransform(stageDpr,0,0,stageDpr,0,0);
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality="high";
   ctx.save();
   if(shake>0)ctx.translate(rnd(-shake,shake)*.5,rnd(-shake,shake)*.5);
-  // 背景（水平與垂直無縫平鋪，滿版無黑邊）
-  for(let bx=0;bx<W;bx+=bg.width){
+  // 背景（2x 高畫質水平與垂直無縫平鋪，滿版無黑邊）
+  const bgLogicalW=bg.width/BGS;
+  for(let bx=0;bx<W;bx+=bgLogicalW){
     for(let by=bgY-BGH;by<H;by+=BGH){
-      ctx.drawImage(bg,bx,by);
+      ctx.drawImage(bg,bx,by,bgLogicalW,BGH);
     }
   }
   if(boss||state===ST.WIN){ // 海面區：BOSS 階段整幅淡化為海岸
@@ -563,11 +634,18 @@ function draw(){
   for(const e of enemies)drawZero(e);
   // BOSS
   if(boss)drawBoss(boss);
-  // 玩家
-  if(P.alive&&!(P.inv>0&&((tGame*20)|0)%2===0))ctx.drawImage(sprPlayer,P.x-18,P.y-18);
-  // 子彈
-  for(const b of bullets){ctx.fillStyle="#bfe8ff";ctx.fillRect(b.x-2,b.y-6,4,10);
-    ctx.fillStyle="#fff";ctx.fillRect(b.x-1,b.y-6,2,5);}
+  // 玩家（高畫質精靈＋飛行投影）
+  if(P.alive&&!(P.inv>0&&((tGame*20)|0)%2===0)){
+    ctx.save();ctx.globalAlpha=0.28;ctx.filter="brightness(0)";
+    ctx.drawImage(sprPlayer,P.x-14,P.y-8,32,32);ctx.restore();
+    ctx.drawImage(sprPlayer,P.x-20,P.y-20,40,40);
+  }
+  // 子彈（發光曳光彈）
+  for(const b of bullets){
+    ctx.fillStyle="rgba(56,189,248,0.45)";ctx.fillRect(b.x-3.5,b.y-8,7,14);
+    ctx.fillStyle="#e0f2fe";ctx.fillRect(b.x-1.8,b.y-7,3.6,11);
+    ctx.fillStyle="#ffffff";ctx.fillRect(b.x-0.9,b.y-7,1.8,6);
+  }
   for(const b of ebullets){
     if(b.flak){const fr=Math.max(1,6-4*b.fuse);ctx.fillStyle="#888";ctx.beginPath();ctx.arc(b.x,b.y,fr,0,7);ctx.fill();
       ctx.fillStyle="#ffd24a";ctx.beginPath();ctx.arc(b.x,b.y,2,0,7);ctx.fill();}
@@ -597,12 +675,11 @@ function draw(){
 }
 
 function drawZero(e){
-  const a=Math.atan2(e.vy,e.vx)-Math.PI/2;
   let spr=sprZeroDown;
   if(e.flank){ if(e.vx>0&&e.vy<120)spr=sprZeroBR; else if(e.vx<0&&e.vy<120)spr=sprZeroBL; else spr=sprZeroDown; }
   ctx.save();ctx.translate(e.x,e.y);
-  if(e.burn){ctx.fillStyle="rgba(255,120,40,.5)";ctx.beginPath();ctx.arc(0,10,10,0,7);ctx.fill();}
-  ctx.drawImage(spr,-17,-15);ctx.restore();
+  if(e.burn){ctx.fillStyle="rgba(255,120,40,.55)";ctx.beginPath();ctx.arc(0,10,11,0,Math.PI*2);ctx.fill();}
+  ctx.drawImage(spr,-19,-17,38,34);ctx.restore();
 }
 
 function drawGround(g){
@@ -717,20 +794,26 @@ function drawHUD(){
 }
 
 function drawOverlay(){
-  ctx.fillStyle="rgba(0,0,10,.78)";ctx.fillRect(0,0,W,H);
+  ctx.fillStyle="rgba(6,16,30,.64)";ctx.fillRect(0,0,W,H);
   ctx.textAlign="center";
   if(state===ST.TITLE){
-    ctx.fillStyle="#ffe27a";ctx.font="bold 44px monospace";ctx.fillText("1 9 4 3",W/2,150);
-    ctx.fillStyle="#7ec8e3";ctx.font="bold 16px monospace";ctx.fillText("THE BATTLE OF MIDWAY",W/2,182);
-    ctx.fillStyle="#fff";ctx.font="bold 20px monospace";ctx.fillText("★ STAGE 2 ★",W/2,240);
-    ctx.fillStyle="#ff8c6b";ctx.font="bold 26px monospace";ctx.fillText("ラバウル RABAUL",W/2,278);
-    ctx.fillStyle="#aaa";ctx.font="12px monospace";
-    ctx.fillText("方向鍵/WASD 移動　Z 射擊　X 轟炸",W/2,350);
-    ctx.fillText("觸控：拖曳飛行自動射擊・右下 B 轟炸",W/2,372);
-    ctx.fillText("消滅地面目標可獲 MEDAL・蒐集 PWR/BOMB",W/2,394);
-    ctx.fillStyle="#ffe27a";ctx.font="bold 15px monospace";
-    if(((tGlobal*2)|0)%2===0)ctx.fillText("ENTER / 點擊 出動！",W/2,460);
-    ctx.fillStyle="#666";ctx.font="10px monospace";ctx.fillText("原創重現・非官方作品",W/2,600);
+    const cardW=Math.min(W-36,440), cardH=330, cx=W/2, cy=H/2;
+    ctx.save();
+    ctx.fillStyle="rgba(10,24,44,.86)";
+    ctx.strokeStyle="rgba(56,189,248,.65)";ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(cx-cardW/2,cy-cardH/2,cardW,cardH,14);ctx.fill();ctx.stroke();
+    ctx.fillStyle="#fde047";ctx.font="900 34px 'Microsoft JhengHei',sans-serif";ctx.fillText("飛機射擊-4",cx,cy-105);
+    ctx.fillStyle="#7dd3fc";ctx.font="bold 14px monospace";ctx.fillText("NAVAL AIR-STRIKE・海空艦隊戰",cx,cy-72);
+    ctx.drawImage(sprPlayer,cx-28,cy-54,56,56);
+    ctx.fillStyle="#e2e8f0";ctx.font="13px 'Microsoft JhengHei',sans-serif";
+    ctx.fillText("方向鍵 / WASD 移動・Z 射擊・X 轟炸",cx,cy+26);
+    ctx.fillText("手機觸控：單指拖曳自動連射・右下 B 轟炸",cx,cy+50);
+    ctx.fillStyle="#a7f3d0";ctx.fillText("鎖定敵艦砲塔與地面目標，蒐集 PWR / BOMB 強化火力",cx,cy+74);
+    ctx.fillStyle=(((tGlobal*2.4)|0)%2===0)?"#fde047":"#fef08a";
+    ctx.font="900 17px 'Microsoft JhengHei',sans-serif";
+    ctx.fillText("▶ 點擊畫面 / ENTER 立即出擊 ◀",cx,cy+124);
+    ctx.fillStyle="#94a3b8";ctx.font="11px monospace";ctx.fillText("HD REMASTER v_18:55:00",cx,cy+152);
+    ctx.restore();
   } else if(state===ST.OVER){
     ctx.fillStyle="#ff5a5a";ctx.font="bold 34px monospace";ctx.fillText("GAME OVER",W/2,250);
     ctx.fillStyle="#fff";ctx.font="14px monospace";ctx.fillText("SCORE "+score+"　MEDAL "+medals,W/2,300);
@@ -762,16 +845,18 @@ function fit(){
   const topH=document.body.classList.contains("embedded")?0:36;
   const availW=window.innerWidth;
   const availH=Math.max(240,window.innerHeight-topH);
+  stageDpr=Math.min(window.devicePixelRatio||1,2);
   let targetW=480, targetH=640;
   if(availH>availW*1.35){
     targetH=clamp(Math.round(480*(availH/availW)),640,1000);
   } else if(availW>availH*1.1){
     targetW=clamp(Math.round(640*(availW/availH)),480,1280);
   }
-  if(W!==targetW||H!==targetH){
+  const pw=Math.round(targetW*stageDpr), ph=Math.round(targetH*stageDpr);
+  if(W!==targetW||H!==targetH||cv.width!==pw||cv.height!==ph){
     const oldW=W, oldH=H;
     W=targetW; H=targetH;
-    cv.width=W; cv.height=H;
+    cv.width=pw; cv.height=ph;
     if(P){
       P.x=clamp(P.x+(W-oldW)/2,24,W-24);
       P.y=clamp(P.y+(H-oldH),HUD+30,H-45);

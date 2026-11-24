@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>3D 太空彈珠台：星際軍校生 ULTRA｜星際艦長造型桌布旗艦版 (v_12:08:00)</title>
+<title>3D 太空彈珠台：星際軍校生 ULTRA｜星際艦長造型桌布旗艦版 (v_18:50:00)</title>
 <style>
   :root {
     --bg-deep: #040611;
@@ -358,7 +358,7 @@
   <div class="brand">
     <span class="badge">REA</span>
     <span>🌌 <span class="hide-sm">3D </span>太空彈珠台</span>
-    <span class="ver-stamp" id="verStamp">v_12:08:00</span>
+    <span class="ver-stamp" id="verStamp">v_18:50:00</span>
   </div>
   <div class="top-actions">
     <button class="top-btn fs-btn" id="btnFullscreen" type="button">⛶ 全螢幕</button>
@@ -429,14 +429,14 @@
       <div style="font-weight:800; color:#ffbe0b; margin-bottom:3px;">📋 REA (Reverse Engineer Anything) 二進位逆向證據：</div>
       <div>• <b>目標執行檔</b>：<code>SpaceCadetPinball.exe</code> (SHA-256: <code>96ac44d88186a8f50f87daafa283babda97cf78dedec204b6bcb9d4feb1dab85</code>)</div>
       <div>• <b>REA Evidence ID</b>：<code>ev_f32c45b7a1aada2b0478b43bdb0303c498b975ac7348522c886d9098e5352d42</code></div>
-      <div>• <b>防卡球與全螢幕強化 (`v_12:08:00`)</b>：已修正內嵌模式下重複顯示兩個全螢幕按鈕問題，並採用雙軸自適應滿版縮放 (`scaleX / scaleY`) 消除全螢幕下方黑底空白，支援 iOS / Android / LINE 100% 無黑邊滿版遊玩。</div>
+      <div>• <b>防卡球與全螢幕強化 (`v_18:50:00`)</b>：已修正內嵌模式下重複顯示兩個全螢幕按鈕問題，並採用雙軸自適應滿版縮放 (`scaleX / scaleY`) 消除全螢幕下方黑底空白，支援 iOS / Android / LINE 100% 無黑邊滿版遊玩。</div>
     </div>
   </div>
 </div>
 
 <script>
 (() => {
-  const VERSION_STAMP = 'v_12:08:00';
+  const VERSION_STAMP = 'v_18:50:00';
   if (new URLSearchParams(window.location.search).get('embed') === '1') {
     document.body.classList.add('embedded');
   }
@@ -1599,18 +1599,24 @@
   }
 
   function render() {
+    const dpr = canvasDpr || 1;
+    const cssW = canvas.width / dpr;
+    const cssH = canvas.height / dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.save();
     if (offsetX > 0) {
-      const fullBg = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      const fullBg = ctx.createLinearGradient(0, 0, 0, cssH);
       fullBg.addColorStop(0, '#04081c');
       fullBg.addColorStop(0.5, '#08102b');
       fullBg.addColorStop(1, '#030510');
       ctx.fillStyle = fullBg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, cssW, cssH);
       for (const st of stars) {
         ctx.fillStyle = `hsla(${st.hue}, 95%, 78%, ${st.alpha * 0.3})`;
         ctx.beginPath();
-        ctx.arc((st.x / W) * canvas.width, (st.y / H) * canvas.height, st.r, 0, Math.PI * 2);
+        ctx.arc((st.x / W) * cssW, (st.y / H) * cssH, st.r, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.translate(offsetX, 0);
@@ -1987,17 +1993,19 @@
     ctx.restore();
   }
 
+  let canvasDpr = 1;
   function resizeViewport() {
     const wrap = document.getElementById('stageWrap');
     const vw = wrap.clientWidth || window.innerWidth;
     const vh = wrap.clientHeight || window.innerHeight;
     const aspect = vh / vw;
+    canvasDpr = Math.min(window.devicePixelRatio || 1, 2);
 
     W = 460;
     H = 840;
     if (aspect >= 1.32 || vw <= 640 || document.body.classList.contains('immersive-fs')) {
-      canvas.width = Math.round(vw);
-      canvas.height = Math.round(vh);
+      canvas.width = Math.round(vw * canvasDpr);
+      canvas.height = Math.round(vh * canvasDpr);
       canvas.style.width = vw + 'px';
       canvas.style.height = vh + 'px';
       scaleX = vw / W;
@@ -2008,8 +2016,8 @@
       scale = Math.min(vw / W, vh / H);
       scaleX = scale;
       scaleY = scale;
-      canvas.width = Math.round(vw);
-      canvas.height = Math.round(vh);
+      canvas.width = Math.round(vw * canvasDpr);
+      canvas.height = Math.round(vh * canvasDpr);
       canvas.style.width = vw + 'px';
       canvas.style.height = vh + 'px';
       offsetX = Math.round((vw - W * scale) / 2);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>1943 第三關・亞也子 | STAGE 3 AYAKO OFFENSIVE</title>
+<title>飛機射擊-3｜雷暴雲海・空中巨艦決戰</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
   html,body{
@@ -44,14 +44,13 @@
   }
   body.embedded #wrap{top:0;}
   canvas{
-    background:#071a2e;image-rendering:pixelated;image-rendering:crisp-edges;
-    box-shadow:0 0 36px rgba(0,0,0,.95),0 0 0 1.5px rgba(148,163,184,.22);
-    border-radius:4px;touch-action:none;display:block;
+    background:#0c2d52;
+    box-shadow:0 0 36px rgba(0,0,0,.85),0 0 0 1.5px rgba(148,163,184,.28);
+    border-radius:6px;touch-action:none;display:block;
   }
   #crt{
     position:fixed;inset:0;pointer-events:none;z-index:40;
-    background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 2px,transparent 2px 4px);
-    mix-blend-mode:multiply;opacity:.48;
+    background:radial-gradient(ellipse at center,transparent 62%,rgba(4,10,24,.32) 100%);
   }
 </style>
 </head>
@@ -67,7 +66,7 @@
     <a class="nav-pill s2" href="./stage2.html">🏝️ 第二關・拉包爾</a>
     <a class="nav-pill s3 active" href="./stage3.html">☁️ 第三關・亞也子</a>
   </div>
-  <span class="ver-tag" id="versionStamp">v_19:15:20</span>
+  <span class="ver-tag" id="versionStamp">v_18:55:00</span>
 </header>
 <div id="wrap"><canvas id="game" width="480" height="640"></canvas></div>
 <div id="crt"></div>
@@ -83,7 +82,7 @@
    - 程序化像素精靈預繪、三層立體雲海與珊瑚礁洋面視差、四發動機獨立部位破壞 BOSS 戰
    - 版本戳：v_19:15:20
    ============================================================================ */
-const VERSION_STAMP = "v_19:15:20";
+const VERSION_STAMP = "v_18:55:00";
 console.log(`[1943 Stage 3 Ayako] Version: ${VERSION_STAMP}`);
 
 let W = 480; const HUD = 28;
@@ -344,30 +343,35 @@ const sprCloudL = makeCloudSprite(170, 96, 0.82);
 const sprCloudM = makeCloudSprite(116, 68, 0.62);
 const sprCloudS = makeCloudSprite(76, 46, 0.42);
 
-/* ---------- 背景預繪：中途島深海與珊瑚環礁無縫捲動圖塊 ---------- */
-const BGH = 1024, bg = document.createElement("canvas");
-bg.width = W; bg.height = BGH;
+/* ---------- 背景預繪：2x 高畫質雷暴洋面與碧藍珊瑚環礁 ---------- */
+const BGH = 1024, BGS = 2, bg = document.createElement("canvas");
+bg.width = W * BGS; bg.height = BGH * BGS;
 (function drawSeamlessOcean(){
   const g = bg.getContext("2d");
-  g.fillStyle = "#0b2948";
+  g.scale(BGS, BGS);
+  const seaG = g.createLinearGradient(0, 0, W, BGH);
+  seaG.addColorStop(0, "#0f3a66");
+  seaG.addColorStop(0.5, "#154b7e");
+  seaG.addColorStop(1, "#0f3a66");
+  g.fillStyle = seaG;
   g.fillRect(0, 0, W, BGH);
-  for(let y=0; y<BGH; y+=4){
-    g.fillStyle = (y%16<8) ? "#0e3156" : "#0b2948";
-    g.fillRect(0, y, W, 2);
+  for(let y=0; y<BGH; y+=12){
+    g.fillStyle = "rgba(125, 211, 252, 0.06)";
+    g.fillRect(0, y, W, 3);
   }
-  const reefs = [[110, 190, 75, 110], [370, 490, 85, 95], [140, 810, 70, 90]];
+  const reefs = [[110, 190, 78, 112], [370, 490, 88, 98], [140, 810, 74, 92]];
   for(const [rx, ry, rw, rh] of reefs){
-    g.fillStyle = "rgba(14, 116, 144, 0.48)";
+    const rg = g.createRadialGradient(rx-8, ry-10, 8, rx, ry, Math.max(rw, rh));
+    rg.addColorStop(0, "rgba(103, 232, 249, 0.58)");
+    rg.addColorStop(0.55, "rgba(14, 165, 233, 0.34)");
+    rg.addColorStop(1, "rgba(14, 116, 144, 0)");
+    g.fillStyle = rg;
     g.beginPath(); g.ellipse(rx, ry, rw, rh, 0.3, 0, Math.PI*2); g.fill();
-    g.fillStyle = "rgba(6, 182, 212, 0.35)";
-    g.beginPath(); g.ellipse(rx-6, ry-8, rw*0.65, rh*0.65, 0.3, 0, Math.PI*2); g.fill();
-    g.fillStyle = "rgba(103, 232, 249, 0.25)";
-    g.beginPath(); g.ellipse(rx-10, ry-12, rw*0.35, rh*0.35, 0.3, 0, Math.PI*2); g.fill();
   }
-  for(let i=0; i<480; i++){
+  for(let i=0; i<520; i++){
     const wx = rnd(0, W), wy = rnd(0, BGH);
-    g.fillStyle = i%4===0 ? "rgba(186, 230, 253, 0.28)" : "rgba(56, 189, 248, 0.16)";
-    g.fillRect(wx, wy, ri(8, 22), 2);
+    g.fillStyle = i%4===0 ? "rgba(224, 242, 254, 0.38)" : "rgba(56, 189, 248, 0.22)";
+    g.beginPath(); g.roundRect(wx, wy, ri(10, 26), 2.2, 1.1); g.fill();
   }
 })();
 
@@ -1203,14 +1207,19 @@ function winStage(){
 }
 
 /* ---------- 畫面渲染 ---------- */
+let stageDpr = 1;
 function draw(){
+  ctx.setTransform(stageDpr, 0, 0, stageDpr, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
   ctx.save();
   if(shake > 0) ctx.translate(rnd(-shake, shake)*0.45, rnd(-shake, shake)*0.45);
 
-  // 1. 深海與珊瑚礁無縫捲動背景（水平平鋪適應寬螢幕）
-  for(let bx = 0; bx < W; bx += bg.width){
-    ctx.drawImage(bg, bx, bgY - BGH);
-    ctx.drawImage(bg, bx, bgY);
+  // 1. 2x 高畫質深海與珊瑚礁無縫捲動背景（水平平鋪適應寬螢幕）
+  const bgLogicalW = bg.width / BGS;
+  for(let bx = 0; bx < W; bx += bgLogicalW){
+    ctx.drawImage(bg, bx, bgY - BGH, bgLogicalW, BGH);
+    ctx.drawImage(bg, bx, bgY, bgLogicalW, BGH);
   }
 
   if(boss || state === ST.WIN){
@@ -1594,18 +1603,18 @@ function drawOverlay(){
 
   if(state === ST.TITLE){
     ctx.fillStyle = "#fde047";
-    ctx.font = "bold 46px monospace";
-    ctx.fillText("1 9 4 3", W/2, cy - 190);
-    ctx.fillStyle = "#38bdf8";
-    ctx.font = "bold 15px monospace";
-    ctx.fillText("THE BATTLE OF MIDWAY", W/2, cy - 160);
+    ctx.font = "900 38px 'Microsoft JhengHei', sans-serif";
+    ctx.fillText("飛機射擊-3", W/2, cy - 186);
+    ctx.fillStyle = "#7dd3fc";
+    ctx.font = "bold 14px monospace";
+    ctx.fillText("THUNDERCLOUD DREADNOUGHT", W/2, cy - 156);
 
     ctx.fillStyle = "#fff";
-    ctx.font = "bold 18px monospace";
-    ctx.fillText("★ STAGE 3 ★", W/2, cy - 116);
+    ctx.font = "bold 16px 'Microsoft JhengHei', sans-serif";
+    ctx.fillText("★ 雷暴雲海・空中巨艦決戰 ★", W/2, cy - 116);
     ctx.fillStyle = "#fb923c";
-    ctx.font = "bold 24px monospace";
-    ctx.fillText("亜也子・AYAKO OFFENSIVE", W/2, cy - 82);
+    ctx.font = "bold 20px 'Microsoft JhengHei', sans-serif";
+    ctx.fillText("亞也子・空中要塞迎擊作戰", W/2, cy - 82);
 
     ctx.drawImage(sprP38, W/2 - 22, cy - 64);
     ctx.drawImage(sprSide, W/2 - 54, cy - 54);
@@ -1639,8 +1648,8 @@ function drawOverlay(){
     ctx.fillStyle = "#fef08a"; ctx.font = "bold 12px monospace";
     ctx.fillText("🎯 點此直接挑戰 BOSS 亞也子 (掛載 3-WAY)", W/2, btn.y + 25);
 
-    ctx.fillStyle = "#64748b"; ctx.font = "10px monospace";
-    ctx.fillText(`CAPCOM 1987 致敬重製版・版本戳 ${VERSION_STAMP}`, W/2, H - 38);
+    ctx.fillStyle = "#94a3b8"; ctx.font = "11px monospace";
+    ctx.fillText(`HD REMASTER・版本戳 ${VERSION_STAMP}`, W/2, H - 34);
   } else if(state === ST.OVER){
     ctx.fillStyle = "#ef4444"; ctx.font = "bold 36px monospace";
     ctx.fillText("GAME OVER", W/2, cy - 50);
@@ -1689,12 +1698,15 @@ function fit(){
     targetW = clamp(Math.round(640 * (availW / availH)), 480, 1280);
   }
 
-  if(W !== targetW || H !== targetH){
+  stageDpr = Math.min(window.devicePixelRatio || 1, 2);
+  const pw = Math.round(targetW * stageDpr);
+  const ph = Math.round(targetH * stageDpr);
+  if(W !== targetW || H !== targetH || cv.width !== pw || cv.height !== ph){
     const oldW = W, oldH = H;
     W = targetW;
     H = targetH;
-    cv.width = W;
-    cv.height = H;
+    cv.width = pw;
+    cv.height = ph;
     if(P){
       P.x = clamp(P.x + (W - oldW) / 2, 24, W - 24);
       P.y = clamp(P.y + (H - oldH), HUD + 30, H - 45);

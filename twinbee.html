@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>兵蜂：晴空鈴鐺幻想曲 ULTRA｜REA 經典 KONAMI 兵蜂逆向復刻 × 透明 PNG 精靈放置空戰 (v_10:25:00)</title>
+<title>兵蜂：晴空鈴鐺幻想曲 ULTRA｜REA 經典 KONAMI 兵蜂逆向復刻 × 透明 PNG 精靈放置空戰 (v_18:50:00)</title>
 <style>
   :root {
     --sky-top: #0284c7;
@@ -627,7 +627,7 @@
   <div class="brand">
     <span class="badge">REA</span>
     <span>🔔 兵蜂<span class="hide-sm">：晴空鈴鐺幻想曲</span></span>
-    <span class="ver-stamp" id="verStamp">v_10:25:00</span>
+    <span class="ver-stamp" id="verStamp">v_18:50:00</span>
   </div>
   <div class="top-actions">
     <button class="top-btn fs-btn" id="btnFullscreen" type="button">⛶ 全螢幕</button>
@@ -746,25 +746,30 @@
 
 <script>
 (() => {
-  const VERSION_STAMP = 'v_10:25:00';
+  const VERSION_STAMP = 'v_18:50:00';
   if (new URLSearchParams(window.location.search).get('embed') === '1') {
     document.body.classList.add('embedded');
   }
 
   const canvas = document.getElementById('twinbeeCanvas');
   const ctx = canvas.getContext('2d');
-  let W = 430, H = 580;
+  let W = 430, H = 580, renderScaleX = 1, renderScaleY = 1;
   function resizeCanvas() {
     const wrap = canvas.parentElement;
     if (!wrap) return;
     const rect = wrap.getBoundingClientRect();
     if (rect.width > 0 && rect.height > 0) {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       H = 580;
       W = Math.max(380, Math.round(H * (rect.width / rect.height)));
-      if (canvas.width !== W || canvas.height !== H) {
-        canvas.width = W;
-        canvas.height = H;
+      const pw = Math.max(W, Math.round(rect.width * dpr));
+      const ph = Math.max(H, Math.round(rect.height * dpr));
+      if (canvas.width !== pw || canvas.height !== ph) {
+        canvas.width = pw;
+        canvas.height = ph;
       }
+      renderScaleX = canvas.width / W;
+      renderScaleY = canvas.height / H;
     }
   }
   resizeCanvas();
@@ -1807,6 +1812,9 @@
   }
 
   function render() {
+    ctx.setTransform(renderScaleX, 0, 0, renderScaleY, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.clearRect(0, 0, W, H);
 
     // 1. 晴空丼物浮空島高解析生圖背景

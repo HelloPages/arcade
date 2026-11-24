@@ -28,7 +28,7 @@
 
   function resize() {
     const bounds = canvas.getBoundingClientRect();
-    ratio = Math.min(1.65, devicePixelRatio || 1);
+    ratio = Math.min(2, devicePixelRatio || 1);
     canvas.width = Math.round(bounds.width * ratio);
     canvas.height = Math.round(bounds.height * ratio);
     scale = Math.min(1.35, Math.max(.82, bounds.height / 780), bounds.width / 358);

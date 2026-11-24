@@ -247,7 +247,7 @@
   function size() {
     const { width, height } = canvas.getBoundingClientRect();
     if (width < 80 || height < 140) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.6);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const rect = { x: 9, y: 44, width: width - 18, height: height - 89 };
     const scale = Math.min(rect.width, rect.height) / 490;
     const worldWidth = rect.width / scale;

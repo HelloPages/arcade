@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>彩虹泡泡龍：晴空浮空島物語 ULTRA｜REA 經典太東泡泡龍逆向復刻 × 商用去背精靈放置養成 (v_12:08:00)</title>
+<title>彩虹泡泡龍：晴空浮空島物語 ULTRA｜REA 經典太東泡泡龍逆向復刻 × 商用去背精靈放置養成 (v_18:50:00)</title>
 <style>
   :root {
     --sky-top: #0284c7;
@@ -578,7 +578,7 @@
   <div class="brand">
     <span class="badge">REA</span>
     <span>🌈 泡泡龍<span class="hide-sm">：晴空浮空島</span></span>
-    <span class="ver-stamp" id="verStamp">v_12:08:00</span>
+    <span class="ver-stamp" id="verStamp">v_18:50:00</span>
   </div>
   <div class="top-actions">
     <button class="top-btn fs-btn" id="btnFullscreen" type="button">⛶ 全螢幕</button>
@@ -689,26 +689,31 @@
 
 <script>
 (() => {
-  const VERSION_STAMP = 'v_12:08:00';
+  const VERSION_STAMP = 'v_18:50:00';
   if (new URLSearchParams(window.location.search).get('embed') === '1') {
     document.body.classList.add('embedded');
   }
 
   const canvas = document.getElementById('rainbowCanvas');
   const ctx = canvas.getContext('2d');
-  let W = 430, H = 580;
+  let W = 430, H = 580, renderScaleX = 1, renderScaleY = 1;
   const GROUND_Y = 548;
   function resizeCanvas() {
     const wrap = canvas.parentElement;
     if (!wrap) return;
     const rect = wrap.getBoundingClientRect();
     if (rect.width > 0 && rect.height > 0) {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       H = 580;
       W = Math.max(380, Math.round(H * (rect.width / rect.height)));
-      if (canvas.width !== W || canvas.height !== H) {
-        canvas.width = W;
-        canvas.height = H;
+      const pw = Math.max(W, Math.round(rect.width * dpr));
+      const ph = Math.max(H, Math.round(rect.height * dpr));
+      if (canvas.width !== pw || canvas.height !== ph) {
+        canvas.width = pw;
+        canvas.height = ph;
       }
+      renderScaleX = canvas.width / W;
+      renderScaleY = canvas.height / H;
     }
   }
   resizeCanvas();
@@ -1751,6 +1756,9 @@
   }
 
   function render() {
+    ctx.setTransform(renderScaleX, 0, 0, renderScaleY, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.clearRect(0, 0, W, H);
 
     // 1. 晴空浮空島原創高解析背景 (100% 明亮呈現)
