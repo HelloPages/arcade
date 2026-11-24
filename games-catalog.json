@@ -1,13 +1,60 @@
 {
   "portalTitle": "經典街機遊戲館",
-  "version": "v_20261123_cutepool_2",
-  "updatedAt": "2026-11-23T16:35:00+08:00",
+  "version": "v_20261124_tennis_1",
+  "updatedAt": "2026-11-24T09:45:00+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向與原創在地化命名（禁用真實版權遊戲名稱），並全面支援 TW / EN / KO 本土化語系切換。",
   "dailySchedule": {
     "generateCron": "每日04:00產出可單人對戰CPU的原創運動或街機競技遊戲",
     "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
   },
   "games": [
+    {
+      "id": "tennis",
+      "title": "網球-1",
+      "shortTab": "網球-1",
+      "genre": "2.5D 紅土網球對決",
+      "reaSource": "取材自經典街機網球的三維球高彈跳、早準晚擊球時機與多拍拉鋸節奏，採歐式紅土大滿貫原創球場與合成音效。",
+      "highlights": [
+        "真 3D 球體高度與落點光圈，支援抽球（斜線／直線／Perfect 爆速）、網前小球與高壓殺球！",
+        "一鍵切換紅土／溫網草地／夜場藍硬地三座球場，對戰三階 CPU 搶 7 決戰（支援三語與手機單指滑動）。"
+      ],
+      "path": "./tennis.html",
+      "addedDate": "2026-11-24",
+      "thumbnail": "assets/tennis-cover.webp",
+      "artDirection": "歐式陽光紅土大滿貫賽事風格：暖陶土紅球場、深松綠擋板、奶油白轉播計分列與紅土彈跳粉塵粒子。",
+      "i18n": {
+        "tw": {
+          "title": "網球-1",
+          "shortTab": "網球-1",
+          "genre": "2.5D 紅土網球對決",
+          "reaSource": "取材自經典街機網球的三維球高彈跳、早準晚擊球時機與多拍拉鋸節奏，採歐式紅土大滿貫原創球場與合成音效。",
+          "highlights": [
+            "真 3D 球體高度與落點光圈，支援抽球（斜線／直線／Perfect 爆速）、網前小球與高壓殺球！",
+            "一鍵切換紅土／溫網草地／夜場藍硬地三座球場，對戰三階 CPU 搶 7 決戰（支援三語與手機單指滑動）。"
+          ]
+        },
+        "en": {
+          "title": "Tennis-1",
+          "shortTab": "Tennis-1",
+          "genre": "2.5D Clay-Court Tennis",
+          "reaSource": "Inspired by classic arcade tennis with 3D ball height, timing-window cross-court/down-the-line drives, drop shots, and overhead smashes on an original European clay stadium.",
+          "highlights": [
+            "True 3D ball trajectory with landing ring: time your Topspin Drive for blazing Perfect winners, Drop Shots, or overhead Smashes.",
+            "Switch between Roland Clay, Center Grass, and Night Hardcourt against 3 CPU tiers in a fast tie-break match."
+          ]
+        },
+        "ko": {
+          "title": "테니스-1",
+          "shortTab": "테니스-1",
+          "genre": "2.5D 클레이 코트 테니스",
+          "reaSource": "클래식 아케이드 테니스의 3D 바운드 물리, 타이밍 샷, 랠리 리듬을 유럽 클레이 그랜드슬램 스타일로 재해석했습니다.",
+          "highlights": [
+            "3D 공 높이와 낙하 링으로 타이밍을 맞춰 퍼펙트 드라이브, 드롭샷, 강스매시를 구사하세요!",
+            "클레이・잔디・나이트 하드 3종 코트 전환과 3단계 CPU 7점 타이브레이크 대결."
+          ]
+        }
+      }
+    },
     {
       "id": "cutepool",
       "title": "撞球-2",

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-arcade-portal>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1d4d3a">
+  <title>網球-1｜紅土大滿貫對決</title>
+  <link rel="icon" href="./assets/tennis-cover.webp">
+  <link rel="stylesheet" href="./tennis.css?v=20261124_tennis_v1">
+</head>
+<body data-i18n-skip>
+  <main id="app">
+    <canvas id="court" tabindex="0" aria-label="網球-1 球場"></canvas>
+
+    <!-- 頂部歐式賽事轉播計分列（簡潔不遮場地，保留 85%+ 競技視野） -->
+    <header class="top-hud">
+      <div class="broadcast-score" aria-live="polite">
+        <div class="b-brand">
+          <span class="b-dot" aria-hidden="true"></span>
+          <strong data-copy="title">網球-1</strong>
+          <span class="ver-stamp">v_09:45</span>
+        </div>
+        <div class="b-scores">
+          <span id="pScoreBox" class="b-side active"><em data-copy="you">你</em><b>0</b></span>
+          <span class="b-dash">-</span>
+          <span id="cScoreBox" class="b-side"><b>0</b><em>CPU</em></span>
+        </div>
+        <div class="b-stat" id="rallyPill">0 km/h</div>
+      </div>
+
+      <div class="top-actions">
+        <button type="button" id="btnSurface" class="hud-btn" title="切換場地" aria-label="切換場地">🏟</button>
+        <button type="button" id="btnSound" class="hud-btn" title="音效" aria-label="音效" aria-pressed="false">♪</button>
+        <button type="button" id="btnMenu" class="hud-btn" title="選單" aria-label="選單">☰</button>
+        <button type="button" id="btnFs" class="hud-btn" title="全螢幕" aria-label="全螢幕">⛶</button>
+      </div>
+    </header>
+
+    <!-- 輕量場上提示條 -->
+    <div id="statusToast" class="status-toast" role="status">拖曳下方移動・按「抽球」發球開打！</div>
+
+    <!-- 底部透明貼邊三球種按鍵（絕不遮擋主球場，保留 85%+ 畫面） -->
+    <footer class="bottom-controls">
+      <button type="button" id="btnDrop" class="shot-btn drop-btn">
+        <strong data-copy="drop">小球</strong>
+        <span data-copy="dropSub">切球</span>
+      </button>
+      <button type="button" id="btnDrive" class="shot-btn drive-btn primary">
+        <strong id="driveLabel" data-copy="serve">發球</strong>
+        <span data-copy="driveSub">強抽</span>
+      </button>
+      <button type="button" id="btnSmash" class="shot-btn smash-btn">
+        <strong data-copy="smash">殺球</strong>
+        <span data-copy="smashSub">高壓</span>
+      </button>
+    </footer>
+
+    <!-- 暫停／賽後結算面板 -->
+    <div id="modalOverlay" class="modal-overlay" hidden>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-kicker" id="modalKicker">ROLAND CLAY · 搶 7 決戰</div>
+        <h2 id="modalTitle">暫停</h2>
+        <p id="modalScore" class="modal-score" hidden>7 - 4</p>
+        <p id="modalStats" class="modal-stats"></p>
+        <p class="modal-guide" data-copy="guide">先得 7 分獲勝（6-6 需領先 2 分）。拖曳球場下方走位，抓準球彈起時機按「抽球」打斜線或直線，按「小球」放網前，高球時按「殺球」！</p>
+
+        <div class="opt-row">
+          <label for="selDiff" data-copy="opponent">CPU 難度</label>
+          <select id="selDiff">
+            <option value="0" data-copy="rookie">初級・俱樂部</option>
+            <option value="1" data-copy="club">中級・巡迴賽</option>
+            <option value="2" data-copy="pro">高手・大滿貫</option>
+          </select>
+        </div>
+        <div class="opt-row">
+          <label for="selLang" data-copy="language">語言</label>
+          <select id="selLang">
+            <option value="tw">繁體中文</option>
+            <option value="en">English</option>
+            <option value="ko">한국어</option>
+          </select>
+        </div>
+
+        <div class="modal-btns">
+          <button type="button" id="btnResume" class="rect-btn primary" data-copy="resume">繼續比賽</button>
+          <button type="button" id="btnRematch" class="rect-btn" data-copy="rematch">再來一局</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="./arcade-i18n.js?v=20261122_i18n_menu_v1"></script>
+  <script src="./tennis.js?v=20261124_tennis_v1"></script>
+</body>
+</html>
