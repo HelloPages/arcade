@@ -660,7 +660,7 @@
 
   const player = {
     x: vw * 0.5, y: vh * 0.68, tx: vw * 0.5, ty: vh * 0.68,
-    hp: 5, maxHp: 5, wpnIdx: 0, wpnLv: 1, bombs: 3,
+    hp: 8, maxHp: 8, wpnIdx: 0, wpnLv: 1, bombs: 3,
     shieldTime: 0, shieldCd: 0, magnetTime: 0, speedBoostTime: 0,
     invuln: 0, fireCd: 0, tilt: 0, collectBounce: 0
   };
@@ -976,9 +976,16 @@
   function damagePlayer() {
     if (player.invuln > 0 || player.shieldTime > 0 || gameOver) return;
     player.hp -= 1;
-    player.invuln = 1.5;
+    player.invuln = 2.4;
+    // 受傷時自動震散周圍 145px 危險彈，避免入門玩家瞬間連續掉血
+    for (let i = eBullets.length - 1; i >= 0; i--) {
+      if (Math.hypot(eBullets[i].x - player.x, eBullets[i].y - player.y) < 145) {
+        spawnBoom(eBullets[i].x, eBullets[i].y, "#ff9f1c", 4, false);
+        eBullets.splice(i, 1);
+      }
+    }
     player.wpnLv = Math.max(1, player.wpnLv - 1);
-    shake = 14;
+    shake = 12;
     spawnBoom(player.x, player.y, "#ff5768", 18, false);
     renderHud();
     if (player.hp <= 0) {
@@ -1757,17 +1764,18 @@
         }
         boss.fireCd -= dt;
         if (boss.fireCd <= 0 && boss.y >= boss.targetY - 10) {
-          const count = 5 + boss.phase * 2;
+          const count = 4 + boss.phase;
           for (let i = 0; i < count; i++) {
-            const ang = Math.PI * 0.22 + (Math.PI * 0.56 * i) / (count - 1) + Math.sin(t * 2) * 0.14;
+            const ang = Math.PI * 0.24 + (Math.PI * 0.52 * i) / Math.max(1, count - 1) + Math.sin(t * 2) * 0.12;
+            const spd = 118 + boss.phase * 16;
             eBullets.push({
               x: boss.x, y: boss.y + 34,
-              vx: Math.cos(ang) * (168 + boss.phase * 22),
-              vy: Math.sin(ang) * (168 + boss.phase * 22),
-              r: 7, kind: bIdx === 0 ? "memo" : bIdx === 1 ? "toast" : (i % 2 === 0 ? "boba" : "pink")
+              vx: Math.cos(ang) * spd,
+              vy: Math.sin(ang) * spd,
+              r: 7.5, kind: bIdx === 0 ? "memo" : bIdx === 1 ? "toast" : (i % 2 === 0 ? "boba" : "pink")
             });
           }
-          boss.fireCd = Math.max(0.60, 1.15 - boss.phase * 0.17);
+          boss.fireCd = Math.max(0.92, 1.62 - boss.phase * 0.20);
         }
         if (boss.hp <= 0) triggerStageClear();
       }
@@ -1801,26 +1809,27 @@
         e.y += e.vy * dt;
         if (e.hitFlash > 0) e.hitFlash = Math.max(0, e.hitFlash - dt);
         e.fireCd -= dt;
-        if (e.fireCd <= 0 && e.y > 42 && e.y < vh * 0.62) {
+        if (e.fireCd <= 0 && e.y > 42 && e.y < vh * 0.58) {
           const ang = Math.atan2(player.y - e.y, player.x - e.x);
           if (e.kind === "copier") {
-            // 暴走影印機：一次扇形噴 3 張公文彈！
-            for (const da of [-0.25, 0, 0.25]) {
-              eBullets.push({ x: e.x, y: e.y + 20, vx: Math.cos(ang + da) * 185, vy: Math.sin(ang + da) * 185, r: 7, kind: "memo" });
+            // 暴走影印機：慢速 3 連發，好閃好判讀
+            for (const da of [-0.28, 0, 0.28]) {
+              eBullets.push({ x: e.x, y: e.y + 20, vx: Math.cos(ang + da) * 130, vy: Math.sin(ang + da) * 130, r: 7.5, kind: "memo" });
             }
-            e.fireCd = 1.65;
+            e.fireCd = 2.35;
           } else {
+            const spd = e.hatched ? 158 : 134;
             eBullets.push({
               x: e.x, y: e.y + 18,
-              vx: Math.cos(ang) * (e.hatched ? 230 : 195),
-              vy: Math.sin(ang) * (e.hatched ? 230 : 195),
-              r: 6.5, kind: e.kind === "toaster" ? "toast" : "pink"
+              vx: Math.cos(ang) * spd,
+              vy: Math.sin(ang) * spd,
+              r: 7, kind: e.kind === "toaster" ? "toast" : "pink"
             });
-            e.fireCd = e.hatched ? 0.95 : 1.55;
+            e.fireCd = e.hatched ? 1.45 : 2.25;
           }
         }
-        // 只判定飛機本體核心（棒棒糖把手完全不增加受傷判定！）
-        if (Math.hypot(e.x - player.x, e.y - player.y) < e.size * 0.38 + 13) {
+        // 只判定飛機本體核心（棒棒糖把手完全不增加受傷判定，入門更寬容！）
+        if (Math.hypot(e.x - player.x, e.y - player.y) < e.size * 0.34 + 9) {
           damagePlayer();
           spawnBoom(e.x, e.y, "#ff5768", 12, false);
           enemies.splice(i, 1);
@@ -1834,7 +1843,7 @@
         const eb = eBullets[i];
         eb.x += eb.vx * dt; eb.y += eb.vy * dt;
         if (eb.y < -30 || eb.y > vh + 30 || eb.x < -30 || eb.x > vw + 30) { eBullets.splice(i, 1); continue; }
-        if (Math.hypot(eb.x - player.x, eb.y - player.y) < eb.r + (player.shieldTime > 0 ? 38 : 10)) {
+        if (Math.hypot(eb.x - player.x, eb.y - player.y) < eb.r + (player.shieldTime > 0 ? 40 : 7.5)) {
           if (player.shieldTime > 0) {
             spawnBoom(eb.x, eb.y, "#48cae4", 6, false);
             eBullets.splice(i, 1);
@@ -2327,72 +2336,93 @@
       ctx.restore();
     }
 
-    // 2. 可吃寶物統一「翠綠×金光安全光環＋旋轉虛線框」（一眼就能和紅黑危險敵彈區隔！）
+    // 2. 可吃寶物統一「透明薄荷綠水晶氣泡＋旋轉金環＋底部「吃!」亮綠徽章」（完全不含紅粉色，一眼就知快去吃！）
+    const eatBadgeText = lang === "en" ? "GET" : (lang === "ko" ? "획득" : "吃!");
     for (const pk of pickups) {
       const def = TREASURES[pk.type] || TREASURES.popcorn;
-      const bobY = Math.sin(t * 6 + pk.phase) * 3;
+      const bobY = Math.sin(t * 5.2 + pk.phase) * 3.5;
       ctx.save();
       ctx.translate(pk.x, pk.y + bobY);
 
-      // 安全可吃外環：明亮薄荷翠綠底暈＋旋轉金色虛線框，絕對不會誤認為敵人子彈
-      const haloR = def.vector ? 21 : 26;
-      ctx.fillStyle = "rgba(46, 232, 138, 0.24)";
+      // 安全可吃水晶氣泡外框：通透薄荷綠＋純白高光＋旋轉金框
+      const haloR = def.vector ? 23 : 28;
+      const bubG = ctx.createRadialGradient(-haloR * 0.28, -haloR * 0.3, 3, 0, 0, haloR);
+      bubG.addColorStop(0, "rgba(255, 255, 255, 0.72)");
+      bubG.addColorStop(0.55, "rgba(52, 235, 168, 0.34)");
+      bubG.addColorStop(1, "rgba(16, 185, 129, 0.56)");
+      ctx.fillStyle = bubG;
       ctx.beginPath(); ctx.arc(0, 0, haloR, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2.6;
+      ctx.beginPath(); ctx.arc(0, 0, haloR + 1.5, 0, Math.PI * 2); ctx.stroke();
       ctx.save();
-      ctx.rotate(t * 2.2 + pk.phase);
-      ctx.strokeStyle = "#ffe066";
-      ctx.lineWidth = 2.4;
-      ctx.setLineDash([6, 4]);
-      ctx.beginPath(); ctx.arc(0, 0, haloR, 0, Math.PI * 2); ctx.stroke();
+      ctx.rotate(t * 2.0 + pk.phase);
+      ctx.strokeStyle = "#00c471";
+      ctx.lineWidth = 2.8;
+      ctx.setLineDash([7, 4]);
+      ctx.beginPath(); ctx.arc(0, 0, haloR - 1, 0, Math.PI * 2); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.strokeStyle = "#2ee88a";
-      ctx.lineWidth = 2.4;
-      ctx.beginPath(); ctx.arc(0, 0, haloR - 3.5, 0, Math.PI * 2); ctx.stroke();
       ctx.restore();
+      // 氣泡左上角純白反光點
+      ctx.fillStyle = "rgba(255,255,255,0.88)";
+      ctx.beginPath(); ctx.ellipse(-haloR * 0.38, -haloR * 0.36, 5, 2.6, -0.6, 0, Math.PI * 2); ctx.fill();
 
-      ctx.rotate(Math.sin(t * 3.5 + pk.phase) * 0.14);
-      ctx.shadowColor = "rgba(18, 92, 54, 0.55)";
-      ctx.shadowBlur = 7;
+      ctx.save();
+      ctx.rotate(Math.sin(t * 3.2 + pk.phase) * 0.12);
+      ctx.shadowColor = "rgba(10, 92, 54, 0.45)";
+      ctx.shadowBlur = 6;
       if (!def.vector && def.img && imgs[def.img] && imgs[def.img].complete && imgs[def.img].naturalWidth > 0) {
-        const im = imgs[def.img], s = 48, asp = im.naturalWidth / im.naturalHeight;
+        const im = imgs[def.img], s = 44, asp = im.naturalWidth / im.naturalHeight;
         const w = asp >= 1 ? s : s * asp, h = asp >= 1 ? s / asp : s;
         ctx.drawImage(im, -w * 0.5, -h * 0.5, w, h);
       } else if (pk.type === "coin") {
         // 閃亮旋轉金幣
-        const wScale = 0.65 + 0.35 * Math.abs(Math.cos(t * 6 + pk.phase));
+        const wScale = 0.72 + 0.28 * Math.abs(Math.cos(t * 5 + pk.phase));
         ctx.scale(wScale, 1);
-        ctx.fillStyle = "#ffd84d"; ctx.strokeStyle = "#5c2d0c"; ctx.lineWidth = 2.4;
+        ctx.fillStyle = "#ffd84d"; ctx.strokeStyle = "#6b3a08"; ctx.lineWidth = 2.4;
         ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = "#fff9db"; ctx.font = "900 14px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText("★", 0, 1);
       } else if (pk.type === "starcandy") {
-        // 可愛彩繪星星糖（金平糖）
-        ctx.fillStyle = "#ff8fab"; ctx.strokeStyle = "#3a1f12"; ctx.lineWidth = 2.4;
+        // 亮金黃檸檬星星糖（改為金黃＋天藍光澤，徹底遠離敵彈紅黑色系！）
+        ctx.fillStyle = "#ffe066"; ctx.strokeStyle = "#0f766e"; ctx.lineWidth = 2.4;
         ctx.beginPath();
         for (let i = 0; i < 10; i++) {
-          const r = i % 2 === 0 ? 16 : 8, a = (Math.PI * 2 * i) / 10 - Math.PI * 0.5;
+          const r = i % 2 === 0 ? 15 : 8, a = (Math.PI * 2 * i) / 10 - Math.PI * 0.5;
           if (i === 0) ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
           else ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
         }
         ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(-3, -3, 3.2, 0, Math.PI * 2); ctx.fill();
       } else if (pk.type === "magnet") {
-        // 糖果吸寶磁鐵
-        ctx.strokeStyle = "#3a1f12"; ctx.lineWidth = 10; ctx.lineCap = "round";
-        ctx.beginPath(); ctx.arc(0, -2, 12, Math.PI, 0, true); ctx.stroke();
-        ctx.strokeStyle = "#ff3864"; ctx.lineWidth = 6;
-        ctx.beginPath(); ctx.arc(0, -2, 12, Math.PI, 0, true); ctx.stroke();
-        ctx.fillStyle = "#e2e8f0"; ctx.fillRect(-15, -12, 6, 8); ctx.fillRect(9, -12, 6, 8);
+        // 糖果吸寶磁鐵（藍金配色）
+        ctx.strokeStyle = "#0f4c81"; ctx.lineWidth = 10; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.arc(0, -2, 11, Math.PI, 0, true); ctx.stroke();
+        ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.arc(0, -2, 11, Math.PI, 0, true); ctx.stroke();
+        ctx.fillStyle = "#fde047"; ctx.fillRect(-14, -12, 6, 8); ctx.fillRect(8, -12, 6, 8);
       } else if (pk.type === "giftbox") {
-        // 彩虹驚喜禮盒
-        ctx.fillStyle = "#c084fc"; ctx.strokeStyle = "#2b1810"; ctx.lineWidth = 2.4;
-        ctx.beginPath(); ctx.roundRect(-16, -15, 32, 30, 6); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = "#ffd84d"; ctx.fillRect(-4, -15, 8, 30); ctx.fillRect(-16, -4, 32, 8);
+        // 翡翠金絲帶驚喜禮盒
+        ctx.fillStyle = "#38bdf8"; ctx.strokeStyle = "#0f4c81"; ctx.lineWidth = 2.4;
+        ctx.beginPath(); ctx.roundRect(-14, -13, 28, 26, 6); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#fde047"; ctx.fillRect(-3.5, -13, 7, 26); ctx.fillRect(-14, -3.5, 28, 7);
       } else {
         // 魔法困敵泡泡球
-        ctx.fillStyle = "rgba(125, 211, 252, 0.55)"; ctx.strokeStyle = "#0284c7"; ctx.lineWidth = 2.4;
-        ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(-5, -5, 4.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(125, 211, 252, 0.65)"; ctx.strokeStyle = "#0284c7"; ctx.lineWidth = 2.4;
+        ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(-4.5, -4.5, 4.2, 0, Math.PI * 2); ctx.fill();
       }
+      ctx.restore();
+
+      // 底部清晰亮綠標籤「吃! / GET」，一眼辨識可收集道具
+      ctx.fillStyle = "#059669";
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.roundRect(-16, haloR - 6, 32, 15, 7); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 10px 'Microsoft JhengHei', sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(eatBadgeText, 0, haloR + 2);
       ctx.restore();
     }
 
@@ -2477,49 +2507,62 @@
       ctx.restore();
     }
 
-    // 5. 高警戒「必須閃避」危險敵彈（紅黑尖刺外框＋脈衝警戒紅光＋白亮核心，永遠位於最上層一目了然！）
-    const dangerPulse = 1 + Math.sin(t * 18) * 0.14;
+    // 5. 高警戒「必須閃避」危險敵彈：統一黑鐵尖刺炸彈＋烈焰尾焰＋白邊高反差＋紅黃警戒核心「!」，與綠光水晶寶物形成絕對視覺對比！
+    const dangerPulse = 1 + Math.sin(t * 16) * 0.12;
     for (const eb of eBullets) {
       ctx.save();
       ctx.translate(eb.x, eb.y);
-      const rad = Math.max(7.5, eb.r + 1.5);
+      const rad = Math.max(8, eb.r + 1.5);
+      const dir = Math.atan2(eb.vy || 1, eb.vx || 0);
+
+      // 沿速度反方向的烈焰尾焰（移動中的危險砲彈一目了然！）
+      ctx.save();
+      ctx.rotate(dir + Math.PI);
+      const flameLen = (15 + Math.sin(t * 40 + eb.x) * 4);
+      const flG = ctx.createLinearGradient(0, 0, flameLen, 0);
+      flG.addColorStop(0, "rgba(255, 230, 0, 0.95)");
+      flG.addColorStop(0.5, "rgba(255, 68, 0, 0.78)");
+      flG.addColorStop(1, "rgba(220, 0, 40, 0)");
+      ctx.fillStyle = flG;
+      ctx.beginPath();
+      ctx.moveTo(2, -rad * 0.65);
+      ctx.lineTo(flameLen, 0);
+      ctx.lineTo(2, rad * 0.65);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+
       // 外層警戒紅光暈
-      ctx.fillStyle = "rgba(255, 0, 58, 0.34)";
-      ctx.beginPath(); ctx.arc(0, 0, (rad + 6) * dangerPulse, 0, Math.PI * 2); ctx.fill();
-      if (eb.kind === "memo") {
-        // 公文危險彈加上鮮紅菱形警戒背板與紅叉，絕不誤當可吃道具
-        ctx.rotate(t * 6 + eb.x);
-        ctx.fillStyle = "#1a0308";
-        ctx.beginPath();
-        ctx.moveTo(0, -14); ctx.lineTo(14, 0); ctx.lineTo(0, 14); ctx.lineTo(-14, 0);
-        ctx.closePath(); ctx.fill();
-        ctx.fillStyle = "#ff0040";
-        ctx.beginPath();
-        ctx.moveTo(0, -11); ctx.lineTo(11, 0); ctx.lineTo(0, 11); ctx.lineTo(-11, 0);
-        ctx.closePath(); ctx.fill();
-        ctx.fillStyle = "#fffdf5";
-        ctx.fillRect(-5, -6, 10, 12);
-        ctx.strokeStyle = "#d90429"; ctx.lineWidth = 2.4;
-        ctx.beginPath(); ctx.moveTo(-3, -3); ctx.lineTo(3, 3); ctx.moveTo(3, -3); ctx.lineTo(-3, 3); ctx.stroke();
-      } else {
-        // 旋轉四角尖刺黑紅危險彈（與圓潤綠金寶物形成強烈形狀＋色相對比）
-        ctx.save();
-        ctx.rotate(t * 5);
-        ctx.fillStyle = "#18020a";
-        ctx.beginPath();
-        for (let i = 0; i < 8; i++) {
-          const rr = i % 2 === 0 ? rad + 5.2 : rad + 1.4;
-          const aa = (Math.PI * i) / 4;
-          if (i === 0) ctx.moveTo(Math.cos(aa) * rr, Math.sin(aa) * rr);
-          else ctx.lineTo(Math.cos(aa) * rr, Math.sin(aa) * rr);
-        }
-        ctx.closePath(); ctx.fill();
-        ctx.restore();
-        ctx.fillStyle = eb.kind === "toast" ? "#ff3d00" : "#ff0044";
-        ctx.beginPath(); ctx.arc(0, 0, rad + 0.6, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#ffffff";
-        ctx.beginPath(); ctx.arc(0, 0, Math.max(3.0, rad * 0.44), 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(220, 0, 40, 0.30)";
+      ctx.beginPath(); ctx.arc(0, 0, (rad + 7) * dangerPulse, 0, Math.PI * 2); ctx.fill();
+
+      // 旋轉黑鐵六角尖刺海雷輪廓＋純白外描邊（無論亮雲或暗空都超級清楚！）
+      ctx.save();
+      ctx.rotate(t * 4.5 + eb.x * 0.05);
+      ctx.beginPath();
+      for (let i = 0; i < 12; i++) {
+        const rr = i % 2 === 0 ? rad + 5.8 : rad + 0.6;
+        const aa = (Math.PI * i) / 6;
+        if (i === 0) ctx.moveTo(Math.cos(aa) * rr, Math.sin(aa) * rr);
+        else ctx.lineTo(Math.cos(aa) * rr, Math.sin(aa) * rr);
       }
+      ctx.closePath();
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 3.2;
+      ctx.stroke();
+      ctx.fillStyle = "#160710";
+      ctx.fill();
+      ctx.restore();
+
+      // 內圈暗紅鐵殼＋黃紅警示核心「!」
+      ctx.fillStyle = "#d90429";
+      ctx.beginPath(); ctx.arc(0, 0, rad - 0.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#ffe600";
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+      ctx.fillStyle = "#fff8b8";
+      ctx.font = "900 11px sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("!", 0, 0.5);
       ctx.restore();
     }
 

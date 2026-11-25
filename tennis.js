@@ -194,7 +194,7 @@
     streak: 0,
     pointTimer: 0,
     cpuServeTimer: 0,
-    player: { x: 0, y: 0.94, tx: 0, ty: 0.94, swing: 0, swingSide: 1, swingKind: 'drive' },
+    player: { x: 0, y: 0.94, tx: 0, ty: 0.94, swing: 0, swingSide: 1, swingKind: 'drive', swingBuffer: 0, swingBufferKind: 'drive' },
     cpu:    { x: 0, y: 0.06, tx: 0, ty: 0.06, swing: 0, swingSide: 1 },
     ball: {
       active: false, x: 0, y: 0.90, z: 0.24,
@@ -325,8 +325,13 @@
       targetX = fromPlayer ? (actor.x > 0 ? -0.45 : 0.45) : (actor.x < 0 ? 0.45 : -0.45);
     }
 
-    const baseFlight = kind === 'smash' ? 0.46 : (kind === 'drop' ? 0.74 : (kind === 'serve' ? 0.56 : (isPerfect ? 0.52 : 0.64)));
-    const flightT = baseFlight / surf.speedMul;
+    const baseFlight = kind === 'smash' ? 0.48 : (kind === 'drop' ? 0.78 : (kind === 'serve' ? 0.60 : (isPerfect ? 0.56 : 0.68)));
+    // Wii 網球樂趣節奏：初級球速放慢 42% 好判讀、中級放慢 22%、終極維持原高速對決
+    const paceMul = diffLevel === 0 ? 1.42 : (diffLevel === 1 ? 1.22 : 1.0);
+    const flightT = (baseFlight * paceMul) / surf.speedMul;
+    if (!fromPlayer && diffLevel === 0) {
+      targetX *= 0.68; // 初級 CPU 回球較集中，方便玩家享受多拍拉鋸
+    }
 
     b.active = true;
     b.lastHitter = hitter;
@@ -363,38 +368,52 @@
     updateHUD();
   }
 
+  function getPlayerReach() {
+    if (diffLevel === 0) return { rx: 0.60, ry: 0.46, rz: 1.18, perfX: 0.36, perfY: 0.16 };
+    if (diffLevel === 1) return { rx: 0.46, ry: 0.34, rz: 1.02, perfX: 0.28, perfY: 0.11 };
+    return { rx: 0.36, ry: 0.26, rz: 0.90, perfX: 0.22, perfY: 0.08 };
+  }
+
+  function executePlayerHitIfInRange(kind) {
+    const b = state.ball;
+    if (!b.active || b.lastHitter === 0) return false;
+    const dx = b.x - state.player.x;
+    const dy = b.y - state.player.y;
+    const reach = getPlayerReach();
+    if (Math.abs(dx) <= reach.rx && Math.abs(dy) <= reach.ry && b.z < reach.rz) {
+      const isPerfect = Math.abs(dy) <= reach.perfY && Math.abs(dx) <= reach.perfX;
+      const canSmash = kind === 'smash' && b.z > 0.22;
+      const actualKind = canSmash ? 'smash' : (kind === 'smash' ? 'drive' : kind);
+      let aimX;
+      if (dy < -0.05) aimX = state.player.x > 0 ? -0.74 : 0.74;
+      else if (dy > 0.06) aimX = state.player.x > 0 ? 0.66 : -0.66;
+      else aimX = (state.cpu.x > 0 ? -0.72 : 0.72);
+      state.player.swingBuffer = 0;
+      launchShot(0, actualKind, aimX, isPerfect);
+      return true;
+    }
+    return false;
+  }
+
   function tryPlayerSwing(kind) {
     if (paused || state.phase === 'end' || state.phase === 'pointOver') return;
     sound.wake();
-    // 玩家發球
+    // 玩家發球：抓準點擊立刻發球，輕鬆上手
     if (state.phase === 'serve') {
       if (state.server === 0) {
         state.ball.x = state.player.x + 0.05;
         state.ball.y = state.player.y - 0.04;
         state.ball.z = 0.42;
-        launchShot(0, 'serve', -state.player.x * 1.4, true);
+        launchShot(0, 'serve', -state.player.x * 1.2, true);
       }
       return;
     }
     // 揮拍動作（即使沒打到也顯示揮拍回饋）
     state.player.swing = 1.0;
-    const b = state.ball;
-    if (!b.active || b.lastHitter === 0) return;
-
-    const dx = b.x - state.player.x;
-    const dy = b.y - state.player.y;
-    const reachX = 0.34;
-    const reachY = 0.24;
-    if (Math.abs(dx) <= reachX && Math.abs(dy) <= reachY && b.z < 0.85) {
-      // 時機判定：dy < -0.05 早打(斜線)、|dy| <= 0.06 準時(Perfect!)、dy > 0.05 晚打(直線)
-      const isPerfect = Math.abs(dy) <= 0.075 && Math.abs(dx) <= 0.22;
-      const canSmash = kind === 'smash' && b.z > 0.26;
-      const actualKind = canSmash ? 'smash' : (kind === 'smash' ? 'drive' : kind);
-      let aimX;
-      if (dy < -0.04) aimX = state.player.x > 0 ? -0.76 : 0.76; // 早打大斜線
-      else if (dy > 0.05) aimX = state.player.x > 0 ? 0.68 : -0.68; // 晚打直線
-      else aimX = (state.cpu.x > 0 ? -0.74 : 0.74); // 準時攻擊對手空檔！
-      launchShot(0, actualKind, aimX, isPerfect);
+    if (!executePlayerHitIfInRange(kind)) {
+      // Wii 網球寬鬆預輸入緩衝：提早按下會在球進入擊球區時自動順暢擊出！
+      state.player.swingBuffer = diffLevel === 0 ? 0.34 : (diffLevel === 1 ? 0.22 : 0.12);
+      state.player.swingBufferKind = kind;
     }
   }
 
@@ -453,12 +472,20 @@
     state.player.tx = clamp(state.player.tx, -1.08, 1.08);
     state.player.ty = clamp(state.player.ty, 0.62, 1.05);
 
-    // 玩家平滑移動（受真實跑速上限，流暢不瞬移）
-    const pMove = Math.min(1, dt * (isDualControl() ? 12 : 10));
+    // 玩家平滑移動（初級自動跑位反應更快更穩，確保一定趕得上回球）
+    const pMove = Math.min(1, dt * (isDualControl() ? 12 : 14));
     state.player.x += (state.player.tx - state.player.x) * pMove;
     state.player.y += (state.player.ty - state.player.y) * pMove;
     state.player.swing = Math.max(0, state.player.swing - dt * 4.5);
     state.cpu.swing = Math.max(0, state.cpu.swing - dt * 4.5);
+
+    // 揮拍預輸入緩衝：球進入寬鬆擊球區立刻自動擊出
+    if (state.player.swingBuffer > 0) {
+      state.player.swingBuffer = Math.max(0, state.player.swingBuffer - dt);
+      if (state.phase === 'rally') {
+        executePlayerHitIfInRange(state.player.swingBufferKind);
+      }
+    }
 
     // 玩家準備發球時，手中網球隨選手位置同步移動
     if (state.phase === 'serve' && state.server === 0) {
@@ -780,17 +807,32 @@
     line(-0.78, 0.76, 0.78, 0.76, 2.0);
     line(0, 0.24, 0, 0.76, 2.0);
 
-    // 3. 落點預告光圈（來球往玩家側飛時，清楚顯示落點與擊球時機！）
+    // 3. Wii 網球風格落點與揮拍時機光環（進入可擊球區時亮起金綠光圈提示！）
     if (state.phase === 'rally' && state.ball.active && state.ball.vy > 0) {
       const land = predictLanding();
-      if (land && land.y >= NET_Y && land.y <= 1.15 && Math.abs(land.x) <= 1.25) {
+      const reach = getPlayerReach();
+      const inHitZone = state.ball.lastHitter === 1 &&
+        Math.abs(state.ball.x - state.player.x) <= reach.rx &&
+        Math.abs(state.ball.y - state.player.y) <= reach.ry;
+      if (land && land.y >= NET_Y && land.y <= 1.18 && Math.abs(land.x) <= 1.25) {
         const lp = project(land.x, land.y, 0);
-        const pulse = 1 + Math.sin(performance.now() * 0.015) * 0.14;
-        ctx.strokeStyle = '#d9ff3b';
-        ctx.lineWidth = 2.6;
+        const pulse = 1 + Math.sin(performance.now() * 0.016) * 0.16;
+        ctx.strokeStyle = inHitZone ? '#ffe066' : '#d9ff3b';
+        ctx.lineWidth = inHitZone ? 3.8 : 2.6;
         ctx.beginPath();
-        ctx.ellipse(lp.x, lp.y, 16 * lp.scale * pulse, 8 * lp.scale * pulse, 0, 0, Math.PI * 2);
+        ctx.ellipse(lp.x, lp.y, (inHitZone ? 22 : 16) * lp.scale * pulse, (inHitZone ? 11 : 8) * lp.scale * pulse, 0, 0, Math.PI * 2);
         ctx.stroke();
+      }
+      if (inHitZone) {
+        const pp = project(state.player.x, state.player.y, 0);
+        ctx.save();
+        ctx.strokeStyle = 'rgba(217, 255, 59, 0.85)';
+        ctx.fillStyle = 'rgba(217, 255, 59, 0.16)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.ellipse(pp.x, pp.groundY, 30 * pp.scale, 13 * pp.scale, 0, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+        ctx.restore();
       }
     }
 
@@ -1093,7 +1135,7 @@
       movePointerId,
       activeShotPointers: shotPointers.size,
       surface: SURFACES[surfaceIdx].id,
-      version: 'v_01:10'
+      version: 'v_01:28'
     }),
     setDiff: (lvl) => { diffLevel = Number(lvl) || 0; $('selDiff').value = String(diffLevel); movePointerId = null; updateHUD(); },
     getCourtCoverage: () => {
