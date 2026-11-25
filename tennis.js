@@ -20,12 +20,14 @@
     tw: {
       title: '網球-1', you: '你', serve: '發球', drive: '抽球', driveSub: '強抽',
       drop: '小球', dropSub: '切球', smash: '殺球', smashSub: '高壓',
-      opponent: 'CPU 難度', rookie: '初級・俱樂部', club: '中級・巡迴賽', pro: '高手・大滿貫',
+      opponent: 'CPU 難度', rookie: '初級・自動跑位', club: '中級・自動跑位', pro: '終極・雙手操作',
       language: '語言', resume: '繼續比賽', rematch: '再來一局',
-      guide: '先得 7 分獲勝（6-6 需領先 2 分）。拖曳球場下方走位，抓準球彈起時機按「抽球」打斜線或直線，按「小球」放網前，高球時按「殺球」！',
-      serveHint: '拖曳下方走位・按「發球」開打！',
+      guide: '先得 7 分獲勝（6-6 需領先 2 分）。初級／中級會自動奔跑走位，你只需專心按「發球／抽球／小球／殺球」；切換至「終極」難度則開啟雙指同時走位與擊球！',
+      serveHintAuto: '自動跑位中・點「發球」開打！',
+      serveHintDual: '終極雙操作：一指滑動走位・另一指按「發球」',
       cpuServe: 'CPU 準備發球...',
-      rallying: '多拍對抽中！抓準落點光圈回擊',
+      rallyingAuto: '自動跑位中・抓準時機按抽球／小球／殺球',
+      rallyingDual: '終極雙操作：一指移動・另一指同時擊球',
       perfect: 'PERFECT! 爆速抽球 🔥',
       smashHit: 'SMASH!! 雷霆殺球 ⚡',
       dropHit: 'DROP SHOT! 精準網前小球 🎯',
@@ -43,12 +45,14 @@
     en: {
       title: 'Tennis-1', you: 'YOU', serve: 'Serve', drive: 'Drive', driveSub: 'Topspin',
       drop: 'Drop', dropSub: 'Slice', smash: 'Smash', smashSub: 'Power',
-      opponent: 'CPU Level', rookie: 'Club Rookie', club: 'Tour Pro', pro: 'Grand Slam',
+      opponent: 'CPU Level', rookie: 'Rookie · Auto-Run', club: 'Club · Auto-Run', pro: 'Ultimate · Dual Control',
       language: 'Language', resume: 'Resume', rematch: 'Play Again',
-      guide: 'First to 7 points wins (win by 2 at 6-6). Drag the lower court to move, tap Drive on the bounce for cross-court or down-the-line, Drop for net touch, Smash on high balls!',
-      serveHint: 'Drag to move · Press Serve to start!',
+      guide: 'First to 7 wins (win by 2 at 6-6). Rookie & Club auto-run for you—just tap Serve/Drive/Drop/Smash! Switch to Ultimate for simultaneous two-finger move + shot.',
+      serveHintAuto: 'Auto-Run ON · Tap Serve to start!',
+      serveHintDual: 'Ultimate Dual: Drag with 1 finger · Tap Serve with another',
       cpuServe: 'CPU preparing to serve...',
-      rallying: 'Rally on! Time your swing on the ring',
+      rallyingAuto: 'Auto-Run ON · Time your Drive / Drop / Smash',
+      rallyingDual: 'Ultimate Dual: Move & swing simultaneously!',
       perfect: 'PERFECT! Blazing Drive 🔥',
       smashHit: 'SMASH!! Overhead Winner ⚡',
       dropHit: 'DROP SHOT! Soft Net Touch 🎯',
@@ -66,12 +70,14 @@
     ko: {
       title: '테니스-1', you: '나', serve: '서브', drive: '드라이브', driveSub: '강타',
       drop: '드롭샷', dropSub: '슬라이스', smash: '스매시', smashSub: '강스매시',
-      opponent: 'CPU 난이도', rookie: '초급 · 클럽', club: '중급 · 투어', pro: '고수 · 그랜드슬램',
+      opponent: 'CPU 난이도', rookie: '초급 · 자동 이동', club: '중급 · 자동 이동', pro: '궁극 · 양손 조작',
       language: '언어', resume: '계속하기', rematch: '한 판 더',
-      guide: '7점 선취 승리(6-6 듀스 시 2점 차). 하단을 드래그해 이동하고, 바운드 타이밍에 맞춰 드라이브・드롭샷・스매시로 승부하세요!',
-      serveHint: '하단 드래그 이동 · 서브 버튼으로 시작!',
+      guide: '7점 선취 승리(6-6 2점 차). 초급・중급은 자동 이동으로 서브・샷만 조작하면 됩니다. 궁극 난이도에서는 두 손가락 동시 이동+샷이 활성화됩니다!',
+      serveHintAuto: '자동 이동 ON · 서브 버튼을 눌러 시작!',
+      serveHintDual: '궁극 양손 조작: 한 손가락 이동 · 다른 손가락 서브',
       cpuServe: 'CPU 서브 준비 중...',
-      rallying: '랠리 진행 중! 낙하 링에 맞춰 스윙',
+      rallyingAuto: '자동 이동 ON · 타이밍에 맞춰 스윙하세요',
+      rallyingDual: '궁극 양손 조작: 이동과 스윙을 동시에!',
       perfect: 'PERFECT! 초고속 드라이브 🔥',
       smashHit: 'SMASH!! 강력한 스매시 ⚡',
       dropHit: 'DROP SHOT! 절묘한 네트 앞 드롭 🎯',
@@ -174,6 +180,7 @@
   let hitStop = 0;
   let screenShake = 0;
   let toastOverride = null;
+  const isDualControl = () => diffLevel >= 2; // 初級/中級：單操作（自動跑位＋手動發球擊球）；終極以上：雙操作（同時移動＋發球擊球）
 
   const state = {
     phase: 'serve', // 'serve' | 'rally' | 'pointOver' | 'end'
@@ -422,21 +429,43 @@
     if (hitStop > 0) { hitStop = Math.max(0, hitStop - dt); return; }
     if (screenShake > 0) screenShake = Math.max(0, screenShake - dt * 28);
 
-    // 鍵盤移動
-    const kSpd = 1.25;
-    if (keys.ArrowLeft || keys.KeyA) state.player.tx -= kSpd * dt;
-    if (keys.ArrowRight || keys.KeyD) state.player.tx += kSpd * dt;
-    if (keys.ArrowUp || keys.KeyW) state.player.ty -= kSpd * 0.7 * dt;
-    if (keys.ArrowDown || keys.KeyS) state.player.ty += kSpd * 0.7 * dt;
+    // 移動控制：初級／中級自動奔跑走位（玩家只需專心發球／擊球）；終極以上由玩家手動控制移動
+    if (isDualControl()) {
+      const kSpd = 1.35;
+      if (keys.ArrowLeft || keys.KeyA) state.player.tx -= kSpd * dt;
+      if (keys.ArrowRight || keys.KeyD) state.player.tx += kSpd * dt;
+      if (keys.ArrowUp || keys.KeyW) state.player.ty -= kSpd * 0.75 * dt;
+      if (keys.ArrowDown || keys.KeyS) state.player.ty += kSpd * 0.75 * dt;
+    } else {
+      // 自動跑位模式：主動追球至最佳擊球位置，打完回中路待命
+      const bAuto = state.ball;
+      if (state.phase === 'rally' && bAuto.active && bAuto.lastHitter === 1 && bAuto.vy > 0) {
+        const landP = predictLanding();
+        const targetX = landP ? landP.x : bAuto.x;
+        const targetY = landP ? Math.max(0.68, Math.min(1.01, landP.y + 0.03)) : Math.max(0.68, Math.min(1.01, bAuto.y + 0.04));
+        state.player.tx = clamp(targetX, -1.04, 1.04);
+        state.player.ty = targetY;
+      } else if (state.phase === 'rally') {
+        state.player.tx = 0;
+        state.player.ty = 0.92;
+      }
+    }
     state.player.tx = clamp(state.player.tx, -1.08, 1.08);
     state.player.ty = clamp(state.player.ty, 0.62, 1.05);
 
     // 玩家平滑移動（受真實跑速上限，流暢不瞬移）
-    const pMove = Math.min(1, dt * 11);
+    const pMove = Math.min(1, dt * (isDualControl() ? 12 : 10));
     state.player.x += (state.player.tx - state.player.x) * pMove;
     state.player.y += (state.player.ty - state.player.y) * pMove;
     state.player.swing = Math.max(0, state.player.swing - dt * 4.5);
     state.cpu.swing = Math.max(0, state.cpu.swing - dt * 4.5);
+
+    // 玩家準備發球時，手中網球隨選手位置同步移動
+    if (state.phase === 'serve' && state.server === 0) {
+      state.ball.x = state.player.x + 0.06;
+      state.ball.y = state.player.y - 0.04;
+      state.ball.z = 0.22;
+    }
 
     // 局間等待
     if (state.phase === 'pointOver') {
@@ -889,26 +918,52 @@
     ctx.restore();
   }
 
-  // --- 操作與 HUD ---
-  let dragId = null;
+  // --- 獨立多指觸控與操作（支援雙指同時持續移動＋發球／擊球，互不干擾） ---
+  let movePointerId = null;
+  const shotPointers = new Map(); // pointerId -> button element
+
+  function updateMoveTarget(clientX, clientY) {
+    const pt = screenToCourt(clientX, clientY);
+    state.player.tx = pt.wx;
+    state.player.ty = pt.wy;
+  }
+
   canvas.addEventListener('pointerdown', ev => {
-    if (!ev.isPrimary || paused) return;
+    if (paused) return;
+    if (shotPointers.has(ev.pointerId)) return;
+    ev.preventDefault();
     sound.wake();
-    dragId = ev.pointerId;
-    canvas.setPointerCapture(ev.pointerId);
-    const pt = screenToCourt(ev.clientX, ev.clientY);
-    state.player.tx = pt.wx;
-    state.player.ty = pt.wy;
-    if (state.phase === 'serve' && state.server === 0) tryPlayerSwing('drive');
+    if (!isDualControl()) {
+      // 單操作模式（初級／中級）：自動跑位，點擊球場也可直接發球／抽球
+      tryPlayerSwing('drive');
+      return;
+    }
+    // 雙操作模式（終極以上）：任意一根未佔用的手指皆可持續控制走位，且不自動誤觸發球
+    if (movePointerId === null) {
+      movePointerId = ev.pointerId;
+      updateMoveTarget(ev.clientX, ev.clientY);
+    }
   });
-  canvas.addEventListener('pointermove', ev => {
-    if (dragId !== ev.pointerId || paused) return;
-    const pt = screenToCourt(ev.clientX, ev.clientY);
-    state.player.tx = pt.wx;
-    state.player.ty = pt.wy;
+
+  window.addEventListener('pointermove', ev => {
+    if (paused || !isDualControl()) return;
+    if (movePointerId === ev.pointerId) {
+      updateMoveTarget(ev.clientX, ev.clientY);
+    }
   });
-  canvas.addEventListener('pointerup', ev => { if (dragId === ev.pointerId) dragId = null; });
-  canvas.addEventListener('pointercancel', ev => { if (dragId === ev.pointerId) dragId = null; });
+
+  function releasePointer(ev) {
+    if (movePointerId === ev.pointerId) {
+      movePointerId = null;
+    }
+    const btn = shotPointers.get(ev.pointerId);
+    if (btn) {
+      btn.classList.remove('is-pressed');
+      shotPointers.delete(ev.pointerId);
+    }
+  }
+  window.addEventListener('pointerup', releasePointer);
+  window.addEventListener('pointercancel', releasePointer);
 
   window.addEventListener('keydown', ev => {
     keys[ev.code] = true;
@@ -919,9 +974,24 @@
   });
   window.addEventListener('keyup', ev => { keys[ev.code] = false; });
 
-  $('btnDrive').addEventListener('click', () => tryPlayerSwing('drive'));
-  $('btnDrop').addEventListener('click', () => tryPlayerSwing('drop'));
-  $('btnSmash').addEventListener('click', () => tryPlayerSwing('smash'));
+  function bindShotButton(el, kind) {
+    el.addEventListener('pointerdown', ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (paused) return;
+      sound.wake();
+      shotPointers.set(ev.pointerId, el);
+      el.classList.add('is-pressed');
+      tryPlayerSwing(kind);
+    });
+    // 保留鍵盤 Enter / Space 觸發（滑鼠與觸控已在 pointerdown 即時觸發，不重複）
+    el.addEventListener('click', ev => {
+      if (ev.detail === 0) tryPlayerSwing(kind);
+    });
+  }
+  bindShotButton($('btnDrive'), 'drive');
+  bindShotButton($('btnDrop'), 'drop');
+  bindShotButton($('btnSmash'), 'smash');
 
   $('btnSurface').addEventListener('click', () => {
     sound.wake();
@@ -936,7 +1006,11 @@
   $('btnMenu').addEventListener('click', () => { paused = !paused; updateHUD(); });
   $('btnResume').addEventListener('click', () => { paused = false; updateHUD(); });
   $('btnRematch').addEventListener('click', () => { sound.wake(); resetMatch(); });
-  $('selDiff').addEventListener('change', e => { diffLevel = Number(e.target.value) || 0; });
+  $('selDiff').addEventListener('change', e => {
+    diffLevel = Number(e.target.value) || 0;
+    movePointerId = null;
+    updateHUD();
+  });
   $('selLang').addEventListener('change', e => {
     lang = e.target.value;
     if (i18n && i18n.setLang) i18n.setLang(lang);
@@ -969,9 +1043,10 @@
     $('btnSound').setAttribute('aria-pressed', String(sound.muted));
 
     const now = performance.now();
+    const dual = isDualControl();
     const defToast = state.phase === 'serve'
-      ? (state.server === 0 ? t('serveHint') : t('cpuServe'))
-      : t('rallying');
+      ? (state.server === 0 ? t(dual ? 'serveHintDual' : 'serveHintAuto') : t('cpuServe'))
+      : t(dual ? 'rallyingDual' : 'rallyingAuto');
     $('statusToast').textContent = (toastOverride && toastOverride.until > now) ? toastOverride.text : defToast;
     $('statusToast').hidden = state.phase === 'end';
 
@@ -1005,9 +1080,22 @@
   resetMatch();
   applyCopy();
 
-  // 診斷介面（供自動化驗收檢查球場比例與狀態）
+  // 診斷介面（供自動化驗收檢查球場比例、自動跑位與雙指多點觸控狀態）
   window.__tennisDebug = {
-    getState: () => ({ phase: state.phase, score: [...state.score], rally: state.rally, surface: SURFACES[surfaceIdx].id, version: 'v_18:55' }),
+    getState: () => ({
+      phase: state.phase,
+      score: [...state.score],
+      rally: state.rally,
+      diffLevel,
+      dualControl: isDualControl(),
+      player: { x: +state.player.x.toFixed(3), y: +state.player.y.toFixed(3), tx: +state.player.tx.toFixed(3), ty: +state.player.ty.toFixed(3) },
+      ball: { active: state.ball.active, x: +state.ball.x.toFixed(3), y: +state.ball.y.toFixed(3), vy: +state.ball.vy.toFixed(3), lastHitter: state.ball.lastHitter },
+      movePointerId,
+      activeShotPointers: shotPointers.size,
+      surface: SURFACES[surfaceIdx].id,
+      version: 'v_01:10'
+    }),
+    setDiff: (lvl) => { diffLevel = Number(lvl) || 0; $('selDiff').value = String(diffLevel); movePointerId = null; updateHUD(); },
     getCourtCoverage: () => {
       const m = getCourtMetrics();
       const courtH = m.botY - m.topY;
