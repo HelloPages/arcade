@@ -261,14 +261,14 @@
     return { wx, wy: clamp(wy, 0.58, 1.05) };
   }
 
-  // --- 預估球體下一次落地點 (wx, wy) 供光圈顯示與 CPU 移動 ---
+  // --- 精準預估球體下一次落地點 (wx, wy)（含安全邊界，絕不回傳 NaN） ---
   function predictLanding() {
     const b = state.ball;
     if (!b.active) return null;
-    // 解 z + vz*t - 0.5*g*t^2 = 0
-    const disc = b.vz * b.vz + 2 * GRAVITY * Math.max(0, b.z);
-    if (disc < 0) return null;
-    const tLand = (b.vz + Math.sqrt(disc)) / GRAVITY;
+    const z0 = Math.max(0, b.z);
+    const disc = b.vz * b.vz + 2 * GRAVITY * z0;
+    if (!Number.isFinite(disc) || disc < 0) return null;
+    const tLand = Math.max(0.01, (b.vz + Math.sqrt(disc)) / GRAVITY);
     return { x: b.x + b.vx * tLand, y: b.y + b.vy * tLand, t: tLand };
   }
 
@@ -277,24 +277,28 @@
     state.server = nextServer;
     state.phase = 'serve';
     state.rally = 0;
-    state.cpuServeTimer = 0.72;
-    state.player.x = nextServer === 0 ? 0.22 : 0;
+    state.cpuServeTimer = 0.65;
+    state.player.x = nextServer === 0 ? 0.18 : 0;
     state.player.tx = state.player.x;
-    state.player.y = 0.96;
-    state.player.ty = 0.96;
-    state.cpu.x = nextServer === 1 ? -0.22 : 0;
+    state.player.y = 0.94;
+    state.player.ty = 0.94;
+    state.player.swing = 0;
+    state.player.swingBuffer = 0;
+    state.cpu.x = nextServer === 1 ? -0.18 : 0;
     state.cpu.tx = state.cpu.x;
-    state.cpu.y = 0.04;
-    state.cpu.ty = 0.04;
+    state.cpu.y = 0.06;
+    state.cpu.ty = 0.06;
+    state.cpu.swing = 0;
 
     const b = state.ball;
     b.active = false;
     b.trail = [];
     b.bouncesOnSide = 0;
     b.x = nextServer === 0 ? state.player.x + 0.06 : state.cpu.x - 0.06;
-    b.y = nextServer === 0 ? 0.92 : 0.08;
-    b.z = 0.22;
+    b.y = nextServer === 0 ? 0.90 : 0.10;
+    b.z = 0.24;
     b.vx = 0; b.vy = 0; b.vz = 0;
+    b.lastHitter = nextServer;
     updateHUD();
   }
 
@@ -310,41 +314,57 @@
     updateHUD();
   }
 
+  // --- 精準 3D 拋物線擊球解算：100% 落在指定 (targetX, targetY) 且保證乾淨過網，徹底消除無故出界／掛網！ ---
   function launchShot(hitter, kind, aimOffset = 0, isPerfect = false) {
     const b = state.ball;
     const surf = SURFACES[surfaceIdx];
     const fromPlayer = hitter === 0;
     const actor = fromPlayer ? state.player : state.cpu;
 
-    // 計算目標落點（依早／準／晚擊球時機與球種決定角度與深度）
+    // 目標落點完全位於場內舒適區（避免邊線誤判出界）
     const targetY = fromPlayer
-      ? (kind === 'drop' ? 0.36 : (kind === 'smash' ? 0.22 : 0.10))
-      : (kind === 'drop' ? 0.64 : (kind === 'smash' ? 0.78 : 0.88));
-    let targetX = clamp(aimOffset, -0.88, 0.88);
+      ? (kind === 'drop' ? 0.34 : (kind === 'smash' ? 0.22 : 0.16))
+      : (kind === 'drop' ? 0.66 : (kind === 'smash' ? 0.78 : 0.82));
+    let targetX = clamp(aimOffset, -0.78, 0.78);
     if (kind === 'serve') {
-      targetX = fromPlayer ? (actor.x > 0 ? -0.45 : 0.45) : (actor.x < 0 ? 0.45 : -0.45);
+      targetX = fromPlayer ? (actor.x >= 0 ? -0.36 : 0.36) : (actor.x < 0 ? 0.34 : -0.34);
+    }
+    if (!fromPlayer && diffLevel === 0) {
+      targetX *= 0.62; // 初級 CPU 回球較集中，方便玩家享受多拍拉鋸
     }
 
-    const baseFlight = kind === 'smash' ? 0.48 : (kind === 'drop' ? 0.78 : (kind === 'serve' ? 0.60 : (isPerfect ? 0.56 : 0.68)));
-    // Wii 網球樂趣節奏：初級球速放慢 42% 好判讀、中級放慢 22%、終極維持原高速對決
-    const paceMul = diffLevel === 0 ? 1.42 : (diffLevel === 1 ? 1.22 : 1.0);
-    const flightT = (baseFlight * paceMul) / surf.speedMul;
-    if (!fromPlayer && diffLevel === 0) {
-      targetX *= 0.68; // 初級 CPU 回球較集中，方便玩家享受多拍拉鋸
+    // 確保起始高度合理，避免貼地極低點出發
+    b.z = clamp(b.z, 0.14, 0.95);
+    b.y = fromPlayer ? clamp(b.y, 0.56, 1.06) : clamp(b.y, -0.02, 0.44);
+
+    // 基礎飛行時間（初級 Wii 輕鬆節奏、中級流暢、終極高速）
+    const baseFlight = kind === 'smash' ? 0.52 : (kind === 'drop' ? 0.86 : (kind === 'serve' ? 0.66 : (isPerfect ? 0.60 : 0.72)));
+    const paceMul = diffLevel === 0 ? 1.38 : (diffLevel === 1 ? 1.18 : 1.0);
+    let flightT = (baseFlight * paceMul) / surf.speedMul;
+
+    // 精確檢查過網瞬間高度 z_net，若不足則自動拉長微調飛行弧線確保乾淨越網！
+    const dyTotal = targetY - b.y;
+    const fracNet = clamp((NET_Y - b.y) / (Math.abs(dyTotal) > 0.01 ? dyTotal : (fromPlayer ? -0.5 : 0.5)), 0.12, 0.88);
+    const minNetClearZ = NET_Z + (kind === 'smash' ? 0.05 : (kind === 'drop' ? 0.14 : 0.09));
+    for (let guard = 0; guard < 8; guard++) {
+      const vzTest = (0 - b.z + 0.5 * GRAVITY * flightT * flightT) / flightT;
+      const tNet = flightT * fracNet;
+      const zNet = b.z + vzTest * tNet - 0.5 * GRAVITY * tNet * tNet;
+      if (zNet >= minNetClearZ) break;
+      flightT += 0.07;
     }
 
     b.active = true;
     b.lastHitter = hitter;
     b.bouncesOnSide = 0;
     b.kind = kind;
+    b.trail = [];
+    // 精確閉合解：無多餘 peakBoost，t = flightT 時必定精準落於 (targetX, targetY, 0)！
     b.vx = (targetX - b.x) / flightT;
     b.vy = (targetY - b.y) / flightT;
-    // 確保球高能順利越過網（NET_Z = 0.22），殺球則貼網急墜
-    const peakBoost = kind === 'drop' ? 0.34 : (kind === 'smash' ? 0.04 : 0.14);
-    b.vz = (0 - b.z + 0.5 * GRAVITY * flightT * flightT) / flightT + peakBoost;
+    b.vz = (0 - b.z + 0.5 * GRAVITY * flightT * flightT) / flightT;
 
-    // 速度顯示（km/h）
-    const kmh = Math.round((kind === 'smash' ? 196 : kind === 'serve' ? 174 : kind === 'drop' ? 78 : isPerfect ? 168 : 132) + Math.random() * 14);
+    const kmh = Math.round((kind === 'smash' ? 188 : kind === 'serve' ? 166 : kind === 'drop' ? 76 : isPerfect ? 158 : 124) + Math.random() * 12);
     state.lastSpeedKmh = kmh;
     if (kmh > state.topSpeedKmh) state.topSpeedKmh = kmh;
     state.rally += 1;
@@ -356,38 +376,40 @@
     sound.hit(isPerfect ? 1 : 0.7, kind === 'smash' || isPerfect);
 
     if (fromPlayer && (isPerfect || kind === 'smash')) {
-      hitStop = 0.036;
-      screenShake = kind === 'smash' ? 8 : 5;
+      hitStop = 0.028;
+      screenShake = kind === 'smash' ? 7 : 4;
       spawnCallout(b.x, b.y, kind === 'smash' ? 'SMASH! ⚡' : 'PERFECT! 🔥', kind === 'smash' ? '#ffe066' : '#ffcf56');
-      showToast(kind === 'smash' ? 'smashHit' : 'perfect', null, 1100);
+      showToast(kind === 'smash' ? 'smashHit' : 'perfect', null, 1000);
     } else if (fromPlayer && kind === 'drop') {
       spawnCallout(b.x, b.y, 'DROP 🎯', '#a7f3d0');
-      showToast('dropHit', null, 1000);
+      showToast('dropHit', null, 900);
     }
     state.phase = 'rally';
     updateHUD();
   }
 
   function getPlayerReach() {
-    if (diffLevel === 0) return { rx: 0.60, ry: 0.46, rz: 1.18, perfX: 0.36, perfY: 0.16 };
-    if (diffLevel === 1) return { rx: 0.46, ry: 0.34, rz: 1.02, perfX: 0.28, perfY: 0.11 };
-    return { rx: 0.36, ry: 0.26, rz: 0.90, perfX: 0.22, perfY: 0.08 };
+    if (diffLevel === 0) return { rx: 0.68, ry: 0.52, rz: 1.40, perfX: 0.42, perfY: 0.20 };
+    if (diffLevel === 1) return { rx: 0.52, ry: 0.40, rz: 1.25, perfX: 0.30, perfY: 0.14 };
+    return { rx: 0.40, ry: 0.30, rz: 1.15, perfX: 0.22, perfY: 0.10 };
   }
 
   function executePlayerHitIfInRange(kind) {
     const b = state.ball;
     if (!b.active || b.lastHitter === 0) return false;
+    // 球必須已越網或接近我方半場（防止在 CPU 半場空中就誤揮）
+    if (b.y < 0.46 || b.y > 1.26) return false;
     const dx = b.x - state.player.x;
     const dy = b.y - state.player.y;
     const reach = getPlayerReach();
     if (Math.abs(dx) <= reach.rx && Math.abs(dy) <= reach.ry && b.z < reach.rz) {
       const isPerfect = Math.abs(dy) <= reach.perfY && Math.abs(dx) <= reach.perfX;
-      const canSmash = kind === 'smash' && b.z > 0.22;
+      const canSmash = kind === 'smash' && b.z > 0.20;
       const actualKind = canSmash ? 'smash' : (kind === 'smash' ? 'drive' : kind);
       let aimX;
-      if (dy < -0.05) aimX = state.player.x > 0 ? -0.74 : 0.74;
-      else if (dy > 0.06) aimX = state.player.x > 0 ? 0.66 : -0.66;
-      else aimX = (state.cpu.x > 0 ? -0.72 : 0.72);
+      if (dy < -0.06) aimX = state.player.x > 0 ? -0.68 : 0.68;
+      else if (dy > 0.08) aimX = state.player.x > 0 ? 0.62 : -0.62;
+      else aimX = (state.cpu.x > 0 ? -0.66 : 0.66);
       state.player.swingBuffer = 0;
       launchShot(0, actualKind, aimX, isPerfect);
       return true;
@@ -398,21 +420,19 @@
   function tryPlayerSwing(kind) {
     if (paused || state.phase === 'end' || state.phase === 'pointOver') return;
     sound.wake();
-    // 玩家發球：抓準點擊立刻發球，輕鬆上手
     if (state.phase === 'serve') {
       if (state.server === 0) {
         state.ball.x = state.player.x + 0.05;
         state.ball.y = state.player.y - 0.04;
-        state.ball.z = 0.42;
-        launchShot(0, 'serve', -state.player.x * 1.2, true);
+        state.ball.z = 0.44;
+        launchShot(0, 'serve', -state.player.x * 1.1, true);
       }
       return;
     }
-    // 揮拍動作（即使沒打到也顯示揮拍回饋）
     state.player.swing = 1.0;
     if (!executePlayerHitIfInRange(kind)) {
       // Wii 網球寬鬆預輸入緩衝：提早按下會在球進入擊球區時自動順暢擊出！
-      state.player.swingBuffer = diffLevel === 0 ? 0.34 : (diffLevel === 1 ? 0.22 : 0.12);
+      state.player.swingBuffer = diffLevel === 0 ? 0.42 : (diffLevel === 1 ? 0.28 : 0.16);
       state.player.swingBufferKind = kind;
     }
   }
@@ -456,17 +476,23 @@
       if (keys.ArrowUp || keys.KeyW) state.player.ty -= kSpd * 0.75 * dt;
       if (keys.ArrowDown || keys.KeyS) state.player.ty += kSpd * 0.75 * dt;
     } else {
-      // 自動跑位模式：主動追球至最佳擊球位置，打完回中路待命
+      // 自動跑位模式：首跳前直奔預估落點，首跳後緊跟實際球路攔截，絕不亂跑！
       const bAuto = state.ball;
       if (state.phase === 'rally' && bAuto.active && bAuto.lastHitter === 1 && bAuto.vy > 0) {
-        const landP = predictLanding();
-        const targetX = landP ? landP.x : bAuto.x;
-        const targetY = landP ? Math.max(0.68, Math.min(1.01, landP.y + 0.03)) : Math.max(0.68, Math.min(1.01, bAuto.y + 0.04));
-        state.player.tx = clamp(targetX, -1.04, 1.04);
-        state.player.ty = targetY;
+        if (bAuto.bouncesOnSide === 0) {
+          const landP = predictLanding();
+          const targetX = landP ? landP.x : bAuto.x;
+          const targetY = landP ? clamp(landP.y + 0.04, 0.64, 0.98) : clamp(bAuto.y + 0.05, 0.64, 0.98);
+          state.player.tx = clamp(targetX, -0.98, 0.98);
+          state.player.ty = targetY;
+        } else {
+          // 首跳後直接跟隨球體彈起軌跡，保持在最佳擊球點
+          state.player.tx = clamp(bAuto.x + bAuto.vx * 0.10, -0.98, 0.98);
+          state.player.ty = clamp(bAuto.y + bAuto.vy * 0.08, 0.64, 1.02);
+        }
       } else if (state.phase === 'rally') {
         state.player.tx = 0;
-        state.player.ty = 0.92;
+        state.player.ty = 0.90;
       }
     }
     state.player.tx = clamp(state.player.tx, -1.08, 1.08);
@@ -516,71 +542,87 @@
       return;
     }
 
-    // 3D 網球飛行、彈跳與邊界規則
+    // 3D 網球固定步長子步物理（120Hz 微步進，徹底消除掉幀穿地／誤判掛網！）
     const b = state.ball;
     if (state.phase === 'rally' && b.active) {
-      const prevY = b.y;
-      b.x += b.vx * dt;
-      b.y += b.vy * dt;
-      b.vz -= GRAVITY * dt;
-      b.z += b.vz * dt;
+      const subSteps = Math.max(1, Math.ceil(dt / 0.008));
+      const subDt = dt / subSteps;
+      let pointEnded = false;
+
+      for (let s = 0; s < subSteps; s++) {
+        const prevY = b.y;
+        b.x += b.vx * subDt;
+        b.y += b.vy * subDt;
+        b.vz -= GRAVITY * subDt;
+        b.z += b.vz * subDt;
+
+        // 過網檢測（寬容合理高度，只攔截真正低於網高的掛網球）
+        if ((prevY < NET_Y && b.y >= NET_Y) || (prevY > NET_Y && b.y <= NET_Y)) {
+          if (b.z < NET_Z * 0.65) {
+            awardPoint(1 - b.lastHitter, 'netCall');
+            pointEnded = true;
+            break;
+          }
+        }
+
+        // 落地彈跳檢測（限制彈跳高度於順手好打的腰肩弧線）
+        if (b.z <= 0) {
+          b.z = 0;
+          const surf = SURFACES[surfaceIdx];
+          b.vz = clamp(Math.abs(b.vz) * surf.bounceRest, 0.72, 1.28);
+          b.vx *= 0.86;
+          b.vy *= 0.86;
+          sound.bounce();
+          spawnDust(b.x, b.y, 9);
+
+          const inX = Math.abs(b.x) <= 1.06;
+          const onPlayerSide = b.y >= NET_Y;
+          const inY = b.y >= -0.04 && b.y <= 1.06;
+
+          if (b.bouncesOnSide === 0) {
+            const validHalf = (b.lastHitter === 0 && !onPlayerSide) || (b.lastHitter === 1 && onPlayerSide);
+            if (!inX || !inY || !validHalf) {
+              awardPoint(1 - b.lastHitter, 'outCall');
+              pointEnded = true;
+              break;
+            }
+            b.bouncesOnSide = 1;
+          } else {
+            awardPoint(b.lastHitter, b.lastHitter === 0 ? 'youPoint' : 'cpuPoint');
+            pointEnded = true;
+            break;
+          }
+        }
+
+        // 飛離畫面深處
+        if (b.y < -0.35 || b.y > 1.38 || Math.abs(b.x) > 1.65) {
+          if (b.bouncesOnSide >= 1) awardPoint(b.lastHitter);
+          else awardPoint(1 - b.lastHitter, 'outCall');
+          pointEnded = true;
+          break;
+        }
+      }
+      if (pointEnded) return;
+
       b.trail.push({ x: b.x, y: b.y, z: b.z });
       if (b.trail.length > 12) b.trail.shift();
 
-      // 過網檢測
-      if ((prevY < NET_Y && b.y >= NET_Y) || (prevY > NET_Y && b.y <= NET_Y)) {
-        if (b.z < NET_Z * 0.72) {
-          // 掛網！
-          awardPoint(1 - b.lastHitter, 'netCall');
-          return;
-        }
-      }
-
-      // 落地彈跳檢測
-      if (b.z <= 0) {
-        b.z = 0;
-        const surf = SURFACES[surfaceIdx];
-        b.vz = Math.abs(b.vz) * surf.bounceRest;
-        b.vx *= 0.90;
-        b.vy *= 0.90;
-        sound.bounce();
-        spawnDust(b.x, b.y, 9);
-
-        const inX = Math.abs(b.x) <= 1.04;
-        const onPlayerSide = b.y >= NET_Y;
-        const inY = b.y >= -0.02 && b.y <= 1.04;
-
+      // CPU AI 走位與回擊（首跳前後皆穩定追球，不再對小球發呆！）
+      const cpuSpd = diffLevel === 0 ? 0.72 : (diffLevel === 1 ? 0.98 : 1.22);
+      if (b.lastHitter === 0 && b.vy < 0) {
         if (b.bouncesOnSide === 0) {
-          // 第一跳必須落在對手場內，否則出界
-          const validHalf = (b.lastHitter === 0 && !onPlayerSide) || (b.lastHitter === 1 && onPlayerSide);
-          if (!inX || !inY || !validHalf) {
-            awardPoint(1 - b.lastHitter, 'outCall');
-            return;
+          const land = predictLanding();
+          if (land) {
+            state.cpu.tx = clamp(land.x, -1.00, 1.00);
+            state.cpu.ty = clamp(land.y - 0.03, 0.04, 0.42);
           }
-          b.bouncesOnSide = 1;
         } else {
-          // 兩跳未救起 -> 擊球方得分！
-          awardPoint(b.lastHitter, b.lastHitter === 0 ? 'youPoint' : 'cpuPoint');
-          return;
+          state.cpu.tx = clamp(b.x + b.vx * 0.08, -1.00, 1.00);
+          state.cpu.ty = clamp(b.y + b.vy * 0.06, 0.04, 0.44);
         }
-      }
-
-      // 飛離畫面深處
-      if (b.y < -0.35 || b.y > 1.38 || Math.abs(b.x) > 1.65) {
-        if (b.bouncesOnSide >= 1) awardPoint(b.lastHitter);
-        else awardPoint(1 - b.lastHitter, 'outCall');
-        return;
-      }
-
-      // CPU AI 走位與回擊（受真實速度上限限制，依 3 階難度調整反應與精準度）
-      const cpuSpd = diffLevel === 0 ? 0.78 : (diffLevel === 1 ? 1.02 : 1.24);
-      const land = predictLanding();
-      if (b.lastHitter === 0 && b.vy < 0 && land) {
-        state.cpu.tx = clamp(land.x, -1.04, 1.04);
-        state.cpu.ty = clamp(Math.min(0.28, Math.max(0.03, land.y - 0.04)), 0.03, 0.34);
       } else {
         state.cpu.tx = 0;
-        state.cpu.ty = 0.08;
+        state.cpu.ty = 0.10;
       }
       const cdx = state.cpu.tx - state.cpu.x;
       const cdy = state.cpu.ty - state.cpu.y;
@@ -591,13 +633,13 @@
         state.cpu.y += (cdy / cdist) * step;
       }
 
-      // CPU 擊球判定
-      if (b.lastHitter === 0 && b.vy < 0 && b.y < 0.38 &&
-          Math.abs(b.x - state.cpu.x) < 0.28 && Math.abs(b.y - state.cpu.y) < 0.16 && b.z < 0.70) {
-        const err = diffLevel === 0 ? 0.34 : (diffLevel === 1 ? 0.16 : 0.06);
-        const openSide = state.player.x > 0 ? -0.68 : 0.68;
-        const aimX = clamp(openSide + (Math.random() - 0.5) * err * 2, -0.86, 0.86);
-        const cpuKind = (diffLevel >= 1 && Math.random() < 0.18) ? 'drop' : 'drive';
+      // CPU 擊球判定（涵蓋網前小球與底線球，且不卡在半場發呆）
+      if (b.lastHitter === 0 && b.vy < 0 && b.y < 0.46 &&
+          Math.abs(b.x - state.cpu.x) < 0.30 && Math.abs(b.y - state.cpu.y) < 0.22 && b.z < 0.95) {
+        const err = diffLevel === 0 ? 0.28 : (diffLevel === 1 ? 0.16 : 0.06);
+        const openSide = state.player.x > 0 ? -0.62 : 0.62;
+        const aimX = clamp(openSide + (Math.random() - 0.5) * err * 2, -0.76, 0.76);
+        const cpuKind = (diffLevel >= 1 && Math.random() < 0.16) ? 'drop' : 'drive';
         launchShot(1, cpuKind, aimX, diffLevel === 2 && Math.random() < 0.35);
       }
     }
@@ -1135,7 +1177,7 @@
       movePointerId,
       activeShotPointers: shotPointers.size,
       surface: SURFACES[surfaceIdx].id,
-      version: 'v_01:28'
+      version: 'v_14:55'
     }),
     setDiff: (lvl) => { diffLevel = Number(lvl) || 0; $('selDiff').value = String(diffLevel); movePointerId = null; updateHUD(); },
     getCourtCoverage: () => {
