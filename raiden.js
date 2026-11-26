@@ -14,6 +14,7 @@
   const btnShield = document.getElementById("btnShield");
   const btnBomb = document.getElementById("btnBomb");
   const bossHud = document.getElementById("bossHud");
+  const bossNameEl = document.getElementById("bossName");
   const bossPhaseEl = document.getElementById("bossPhase");
   const bossFill = document.getElementById("bossFill");
   const endModal = document.getElementById("endModal");
@@ -32,14 +33,83 @@
     });
   }
 
-  // --- 專屬高畫質去背美術資源 ---
+  // --- 專屬高畫質去背美術資源（含五大實繪寶物圖檔與四大主題空域背景） ---
   const imgs = {};
   const assetMap = {
     bg: "./assets/raiden-bg.webp?v=20261120_raiden_v1",
+    bgStorm: "./assets/raiden-bg-storm.webp?v=20261126_v1",
+    bgLava: "./assets/raiden-bg-lava.webp?v=20261126_v1",
+    bgOrbit: "./assets/raiden-bg-orbit.webp?v=20261126_v1",
     hero: "./assets/raiden-hero.webp?v=20261120_raiden_v2",
     enemy: "./assets/raiden-enemy.webp?v=20261120_raiden_v2",
-    boss: "./assets/raiden-boss.webp?v=20261120_raiden_v2"
+    boss: "./assets/raiden-boss.webp?v=20261120_raiden_v2",
+    pk_vulcan: "./assets/raiden-pk-vulcan.webp?v=20261126_v1",
+    pk_laser: "./assets/raiden-pk-laser.webp?v=20261126_v1",
+    pk_homing: "./assets/raiden-pk-homing.webp?v=20261126_v1",
+    pk_bomb: "./assets/raiden-pk-bomb.webp?v=20261126_v1",
+    pk_heal: "./assets/raiden-pk-heal.webp?v=20261126_v1"
   };
+
+  // --- 四大主題空域定義（關卡不再重複單調） ---
+  const STAGE_THEMES = [
+    {
+      name: "夕陽海峽",
+      bgKey: "bg",
+      fallbackBg: "#0a2a44",
+      scrollSpd: 115,
+      ambient: "clouds",
+      bossName: "⚠ SKY FORTRESS 空中要塞",
+      bossFilter: "none",
+      bossStyle: "fortress",
+      waves: ["v_squad", "cross_strike", "heavy_convoy"]
+    },
+    {
+      name: "雷暴雲海",
+      bgKey: "bgStorm",
+      fallbackBg: "#0b142c",
+      scrollSpd: 142,
+      ambient: "storm",
+      bossName: "⚡ THUNDER CARRIER 雷鳴航母",
+      bossFilter: "hue-rotate(175deg) saturate(1.35) brightness(1.08)",
+      bossStyle: "thunder",
+      waves: ["sniper_grid", "supply_convoy", "storm_blitz"]
+    },
+    {
+      name: "熔岩峽谷",
+      bgKey: "bgLava",
+      fallbackBg: "#240c08",
+      scrollSpd: 132,
+      ambient: "embers",
+      bossName: "🔥 INFERNO DREADNOUGHT 赤炎巨神",
+      bossFilter: "hue-rotate(-28deg) saturate(1.55) contrast(1.08)",
+      bossStyle: "inferno",
+      waves: ["meteor_rain", "heavy_convoy", "magma_pincer"]
+    },
+    {
+      name: "星際軌道",
+      bgKey: "bgOrbit",
+      fallbackBg: "#060818",
+      scrollSpd: 168,
+      ambient: "stars",
+      bossName: "✦ ORBITAL OVERLORD 軌道母艦",
+      bossFilter: "hue-rotate(225deg) saturate(1.4) brightness(1.12)",
+      bossStyle: "orbital",
+      waves: ["phantom_dash", "supply_convoy", "orbital_ring"]
+    }
+  ];
+  function getStageTheme(num = stageNum) {
+    return STAGE_THEMES[(Math.max(1, num) - 1) % STAGE_THEMES.length];
+  }
+  let lightningFlash = 0;
+  let lightningCd = 2.8;
+  const ambientDrops = Array.from({ length: 28 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    len: 10 + Math.random() * 18,
+    spd: 240 + Math.random() * 260,
+    size: 1.5 + Math.random() * 2.5,
+    alpha: 0.25 + Math.random() * 0.5
+  }));
   for (const [k, src] of Object.entries(assetMap)) {
     const im = new Image();
     im.decoding = "async";
@@ -177,7 +247,8 @@
 
   function renderHud() {
     scoreVal.textContent = String(score).padStart(6, "0");
-    stageVal.textContent = boss ? `空域 ${stageNum} BOSS` : `空域 ${stageNum}-${waveNum}`;
+    const theme = getStageTheme(stageNum);
+    stageVal.textContent = boss ? `${stageNum}・${theme.name} BOSS` : `${stageNum}-${waveNum} ${theme.name}`;
     const w = WEAPONS[player.wpnIdx];
     wpnVal.textContent = `${w.label} Lv.${player.wpnLv}`;
     wpnVal.style.borderColor = w.color;
@@ -191,6 +262,7 @@
     }
     if (boss && boss.hp > 0) {
       bossHud.classList.remove("hidden");
+      if (bossNameEl) bossNameEl.textContent = boss.name || theme.bossName;
       bossFill.style.width = `${Math.max(0, (boss.hp / boss.maxHp) * 100)}%`;
       const ph = boss.hp < boss.maxHp * 0.35 ? 3 : boss.hp < boss.maxHp * 0.7 ? 2 : 1;
       bossPhaseEl.textContent = `PHASE ${ph}`;
@@ -227,7 +299,7 @@
     player.invuln = 1.5;
     player.shieldTime = 0;
     player.shieldCd = 0;
-    bannerText = "空域 1 ・ 雷霆出擊！";
+    bannerText = `空域 1・${getStageTheme(1).name} 雷霆出擊！`;
     bannerTimer = 2.2;
     endModal.classList.add("hidden");
     renderHud();
@@ -355,50 +427,151 @@
   }
 
   function spawnEnemyWave() {
-    const mode = waveNum % 3;
+    const theme = getStageTheme(stageNum);
+    const waveType = theme.waves[(waveNum - 1) % theme.waves.length];
     const baseHp = 5 + stageNum * 3;
-    if (mode === 1) {
+    const spdMult = 1 + Math.min(0.65, (stageNum - 1) * 0.12);
+
+    if (waveType === "v_squad") {
       // V 字高速攔截編隊
-      const cx = 60 + Math.random() * (vw - 120);
+      const cx = 70 + Math.random() * (vw - 140);
       for (let i = -1; i <= 1; i++) {
         enemies.push({
-          x: Math.max(36, Math.min(vw - 36, cx + i * 58)),
+          x: Math.max(36, Math.min(vw - 36, cx + i * 56)),
           y: -40 - Math.abs(i) * 34,
           vx: i * 18,
-          vy: 145 + stageNum * 15,
+          vy: 145 * spdMult,
           hp: baseHp,
           maxHp: baseHp,
           size: 48,
-          fireCd: 0.7 + Math.random() * 0.8,
+          fireCd: 0.75 + Math.random() * 0.7,
           kind: "interceptor",
           score: 120,
           hitFlash: 0
         });
       }
-    } else if (mode === 2) {
-      // 雙翼交叉蛇行機隊
-      const fromLeft = Math.random() < 0.5;
+    } else if (waveType === "cross_strike" || waveType === "magma_pincer") {
+      // 雙翼交叉蛇行機隊（熔岩空域為左右夾擊雙機）
+      const sides = waveType === "magma_pincer" ? [true, false] : [Math.random() < 0.5];
+      for (const fromLeft of sides) {
+        enemies.push({
+          x: fromLeft ? 46 : vw - 46,
+          y: -42,
+          vx: (fromLeft ? 82 : -82) * spdMult,
+          vy: 118 * spdMult,
+          hp: baseHp * 1.45,
+          maxHp: baseHp * 1.45,
+          size: 56,
+          fireCd: 0.65,
+          kind: "striker",
+          phase: Math.random() * 6,
+          score: 180,
+          tint: waveType === "magma_pincer" ? "hue-rotate(-35deg) saturate(1.6)" : "",
+          hitFlash: 0
+        });
+      }
+    } else if (waveType === "sniper_grid") {
+      // 雷暴空域：懸停鎖定狙擊無人機（短暫瞄準後三連發）
+      const slots = [vw * 0.24, vw * 0.5, vw * 0.76];
+      const sx = slots[Math.floor(Math.random() * slots.length)] + (Math.random() - 0.5) * 36;
       enemies.push({
-        x: fromLeft ? 48 : vw - 48,
-        y: -40,
-        vx: fromLeft ? 78 : -78,
-        vy: 120 + stageNum * 12,
-        hp: baseHp * 1.4,
-        maxHp: baseHp * 1.4,
-        size: 56,
-        fireCd: 0.65,
-        kind: "striker",
-        phase: Math.random() * 6,
-        score: 180,
+        x: Math.max(44, Math.min(vw - 44, sx)),
+        y: -48,
+        targetY: 95 + Math.random() * 95,
+        vx: (Math.random() - 0.5) * 36,
+        vy: 150,
+        hp: baseHp * 1.85,
+        maxHp: baseHp * 1.85,
+        size: 58,
+        fireCd: 1.05,
+        hoverT: 3.4,
+        kind: "sniper",
+        tint: "hue-rotate(175deg) saturate(1.4) brightness(1.15)",
+        score: 260,
         hitFlash: 0
       });
+    } else if (waveType === "supply_convoy") {
+      // 黃金補給運輸機＋護衛（擊破掉出雙重寶物！）
+      const hasCarrier = enemies.some(e => e.kind === "carrier");
+      if (!hasCarrier) {
+        enemies.push({
+          x: 75 + Math.random() * (vw - 150),
+          y: -64,
+          vx: (Math.random() - 0.5) * 55,
+          vy: 66 * spdMult,
+          hp: baseHp * 3.2,
+          maxHp: baseHp * 3.2,
+          size: 76,
+          fireCd: 1.35,
+          kind: "carrier",
+          tint: "sepia(1) saturate(3.2) hue-rotate(8deg) brightness(1.18)",
+          score: 520,
+          dropGuaranteed: true,
+          dropBonus: 2,
+          hitFlash: 0
+        });
+      }
+      const ex = 60 + Math.random() * (vw - 120);
+      enemies.push({
+        x: ex, y: -38, vx: 0, vy: 155 * spdMult,
+        hp: baseHp, maxHp: baseHp, size: 46, fireCd: 0.9,
+        kind: "interceptor", score: 140, hitFlash: 0
+      });
+    } else if (waveType === "meteor_rain") {
+      // 熔岩峽谷：燃燒火山隕石雨＋重裝護衛
+      for (let i = 0; i < 2; i++) {
+        const r = 20 + Math.random() * 14;
+        enemies.push({
+          x: 42 + Math.random() * (vw - 84),
+          y: -45 - i * 48,
+          vx: (Math.random() - 0.5) * 65,
+          vy: (125 + Math.random() * 75) * spdMult,
+          hp: baseHp * 1.6,
+          maxHp: baseHp * 1.6,
+          size: r * 2.2,
+          fireCd: 99,
+          kind: "meteor",
+          rot: Math.random() * 6.28,
+          vrot: (Math.random() - 0.5) * 3.6,
+          score: 210,
+          hitFlash: 0
+        });
+      }
+    } else if (waveType === "storm_blitz" || waveType === "phantom_dash" || waveType === "orbital_ring") {
+      // 星際／雷暴高速突擊編隊（衝刺機＋重裝砲艇）
+      const cx = 75 + Math.random() * (vw - 150);
+      for (const side of [-1, 1]) {
+        enemies.push({
+          x: Math.max(38, Math.min(vw - 38, cx + side * 66)),
+          y: -44,
+          vx: side * 32,
+          vy: (waveType === "phantom_dash" ? 215 : 165) * spdMult,
+          hp: baseHp * 1.25,
+          maxHp: baseHp * 1.25,
+          size: 50,
+          fireCd: 0.7,
+          kind: waveType === "orbital_ring" ? "striker" : "interceptor",
+          phase: side * 1.5,
+          tint: waveType === "storm_blitz" ? "hue-rotate(190deg) saturate(1.4)" : "hue-rotate(250deg) saturate(1.5) brightness(1.15)",
+          score: 220,
+          hitFlash: 0
+        });
+      }
+      if (Math.random() < 0.45) {
+        enemies.push({
+          x: cx, y: -62, vx: 0, vy: 82 * spdMult,
+          hp: baseHp * 2.6, maxHp: baseHp * 2.6, size: 70, fireCd: 0.95,
+          kind: "heavy", score: 380, dropGuaranteed: true,
+          tint: "hue-rotate(230deg) saturate(1.4)", hitFlash: 0
+        });
+      }
     } else {
-      // 重裝砲艇（擊破必掉能量水晶）
+      // 重裝砲艇（擊破必掉精繪寶物）
       enemies.push({
         x: 70 + Math.random() * (vw - 140),
         y: -60,
         vx: (Math.random() - 0.5) * 40,
-        vy: 76 + stageNum * 8,
+        vy: 76 * spdMult,
         hp: baseHp * 2.8,
         maxHp: baseHp * 2.8,
         size: 72,
@@ -412,7 +585,8 @@
   }
 
   function spawnBoss() {
-    const maxHp = 260 + stageNum * 160;
+    const theme = getStageTheme(stageNum);
+    const maxHp = 260 + stageNum * 165;
     boss = {
       x: vw * 0.5,
       y: -120,
@@ -423,10 +597,13 @@
       w: Math.min(260, vw * 0.62),
       fireCd: 0.9,
       patternIdx: 0,
-      hitFlash: 0
+      hitFlash: 0,
+      name: theme.bossName,
+      style: theme.bossStyle,
+      filter: theme.bossFilter
     };
-    bannerText = `⚠ WARNING! 空域 ${stageNum} 空中要塞來襲！`;
-    bannerTimer = 2.4;
+    bannerText = `${theme.bossName} 來襲！`;
+    bannerTimer = 2.5;
     sfxBoom(true);
     renderHud();
   }
@@ -594,7 +771,35 @@
           if (boss.fireCd <= 0) {
             const phase = boss.hp < boss.maxHp * 0.35 ? 3 : boss.hp < boss.maxHp * 0.7 ? 2 : 1;
             boss.patternIdx = (boss.patternIdx + 1) % 3;
-            if (phase === 1 || boss.patternIdx === 0) {
+            if (boss.style === "thunder" && boss.patternIdx === 1) {
+              // 雷鳴航母：電漿扇形快彈＋高速狙擊電球
+              const baseAng = Math.atan2(player.y - (boss.y + 24), player.x - boss.x);
+              const n = phase === 3 ? 7 : 5;
+              for (let k = 0; k < n; k++) {
+                const a = baseAng + (k - (n - 1) * 0.5) * 0.20;
+                eBullets.push({ x: boss.x, y: boss.y + 24, vx: Math.cos(a) * 265, vy: Math.sin(a) * 265, r: 6, color: "#4ee8ff" });
+              }
+              boss.fireCd = phase === 3 ? 0.58 : 0.78;
+            } else if (boss.style === "inferno" && boss.patternIdx !== 0) {
+              // 赤炎巨神：雙重反向熔岩螺旋火輪
+              const cnt = phase === 3 ? 12 : 9;
+              const spin = (boss.patternIdx === 1 ? 1 : -1) * now * 0.0028;
+              for (let i = 0; i < cnt; i++) {
+                const ang = spin + (Math.PI * 2 * i) / cnt;
+                eBullets.push({ x: boss.x, y: boss.y + 20, vx: Math.cos(ang) * 205, vy: Math.sin(ang) * 205, r: 7, color: "#ff7b29" });
+              }
+              boss.fireCd = phase === 3 ? 0.52 : 0.68;
+            } else if (boss.style === "orbital" && boss.patternIdx === 2) {
+              // 軌道母艦：星芒雙層擴散＋側翼鎖定雷射彈
+              const cnt = phase === 3 ? 14 : 10;
+              const baseAng = now * 0.0024;
+              for (let i = 0; i < cnt; i++) {
+                const ang = baseAng + (Math.PI * 2 * i) / cnt;
+                const spd = i % 2 === 0 ? 235 : 175;
+                eBullets.push({ x: boss.x, y: boss.y + 18, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, r: 6, color: i % 2 === 0 ? "#d57dff" : "#4ee8ff" });
+              }
+              boss.fireCd = phase === 3 ? 0.56 : 0.74;
+            } else if (phase === 1 || boss.patternIdx === 0) {
               // 雙翼主砲瞄準連射
               for (const side of [-1, 1]) {
                 const sx = boss.x + side * boss.w * 0.28;
@@ -654,7 +859,13 @@
               sfxBoom(e.kind === "heavy");
               spawnBoom(e.x, e.y, e.kind === "heavy" ? "#ffd45a" : "#ff7e42", e.kind === "heavy" ? 24 : 14, e.kind === "heavy");
               addKillScore(e.score, e.x, e.y);
-              maybeDropPickup(e.x, e.y, !!e.dropGuaranteed);
+              if (e.dropBonus) {
+                for (let d = 0; d < e.dropBonus; d++) {
+                  maybeDropPickup(e.x + (d - (e.dropBonus - 1) * 0.5) * 34, e.y, true);
+                }
+              } else {
+                maybeDropPickup(e.x, e.y, !!e.dropGuaranteed);
+              }
               enemies.splice(j, 1);
             }
             break;
@@ -682,25 +893,39 @@
             stageNum += 1;
             waveNum = 1;
             waveTimer = 0;
-            bannerText = `★ 要塞擊破！進入空域 ${stageNum} ★`;
-            bannerTimer = 2.6;
+            const nextTheme = getStageTheme(stageNum);
+            bannerText = `★ 要塞擊破！進入空域 ${stageNum}・${nextTheme.name} ★`;
+            bannerTimer = 2.8;
             renderHud();
           }
         }
       }
 
-      // 更新敵機
+      // 更新敵機（含懸停狙擊無人機、補給運輸機、旋轉火山隕石）
       for (let i = enemies.length - 1; i >= 0; i--) {
         const e = enemies[i];
         if (e.kind === "striker") e.x += Math.sin(now * 0.004 + e.phase) * 90 * dt;
-        e.x += e.vx * dt;
-        e.y += e.vy * dt;
+        if (e.kind === "meteor") e.rot += (e.vrot || 2) * dt;
+        if (e.kind === "sniper" && e.hoverT > 0 && e.y >= e.targetY) {
+          e.hoverT -= dt;
+          e.x = Math.max(36, Math.min(vw - 36, e.x + e.vx * dt));
+        } else {
+          e.x += e.vx * dt;
+          e.y += e.vy * dt;
+        }
         if (e.hitFlash > 0) e.hitFlash = Math.max(0, e.hitFlash - dt);
         e.fireCd -= dt;
-        if (e.fireCd <= 0 && e.y > 40 && e.y < vh * 0.65) {
+        if (e.kind !== "meteor" && e.fireCd <= 0 && e.y > 40 && e.y < vh * 0.65) {
           const ang = Math.atan2(player.y - e.y, player.x - e.x);
-          eBullets.push({ x: e.x, y: e.y + 18, vx: Math.cos(ang) * 230, vy: Math.sin(ang) * 230, r: 5, color: "#ff7256" });
-          e.fireCd = e.kind === "heavy" ? 1.15 : 1.65;
+          if (e.kind === "sniper") {
+            for (let k = -1; k <= 1; k++) {
+              eBullets.push({ x: e.x, y: e.y + 18, vx: Math.cos(ang + k * 0.14) * 265, vy: Math.sin(ang + k * 0.14) * 265, r: 5.5, color: "#4ee8ff" });
+            }
+            e.fireCd = 1.35;
+          } else {
+            eBullets.push({ x: e.x, y: e.y + 18, vx: Math.cos(ang) * 230, vy: Math.sin(ang) * 230, r: 5, color: "#ff7256" });
+            e.fireCd = e.kind === "heavy" ? 1.15 : e.kind === "carrier" ? 1.55 : 1.65;
+          }
         }
         if (Math.hypot(e.x - player.x, e.y - player.y) < e.size * 0.42 + 14) {
           damagePlayer();
@@ -755,10 +980,31 @@
       }
     }
 
-    // 背景與粒子更新
-    bgScroll += 115 * dt;
+    // 背景與粒子更新（依各空域主題切換捲動速度與環境特效）
+    const activeTheme = getStageTheme(stageNum);
+    bgScroll += activeTheme.scrollSpd * dt;
     if (shake > 0) shake = Math.max(0, shake - dt * 52);
     if (bombFlash > 0) bombFlash = Math.max(0, bombFlash - dt * 1.9);
+    if (lightningFlash > 0) lightningFlash = Math.max(0, lightningFlash - dt * 2.8);
+    if (activeTheme.ambient === "storm") {
+      lightningCd -= dt;
+      if (lightningCd <= 0) {
+        lightningFlash = 0.55;
+        lightningCd = 2.6 + Math.random() * 3.2;
+      }
+    }
+    for (const d of ambientDrops) {
+      if (activeTheme.ambient === "embers") {
+        d.y -= d.spd * 0.35 * dt;
+        d.x += Math.sin(now * 0.003 + d.len) * 28 * dt;
+        if (d.y < -20) { d.y = vh + 12; d.x = Math.random() * vw; }
+      } else {
+        d.y += d.spd * (activeTheme.ambient === "storm" ? 1.55 : 0.7) * dt;
+        if (activeTheme.ambient === "storm") d.x -= 48 * dt;
+        if (d.y > vh + 24) { d.y = -20; d.x = Math.random() * vw; }
+        if (d.x < -12) d.x = vw + 8;
+      }
+    }
 
     for (const c of clouds) {
       c.y += c.speed * dt;
@@ -787,8 +1033,10 @@
     ctx.save();
     if (shake > 0) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
 
-    // 1. 鏡像無縫縱向捲動高空夕陽海峽背景（零水平接縫）
-    const bg = imgs.bg;
+    // 1. 依空域主題切換無縫縱向捲動背景（夕陽海峽／雷暴雲海／熔岩峽谷／星際軌道）
+    const bg = imgs[activeTheme.bgKey] && imgs[activeTheme.bgKey].complete && imgs[activeTheme.bgKey].naturalWidth > 0
+      ? imgs[activeTheme.bgKey]
+      : imgs.bg;
     if (bg && bg.complete && bg.naturalWidth > 0) {
       const scale = Math.max(vw / bg.naturalWidth, vh / bg.naturalHeight);
       const dw = bg.naturalWidth * scale;
@@ -813,61 +1061,154 @@
       drawTile(yOff, false);
       drawTile(yOff + dh, true);
     } else {
-      ctx.fillStyle = "#0a2a44";
+      ctx.fillStyle = activeTheme.fallbackBg || "#0a2a44";
       ctx.fillRect(0, 0, vw, vh);
     }
 
-    // 視差高空浮雲
+    // 空域主題動態環境層（雲霧／暴風雨＋閃電／火山火星／星際流光）
     ctx.save();
-    for (const c of clouds) {
-      const g = ctx.createRadialGradient(c.x, c.y, 4, c.x, c.y, c.r);
-      g.addColorStop(0, `rgba(255, 240, 215, ${c.alpha})`);
-      g.addColorStop(1, "rgba(255, 240, 215, 0)");
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-      ctx.fill();
+    if (activeTheme.ambient === "clouds") {
+      for (const c of clouds) {
+        const g = ctx.createRadialGradient(c.x, c.y, 4, c.x, c.y, c.r);
+        g.addColorStop(0, `rgba(255, 240, 215, ${c.alpha})`);
+        g.addColorStop(1, "rgba(255, 240, 215, 0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (activeTheme.ambient === "storm") {
+      ctx.strokeStyle = "rgba(170, 225, 255, 0.34)";
+      ctx.lineWidth = 1.4;
+      for (const d of ambientDrops) {
+        ctx.beginPath();
+        ctx.moveTo(d.x, d.y);
+        ctx.lineTo(d.x - 4, d.y + d.len);
+        ctx.stroke();
+      }
+      if (lightningFlash > 0) {
+        ctx.fillStyle = `rgba(195, 238, 255, ${lightningFlash * 0.28})`;
+        ctx.fillRect(0, 0, vw, vh);
+      }
+    } else if (activeTheme.ambient === "embers") {
+      for (const d of ambientDrops) {
+        ctx.fillStyle = `rgba(255, 168, 58, ${d.alpha})`;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (activeTheme.ambient === "stars") {
+      ctx.strokeStyle = "rgba(210, 238, 255, 0.48)";
+      ctx.lineWidth = 1.3;
+      for (const d of ambientDrops) {
+        ctx.beginPath();
+        ctx.moveTo(d.x, d.y);
+        ctx.lineTo(d.x, d.y + d.len * 0.7);
+        ctx.stroke();
+      }
     }
     ctx.restore();
 
-    // 2. 掉落能量水晶
+    // 2. 實繪寶物圖片掉落（不再使用純文字方塊）
+    const PK_META = {
+      vulcan: { imgKey: "pk_vulcan", col: "#ff5a3c" },
+      laser:  { imgKey: "pk_laser",  col: "#3ee4ff" },
+      homing: { imgKey: "pk_homing", col: "#d57dff" },
+      bomb:   { imgKey: "pk_bomb",   col: "#ffd45a" },
+      heal:   { imgKey: "pk_heal",   col: "#5ef5a8" }
+    };
     for (const pk of pickups) {
-      const col = pk.type === "vulcan" ? "#ff5a3c" : pk.type === "laser" ? "#3ee4ff" : pk.type === "homing" ? "#d57dff" : pk.type === "bomb" ? "#ffd45a" : "#5ef5a8";
-      const txt = pk.type === "vulcan" ? "V" : pk.type === "laser" ? "L" : pk.type === "homing" ? "H" : pk.type === "bomb" ? "B" : "+";
+      const meta = PK_META[pk.type] || PK_META.vulcan;
+      const pImg = imgs[meta.imgKey];
+      const pulse = 1 + Math.sin(now * 0.008 + pk.phase) * 0.08;
       ctx.save();
       ctx.translate(pk.x, pk.y);
-      ctx.shadowColor = col;
-      ctx.shadowBlur = 14;
-      ctx.fillStyle = col;
+      // 外圈柔光能量環，讓寶物與敵彈一眼區分
+      const aura = ctx.createRadialGradient(0, 0, 4, 0, 0, 28 * pulse);
+      aura.addColorStop(0, "rgba(255,255,255,0.42)");
+      aura.addColorStop(0.55, `${meta.col}55`);
+      aura.addColorStop(1, `${meta.col}00`);
+      ctx.fillStyle = aura;
       ctx.beginPath();
-      ctx.roundRect(-14, -14, 28, 28, 6);
+      ctx.arc(0, 0, 28 * pulse, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "#ffffff";
+
+      ctx.strokeStyle = meta.col;
       ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.78;
+      ctx.beginPath();
+      ctx.arc(0, 0, 21 * pulse, 0, Math.PI * 2);
       ctx.stroke();
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "#0c1422";
-      ctx.font = "900 16px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(txt, 0, 1);
+      ctx.globalAlpha = 1;
+
+      ctx.rotate(Math.sin(now * 0.0045 + pk.phase) * 0.14);
+      if (pImg && pImg.complete && pImg.naturalWidth > 0) {
+        const sz = 44 * pulse;
+        ctx.shadowColor = meta.col;
+        ctx.shadowBlur = 10;
+        ctx.drawImage(pImg, -sz * 0.5, -sz * 0.5, sz, sz);
+      } else {
+        ctx.fillStyle = meta.col;
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.restore();
     }
 
-    // 3. 敵機與巨型首領
+    // 3. 敵機、火山隕石與巨型首領
     const eImg = imgs.enemy;
     for (const e of enemies) {
       ctx.save();
       ctx.translate(e.x, e.y);
-      if (e.hitFlash > 0) ctx.filter = "brightness(2.2)";
-      if (eImg && eImg.complete && eImg.naturalWidth > 0) {
-        const aspect = eImg.naturalWidth / eImg.naturalHeight;
-        ctx.drawImage(eImg, -e.size * aspect * 0.5, -e.size * 0.5, e.size * aspect, e.size);
-      } else {
-        ctx.fillStyle = "#d93636";
+      if (e.kind === "meteor") {
+        ctx.rotate(e.rot || 0);
+        const r = e.size * 0.44;
+        const mg = ctx.createRadialGradient(-r * 0.25, -r * 0.25, r * 0.15, 0, 0, r);
+        mg.addColorStop(0, e.hitFlash > 0 ? "#ffffff" : "#ffb85c");
+        mg.addColorStop(0.55, "#c84b18");
+        mg.addColorStop(1, "#3b170e");
+        ctx.fillStyle = mg;
+        ctx.shadowColor = "#ff6a22";
+        ctx.shadowBlur = 12;
         ctx.beginPath();
-        ctx.arc(0, 0, e.size * 0.4, 0, Math.PI * 2);
+        const rocky = [1.0, 0.84, 0.96, 0.72, 0.92, 0.80, 1.02, 0.76, 0.95, 0.82, 0.90];
+        for (let k = 0; k < rocky.length; k++) {
+          const a = (Math.PI * 2 * k) / rocky.length;
+          const rr = r * rocky[k];
+          if (k === 0) ctx.moveTo(Math.cos(a) * rr, Math.sin(a) * rr);
+          else ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr);
+        }
+        ctx.closePath();
         ctx.fill();
+        ctx.strokeStyle = "#ffd07a";
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+        ctx.fillStyle = "rgba(42,14,8,0.55)";
+        ctx.beginPath(); ctx.arc(-r * 0.22, r * 0.14, r * 0.22, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(r * 0.24, -r * 0.18, r * 0.15, 0, Math.PI * 2); ctx.fill();
+      } else {
+        if (e.hitFlash > 0) ctx.filter = "brightness(2.2)";
+        else if (e.tint) ctx.filter = e.tint;
+        if (eImg && eImg.complete && eImg.naturalWidth > 0) {
+          const aspect = eImg.naturalWidth / eImg.naturalHeight;
+          ctx.drawImage(eImg, -e.size * aspect * 0.5, -e.size * 0.5, e.size * aspect, e.size);
+        } else {
+          ctx.fillStyle = "#d93636";
+          ctx.beginPath();
+          ctx.arc(0, 0, e.size * 0.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.filter = "none";
+        // 重裝／補給機／狙擊機血條顯示
+        if (e.kind === "heavy" || e.kind === "carrier" || e.kind === "sniper") {
+          const bw = e.size * 0.72;
+          const ratio = Math.max(0, e.hp / e.maxHp);
+          ctx.fillStyle = "rgba(0,0,0,0.55)";
+          ctx.fillRect(-bw * 0.5, -e.size * 0.56, bw, 5);
+          ctx.fillStyle = e.kind === "carrier" ? "#ffd45a" : e.kind === "sniper" ? "#4ee8ff" : "#ff6b52";
+          ctx.fillRect(-bw * 0.5, -e.size * 0.56, bw * ratio, 5);
+        }
       }
       ctx.restore();
     }
@@ -877,6 +1218,7 @@
       ctx.save();
       ctx.translate(boss.x, boss.y);
       if (boss.hitFlash > 0) ctx.filter = "brightness(1.9)";
+      else if (boss.filter && boss.filter !== "none") ctx.filter = boss.filter;
       if (bImg && bImg.complete && bImg.naturalWidth > 0) {
         const aspect = bImg.naturalWidth / bImg.naturalHeight;
         const bh = boss.w / aspect;
@@ -1032,5 +1374,32 @@
     ctx.restore();
     requestAnimationFrame(loop);
   }
+  window.__RAIDEN_QA__ = {
+    setStage(n, w = 1) {
+      stageNum = n;
+      waveNum = w;
+      waveTimer = 0;
+      boss = null;
+      enemies.length = 0;
+      eBullets.length = 0;
+      bannerText = `空域 ${stageNum}・${getStageTheme(stageNum).name}`;
+      bannerTimer = 2.0;
+      spawnEnemyWave();
+      renderHud();
+    },
+    spawnAllPickups() {
+      pickups.length = 0;
+      ["vulcan", "laser", "homing", "bomb", "heal"].forEach((t, i) => {
+        pickups.push({ x: vw * (0.18 + i * 0.16), y: vh * 0.44, vy: 18, type: t, phase: i });
+      });
+    },
+    getState() {
+      return {
+        stageNum, waveNum, theme: getStageTheme(stageNum).name,
+        pickups: pickups.length, enemies: enemies.length,
+        loadedImgs: Object.fromEntries(Object.entries(imgs).map(([k, v]) => [k, !!(v.complete && v.naturalWidth > 0)]))
+      };
+    }
+  };
   requestAnimationFrame(loop);
 })();

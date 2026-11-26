@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>雷霆空域：蒼穹覺醒 ULTRA｜經典街機縱向空戰</title>
+  <link rel="preload" as="image" href="./assets/raiden-pk-vulcan.webp?v=20261126_v1">
+  <link rel="preload" as="image" href="./assets/raiden-pk-laser.webp?v=20261126_v1">
+  <link rel="preload" as="image" href="./assets/raiden-pk-homing.webp?v=20261126_v1">
+  <link rel="preload" as="image" href="./assets/raiden-pk-bomb.webp?v=20261126_v1">
+  <link rel="preload" as="image" href="./assets/raiden-pk-heal.webp?v=20261126_v1">
   <link rel="stylesheet" href="./raiden.css?v=20261120_raiden_v1">
 </head>
 <body>
@@ -28,11 +33,12 @@
         <button type="button" class="hud-btn" id="btnFs">全螢幕</button>
       </div>
     </header>
+    <div style="position:fixed;bottom:54px;right:10px;z-index:12;font:700 10px ui-monospace,monospace;color:rgba(186,230,253,.72);pointer-events:none;">v_23:25</div>
 
     <!-- 首領血條（首領現身時顯示） -->
     <div class="boss-hud hidden" id="bossHud">
       <div class="boss-title">
-        <span>⚠ SKY FORTRESS 空中要塞</span>
+        <span id="bossName">⚠ SKY FORTRESS 空中要塞</span>
         <span id="bossPhase">PHASE 1</span>
       </div>
       <div class="boss-track"><div class="boss-fill" id="bossFill"></div></div>
@@ -56,7 +62,7 @@
     </div>
   </div>
 
-  <script src="./raiden.js?v=20261120_raiden_v2"></script>
+  <script src="./raiden.js?v=20261126_raiden_v3"></script>
   <script src="./arcade-i18n.js?v=20261122_i18n_menu_v1"></script>
 </body>
 </html>
