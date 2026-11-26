@@ -182,6 +182,16 @@
   let toastOverride = null;
   const isDualControl = () => diffLevel >= 2; // 初級/中級：單操作（自動跑位＋手動發球擊球）；終極以上：雙操作（同時移動＋發球擊球）
 
+  // --- 高精緻原創男女網球選手精靈圖載入（待機＋揮拍雙姿態真透明 WebP）---
+  const SPRITES = {};
+  for (const k of ['player_ready', 'player_swing', 'rival_ready', 'rival_swing']) {
+    const im = new Image();
+    im.decoding = 'async';
+    if ('fetchPriority' in im) im.fetchPriority = 'high';
+    im.src = `./assets/tennis/${k}.webp?v=20261126_v1`;
+    SPRITES[k] = im;
+  }
+
   const state = {
     phase: 'serve', // 'serve' | 'rally' | 'pointOver' | 'end'
     server: 0,      // 0 = player, 1 = cpu
@@ -189,13 +199,14 @@
     winner: -1,
     rally: 0,
     maxRally: 0,
+    momentum: 0,    // 0..100 氣勢連擊槽（滿值觸發火焰超級制勝球！）
     lastSpeedKmh: 0,
     topSpeedKmh: 0,
     streak: 0,
     pointTimer: 0,
     cpuServeTimer: 0,
-    player: { x: 0, y: 0.94, tx: 0, ty: 0.94, swing: 0, swingSide: 1, swingKind: 'drive', swingBuffer: 0, swingBufferKind: 'drive' },
-    cpu:    { x: 0, y: 0.06, tx: 0, ty: 0.06, swing: 0, swingSide: 1 },
+    player: { x: 0, y: 0.94, tx: 0, ty: 0.94, vx: 0, jump: 0, swing: 0, swingSide: 1, swingKind: 'drive', swingBuffer: 0, swingBufferKind: 'drive' },
+    cpu:    { x: 0, y: 0.06, tx: 0, ty: 0.06, vx: 0, jump: 0, swing: 0, swingSide: 1, swingKind: 'drive' },
     ball: {
       active: false, x: 0, y: 0.90, z: 0.24,
       vx: 0, vy: 0, vz: 0,
@@ -337,8 +348,19 @@
     b.z = clamp(b.z, 0.14, 0.95);
     b.y = fromPlayer ? clamp(b.y, 0.56, 1.06) : clamp(b.y, -0.02, 0.44);
 
-    // 基礎飛行時間（初級 Wii 輕鬆節奏、中級流暢、終極高速）
-    const baseFlight = kind === 'smash' ? 0.52 : (kind === 'drop' ? 0.86 : (kind === 'serve' ? 0.66 : (isPerfect ? 0.60 : 0.72)));
+    // 氣勢連擊系統：連續對抽與 Perfect 累積氣勢，滿值自動釋放火焰超級球！
+    let isSuperShot = false;
+    if (fromPlayer && kind !== 'serve') {
+      if (state.momentum >= 100 && (kind === 'drive' || kind === 'smash')) {
+        isSuperShot = true;
+        state.momentum = 0;
+      } else {
+        state.momentum = Math.min(100, state.momentum + (isPerfect ? 42 : 28));
+      }
+    }
+
+    // 基礎飛行時間（初級 Wii 輕鬆節奏、中級流暢、終極高速；超級球加速 15%）
+    const baseFlight = kind === 'smash' ? 0.50 : (kind === 'drop' ? 0.86 : (kind === 'serve' ? 0.66 : (isSuperShot ? 0.52 : (isPerfect ? 0.60 : 0.72))));
     const paceMul = diffLevel === 0 ? 1.38 : (diffLevel === 1 ? 1.18 : 1.0);
     let flightT = (baseFlight * paceMul) / surf.speedMul;
 
@@ -357,14 +379,15 @@
     b.active = true;
     b.lastHitter = hitter;
     b.bouncesOnSide = 0;
-    b.kind = kind;
+    b.kind = isSuperShot ? 'smash' : kind;
+    b.superShot = isSuperShot;
     b.trail = [];
     // 精確閉合解：無多餘 peakBoost，t = flightT 時必定精準落於 (targetX, targetY, 0)！
     b.vx = (targetX - b.x) / flightT;
     b.vy = (targetY - b.y) / flightT;
     b.vz = (0 - b.z + 0.5 * GRAVITY * flightT * flightT) / flightT;
 
-    const kmh = Math.round((kind === 'smash' ? 188 : kind === 'serve' ? 166 : kind === 'drop' ? 76 : isPerfect ? 158 : 124) + Math.random() * 12);
+    const kmh = Math.round((isSuperShot ? 212 : kind === 'smash' ? 188 : kind === 'serve' ? 166 : kind === 'drop' ? 76 : isPerfect ? 158 : 124) + Math.random() * 12);
     state.lastSpeedKmh = kmh;
     if (kmh > state.topSpeedKmh) state.topSpeedKmh = kmh;
     state.rally += 1;
@@ -372,10 +395,16 @@
 
     actor.swing = 1.0;
     actor.swingSide = b.x >= actor.x ? 1 : -1;
-    actor.swingKind = kind;
-    sound.hit(isPerfect ? 1 : 0.7, kind === 'smash' || isPerfect);
+    actor.swingKind = b.kind;
+    if (kind === 'smash' || kind === 'serve' || isSuperShot) actor.jump = 1.0;
+    sound.hit(isPerfect || isSuperShot ? 1 : 0.7, kind === 'smash' || isPerfect || isSuperShot);
 
-    if (fromPlayer && (isPerfect || kind === 'smash')) {
+    if (fromPlayer && isSuperShot) {
+      hitStop = 0.042;
+      screenShake = 9;
+      spawnCallout(b.x, b.y, '🔥 SUPER WINNER!', '#ffcf40');
+      showToast('smashHit', null, 1100);
+    } else if (fromPlayer && (isPerfect || kind === 'smash')) {
       hitStop = 0.028;
       screenShake = kind === 'smash' ? 7 : 4;
       spawnCallout(b.x, b.y, kind === 'smash' ? 'SMASH! ⚡' : 'PERFECT! 🔥', kind === 'smash' ? '#ffe066' : '#ffcf56');
@@ -498,12 +527,17 @@
     state.player.tx = clamp(state.player.tx, -1.08, 1.08);
     state.player.ty = clamp(state.player.ty, 0.62, 1.05);
 
-    // 玩家平滑移動（初級自動跑位反應更快更穩，確保一定趕得上回球）
+    // 玩家平滑移動＋追蹤水平速度供身體傾斜與腳步揚塵演出
     const pMove = Math.min(1, dt * (isDualControl() ? 12 : 14));
+    const prevPx = state.player.x;
     state.player.x += (state.player.tx - state.player.x) * pMove;
     state.player.y += (state.player.ty - state.player.y) * pMove;
-    state.player.swing = Math.max(0, state.player.swing - dt * 4.5);
-    state.cpu.swing = Math.max(0, state.cpu.swing - dt * 4.5);
+    state.player.vx = dt > 0 ? (state.player.x - prevPx) / dt : 0;
+    if (Math.abs(state.player.vx) > 0.95 && Math.random() < 0.25) spawnDust(state.player.x, state.player.y, 2);
+    state.player.swing = Math.max(0, state.player.swing - dt * 3.8);
+    state.player.jump = Math.max(0, state.player.jump - dt * 3.4);
+    state.cpu.swing = Math.max(0, state.cpu.swing - dt * 3.8);
+    state.cpu.jump = Math.max(0, state.cpu.jump - dt * 3.4);
 
     // 揮拍預輸入緩衝：球進入寬鬆擊球區立刻自動擊出
     if (state.player.swingBuffer > 0) {
@@ -565,15 +599,17 @@
           }
         }
 
-        // 落地彈跳檢測（限制彈跳高度於順手好打的腰肩弧線）
+        // 落地彈跳檢測（區分小球下旋急煞 vs 抽球上旋前衝，保留真實網球戰術深度！）
         if (b.z <= 0) {
           b.z = 0;
           const surf = SURFACES[surfaceIdx];
-          b.vz = clamp(Math.abs(b.vz) * surf.bounceRest, 0.72, 1.28);
-          b.vx *= 0.86;
-          b.vy *= 0.86;
+          const isDrop = b.kind === 'drop';
+          b.vz = clamp(Math.abs(b.vz) * surf.bounceRest * (isDrop ? 0.78 : 1.0), 0.68, 1.28);
+          const horizDrag = isDrop ? 0.56 : (b.kind === 'drive' ? 0.92 : 0.86);
+          b.vx *= horizDrag;
+          b.vy *= horizDrag;
           sound.bounce();
-          spawnDust(b.x, b.y, 9);
+          spawnDust(b.x, b.y, isDrop ? 12 : 9);
 
           const inX = Math.abs(b.x) <= 1.06;
           const onPlayerSide = b.y >= NET_Y;
@@ -627,11 +663,13 @@
       const cdx = state.cpu.tx - state.cpu.x;
       const cdy = state.cpu.ty - state.cpu.y;
       const cdist = Math.hypot(cdx, cdy);
+      const prevCx = state.cpu.x;
       if (cdist > 0.005) {
         const step = Math.min(cdist, cpuSpd * dt);
         state.cpu.x += (cdx / cdist) * step;
         state.cpu.y += (cdy / cdist) * step;
       }
+      state.cpu.vx = dt > 0 ? (state.cpu.x - prevCx) / dt : 0;
 
       // CPU 擊球判定（涵蓋網前小球與底線球，且不卡在半場發呆）
       if (b.lastHitter === 0 && b.vy < 0 && b.y < 0.46 &&
@@ -649,77 +687,78 @@
     $('btnSmash').classList.toggle('smash-ready', smashReady);
   }
 
-  // --- 繪製 2.5D 紅土大滿貫球場、角色與 3D 網球 ---
+  // --- 繪製 2.5D 高精緻原創男女網球選手（待機呼吸＋衝刺傾斜＋跳躍殺球＋揮拍光弧） ---
   function drawPlayerSprite(actor, isPlayer) {
     const p = project(actor.x, actor.y, 0);
     const sc = p.scale;
-    const h = 58 * sc;
+    const now = performance.now() * 0.001;
+    const sw = actor.swing || 0;
+    const jp = actor.jump || 0;
+    const jumpPx = Math.sin(jp * Math.PI) * 32 * sc;
+    const isSwinging = sw > 0.16;
+    const breath = isSwinging ? 0 : Math.sin(now * 5.2 + (isPlayer ? 0 : 1.7)) * 0.022;
+    const lean = clamp((actor.vx || 0) * 0.07, -0.14, 0.14);
+    const side = actor.swingSide || 1;
+    const drawH = (isPlayer ? 116 : 96) * sc;
+
     ctx.save();
     ctx.translate(p.x, p.y);
 
-    // 地面橢圓陰影
-    ctx.fillStyle = 'rgba(15, 24, 18, 0.32)';
-    ctx.beginPath(); ctx.ellipse(0, 2, 18 * sc, 7 * sc, 0, 0, Math.PI * 2); ctx.fill();
-
-    // 雙腿
-    ctx.strokeStyle = '#f2c7a4';
-    ctx.lineWidth = Math.max(3, 5.5 * sc);
-    ctx.lineCap = 'round';
+    // 地面動態投影（跳躍時陰影縮小淡化）
+    const shScale = Math.max(0.55, 1 - Math.sin(jp * Math.PI) * 0.38);
+    ctx.fillStyle = `rgba(12, 22, 16, ${0.34 * shScale})`;
     ctx.beginPath();
-    ctx.moveTo(-6 * sc, -h * 0.32); ctx.lineTo(-8 * sc, -2);
-    ctx.moveTo(6 * sc, -h * 0.32); ctx.lineTo(8 * sc, -2);
-    ctx.stroke();
+    ctx.ellipse(0, 2, 24 * sc * shScale, 8.5 * sc * shScale, 0, 0, Math.PI * 2);
+    ctx.fill();
 
-    // 球衣（玩家＝典雅奶油白×海軍藍；CPU＝深松綠×金條）
-    ctx.fillStyle = isPlayer ? '#fbf7ee' : '#174d38';
-    ctx.strokeStyle = '#18201b';
-    ctx.lineWidth = Math.max(1.5, 2.2 * sc);
-    ctx.beginPath();
-    ctx.roundRect(-12 * sc, -h * 0.72, 24 * sc, h * 0.42, 6 * sc);
-    ctx.fill(); ctx.stroke();
+    // 玩家氣勢槽光條（集滿 100% 下一球自動觸發 🔥 SUPER WINNER！）
+    if (isPlayer && state.momentum > 0) {
+      const barW = 46 * sc;
+      const barH = Math.max(4, 5 * sc);
+      const frac = clamp(state.momentum / 100, 0, 1);
+      ctx.fillStyle = 'rgba(10, 22, 16, 0.72)';
+      ctx.beginPath(); ctx.roundRect(-barW * 0.5, 9 * sc, barW, barH, 3); ctx.fill();
+      ctx.fillStyle = frac >= 1 ? '#ffcf40' : '#4ade80';
+      ctx.beginPath(); ctx.roundRect(-barW * 0.5, 9 * sc, barW * frac, barH, 3); ctx.fill();
+    }
 
-    // 領口裝飾線
-    ctx.fillStyle = isPlayer ? '#1e3a5f' : '#e6b84c';
-    ctx.fillRect(-10 * sc, -h * 0.62, 20 * sc, 4 * sc);
+    // 揮拍光弧殘影（紅金強抽／翡翠切球／雷電殺球）
+    if (sw > 0.14) {
+      ctx.save();
+      ctx.translate(0, -drawH * 0.54 - jumpPx);
+      const arcCol = actor.swingKind === 'smash'
+        ? `rgba(255, 214, 64, ${sw * 0.90})`
+        : (actor.swingKind === 'drop' ? `rgba(94, 234, 212, ${sw * 0.80})` : `rgba(255, 120, 90, ${sw * 0.82})`);
+      ctx.strokeStyle = arcCol;
+      ctx.lineWidth = Math.max(4, 9 * sc * sw);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      if (side >= 0) ctx.arc(8 * sc, 0, 38 * sc, -1.35, 0.45);
+      else ctx.arc(-8 * sc, 0, 38 * sc, Math.PI - 0.45, Math.PI + 1.35);
+      ctx.stroke();
+      ctx.restore();
+    }
 
-    // 頭部＋運動頭帶
-    ctx.fillStyle = '#f2c7a4';
-    ctx.beginPath(); ctx.arc(0, -h * 0.88, 10.5 * sc, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = isPlayer ? '#c95d36' : '#e6b84c';
-    ctx.fillRect(-10 * sc, -h * 0.94, 20 * sc, 3.8 * sc);
-
-    // 網球拍（含細緻拍網紋與流暢揮拍弧線殘影）
-    const sw = actor.swing;
-    const side = actor.swingSide || 1;
-    const rAng = side * (0.45 - sw * 1.9);
+    // 繪製高精緻角色精靈（依正反手自動鏡像，待機／揮拍無縫切換）
+    const spKey = isPlayer ? (isSwinging ? 'player_swing' : 'player_ready') : (isSwinging ? 'rival_swing' : 'rival_ready');
+    const im = SPRITES[spKey];
     ctx.save();
-    ctx.translate(side * 12 * sc, -h * 0.56);
-    ctx.rotate(rAng);
-    if (sw > 0.15) {
-      ctx.strokeStyle = actor.swingKind === 'smash' ? `rgba(255, 224, 102, ${sw * 0.85})` : `rgba(255, 255, 255, ${sw * 0.68})`;
-      ctx.lineWidth = 4.5 * sc;
-      ctx.beginPath(); ctx.arc(0, 0, 27 * sc, -0.75, 0.75); ctx.stroke();
+    ctx.translate(0, -jumpPx);
+    ctx.rotate(lean + (isSwinging ? side * sw * 0.08 : 0));
+    const flipX = (isSwinging && side < 0) ? -1 : 1;
+    const sx = flipX * (1 + (isSwinging ? sw * 0.06 : -breath));
+    const sy = 1 + (isSwinging ? -sw * 0.03 : breath);
+    ctx.scale(sx, sy);
+
+    if (im && im.complete && im.naturalWidth > 0) {
+      const asp = im.naturalWidth / im.naturalHeight;
+      const drawW = drawH * asp;
+      ctx.drawImage(im, -drawW * 0.5, -drawH + 4 * sc, drawW, drawH);
+    } else {
+      // 載入極短瞬間保底
+      ctx.fillStyle = isPlayer ? '#fbf7ee' : '#174d38';
+      ctx.beginPath(); ctx.arc(0, -drawH * 0.45, 18 * sc, 0, Math.PI * 2); ctx.fill();
     }
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = Math.max(2.2, 3.4 * sc);
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -17 * sc); ctx.stroke();
-    // 拍面與拍網格線
-    ctx.save();
-    ctx.beginPath(); ctx.ellipse(0, -27 * sc, 9.5 * sc, 12.5 * sc, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.22)'; ctx.fill();
-    ctx.clip();
-    ctx.strokeStyle = 'rgba(255,255,255,0.52)';
-    ctx.lineWidth = Math.max(0.7, 0.9 * sc);
-    for (let sx = -6; sx <= 6; sx += 3) {
-      ctx.beginPath(); ctx.moveTo(sx * sc, -40 * sc); ctx.lineTo(sx * sc, -14 * sc); ctx.stroke();
-    }
-    for (let sy = -36; sy <= -18; sy += 4) {
-      ctx.beginPath(); ctx.moveTo(-10 * sc, sy * sc); ctx.lineTo(10 * sc, sy * sc); ctx.stroke();
-    }
-    ctx.restore();
-    ctx.strokeStyle = isPlayer ? '#e63946' : '#f4d37a';
-    ctx.lineWidth = Math.max(2, 2.8 * sc);
-    ctx.beginPath(); ctx.ellipse(0, -27 * sc, 9.5 * sc, 12.5 * sc, 0, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
 
     ctx.restore();
@@ -1177,7 +1216,7 @@
       movePointerId,
       activeShotPointers: shotPointers.size,
       surface: SURFACES[surfaceIdx].id,
-      version: 'v_14:55'
+      version: 'v_15:20'
     }),
     setDiff: (lvl) => { diffLevel = Number(lvl) || 0; $('selDiff').value = String(diffLevel); movePointerId = null; updateHUD(); },
     getCourtCoverage: () => {
