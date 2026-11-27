@@ -1,13 +1,14 @@
 {
   "portalTitle": "經典街機遊戲館",
-  "version": "v_20261128_candy_px_v4",
-  "updatedAt": "2026-11-28T02:15:00+08:00",
+  "version": "v_20261128_tabletennis_1",
+  "updatedAt": "2026-11-28T04:10:00+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向與原創在地化命名（禁用真實版權遊戲名稱），並全面支援 TW / EN / KO 本土化語系切換。",
   "dailySchedule": {
     "generateCron": "每日04:00產出可單人對戰CPU的原創運動或街機競技遊戲",
     "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
   },
   "games": [
+    {"id": "tabletennis", "title": "桌球-1", "shortTab": "桌球-1", "genre": "單人桌球對戰", "reaSource": "取材自桌球快攻、弧圈與側旋，依落桌彈跳和揮拍方向決定回球。", "highlights": ["點一下快攻，往上滑打弧圈，斜滑讓球側旋。", "三階CPU、搶7分，6平後逐分交換發球。"], "path": "./tabletennis.html", "addedDate": "2026-11-28", "thumbnail": "assets/tabletennis-cover.webp", "artDirection": "復古桌球俱樂部網版印刷。鈷藍球桌、朱紅膠皮、米白紙紋與低角度球網。", "i18n": {"tw": {"title": "桌球-1", "shortTab": "桌球-1", "genre": "單人桌球對戰", "reaSource": "取材自桌球快攻、弧圈與側旋，依落桌彈跳和揮拍方向決定回球。", "highlights": ["點一下快攻，往上滑打弧圈，斜滑讓球側旋。", "三階CPU、搶7分，6平後逐分交換發球。"]}, "en": {"title": "Table Tennis 1", "shortTab": "Table Tennis 1", "genre": "Singles table tennis", "reaSource": "Arcade table tennis built around first-bounce timing, looping drives and curving sidespin.", "highlights": ["Tap for a drive, swipe up for a loop or swipe diagonally to bend the return.", "Face three CPU levels in a race to seven. Service alternates every point at 6-all."]}, "ko": {"title": "탁구-1", "shortTab": "탁구-1", "genre": "탁구 단식", "reaSource": "첫 바운드에 맞춰 속공과 드라이브, 횡회전을 구사하는 탁구 게임입니다.", "highlights": ["톡 누르면 속공, 위로 밀면 드라이브, 비스듬히 밀면 횡회전이 걸려요.", "세 단계 CPU와 7점 승부를 펼쳐요. 6대6부터는 매 점마다 서브가 바뀌어요."]}}},
     {
       "id": "candy",
       "title": "糖果三消-1",

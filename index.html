@@ -169,7 +169,7 @@
       <select id="mobile-game-select" class="portal-select" aria-label="切換遊戲"></select>
       <button type="button" class="catalog-btn" id="btn-catalog" onclick="toggleCatalog(true)">遊戲總覽</button>
       <button type="button" class="fs-btn" id="standalone-link" onclick="togglePortalFullscreen()">⛶ <span class="fs-label">全螢幕</span></button>
-      <span class="ver-pill" id="portal-version">11.27</span>
+      <span class="ver-pill" id="portal-version">11.28</span>
     </div>
   </header>
 
@@ -189,7 +189,7 @@
   </div>
 
   <script>
-    const VERSION_STAMP = "v_20261127_badminton_1";
+    const VERSION_STAMP = "v_20261128_tabletennis_1";
     const frame = document.getElementById("game-frame");
     const tabsEl = document.getElementById("portal-tabs");
     const mobileSelect = document.getElementById("mobile-game-select");
@@ -243,6 +243,7 @@
 
     // 內建即時備援清單（確保首幀無閃爍；games-catalog.json 載入後會自動同步最新與未來新增遊戲）
     let catalogGames = [
+      {"id": "tabletennis", "path": "./tabletennis.html", "title": "桌球-1", "shortTab": "桌球-1", "thumbnail": "assets/tabletennis-cover.webp", "i18n": {"tw": {"title": "桌球-1", "shortTab": "桌球-1"}, "en": {"title": "Table Tennis 1", "shortTab": "Table Tennis 1"}, "ko": {"title": "탁구-1", "shortTab": "탁구-1"}}},
       { id: "candy", path: "./candy.html", title: "糖果三消-1", shortTab: "糖果三消-1", thumbnail: "assets/candy-cover.webp", i18n: { tw: { title: "糖果三消-1", shortTab: "糖果三消-1" }, en: { title: "Candy Match 1", shortTab: "Candy Match 1" }, ko: { title: "캔디 매치-1", shortTab: "캔디 매치-1" } } },
       { id: "badminton", path: "./badminton.html", title: "羽球-1", thumbnail: "assets/badminton-cover.svg", i18n: { tw: { title: "羽球-1", shortTab: "羽球-1" }, en: { title: "Badminton 1", shortTab: "Badminton 1" }, ko: { title: "배드민턴-1", shortTab: "배드민턴-1" } } },
       {"id": "pool", "title": "撞球-1", "shortTab": "撞球-1", "genre": "單人六球撞球", "reaSource": "取材自六球美式落袋撞球的切球、走位與自由球規則，採原創球桌、美術與音樂。", "highlights": ["點桌面瞄準，或從白球反向拖曳拉桿。幽靈球輔助線可預覽切球方向。", "三階CPU逐球判讀球路。先進4球獲勝，3比3時由下一球決勝。"], "path": "./pool.html", "addedDate": "2026-11-23", "thumbnail": "assets/pool-cover.webp", "artDirection": "俯視球房實體桌面，暖綠毛呢、胡桃木、嵌鑄黃銅與象牙色計分板。", "i18n": {"tw": {"title": "撞球-1", "shortTab": "撞球-1", "genre": "單人六球撞球", "reaSource": "取材自六球美式落袋撞球的切球、走位與自由球規則，採原創球桌、美術與音樂。", "highlights": ["點桌面瞄準，或從白球反向拖曳拉桿。幽靈球輔助線可預覽切球方向。", "三階CPU逐球判讀球路。先進4球獲勝，3比3時由下一球決勝。"]}, "en": {"title": "Pool-1", "shortTab": "Pool-1", "genre": "Single-player six-ball pool", "reaSource": "Inspired by six-ball pocket billiards, with cut shots, cue-ball position play and ball in hand. Original table art and music.", "highlights": ["Tap to aim or pull back from the cue ball. A ghost ball shows the contact point and the cut angle.", "Play three CPU difficulty levels. First to four wins, with a deciding ball at 3–3."]}, "ko": {"title": "포켓볼-1", "shortTab": "포켓볼-1", "genre": "싱글 플레이 6볼 포켓볼", "reaSource": "6볼 포켓볼의 빗겨치기, 흰 공 위치 조절, 프리볼 규칙을 바탕으로 테이블과 음악을 직접 제작했습니다.", "highlights": ["테이블을 눌러 조준하거나 흰 공을 뒤로 끌어 치세요. 고스트볼이 타점과 진행 방향을 보여 줍니다.", "3단계 난이도의 CPU와 대결하세요. 공을 먼저 4개 넣으면 승리하며, 3 대 3에서는 다음 득점으로 결정됩니다."]}}},
