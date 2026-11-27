@@ -14,12 +14,33 @@ html, body {
   overflow: hidden;
   touch-action: none;
   font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", "PingFang TC", "Apple SD Gothic Neo", sans-serif;
-  background: linear-gradient(180deg, #98dcf8 0%, #f9d4e8 55%, #fde8c8 100%);
-  color: #4a2340;
+  background-color: #f9d5e2;
+  background-image: url("./assets/candy-bg-tw.webp?v=20261128_v3");
+  background-size: cover;
+  background-position: center;
+  color: #4a2138;
+}
+
+/* 尾牙級雙層歡樂特效畫布（純視覺裝飾，絕不攔截任何觸控！） */
+.fx-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.fx-back {
+  z-index: 1;
+}
+
+.fx-front {
+  z-index: 35;
 }
 
 .candy-app {
   position: relative;
+  z-index: 10;
   width: 100%;
   height: 100%;
   height: 100dvh;
@@ -29,38 +50,28 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  background-image: url("./assets/candy-bg.webp?v=20261127_v1");
-  background-size: cover;
-  background-position: center;
 }
 
 @media (min-width: 560px) {
-  body {
-    background-image: url("./assets/candy-bg.webp?v=20261127_v1");
-    background-size: cover;
-    background-position: center;
-  }
   .candy-app {
-    background-image: none;
     padding: 6px 10px;
     gap: 6px;
   }
 }
 
-/* 緊湊頂部資訊卡（輕圓角＋乾淨右下錯位色塊，絕不與右上退出全螢幕重疊） */
+/* 緊湊台味節慶資訊卡（輕圓角＋乾淨右下錯位色塊，全螢幕右上零遮擋） */
 .hud-card {
   flex: 0 0 auto;
-  background: rgba(255, 250, 253, 0.94);
-  border: 1.5px solid #ecc0d7;
+  background: rgba(255, 250, 245, 0.94);
+  border: 1.5px solid #f0b6c6;
   border-radius: 11px;
-  box-shadow: 3px 3px 0 #e4bad0;
+  box-shadow: 3px 3px 0 #e2b4c2;
   padding: 5px 8px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-/* 大廳全螢幕模式：右上自動保留退出全螢幕按鈕專屬空間，零遮擋！ */
 .candy-app.portal-fs-pad .hud-row-main {
   padding-right: 96px;
 }
@@ -76,9 +87,9 @@ html, body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: linear-gradient(180deg, #ff7db3 0%, #ef478c 100%);
+  background: linear-gradient(180deg, #ff6b8b 0%, #e53e66 100%);
   color: #ffffff;
-  border: 1px solid #d43273;
+  border: 1px solid #c2284e;
   border-radius: 8px;
   padding: 3px 8px;
   font-weight: 900;
@@ -91,7 +102,7 @@ html, body {
   font-size: 9px;
   font-weight: 700;
   opacity: 0.9;
-  background: rgba(74, 35, 64, 0.22);
+  background: rgba(74, 33, 56, 0.24);
   padding: 1px 4px;
   border-radius: 4px;
 }
@@ -100,8 +111,8 @@ html, body {
   display: inline-flex;
   align-items: baseline;
   gap: 4px;
-  background: #fff5fa;
-  border: 1px solid #eac8db;
+  background: #fff7f2;
+  border: 1px solid #ecc6d0;
   border-radius: 8px;
   padding: 2px 8px;
   white-space: nowrap;
@@ -110,12 +121,12 @@ html, body {
 .moves-pill strong {
   font-size: 16px;
   font-weight: 900;
-  color: #e13b72;
+  color: #dc264c;
 }
 
 .moves-pill.low {
-  background: #ffedf0;
-  border-color: #f4667d;
+  background: #ffecee;
+  border-color: #f45c72;
   animation: pulseMoves 0.65s ease-in-out infinite alternate;
 }
 
@@ -133,7 +144,7 @@ html, body {
 .pill-lbl {
   font-size: 10.5px;
   font-weight: 800;
-  color: #845a78;
+  color: #84546b;
 }
 
 .hud-row-goals {
@@ -149,13 +160,13 @@ html, body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: #fff8fc;
-  border: 1px solid #e6c6d8;
+  background: #fffaf7;
+  border: 1px solid #e9c4cf;
   border-radius: 8px;
   padding: 2px 7px;
   font-size: 11.5px;
   font-weight: 800;
-  color: #5b2a4d;
+  color: #5b2540;
   white-space: nowrap;
 }
 
@@ -176,21 +187,21 @@ html, body {
   width: 14px;
   height: 14px;
   border-radius: 4px;
-  background: linear-gradient(135deg, #fbcfe8, #f472b6);
-  border: 1px solid #db2777;
+  background: linear-gradient(135deg, #fde68a, #f59e0b);
+  border: 1px solid #d97706;
   display: inline-block;
   flex-shrink: 0;
 }
 
-/* 首次短提示（首次有效交換後自動收合，把全部空間還給棋盤） */
+/* 首次短提示（首步消除後自動收合） */
 .tip-banner {
   flex: 0 0 auto;
   text-align: center;
   font-size: 11.5px;
   font-weight: 800;
-  color: #6b2954;
-  background: rgba(255, 252, 254, 0.90);
-  border: 1px solid #ebc8dc;
+  color: #6b2644;
+  background: rgba(255, 250, 244, 0.92);
+  border: 1px solid #ecc6d0;
   border-radius: 8px;
   padding: 3px 8px;
   white-space: nowrap;
@@ -199,8 +210,8 @@ html, body {
 }
 
 .tip-banner.combo {
-  background: linear-gradient(90deg, #fff1c9, #ffe2f0, #dff6ff);
-  border-color: #f3a4c7;
+  background: linear-gradient(90deg, #fff0b8, #ffe0ec, #daf5ff);
+  border-color: #f39eb9;
   color: #9d174d;
 }
 
@@ -208,7 +219,7 @@ html, body {
   display: none;
 }
 
-/* 真滿版彈性棋盤區：依直式手機高度自動增加列數，格子嚴格保持 1:1 正方形 */
+/* 真滿版彈性棋盤區（透明感微暖底框讓背景禮物雨若隱若現、棋盤清晰度 100%） */
 .board-stage {
   flex: 1 1 auto;
   min-height: 0;
@@ -221,10 +232,10 @@ html, body {
 
 .board-frame {
   position: relative;
-  background: rgba(255, 246, 251, 0.90);
-  border: 2px solid #f0b0cf;
+  background: rgba(255, 249, 245, 0.88);
+  border: 2px solid #f2b0c2;
   border-radius: 13px;
-  box-shadow: 4px 4px 0 #ddb3c9;
+  box-shadow: 4px 4px 0 #ddb2bf;
   padding: 4px;
   display: flex;
   align-items: center;
@@ -238,7 +249,7 @@ html, body {
   cursor: pointer;
 }
 
-/* 底部精簡操作列（含獨立音樂／音效開關） */
+/* 底部主要操作列 */
 .action-bar {
   flex: 0 0 auto;
   display: flex;
@@ -252,14 +263,14 @@ html, body {
   min-width: 0;
   height: 38px;
   border-radius: 9px;
-  border: 1px solid #e2b8cf;
-  background: rgba(255, 250, 253, 0.95);
-  color: #5b264c;
+  border: 1px solid #e4b5c4;
+  background: rgba(255, 250, 247, 0.95);
+  color: #5b2540;
   font-family: inherit;
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 3px 3px 0 #dfb6cb;
+  box-shadow: 3px 3px 0 #dfb3c1;
   white-space: nowrap;
   padding: 0 4px;
   transition: transform 0.1s ease, background 0.15s ease;
@@ -267,12 +278,12 @@ html, body {
 
 .act-btn:active {
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 #dfb6cb;
+  box-shadow: 1px 1px 0 #dfb3c1;
 }
 
 .hint-btn {
-  background: #fff7db;
-  border-color: #ebc96b;
+  background: #fff6d6;
+  border-color: #ebc65e;
   color: #7c4a03;
 }
 
@@ -285,20 +296,20 @@ html, body {
 .bgm-btn.muted,
 .sound-btn.muted {
   opacity: 0.68;
-  background: #f7f2f5;
-  color: #7d6776;
+  background: #f7f2f4;
+  color: #7d6770;
 }
 
 .act-btn.hidden {
   display: none;
 }
 
-/* 過關／失敗彈窗 */
+/* 過關／失敗彈窗（位於前景爆破之上，俐落好點） */
 .modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 60;
-  background: rgba(74, 35, 64, 0.45);
+  background: rgba(74, 33, 56, 0.42);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -312,10 +323,10 @@ html, body {
 .modal-card {
   width: 100%;
   max-width: 316px;
-  background: #fffafc;
-  border: 2px solid #f0b0cf;
+  background: #fffaf7;
+  border: 2px solid #f0aac0;
   border-radius: 13px;
-  box-shadow: 4px 4px 0 #d9a7c2;
+  box-shadow: 4px 4px 0 #d9a4b7;
   padding: 16px 14px;
   text-align: center;
   display: flex;
@@ -332,13 +343,13 @@ html, body {
 .modal-title {
   font-size: 19px;
   font-weight: 900;
-  color: #831843;
+  color: #9d174d;
 }
 
 .modal-desc {
   font-size: 12.5px;
   font-weight: 700;
-  color: #6b435e;
+  color: #6b4355;
   line-height: 1.45;
 }
 
@@ -368,17 +379,17 @@ html, body {
 }
 
 .modal-btn.primary {
-  background: linear-gradient(180deg, #ff7eb3 0%, #ec4899 100%);
+  background: linear-gradient(180deg, #ff6b8b 0%, #e53e66 100%);
   color: #ffffff;
   border: 1px solid #be185d;
-  box-shadow: 3px 3px 0 #d59cb9;
+  box-shadow: 3px 3px 0 #d59cb0;
 }
 
 .modal-btn.secondary {
-  background: #fff5fa;
-  color: #6b2954;
-  border: 1px solid #e2b8cf;
-  box-shadow: 3px 3px 0 #e0b8cd;
+  background: #fff5f8;
+  color: #6b2644;
+  border: 1px solid #e2b5c4;
+  box-shadow: 3px 3px 0 #e0b5c4;
 }
 
 @media (max-height: 650px) {

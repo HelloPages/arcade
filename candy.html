@@ -3,24 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>糖果三消-1｜甜蜜甜點王國</title>
-  <link rel="preload" as="image" href="./assets/candy-bg.webp?v=20261127_v1">
-  <link rel="preload" as="image" href="./assets/candy-c0.webp?v=20261128_v2">
-  <link rel="preload" as="image" href="./assets/candy-c1.webp?v=20261128_v2">
-  <link rel="preload" as="image" href="./assets/candy-c2.webp?v=20261128_v2">
-  <link rel="preload" as="image" href="./assets/candy-c3.webp?v=20261128_v2">
-  <link rel="preload" as="image" href="./assets/candy-c4.webp?v=20261128_v2">
-  <link rel="preload" as="image" href="./assets/candy-c5.webp?v=20261128_v2">
-  <link rel="preload" as="image" href="./assets/candy-bomb.webp?v=20261128_v2">
-  <link rel="stylesheet" href="./candy.css?v=20261128_candy_v2">
+  <title>糖果三消-1｜台味夜市甜點派對</title>
+  <link rel="preload" as="image" href="./assets/candy-bg-tw.webp?v=20261128_v3">
+  <link rel="preload" as="image" href="./assets/candy-tw0.webp?v=20261128_v3">
+  <link rel="preload" as="image" href="./assets/candy-tw1.webp?v=20261128_v3">
+  <link rel="preload" as="image" href="./assets/candy-tw2.webp?v=20261128_v3">
+  <link rel="preload" as="image" href="./assets/candy-tw3.webp?v=20261128_v3">
+  <link rel="preload" as="image" href="./assets/candy-tw4.webp?v=20261128_v3">
+  <link rel="preload" as="image" href="./assets/candy-tw5.webp?v=20261128_v3">
+  <link rel="preload" as="image" href="./assets/candy-tw-bomb.webp?v=20261128_v3">
+  <link rel="stylesheet" href="./candy.css?v=20261128_candy_v3">
 </head>
 <body>
+  <canvas id="fxBackCanvas" class="fx-layer fx-back" aria-hidden="true"></canvas>
+
   <div id="candy-app" class="candy-app">
     <header class="hud-card" id="hudCard" aria-label="關卡資訊">
       <div class="hud-row-main" id="hudRowMain">
         <div class="level-badge">
           <span id="levelLabel">第 1 關</span>
-          <span class="ver-tag" id="verTag">v_00:35</span>
+          <span class="ver-tag" id="verTag">v_01:25</span>
         </div>
         <div class="stat-pill moves-pill" id="movesPill" aria-label="剩餘步數">
           <span class="pill-lbl" id="movesLbl">步數</span>
@@ -35,12 +37,12 @@
     </header>
 
     <div class="tip-banner" id="tipBanner" role="status" aria-live="polite">
-      單指滑動或點兩顆相鄰甜點，連成 3 顆就能消除！
+      單指滑動或點兩顆相鄰台味點心，連成 3 顆就能歡樂消除！
     </div>
 
     <main class="board-stage" id="boardStage">
       <div class="board-frame" id="boardFrame">
-        <canvas id="candyCanvas" aria-label="糖果三消棋盤"></canvas>
+        <canvas id="candyCanvas" aria-label="台味甜點三消棋盤"></canvas>
       </div>
     </main>
 
@@ -56,7 +58,7 @@
       <div class="modal-card">
         <div class="modal-stars" id="modalStars">★★★</div>
         <h2 class="modal-title" id="modalTitle">過關成功！</h2>
-        <p class="modal-desc" id="modalDesc">太甜美了！準備進入下一關吧。</p>
+        <p class="modal-desc" id="modalDesc">太讚啦！剩餘步數已換算額外加分！</p>
         <div class="modal-stats" id="modalStats"></div>
         <div class="modal-actions">
           <button type="button" class="modal-btn primary" id="btnNextLevel">下一關 ↗</button>
@@ -66,7 +68,9 @@
     </div>
   </div>
 
+  <canvas id="fxFrontCanvas" class="fx-layer fx-front" aria-hidden="true"></canvas>
+
   <script src="./arcade-i18n.js?v=20261122_i18n_menu_v1"></script>
-  <script src="./candy.js?v=20261128_candy_v2"></script>
+  <script src="./candy.js?v=20261128_candy_v3"></script>
 </body>
 </html>
