@@ -1,13 +1,60 @@
 {
   "portalTitle": "經典街機遊戲館",
-  "version": "v_20261127_badminton_1",
-  "updatedAt": "2026-11-27T15:28:00+08:00",
+  "version": "v_20261127_candy_1",
+  "updatedAt": "2026-11-27T23:45:00+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向與原創在地化命名（禁用真實版權遊戲名稱），並全面支援 TW / EN / KO 本土化語系切換。",
   "dailySchedule": {
     "generateCron": "每日04:00產出可單人對戰CPU的原創運動或街機競技遊戲",
     "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
   },
   "games": [
+    {
+      "id": "candy",
+      "title": "糖果三消-1",
+      "shortTab": "糖果三消-1",
+      "path": "./candy.html",
+      "addedDate": "2026-11-27",
+      "thumbnail": "assets/candy-cover.webp",
+      "genre": "甜蜜繽紛糖果三消",
+      "reaSource": "原創繽紛糖果王國三消益智，六種立體高辨識造型糖果、單指滑動／點兩顆即換、條紋／包裝炸彈／彩虹彩球連鎖爆破，直式手機一頁滿版免捲動。",
+      "highlights": [
+        "單指滑動或點兩顆相鄰糖果就能輕鬆消除，無效交換自動回彈不扣步，無可走步自動洗牌。",
+        "四連條紋糖、L/T 包裝炸彈、五連彩虹彩球與雙特殊技大爆破，前幾關爽快好上手！"
+      ],
+      "artDirection": "夢幻粉彩糖果王國：棉花糖雲海背景、晶透立體果凍六造型糖果與清新暖粉輕圓角卡片介面。",
+      "i18n": {
+        "tw": {
+          "title": "糖果三消-1",
+          "shortTab": "糖果三消-1",
+          "genre": "甜蜜繽紛糖果三消",
+          "reaSource": "原創繽紛糖果王國三消益智，六種立體高辨識造型糖果與條紋／包裝／彩虹彩球連鎖消除。",
+          "highlights": [
+            "單指滑動或點兩顆相鄰糖果就能輕鬆消除，無效交換回彈不扣步，無可走步自動洗牌。",
+            "四連條紋糖、L/T 包裝炸彈、五連彩虹彩球與雙特殊技大爆破，直式手機一頁免捲動！"
+          ]
+        },
+        "en": {
+          "title": "Candy Match 1",
+          "shortTab": "Candy Match 1",
+          "genre": "Colorful Candy Match-3",
+          "reaSource": "A bright pastel Candy Kingdom match-3 puzzle with six distinct glossy candy shapes, juicy cascades, and special candy combos.",
+          "highlights": [
+            "One-finger swipe or tap-to-swap with forgiving bounce-back on invalid moves and auto-shuffle.",
+            "Craft Striped, Wrapped, and Color Bomb candies for dazzling chain clears on a single-screen mobile layout."
+          ]
+        },
+        "ko": {
+          "title": "캔디 매치-1",
+          "shortTab": "캔디 매치-1",
+          "genre": "달콤한 캔디 3매치",
+          "reaSource": "여섯 가지 선명한 젤리 캔디와 줄무늬・포장 폭탄・무지개 볼 연쇄 콤보를 한 화면에 담은 3매치 퍼즐입니다.",
+          "highlights": [
+            "한 손가락 스와이프 또는 두 칸 터치로 쉽게 교환하며, 잘못된 이동은 횟수 차감 없이 되돌아갑니다.",
+            "세로 모바일 한 화면 최적화로 스크롤 없이 쾌적하게 특수 캔디 콤보를 즐겨 보세요."
+          ]
+        }
+      }
+    },
     {
       "id": "badminton",
       "title": "羽球-1",

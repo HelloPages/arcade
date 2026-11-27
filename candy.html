@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>糖果三消-1｜甜蜜王國</title>
+  <link rel="preload" as="image" href="./assets/candy-bg.webp?v=20261127_v1">
+  <link rel="stylesheet" href="./candy.css?v=20261127_candy_v1">
+</head>
+<body>
+  <div id="candy-app" class="candy-app">
+    <header class="hud-card" aria-label="關卡資訊">
+      <div class="hud-top-row">
+        <div class="level-badge">
+          <span class="level-num" id="levelLabel">第 1 關</span>
+          <span class="ver-tag" id="verTag">v_23:45</span>
+        </div>
+        <div class="moves-pill" id="movesPill" aria-label="剩餘步數">
+          <span class="pill-lbl" id="movesLbl">步數</span>
+          <strong id="movesVal">20</strong>
+        </div>
+        <div class="score-pill" aria-label="分數">
+          <span class="pill-lbl" id="scoreLbl">分數</span>
+          <strong id="scoreVal">0</strong>
+        </div>
+      </div>
+      <div class="goal-strip" id="goalStrip" aria-label="過關目標"></div>
+    </header>
+
+    <div class="tip-banner" id="tipBanner" role="status" aria-live="polite">
+      單指滑動或點兩顆相鄰糖果，連成 3 顆以上就能消除！
+    </div>
+
+    <main class="board-stage" id="boardStage">
+      <div class="board-frame" id="boardFrame">
+        <canvas id="candyCanvas" aria-label="糖果三消棋盤"></canvas>
+      </div>
+    </main>
+
+    <footer class="action-bar" aria-label="操作按鈕">
+      <button type="button" class="act-btn hint-btn" id="btnHint">💡 提示</button>
+      <button type="button" class="act-btn sound-btn" id="btnSound">🔊 音效開</button>
+      <button type="button" class="act-btn restart-btn" id="btnRestart">↻ 重玩</button>
+      <button type="button" class="act-btn fs-btn" id="btnFs">⛶ 全螢幕</button>
+    </footer>
+
+    <div class="modal-backdrop hidden" id="resultModal" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <div class="modal-stars" id="modalStars">★★★</div>
+        <h2 class="modal-title" id="modalTitle">過關成功！</h2>
+        <p class="modal-desc" id="modalDesc">太甜美了！準備進入下一關吧。</p>
+        <div class="modal-stats" id="modalStats"></div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn primary" id="btnNextLevel">下一關 ↗</button>
+          <button type="button" class="modal-btn secondary" id="btnRetryLevel">再玩一次</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./arcade-i18n.js?v=20261122_i18n_menu_v1"></script>
+  <script src="./candy.js?v=20261127_candy_v1"></script>
+</body>
+</html>
