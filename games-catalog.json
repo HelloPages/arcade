@@ -1,7 +1,7 @@
 {
   "portalTitle": "經典街機遊戲館",
-  "version": "v_20261128_candy_tw_v3",
-  "updatedAt": "2026-11-28T01:25:00+08:00",
+  "version": "v_20261128_candy_px_v4",
+  "updatedAt": "2026-11-28T02:15:00+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向與原創在地化命名（禁用真實版權遊戲名稱），並全面支援 TW / EN / KO 本土化語系切換。",
   "dailySchedule": {
     "generateCron": "每日04:00產出可單人對戰CPU的原創運動或街機競技遊戲",

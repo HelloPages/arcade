@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION_STAMP = "v_01:25";
+  const VERSION_STAMP = "v_02:15";
   const appEl = document.getElementById("candy-app");
   const canvas = document.getElementById("candyCanvas");
   const ctx = canvas.getContext("2d");
@@ -24,6 +24,11 @@
   const btnSound = document.getElementById("btnSound");
   const btnRestart = document.getElementById("btnRestart");
   const btnFs = document.getElementById("btnFs");
+  const lblHint = document.getElementById("lblHint");
+  const lblBgm = document.getElementById("lblBgm");
+  const lblSound = document.getElementById("lblSound");
+  const lblRestart = document.getElementById("lblRestart");
+  const lblFs = document.getElementById("lblFs");
 
   const resultModal = document.getElementById("resultModal");
   const modalStars = document.getElementById("modalStars");
@@ -33,30 +38,30 @@
   const btnNextLevel = document.getElementById("btnNextLevel");
   const btnRetryLevel = document.getElementById("btnRetryLevel");
 
-  // --- 多語系 (TW / EN / KO) ---
+  // --- 多語系 (TW / EN / KO，全部改搭統一像素圖示、零系統 Emoji) ---
   const COPY = {
     tw: {
       level: n => `第 ${n} 關`,
       moves: "步數",
       score: "分數",
-      hint: "💡 提示",
-      bgmOn: "🎵 音樂",
-      bgmOff: "🎵 關",
-      soundOn: "🔊 音效",
-      soundOff: "🔇 靜音",
-      restart: "↻ 重玩",
-      fsEnter: "⛶ 全螢幕",
-      fsExit: "✕ 退出",
+      hint: "提示",
+      bgmOn: "音樂",
+      bgmOff: "音樂關",
+      soundOn: "音效",
+      soundOff: "靜音",
+      restart: "重玩",
+      fsEnter: "全螢幕",
+      fsExit: "退出",
       tipStart: "單指滑動或點兩顆相鄰台味點心，連成 3 顆就能歡樂消除！",
       tipShuffle: "沒有可走的步了，自動洗牌中！",
       cheers: ["好甜!", "超讚!", "大吉大利!", "夜市滿貫!", "尾牙狂歡!"],
       goalScore: v => `分數 ${v}`,
       goalFrost: v => `糖霜 ${v}`,
-      winTitle: n => `🎉 第 ${n} 關大過關！`,
+      winTitle: n => `第 ${n} 關大過關！`,
       winDesc: "好運爆棚！剩餘步數已換算成紅包加分！",
       loseTitle: "步數用完囉！",
       loseDesc: "差一點點就大吉過關，再來一局吧！",
-      nextBtn: "下一關 ↗",
+      nextBtn: "下一關",
       retryBtn: "再玩一次",
       stats: (sc, best) => `本關得分：${sc.toLocaleString()} ｜ 最高分：${best.toLocaleString()}`,
       candyNames: ["糖葫蘆", "雞蛋糕", "汽水", "小龜粿", "珍奶", "鳳梨酥"]
@@ -65,24 +70,24 @@
       level: n => `Lv.${n}`,
       moves: "Moves",
       score: "Score",
-      hint: "💡 Hint",
-      bgmOn: "🎵 BGM",
-      bgmOff: "🎵 Off",
-      soundOn: "🔊 SFX",
-      soundOff: "🔇 Off",
-      restart: "↻ Retry",
-      fsEnter: "⛶ Full",
-      fsExit: "✕ Exit",
+      hint: "Hint",
+      bgmOn: "BGM",
+      bgmOff: "Off",
+      soundOn: "SFX",
+      soundOff: "Off",
+      restart: "Retry",
+      fsEnter: "Full",
+      fsExit: "Exit",
       tipStart: "Swipe or tap two adjacent Taiwanese treats to match 3+!",
       tipShuffle: "No moves left — auto shuffling!",
       cheers: ["Sweet!", "Yummy!", "Lucky!", "Jackpot!", "Party Time!"],
       goalScore: v => `Score ${v}`,
       goalFrost: v => `Frost ${v}`,
-      winTitle: n => `🎉 Level ${n} Clear!`,
+      winTitle: n => `Level ${n} Clear!`,
       winDesc: "Jackpot! Leftover moves turned into bonus points!",
       loseTitle: "Out of Moves!",
       loseDesc: "So close! Give it another try!",
-      nextBtn: "Next Level ↗",
+      nextBtn: "Next Level",
       retryBtn: "Play Again",
       stats: (sc, best) => `Score: ${sc.toLocaleString()} | Best: ${best.toLocaleString()}`,
       candyNames: ["Tanghulu", "ChickCake", "Soda", "Turtle", "Boba", "Pineapple"]
@@ -91,24 +96,24 @@
       level: n => `${n}단계`,
       moves: "횟수",
       score: "점수",
-      hint: "💡 힌트",
-      bgmOn: "🎵 음악",
-      bgmOff: "🎵 끔",
-      soundOn: "🔊 효과",
-      soundOff: "🔇 끔",
-      restart: "↻ 다시",
-      fsEnter: "⛶ 전체",
-      fsExit: "✕ 닫기",
+      hint: "힌트",
+      bgmOn: "음악",
+      bgmOff: "끔",
+      soundOn: "효과",
+      soundOff: "끔",
+      restart: "다시",
+      fsEnter: "전체",
+      fsExit: "닫기",
       tipStart: "한 손가락으로 밀거나 인접한 대만 간식을 눌러 3개 이상 맞추세요!",
       tipShuffle: "움직일 수 있는 수가 없어 자동 섞기 중!",
       cheers: ["달콤!", "최고!", "대박!", "축제 콤보!", "파티 타임!"],
       goalScore: v => `점수 ${v}`,
       goalFrost: v => `프로스팅 ${v}`,
-      winTitle: n => `🎉 ${n}단계 클리어!`,
+      winTitle: n => `${n}단계 클리어!`,
       winDesc: "대박! 남은 횟수가 보너스 점수로 전환되었어요!",
       loseTitle: "이동 횟수 종료!",
       loseDesc: "아쉬워요! 다시 도전해 보세요!",
-      nextBtn: "다음 단계 ↗",
+      nextBtn: "다음 단계",
       retryBtn: "다시 하기",
       stats: (sc, best) => `점수: ${sc.toLocaleString()} | 최고: ${best.toLocaleString()}`,
       candyNames: ["탕후루", "계란빵", "사이다", "거북떡", "버블티", "펑리수"]
@@ -139,117 +144,26 @@
     appEl.classList.toggle("portal-fs-pad", inPortalFs);
   }
 
-  // --- 七款精繪台味夜市甜點角色精靈 ---
+  // --- 全套統一 32x32 半立體像素真透明台味甜點＋禮物雨精靈 ---
+  const PX_VER = "v=20261128_v4";
   const CANDY_META = [
-    { id: 0, main: "#ff3b63", light: "#ff9cb2", src: "./assets/candy-tw0.webp?v=20261128_v3" }, // 糖葫蘆
-    { id: 1, main: "#ffc414", light: "#fff099", src: "./assets/candy-tw1.webp?v=20261128_v3" }, // 雞蛋糕小雞
-    { id: 2, main: "#2596ff", light: "#a8e2ff", src: "./assets/candy-tw2.webp?v=20261128_v3" }, // 彈珠汽水
-    { id: 3, main: "#18c574", light: "#a7f3d0", src: "./assets/candy-tw3.webp?v=20261128_v3" }, // 草仔粿小龜
-    { id: 4, main: "#9b4dff", light: "#dfc4ff", src: "./assets/candy-tw4.webp?v=20261128_v3" }, // 芋頭珍奶杯
-    { id: 5, main: "#ff7e1a", light: "#ffd299", src: "./assets/candy-tw5.webp?v=20261128_v3" }  // 黃金鳳梨酥
+    { id: 0, main: "#ff3b63", light: "#ff9cb2", src: `./assets/px-tw0.webp?${PX_VER}` }, // 糖葫蘆
+    { id: 1, main: "#ffc414", light: "#fff099", src: `./assets/px-tw1.webp?${PX_VER}` }, // 雞蛋糕小雞
+    { id: 2, main: "#2596ff", light: "#a8e2ff", src: `./assets/px-tw2.webp?${PX_VER}` }, // 彈珠汽水
+    { id: 3, main: "#18c574", light: "#a7f3d0", src: `./assets/px-tw3.webp?${PX_VER}` }, // 草仔粿小龜
+    { id: 4, main: "#9b4dff", light: "#dfc4ff", src: `./assets/px-tw4.webp?${PX_VER}` }, // 芋頭珍奶杯
+    { id: 5, main: "#ff7e1a", light: "#ffd299", src: `./assets/px-tw5.webp?${PX_VER}` }  // 黃金鳳梨酥
   ];
-  const candyImgs = CANDY_META.map(m => {
-    const im = new Image();
-    im.decoding = "async";
-    im.src = m.src;
-    return im;
-  });
-  const bombImg = new Image();
-  bombImg.decoding = "async";
-  bombImg.src = "./assets/candy-tw-bomb.webp?v=20261128_v3";
-
-  // =========================================================================
-  // 移植自《尾牙抽獎》prize-confetti.js 的離屏卡通禮物貼紙圖集
-  // （白貼紙粗邊＋深藍墨線＋可愛笑臉：飛行紅包、驚喜禮盒、皇冠金幣、笑臉星星、彩虹泡泡）
-  // =========================================================================
-  const STICKER_SZ = 72;
-  const partyStickers = [];
-  function buildPartyStickers() {
-    partyStickers.length = 0;
-    const INK = "#28324f", PAPER = "#fffdf5";
-    const makeCanvas = drawFn => {
-      const c = document.createElement("canvas");
-      c.width = STICKER_SZ; c.height = STICKER_SZ;
-      const g = c.getContext("2d");
-      g.translate(STICKER_SZ * 0.5, STICKER_SZ * 0.5);
-      g.lineCap = "round"; g.lineJoin = "round";
-      const fill = col => {
-        g.strokeStyle = PAPER; g.lineWidth = 6.5; g.stroke();
-        g.fillStyle = col; g.fill();
-        g.strokeStyle = INK; g.lineWidth = 2.4; g.stroke();
-      };
-      const face = (y) => {
-        g.fillStyle = INK;
-        g.beginPath(); g.arc(-6, y, 2.2, 0, Math.PI * 2); g.arc(6, y, 2.2, 0, Math.PI * 2); g.fill();
-        g.fillStyle = "#ff8fa3";
-        g.beginPath(); g.ellipse(-10, y + 3.5, 2.8, 1.6, 0, 0, Math.PI * 2); g.ellipse(10, y + 3.5, 2.8, 1.6, 0, 0, Math.PI * 2); g.fill();
-        g.strokeStyle = INK; g.lineWidth = 2;
-        g.beginPath(); g.moveTo(-4, y + 4); g.quadraticCurveTo(0, y + 9, 4, y + 4); g.stroke();
-      };
-      drawFn(g, fill, face);
-      return c;
-    };
-
-    // 0: 飛行小紅包（白翅膀＋紅金封口＋笑臉）
-    partyStickers.push(makeCanvas((g, fill, face) => {
-      for (const s of [-1, 1]) {
-        g.save(); g.scale(s, 1);
-        g.beginPath(); g.ellipse(22, -4, 9, 5, -0.35, 0, Math.PI * 2); fill(PAPER);
-        g.restore();
-      }
-      g.beginPath(); g.roundRect(-18, -13, 36, 28, 6); fill("#ef3b5b");
-      g.beginPath(); g.moveTo(-17, -11); g.lineTo(0, 2); g.lineTo(17, -11); g.closePath();
-      g.fillStyle = "#ffd34d"; g.fill(); g.strokeStyle = INK; g.lineWidth = 2; g.stroke();
-      face(5);
-    }));
-
-    // 1: 驚喜禮物盒（粉彩禮盒＋金緞帶＋笑臉）
-    partyStickers.push(makeCanvas((g, fill, face) => {
-      g.beginPath(); g.roundRect(-18, -6, 36, 24, 5); fill("#ff6f9c");
-      g.beginPath(); g.roundRect(-21, -14, 42, 10, 4); fill("#50dacc");
-      g.fillStyle = "#ffd44d"; g.fillRect(-4, -13, 8, 30);
-      g.beginPath(); g.ellipse(-7, -18, 7, 4.5, -0.3, 0, Math.PI * 2); fill("#ffd44d");
-      g.beginPath(); g.ellipse(7, -18, 7, 4.5, 0.3, 0, Math.PI * 2); fill("#ffd44d");
-      face(5);
-    }));
-
-    // 2: 皇冠幸運金幣
-    partyStickers.push(makeCanvas((g, fill, face) => {
-      g.beginPath(); g.arc(0, 3, 19, 0, Math.PI * 2); fill("#ffd44d");
-      g.fillStyle = "#fff1a8"; g.beginPath(); g.arc(0, 3, 13.5, 0, Math.PI * 2); g.fill();
-      g.beginPath(); g.moveTo(-10, -14); g.lineTo(-12, -23); g.lineTo(-4, -18); g.lineTo(0, -25); g.lineTo(4, -18); g.lineTo(12, -23); g.lineTo(10, -14); g.closePath();
-      fill("#ff5c8a");
-      face(2);
-    }));
-
-    // 3: 笑臉幸運星星
-    partyStickers.push(makeCanvas((g, fill, face) => {
-      g.beginPath();
-      for (let i = 0; i < 10; i++) {
-        const a = -Math.PI / 2 + (Math.PI * i) / 5;
-        const rad = i % 2 === 0 ? 22 : 11;
-        if (i === 0) g.moveTo(Math.cos(a) * rad, Math.sin(a) * rad);
-        else g.lineTo(Math.cos(a) * rad, Math.sin(a) * rad);
-      }
-      g.closePath(); fill("#ffe055");
-      face(0);
-    }));
-
-    // 4: 夢幻彩虹泡泡
-    partyStickers.push(makeCanvas((g) => {
-      const grad = g.createRadialGradient(-6, -6, 3, 0, 0, 20);
-      grad.addColorStop(0, "rgba(255,255,255,0.92)");
-      grad.addColorStop(0.55, "rgba(165,235,255,0.55)");
-      grad.addColorStop(0.85, "rgba(255,180,230,0.68)");
-      grad.addColorStop(1, "rgba(255,235,160,0.8)");
-      g.fillStyle = grad;
-      g.beginPath(); g.arc(0, 0, 19, 0, Math.PI * 2); g.fill();
-      g.strokeStyle = "rgba(255,255,255,0.9)"; g.lineWidth = 2; g.stroke();
-      g.fillStyle = "#ffffff";
-      g.beginPath(); g.ellipse(-6, -7, 5, 2.8, -0.5, 0, Math.PI * 2); g.fill();
-    }));
-  }
-  buildPartyStickers();
+  const loadPxImg = src => { const im = new Image(); im.decoding = "async"; im.src = src; return im; };
+  const candyImgs = CANDY_META.map(m => loadPxImg(m.src));
+  const bombImg = loadPxImg(`./assets/px-bomb.webp?${PX_VER}`);
+  const partyStickers = [
+    loadPxImg(`./assets/px-gift-red.webp?${PX_VER}`),
+    loadPxImg(`./assets/px-gift-box.webp?${PX_VER}`),
+    loadPxImg(`./assets/px-gift-coin.webp?${PX_VER}`),
+    loadPxImg(`./assets/px-gift-star.webp?${PX_VER}`),
+    loadPxImg(`./assets/px-gift-bubble.webp?${PX_VER}`)
+  ];
 
   // =========================================================================
   // 雙層尾牙級持續禮物雨 ＋ 歡樂彩帶噴泉爆破系統（嚴格上限回收、不掉幀）
@@ -269,6 +183,7 @@
       cv.width = Math.round(fxW * d);
       cv.height = Math.round(fxH * d);
       g.setTransform(d, 0, 0, d, 0, 0);
+      g.imageSmoothingEnabled = false;
     }
   }
   window.addEventListener("resize", resizeFxCanvases);
@@ -365,7 +280,7 @@
         fxBackCtx.fillRect(-p.size * 0.6, -p.size * 0.3, p.size * 1.2, p.size * 0.6);
       } else {
         const sp = partyStickers[p.stickerIdx];
-        fxBackCtx.drawImage(sp, -p.size * 0.5, -p.size * 0.5, p.size, p.size);
+        if (sp && sp.complete && sp.naturalWidth > 0) fxBackCtx.drawImage(sp, -p.size * 0.5, -p.size * 0.5, p.size, p.size);
       }
       fxBackCtx.restore();
     }
@@ -401,7 +316,7 @@
         fxFrontCtx.fillRect(-p.size * 0.65, -p.size * 0.32, p.size * 1.3, p.size * 0.64);
       } else {
         const sp = partyStickers[p.stickerIdx];
-        fxFrontCtx.drawImage(sp, -p.size * 0.5, -p.size * 0.5, p.size, p.size);
+        if (sp && sp.complete && sp.naturalWidth > 0) fxFrontCtx.drawImage(sp, -p.size * 0.5, -p.size * 0.5, p.size, p.size);
       }
       fxFrontCtx.restore();
     }
@@ -431,7 +346,7 @@
   }
 
   // =========================================================================
-  // 原創復古可愛掌機晶片 BGM（128 步四段變化，128 BPM 無縫循環）＋ 慶祝音效
+  // 朗朗上口原創復古可愛掌機 BGM（134 BPM，128 步 A - A' - B - C 呼應主旋律）
   // =========================================================================
   let bgmOn = localStorage.getItem("candy_bgm_on") !== "0";
   let sfxOn = localStorage.getItem("candy_sfx_on") !== "0";
@@ -441,31 +356,44 @@
   const NOTE_HZ = {
     C3:130.81, D3:146.83, E3:164.81, F3:174.61, G3:196.00, A3:220.00, B3:246.94,
     C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88,
-    C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880.00, B5:987.77, C6:1046.50
+    C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880.00, B5:987.77, C6:1046.50, D6:1174.66, E6:1318.51
   };
+  // 超洗腦記憶點主旋律：清楚兩小節呼應樂句（A -> A' -> B 副歌拉高 -> C 回旋收尾接 A）
   const BGM_LEAD = [
-    "E5",0,"G5",0,"C6",0,"A5",0, "G5",0,"E5",0,"D5","E5","C5",0,
-    "A4",0,"C5",0,"E5",0,"D5",0, "C5",0,"A4",0,"G4",0,0,0,
-    "F5",0,"A5",0,"G5",0,"F5",0, "E5",0,"G5",0,"C5",0,"E5",0,
-    "D5",0,"F5",0,"A5",0,"G5",0, "G5",0,"E5",0,"D5",0,0,0,
-    "G5",0,"E5","G5","B5",0,"G5",0, "A5",0,"E5","A5","C6",0,"A5",0,
-    "F5",0,"A5","F5","C6",0,"A5",0, "G5",0,"F5",0,"E5",0,"D5",0,
-    "E5",0,"G5",0,"A5",0,"C6",0, "A5",0,"F5",0,"D5",0,"F5",0,
-    "E5",0,"D5",0,"C5",0,"D5",0, "C5",0,0,0,"G4",0,0,0
+    // A 段：朗朗上口跳躍主題「Do-Mi-So-La-So! Mi-Re-Do-Re-Mi!」
+    "C5",0,"E5",0,"G5",0,"A5","G5", 0,"E5","D5","C5","D5",0,"E5",0,
+    "G5",0,"E5",0,"D5",0,"C5","D5", 0,"E5","G5",0,"E5",0,0,0,
+    // A' 段：重複主題並上揚收尾「Do-Mi-So-La-Do6! La-So-Mi-So-La-So!」
+    "C5",0,"E5",0,"G5",0,"A5","C6", 0,"A5","G5","E5","G5",0,"A5",0,
+    "G5",0,"E5",0,"D5","E5","G5",0, "C5",0,0,0,0,0,0,0,
+    // B 段：明亮副歌（F -> G -> Em -> Am，歡樂起飛！）
+    "A5",0,"A5",0,"G5",0,"F5",0, "E5",0,"G5",0,"C6",0,"G5",0,
+    "F5",0,"A5",0,"G5",0,"E5",0, "D5",0,"E5","F5","G5",0,0,0,
+    // C 段：可愛玩具盒回應句，自然導回 A 段首音 C5
+    "A5",0,"C6",0,"B5",0,"A5",0, "G5",0,"E5",0,"C5",0,"E5",0,
+    "D5",0,"F5",0,"E5",0,"D5",0, "C5",0,"E5",0,"G5",0,0,0
   ];
+  // 呼應副旋律（玩具鐘琴在主旋律空拍處輕輕眨眼回應）
+  const BGM_BELL = [
+    0,0,0,0,0,0,0,0, "C6",0,0,0,0,0,"G5",0,
+    0,0,0,0,0,0,0,0, "G5",0,0,0,0,"C6","E6",0,
+    0,0,0,0,0,0,0,0, "C6",0,0,0,0,0,"C6",0,
+    0,0,0,0,0,0,0,0, 0,"E5","G5","C6",0,"G5",0,0,
+    0,0,"C6",0,0,0,"A5",0, 0,0,"C6",0,0,0,"E6",0,
+    0,0,"C6",0,0,0,"G5",0, 0,0,0,0,0,"B5","D6",0,
+    0,0,0,0,0,0,"C6",0, 0,0,"G5",0,0,0,"G5",0,
+    0,0,"A5",0,0,0,"G5",0, 0,"E5","G5","C6",0,0,0,0
+  ];
+  // 八度跳躍復古貝斯（律動感十足！）
   const BGM_BASS = [
-    "C3",0,0,0,"G3",0,0,0, "C3",0,0,0,"G3",0,0,0,
-    "A3",0,0,0,"E3",0,0,0, "A3",0,0,0,"G3",0,0,0,
-    "F3",0,0,0,"C4",0,0,0, "C3",0,0,0,"G3",0,0,0,
-    "D3",0,0,0,"A3",0,0,0, "G3",0,0,0,"D3",0,0,0,
-    "E3",0,0,0,"B3",0,0,0, "A3",0,0,0,"E3",0,0,0,
-    "F3",0,0,0,"C4",0,0,0, "G3",0,0,0,"D3",0,0,0,
-    "C3",0,0,0,"G3",0,0,0, "F3",0,0,0,"C4",0,0,0,
-    "G3",0,0,0,"D3",0,0,0, "C3",0,0,0,"G3",0,0,0
-  ];
-  const BGM_ARP = [
-    "C5","E5","G5","E5", "C5","E5","G5","E5", "A4","C5","E5","C5", "A4","C5","E5","C5",
-    "F4","A4","C5","A4", "C5","E5","G5","E5", "D5","F5","A5","F5", "G4","B4","D5","B4"
+    "C3",0,"C4",0,"G3",0,"C4",0, "A3",0,"A4",0,"E3",0,"A3",0,
+    "F3",0,"F4",0,"G3",0,"G4",0, "C3",0,"G3",0,"C4",0,"G3",0,
+    "C3",0,"C4",0,"G3",0,"C4",0, "F3",0,"F4",0,"C3",0,"G3",0,
+    "D3",0,"A3",0,"G3",0,"D3",0, "C3",0,"G3",0,"C4",0,"G3",0,
+    "F3",0,"F4",0,"C4",0,"F4",0, "C3",0,"C4",0,"G3",0,"C4",0,
+    "F3",0,"F4",0,"E3",0,"E4",0, "D3",0,"A3",0,"G3",0,"G4",0,
+    "F3",0,"F4",0,"G3",0,"G4",0, "E3",0,"E4",0,"A3",0,"E4",0,
+    "D3",0,"A3",0,"G3",0,"B3",0, "C3",0,"G3",0,"C4",0,"G3",0
   ];
 
   function ensureAudio() {
@@ -509,31 +437,35 @@
       g2.gain.exponentialRampToValueAtTime(0.001, when + 0.14);
       o2.connect(g2).connect(bgmFilter); o2.start(when); o2.stop(when + 0.15);
     }
-    if (step % 2 === 1) {
-      const arpNote = BGM_ARP[Math.floor(step / 4) % BGM_ARP.length];
-      if (arpNote && NOTE_HZ[arpNote]) {
-        const oa = a.createOscillator(), ga = a.createGain();
-        oa.type = "sine"; oa.frequency.setValueAtTime(NOTE_HZ[arpNote], when);
-        ga.gain.setValueAtTime(0.001, when);
-        ga.gain.linearRampToValueAtTime(0.052, when + 0.008);
-        ga.gain.exponentialRampToValueAtTime(0.001, when + 0.11);
-        oa.connect(ga).connect(bgmFilter); oa.start(when); oa.stop(when + 0.12);
-      }
+    const bellNote = BGM_BELL[step];
+    if (bellNote && NOTE_HZ[bellNote]) {
+      const oa = a.createOscillator(), ga = a.createGain();
+      oa.type = "sine"; oa.frequency.setValueAtTime(NOTE_HZ[bellNote], when);
+      ga.gain.setValueAtTime(0.001, when);
+      ga.gain.linearRampToValueAtTime(0.068, when + 0.008);
+      ga.gain.exponentialRampToValueAtTime(0.001, when + 0.14);
+      oa.connect(ga).connect(bgmFilter); oa.start(when); oa.stop(when + 0.15);
     }
     const bassNote = BGM_BASS[step];
     if (bassNote && NOTE_HZ[bassNote]) {
       const ob = a.createOscillator(), gb = a.createGain();
       ob.type = "triangle"; ob.frequency.setValueAtTime(NOTE_HZ[bassNote], when);
       gb.gain.setValueAtTime(0.001, when);
-      gb.gain.linearRampToValueAtTime(0.14, when + 0.012);
-      gb.gain.exponentialRampToValueAtTime(0.001, when + 0.24);
-      ob.connect(gb).connect(bgmFilter); ob.start(when); ob.stop(when + 0.25);
+      gb.gain.linearRampToValueAtTime(0.14, when + 0.01);
+      gb.gain.exponentialRampToValueAtTime(0.001, when + 0.17);
+      ob.connect(gb).connect(bgmFilter); ob.start(when); ob.stop(when + 0.18);
     }
-    if (step % 4 === 0) {
+    // 輕快復古節奏（第 0 拍底鼓、第 4 拍清脆小鼓、偶數拍輕響鈸）
+    if (step % 8 === 0) {
       const ok = a.createOscillator(), gk = a.createGain();
-      ok.type = "sine"; ok.frequency.setValueAtTime(145, when); ok.frequency.exponentialRampToValueAtTime(52, when + 0.06);
-      gk.gain.setValueAtTime(0.085, when); gk.gain.exponentialRampToValueAtTime(0.001, when + 0.07);
+      ok.type = "sine"; ok.frequency.setValueAtTime(155, when); ok.frequency.exponentialRampToValueAtTime(48, when + 0.065);
+      gk.gain.setValueAtTime(0.10, when); gk.gain.exponentialRampToValueAtTime(0.001, when + 0.075);
       ok.connect(gk).connect(bgmFilter); ok.start(when); ok.stop(when + 0.08);
+    } else if (step % 8 === 4) {
+      const os = a.createOscillator(), gs = a.createGain();
+      os.type = "triangle"; os.frequency.setValueAtTime(320, when); os.frequency.exponentialRampToValueAtTime(120, when + 0.045);
+      gs.gain.setValueAtTime(0.065, when); gs.gain.exponentialRampToValueAtTime(0.001, when + 0.055);
+      os.connect(gs).connect(bgmFilter); os.start(when); os.stop(when + 0.06);
     }
   }
 
@@ -545,10 +477,10 @@
       a.resume().then(() => { if (bgmOn && !document.hidden) startBgm(); }).catch(() => {});
       return;
     }
-    if (masterBgmGain) masterBgmGain.gain.setValueAtTime(0.54, a.currentTime);
+    if (masterBgmGain) masterBgmGain.gain.setValueAtTime(0.56, a.currentTime);
     bgmRunning = true;
     bgmNextTime = a.currentTime + 0.03;
-    const stepDur = 60 / 128 / 4;
+    const stepDur = 60 / 134 / 4; // 134 BPM 輕快復古掌機節奏
     if (bgmTimer) clearInterval(bgmTimer);
     bgmTimer = setInterval(() => {
       if (!bgmRunning || !ac || ac.state !== "running" || document.hidden) return;
@@ -665,16 +597,26 @@
     canvas.width = Math.round(boardW * dpr);
     canvas.height = Math.round(boardH * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
+    ctx.imageSmoothingEnabled = false;
     if (phase === "idle") {
       for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
         if (grid[r] && grid[r][c]) { grid[r][c].x = c; grid[r][c].y = r; }
       }
     }
   }
-  window.addEventListener("resize", () => resizeBoard(false));
-  if (typeof ResizeObserver !== "undefined") new ResizeObserver(() => resizeBoard(false)).observe(boardStage);
+  function handleViewportChange() {
+    const canReflowRows = (phase === "idle" && movesLeft === cfg.moves && score === 0);
+    if (canReflowRows) {
+      const ideal = computeIdealGridSize();
+      if (ideal.rows !== ROWS || ideal.cols !== COLS) {
+        COLS = ideal.cols; ROWS = ideal.rows;
+        createInitialBoard();
+      }
+    }
+    resizeBoard(false);
+  }
+  window.addEventListener("resize", handleViewportChange);
+  if (typeof ResizeObserver !== "undefined") new ResizeObserver(handleViewportChange).observe(boardStage);
 
   function randColor() { return Math.floor(Math.random() * cfg.colors); }
   function makeCandy(r, c, color = randColor(), special = null) {
@@ -739,11 +681,13 @@
     movesVal.textContent = String(movesLeft); scoreVal.textContent = String(score);
     movesPill.classList.toggle("low", movesLeft <= 5 && phase !== "win");
 
-    btnHint.textContent = t.hint;
-    btnBgm.textContent = bgmOn ? t.bgmOn : t.bgmOff; btnBgm.classList.toggle("muted", !bgmOn);
-    btnSound.textContent = sfxOn ? t.soundOn : t.soundOff; btnSound.classList.toggle("muted", !sfxOn);
-    btnRestart.textContent = t.restart;
-    if (btnFs) btnFs.textContent = document.fullscreenElement ? t.fsExit : t.fsEnter;
+    if (lblHint) lblHint.textContent = t.hint;
+    if (lblBgm) lblBgm.textContent = bgmOn ? t.bgmOn : t.bgmOff;
+    btnBgm.classList.toggle("muted", !bgmOn);
+    if (lblSound) lblSound.textContent = sfxOn ? t.soundOn : t.soundOff;
+    btnSound.classList.toggle("muted", !sfxOn);
+    if (lblRestart) lblRestart.textContent = t.restart;
+    if (lblFs) lblFs.textContent = document.fullscreenElement ? t.fsExit : t.fsEnter;
 
     goalStrip.innerHTML = "";
     for (const item of cfg.collect) {
@@ -757,13 +701,13 @@
     if (frostTotal > 0) {
       const chip = document.createElement("div");
       chip.className = "goal-chip" + (frostLeft <= 0 ? " done" : "");
-      chip.innerHTML = `<span class="goal-frost-dot"></span><span>${t.goalFrost(`${frostTotal - frostLeft}/${frostTotal}`)}</span>`;
+      chip.innerHTML = `<img class="goal-icon" src="./assets/px-ui-frost.webp?${PX_VER}" alt=""><span>${t.goalFrost(`${frostTotal - frostLeft}/${frostTotal}`)}</span>`;
       goalStrip.appendChild(chip);
     }
     if (cfg.targetScore > 0) {
       const chip = document.createElement("div");
       chip.className = "goal-chip" + (score >= cfg.targetScore ? " done" : "");
-      chip.innerHTML = `<span>★ ${t.goalScore(`${Math.min(score, cfg.targetScore)}/${cfg.targetScore}`)}</span>`;
+      chip.innerHTML = `<img class="goal-icon" src="./assets/px-ui-star.webp?${PX_VER}" alt=""><span>${t.goalScore(`${Math.min(score, cfg.targetScore)}/${cfg.targetScore}`)}</span>`;
       goalStrip.appendChild(chip);
     }
   }
@@ -1088,12 +1032,13 @@
       sfxWin();
       triggerPartyExplosion(2.6, fxW * 0.5, fxH * 0.55);
       winShowerTimer = 0.7;
-      modalStars.textContent = movesLeft >= 8 ? "★★★" : movesLeft >= 3 ? "★★☆" : "★☆☆";
+      const nStars = movesLeft >= 8 ? 3 : movesLeft >= 3 ? 2 : 1;
+      modalStars.innerHTML = Array.from({ length: nStars }, () => `<img class="modal-star-ico" src="./assets/px-ui-star.webp?${PX_VER}" alt="">`).join("");
       modalTitle.textContent = t.winTitle(currentLevel);
       modalDesc.textContent = t.winDesc;
       btnNextLevel.classList.remove("hidden");
     } else {
-      modalStars.textContent = "🧋";
+      modalStars.innerHTML = `<img class="modal-star-ico" src="./assets/px-tw4.webp?${PX_VER}" alt="">`;
       modalTitle.textContent = t.loseTitle;
       modalDesc.textContent = t.loseDesc;
       btnNextLevel.classList.add("hidden");

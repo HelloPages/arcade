@@ -177,20 +177,26 @@ html, body {
 }
 
 .goal-icon {
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
+  image-rendering: pixelated;
   flex-shrink: 0;
 }
 
-.goal-frost-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  background: linear-gradient(135deg, #fde68a, #f59e0b);
-  border: 1px solid #d97706;
-  display: inline-block;
+.px-btn-ico {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  image-rendering: pixelated;
   flex-shrink: 0;
+}
+
+.modal-star-ico {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 /* 首次短提示（首步消除後自動收合） */
@@ -247,6 +253,7 @@ html, body {
   border-radius: 9px;
   touch-action: none;
   cursor: pointer;
+  image-rendering: pixelated;
 }
 
 /* 底部主要操作列 */
@@ -267,12 +274,16 @@ html, body {
   background: rgba(255, 250, 247, 0.95);
   color: #5b2540;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 900;
   cursor: pointer;
   box-shadow: 3px 3px 0 #dfb3c1;
   white-space: nowrap;
   padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
   transition: transform 0.1s ease, background 0.15s ease;
 }
 
