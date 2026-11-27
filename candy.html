@@ -3,32 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>糖果三消-1｜甜蜜王國</title>
+  <title>糖果三消-1｜甜蜜甜點王國</title>
   <link rel="preload" as="image" href="./assets/candy-bg.webp?v=20261127_v1">
-  <link rel="stylesheet" href="./candy.css?v=20261127_candy_v1">
+  <link rel="preload" as="image" href="./assets/candy-c0.webp?v=20261128_v2">
+  <link rel="preload" as="image" href="./assets/candy-c1.webp?v=20261128_v2">
+  <link rel="preload" as="image" href="./assets/candy-c2.webp?v=20261128_v2">
+  <link rel="preload" as="image" href="./assets/candy-c3.webp?v=20261128_v2">
+  <link rel="preload" as="image" href="./assets/candy-c4.webp?v=20261128_v2">
+  <link rel="preload" as="image" href="./assets/candy-c5.webp?v=20261128_v2">
+  <link rel="preload" as="image" href="./assets/candy-bomb.webp?v=20261128_v2">
+  <link rel="stylesheet" href="./candy.css?v=20261128_candy_v2">
 </head>
 <body>
   <div id="candy-app" class="candy-app">
-    <header class="hud-card" aria-label="關卡資訊">
-      <div class="hud-top-row">
+    <header class="hud-card" id="hudCard" aria-label="關卡資訊">
+      <div class="hud-row-main" id="hudRowMain">
         <div class="level-badge">
-          <span class="level-num" id="levelLabel">第 1 關</span>
-          <span class="ver-tag" id="verTag">v_23:45</span>
+          <span id="levelLabel">第 1 關</span>
+          <span class="ver-tag" id="verTag">v_00:35</span>
         </div>
-        <div class="moves-pill" id="movesPill" aria-label="剩餘步數">
+        <div class="stat-pill moves-pill" id="movesPill" aria-label="剩餘步數">
           <span class="pill-lbl" id="movesLbl">步數</span>
           <strong id="movesVal">20</strong>
         </div>
-        <div class="score-pill" aria-label="分數">
+        <div class="stat-pill score-pill" aria-label="分數">
           <span class="pill-lbl" id="scoreLbl">分數</span>
           <strong id="scoreVal">0</strong>
         </div>
       </div>
-      <div class="goal-strip" id="goalStrip" aria-label="過關目標"></div>
+      <div class="hud-row-goals" id="goalStrip" aria-label="過關目標"></div>
     </header>
 
     <div class="tip-banner" id="tipBanner" role="status" aria-live="polite">
-      單指滑動或點兩顆相鄰糖果，連成 3 顆以上就能消除！
+      單指滑動或點兩顆相鄰甜點，連成 3 顆就能消除！
     </div>
 
     <main class="board-stage" id="boardStage">
@@ -39,7 +46,8 @@
 
     <footer class="action-bar" aria-label="操作按鈕">
       <button type="button" class="act-btn hint-btn" id="btnHint">💡 提示</button>
-      <button type="button" class="act-btn sound-btn" id="btnSound">🔊 音效開</button>
+      <button type="button" class="act-btn bgm-btn" id="btnBgm">🎵 音樂</button>
+      <button type="button" class="act-btn sound-btn" id="btnSound">🔊 音效</button>
       <button type="button" class="act-btn restart-btn" id="btnRestart">↻ 重玩</button>
       <button type="button" class="act-btn fs-btn" id="btnFs">⛶ 全螢幕</button>
     </footer>
@@ -59,6 +67,6 @@
   </div>
 
   <script src="./arcade-i18n.js?v=20261122_i18n_menu_v1"></script>
-  <script src="./candy.js?v=20261127_candy_v1"></script>
+  <script src="./candy.js?v=20261128_candy_v2"></script>
 </body>
 </html>

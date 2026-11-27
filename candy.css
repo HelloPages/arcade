@@ -14,7 +14,7 @@ html, body {
   overflow: hidden;
   touch-action: none;
   font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", "PingFang TC", "Apple SD Gothic Neo", sans-serif;
-  background: linear-gradient(180deg, #9adcf7 0%, #f9d5e8 55%, #fde8c8 100%);
+  background: linear-gradient(180deg, #98dcf8 0%, #f9d4e8 55%, #fde8c8 100%);
   color: #4a2340;
 }
 
@@ -23,12 +23,12 @@ html, body {
   width: 100%;
   height: 100%;
   height: 100dvh;
-  max-width: 540px;
+  max-width: 520px;
   margin: 0 auto;
-  padding: max(6px, env(safe-area-inset-top)) 8px max(6px, env(safe-area-inset-bottom));
+  padding: max(5px, env(safe-area-inset-top)) 6px max(5px, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   background-image: url("./assets/candy-bg.webp?v=20261127_v1");
   background-size: cover;
   background-position: center;
@@ -42,77 +42,81 @@ html, body {
   }
   .candy-app {
     background-image: none;
-    padding: 8px 12px;
-    gap: 8px;
+    padding: 6px 10px;
+    gap: 6px;
   }
 }
 
-/* 頂部資訊卡（輕圓角＋乾淨右下錯位色塊，不佔過多高度） */
+/* 緊湊頂部資訊卡（輕圓角＋乾淨右下錯位色塊，絕不與右上退出全螢幕重疊） */
 .hud-card {
   flex: 0 0 auto;
-  background: rgba(255, 250, 253, 0.92);
-  border: 1px solid #ecc6da;
-  border-radius: 12px;
-  box-shadow: 4px 4px 0 #e6bfd3;
-  padding: 6px 8px;
+  background: rgba(255, 250, 253, 0.94);
+  border: 1.5px solid #ecc0d7;
+  border-radius: 11px;
+  box-shadow: 3px 3px 0 #e4bad0;
+  padding: 5px 8px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
-.hud-top-row {
+/* 大廳全螢幕模式：右上自動保留退出全螢幕按鈕專屬空間，零遮擋！ */
+.candy-app.portal-fs-pad .hud-row-main {
+  padding-right: 96px;
+}
+
+.hud-row-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 5px;
 }
 
 .level-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  background: linear-gradient(180deg, #ff7eb3 0%, #f14f90 100%);
+  gap: 4px;
+  background: linear-gradient(180deg, #ff7db3 0%, #ef478c 100%);
   color: #ffffff;
-  border: 1px solid #d73a79;
-  border-radius: 9px;
-  padding: 4px 9px;
+  border: 1px solid #d43273;
+  border-radius: 8px;
+  padding: 3px 8px;
   font-weight: 900;
-  font-size: 13px;
+  font-size: 12.5px;
   white-space: nowrap;
 }
 
 .ver-tag {
   font-family: ui-monospace, monospace;
-  font-size: 9.5px;
+  font-size: 9px;
   font-weight: 700;
-  opacity: 0.88;
+  opacity: 0.9;
   background: rgba(74, 35, 64, 0.22);
   padding: 1px 4px;
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
-.moves-pill,
-.score-pill {
+.stat-pill {
   display: inline-flex;
   align-items: baseline;
   gap: 4px;
   background: #fff5fa;
-  border: 1px solid #ebd0df;
-  border-radius: 9px;
-  padding: 3px 9px;
+  border: 1px solid #eac8db;
+  border-radius: 8px;
+  padding: 2px 8px;
   white-space: nowrap;
 }
 
 .moves-pill strong {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 900;
   color: #e13b72;
 }
 
 .moves-pill.low {
-  background: #fff0f2;
+  background: #ffedf0;
   border-color: #f4667d;
-  animation: pulseMoves 0.7s ease-in-out infinite alternate;
+  animation: pulseMoves 0.65s ease-in-out infinite alternate;
 }
 
 @keyframes pulseMoves {
@@ -121,23 +125,23 @@ html, body {
 }
 
 .score-pill strong {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 900;
   color: #7c3aed;
 }
 
 .pill-lbl {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
   color: #845a78;
 }
 
-.goal-strip {
+.hud-row-goals {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: nowrap;
-  gap: 6px;
+  gap: 5px;
   overflow: hidden;
 }
 
@@ -148,8 +152,8 @@ html, body {
   background: #fff8fc;
   border: 1px solid #e6c6d8;
   border-radius: 8px;
-  padding: 2px 8px;
-  font-size: 12px;
+  padding: 2px 7px;
+  font-size: 11.5px;
   font-weight: 800;
   color: #5b2a4d;
   white-space: nowrap;
@@ -161,26 +165,34 @@ html, body {
   color: #166534;
 }
 
-.goal-dot {
+.goal-icon {
+  width: 17px;
+  height: 17px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.goal-frost-dot {
   width: 14px;
   height: 14px;
   border-radius: 4px;
+  background: linear-gradient(135deg, #fbcfe8, #f472b6);
+  border: 1px solid #db2777;
   display: inline-block;
   flex-shrink: 0;
-  border: 1px solid rgba(74, 35, 64, 0.25);
 }
 
-/* 單行提示／連擊播報列 */
+/* 首次短提示（首次有效交換後自動收合，把全部空間還給棋盤） */
 .tip-banner {
   flex: 0 0 auto;
   text-align: center;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 800;
   color: #6b2954;
-  background: rgba(255, 252, 254, 0.86);
-  border: 1px solid #ecd0df;
-  border-radius: 9px;
-  padding: 3px 10px;
+  background: rgba(255, 252, 254, 0.90);
+  border: 1px solid #ebc8dc;
+  border-radius: 8px;
+  padding: 3px 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -192,7 +204,11 @@ html, body {
   color: #9d174d;
 }
 
-/* 彈性棋盤區：自動計算可用寬高，保證一頁完全不裁切、不捲動 */
+.tip-banner.collapsed {
+  display: none;
+}
+
+/* 真滿版彈性棋盤區：依直式手機高度自動增加列數，格子嚴格保持 1:1 正方形 */
 .board-stage {
   flex: 1 1 auto;
   min-height: 0;
@@ -205,11 +221,11 @@ html, body {
 
 .board-frame {
   position: relative;
-  background: rgba(255, 247, 252, 0.90);
-  border: 2px solid #f2b7d4;
-  border-radius: 14px;
-  box-shadow: 4px 4px 0 #dfb7cc;
-  padding: 5px;
+  background: rgba(255, 246, 251, 0.90);
+  border: 2px solid #f0b0cf;
+  border-radius: 13px;
+  box-shadow: 4px 4px 0 #ddb3c9;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -217,41 +233,41 @@ html, body {
 
 #candyCanvas {
   display: block;
-  border-radius: 10px;
+  border-radius: 9px;
   touch-action: none;
   cursor: pointer;
 }
 
-/* 底部主要操作列 */
+/* 底部精簡操作列（含獨立音樂／音效開關） */
 .action-bar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .act-btn {
   flex: 1 1 0;
   min-width: 0;
-  height: 40px;
-  border-radius: 10px;
+  height: 38px;
+  border-radius: 9px;
   border: 1px solid #e2b8cf;
-  background: rgba(255, 250, 253, 0.94);
+  background: rgba(255, 250, 253, 0.95);
   color: #5b264c;
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 3px 3px 0 #e0b8cd;
+  box-shadow: 3px 3px 0 #dfb6cb;
   white-space: nowrap;
-  padding: 0 6px;
+  padding: 0 4px;
   transition: transform 0.1s ease, background 0.15s ease;
 }
 
 .act-btn:active {
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 #e0b8cd;
+  box-shadow: 1px 1px 0 #dfb6cb;
 }
 
 .hint-btn {
@@ -260,8 +276,16 @@ html, body {
   color: #7c4a03;
 }
 
+.bgm-btn {
+  background: #f4eeff;
+  border-color: #cbb2f6;
+  color: #5b21b6;
+}
+
+.bgm-btn.muted,
 .sound-btn.muted {
-  opacity: 0.72;
+  opacity: 0.68;
+  background: #f7f2f5;
   color: #7d6776;
 }
 
@@ -287,16 +311,16 @@ html, body {
 
 .modal-card {
   width: 100%;
-  max-width: 320px;
+  max-width: 316px;
   background: #fffafc;
   border: 2px solid #f0b0cf;
-  border-radius: 14px;
-  box-shadow: 5px 5px 0 #d9a7c2;
-  padding: 18px 16px;
+  border-radius: 13px;
+  box-shadow: 4px 4px 0 #d9a7c2;
+  padding: 16px 14px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .modal-stars {
@@ -306,40 +330,39 @@ html, body {
 }
 
 .modal-title {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 900;
   color: #831843;
 }
 
 .modal-desc {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   color: #6b435e;
   line-height: 1.45;
 }
 
 .modal-stats {
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 800;
   color: #7c3aed;
   background: #f9effc;
   border: 1px solid #e4c6f2;
-  border-radius: 9px;
-  padding: 6px 10px;
+  border-radius: 8px;
+  padding: 6px 8px;
 }
 
 .modal-actions {
   display: flex;
   gap: 8px;
-  margin-top: 2px;
 }
 
 .modal-btn {
   flex: 1 1 0;
-  height: 42px;
-  border-radius: 10px;
+  height: 40px;
+  border-radius: 9px;
   font-family: inherit;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 900;
   cursor: pointer;
 }
@@ -358,35 +381,15 @@ html, body {
   box-shadow: 3px 3px 0 #e0b8cd;
 }
 
-/* 短螢幕保護（如 360×640、手機工具列展開 390×664／360×560） */
-@media (max-height: 670px) {
-  .candy-app {
-    gap: 4px;
-    padding: 4px 6px;
-  }
-  .hud-card {
-    padding: 4px 7px;
-    gap: 3px;
-  }
-  .level-badge {
-    padding: 3px 7px;
-    font-size: 12px;
-  }
-  .moves-pill strong { font-size: 15px; }
-  .score-pill strong { font-size: 13.5px; }
-  .goal-chip {
-    padding: 1px 6px;
-    font-size: 11px;
-  }
-  .tip-banner {
-    font-size: 11px;
-    padding: 2px 8px;
-  }
-  .board-frame {
-    padding: 4px;
-  }
-  .act-btn {
-    height: 35px;
-    font-size: 11.5px;
-  }
+@media (max-height: 650px) {
+  .candy-app { gap: 3px; padding: 3px 5px; }
+  .hud-card { padding: 4px 6px; gap: 3px; }
+  .level-badge { padding: 2px 6px; font-size: 11.5px; }
+  .moves-pill strong { font-size: 14.5px; }
+  .score-pill strong { font-size: 13px; }
+  .goal-chip { padding: 1px 6px; font-size: 11px; }
+  .goal-icon { width: 15px; height: 15px; }
+  .tip-banner { font-size: 10.5px; padding: 2px 6px; }
+  .board-frame { padding: 3px; }
+  .act-btn { height: 34px; font-size: 11px; }
 }

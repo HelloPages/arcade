@@ -1,11 +1,11 @@
 (() => {
   "use strict";
 
-  const VERSION_STAMP = "v_23:45";
+  const VERSION_STAMP = "v_00:35";
+  const appEl = document.getElementById("candy-app");
   const canvas = document.getElementById("candyCanvas");
   const ctx = canvas.getContext("2d");
   const boardStage = document.getElementById("boardStage");
-  const boardFrame = document.getElementById("boardFrame");
 
   const levelLabel = document.getElementById("levelLabel");
   const movesPill = document.getElementById("movesPill");
@@ -16,6 +16,7 @@
   const goalStrip = document.getElementById("goalStrip");
   const tipBanner = document.getElementById("tipBanner");
   const btnHint = document.getElementById("btnHint");
+  const btnBgm = document.getElementById("btnBgm");
   const btnSound = document.getElementById("btnSound");
   const btnRestart = document.getElementById("btnRestart");
   const btnFs = document.getElementById("btnFs");
@@ -35,46 +36,50 @@
       moves: "步數",
       score: "分數",
       hint: "💡 提示",
-      soundOn: "🔊 音效開",
+      bgmOn: "🎵 音樂",
+      bgmOff: "🎵 關",
+      soundOn: "🔊 音效",
       soundOff: "🔇 靜音",
       restart: "↻ 重玩",
       fsEnter: "⛶ 全螢幕",
       fsExit: "✕ 退出",
-      tipStart: "單指滑動或點兩顆相鄰糖果，連成 3 顆以上就能消除！",
+      tipStart: "單指滑動或點兩顆相鄰甜點，連成 3 顆就能消除！",
       tipInvalid: "這兩顆換了還消不掉喔，試試別的位置！",
       tipShuffle: "沒有可走的步了，自動洗牌中！",
-      tipSpecialStripe: "✨ 合成條紋糖！交換就能整排掃光！",
-      tipSpecialWrap: "💥 合成包裝炸彈糖！周圍 3×3 雙重爆破！",
-      tipSpecialBomb: "🌈 合成彩虹彩球！跟任何糖果交換全色清除！",
-      cheers: ["Sweet!", "Tasty!", "Delicious!", "Divine!", "Super Sweet!"],
+      tipSpecialStripe: "✨ 合成條紋甜點！交換就能整排掃光！",
+      tipSpecialWrap: "💥 合成糖紙炸彈！周圍 3×3 雙重爆破！",
+      tipSpecialBomb: "👑 合成彩虹皇冠球！跟任何甜點交換全色清除！",
+      cheers: ["Sweet!", "Yummy!", "Delicious!", "Super Cute!", "Sugar Party!"],
       goalScore: v => `分數 ${v}`,
       goalFrost: v => `糖霜 ${v}`,
       winTitle: n => `第 ${n} 關過關！`,
-      winDesc: "手氣超順！剩餘步數已換算額外加分！",
+      winDesc: "手氣超甜！剩餘步數已換算成額外加分！",
       loseTitle: "步數用完囉！",
       loseDesc: "差一點點就過關了，再試一次一定行！",
       nextBtn: "下一關 ↗",
       retryBtn: "再玩一次",
       stats: (sc, best) => `本關得分：${sc.toLocaleString()} ｜ 最高分：${best.toLocaleString()}`,
-      candyNames: ["草莓", "檸檬", "藍莓", "薄荷", "葡萄", "橘子"]
+      candyNames: ["草莓", "布丁", "兔兔", "小熊", "貓圈", "橘泡"]
     },
     en: {
       level: n => `Lv.${n}`,
       moves: "Moves",
       score: "Score",
       hint: "💡 Hint",
-      soundOn: "🔊 Sound",
-      soundOff: "🔇 Muted",
+      bgmOn: "🎵 BGM",
+      bgmOff: "🎵 Off",
+      soundOn: "🔊 SFX",
+      soundOff: "🔇 Off",
       restart: "↻ Retry",
       fsEnter: "⛶ Full",
       fsExit: "✕ Exit",
-      tipStart: "Swipe or tap two adjacent candies to match 3 or more!",
-      tipInvalid: "No match there — try another swap!",
+      tipStart: "Swipe or tap two adjacent treats to match 3 or more!",
+      tipInvalid: "No match there — try another pair!",
       tipShuffle: "No moves left — auto shuffling!",
-      tipSpecialStripe: "✨ Striped Candy! Clears a full row or column!",
-      tipSpecialWrap: "💥 Wrapped Candy! Blasts a 3×3 area!",
-      tipSpecialBomb: "🌈 Color Bomb! Swap with any candy to zap that color!",
-      cheers: ["Sweet!", "Tasty!", "Delicious!", "Divine!", "Sugar Crush!"],
+      tipSpecialStripe: "✨ Striped Treat! Clears a full row or column!",
+      tipSpecialWrap: "💥 Wrapped Bomb! Blasts a 3×3 area!",
+      tipSpecialBomb: "👑 Rainbow Crown! Swap with any treat to clear that color!",
+      cheers: ["Sweet!", "Yummy!", "Delicious!", "Super Cute!", "Sugar Party!"],
       goalScore: v => `Score ${v}`,
       goalFrost: v => `Frost ${v}`,
       winTitle: n => `Level ${n} Clear!`,
@@ -84,25 +89,27 @@
       nextBtn: "Next Level ↗",
       retryBtn: "Play Again",
       stats: (sc, best) => `Score: ${sc.toLocaleString()} | Best: ${best.toLocaleString()}`,
-      candyNames: ["Berry", "Lemon", "Blue", "Mint", "Grape", "Orange"]
+      candyNames: ["Berry", "Pudding", "Bunny", "Bear", "Kitty", "Puff"]
     },
     ko: {
       level: n => `${n}단계`,
       moves: "횟수",
       score: "점수",
       hint: "💡 힌트",
-      soundOn: "🔊 소리 켜짐",
-      soundOff: "🔇 음소거",
+      bgmOn: "🎵 음악",
+      bgmOff: "🎵 끔",
+      soundOn: "🔊 효과",
+      soundOff: "🔇 끔",
       restart: "↻ 다시",
       fsEnter: "⛶ 전체",
       fsExit: "✕ 닫기",
-      tipStart: "한 손가락으로 밀거나 인접한 두 캔디를 눌러 3개 이상 맞추세요!",
-      tipInvalid: "맞춰지지 않아요! 다른 캔디를 바꿔 보세요!",
+      tipStart: "한 손가락으로 밀거나 인접한 두 디저트를 눌러 3개 이상 맞추세요!",
+      tipInvalid: "맞춰지지 않아요! 다른 디저트를 바꿔 보세요!",
       tipShuffle: "움직일 수 있는 수가 없어 자동 섞기 중!",
-      tipSpecialStripe: "✨ 줄무늬 캔디 완성! 한 줄 전체 제거!",
-      tipSpecialWrap: "💥 포장 폭탄 캔디! 주변 3×3 폭발!",
-      tipSpecialBomb: "🌈 무지개 볼 완성! 원하는 색 전체 제거!",
-      cheers: ["Sweet!", "Tasty!", "Delicious!", "Divine!", "Super Combo!"],
+      tipSpecialStripe: "✨ 줄무늬 디저트 완성! 한 줄 전체 제거!",
+      tipSpecialWrap: "💥 캔디 폭탄 완성! 주변 3×3 폭발!",
+      tipSpecialBomb: "👑 무지개 왕관 볼! 원하는 색 전체 제거!",
+      cheers: ["Sweet!", "Yummy!", "Delicious!", "Super Cute!", "Sugar Party!"],
       goalScore: v => `점수 ${v}`,
       goalFrost: v => `프로스팅 ${v}`,
       winTitle: n => `${n}단계 클리어!`,
@@ -112,7 +119,7 @@
       nextBtn: "다음 단계 ↗",
       retryBtn: "다시 하기",
       stats: (sc, best) => `점수: ${sc.toLocaleString()} | 최고: ${best.toLocaleString()}`,
-      candyNames: ["딸기", "레몬", "블루", "민트", "포도", "오렌지"]
+      candyNames: ["딸기", "푸딩", "토끼", "곰돌", "냥이", "슈크림"]
     }
   };
   function getLang() {
@@ -122,7 +129,7 @@
     return COPY[getLang()] || COPY.tw;
   }
 
-  // --- 內嵌大廳模式隱藏重複全螢幕鍵 ---
+  // --- 內嵌大廳模式與全螢幕避讓（右上退出全螢幕絕不遮擋目標／分數） ---
   const isLobbyEmbed = (() => {
     try {
       const sp = new URLSearchParams(location.search);
@@ -132,55 +139,282 @@
   })();
   if (isLobbyEmbed && btnFs) btnFs.classList.add("hidden");
 
-  // --- 6 種高辨識度造型糖果配色 ---
-  const CANDY_STYLES = [
-    { id: 0, name: "heart",   main: "#ff3b6b", light: "#ff9bb5", dark: "#b5123d", rim: "#7c0b2a" }, // 紅草莓愛心
-    { id: 1, name: "star",    main: "#ffc414", light: "#fff199", dark: "#d97706", rim: "#854d0e" }, // 黃檸檬星星
-    { id: 2, name: "diamond", main: "#2596ff", light: "#a8e0ff", dark: "#1d4ed8", rim: "#1e3a8a" }, // 藍莓菱鑽
-    { id: 3, name: "drop",    main: "#16c978", light: "#a7f3d0", dark: "#047857", rim: "#064e3b" }, // 薄荷水滴
-    { id: 4, name: "grape",   main: "#9f4dff", light: "#dfc4ff", dark: "#6d28d9", rim: "#4c1d95" }, // 紫葡萄軟糖
-    { id: 5, name: "swirl",   main: "#ff7b1c", light: "#ffd099", dark: "#c2410c", rim: "#7c2d12" }  // 橘子旋渦糖
-  ];
+  function syncPortalFsSafeZone() {
+    if (!appEl) return;
+    let inPortalFs = false;
+    if (isLobbyEmbed) {
+      try {
+        inPortalFs = !!(window.top && window.top.document && window.top.document.body.classList.contains("immersive-fs"));
+      } catch {
+        inPortalFs = window.innerHeight >= (window.screen?.height || 9999) - 95;
+      }
+    }
+    appEl.classList.toggle("portal-fs-pad", inPortalFs);
+  }
 
-  // --- 關卡設計（前 3 關超容易上手、有成就感，後續豐富變化） ---
+  // --- 七款精繪可愛角色甜點精靈載入 ---
+  const CANDY_META = [
+    { id: 0, main: "#ff3b6b", light: "#ff9bb5", src: "./assets/candy-c0.webp?v=20261128_v2" }, // 草莓奶油
+    { id: 1, main: "#ffc414", light: "#fff199", src: "./assets/candy-c1.webp?v=20261128_v2" }, // 星星焦糖布丁
+    { id: 2, main: "#2596ff", light: "#a8e0ff", src: "./assets/candy-c2.webp?v=20261128_v2" }, // 藍莓兔耳馬卡龍
+    { id: 3, main: "#16c978", light: "#a7f3d0", src: "./assets/candy-c3.webp?v=20261128_v2" }, // 薄荷小熊軟糖
+    { id: 4, main: "#9f4dff", light: "#dfc4ff", src: "./assets/candy-c4.webp?v=20261128_v2" }, // 葡萄貓耳甜甜圈
+    { id: 5, main: "#ff7b1c", light: "#ffd099", src: "./assets/candy-c5.webp?v=20261128_v2" }  // 蜜柑奶油泡芙
+  ];
+  const candyImgs = CANDY_META.map(m => {
+    const im = new Image();
+    im.decoding = "async";
+    im.src = m.src;
+    return im;
+  });
+  const bombImg = new Image();
+  bombImg.decoding = "async";
+  bombImg.src = "./assets/candy-bomb.webp?v=20261128_v2";
+
+  // --- 關卡設計（前幾關輕鬆好上手，直式手機依可用高度動態配置列數） ---
   const LEVELS = [
-    { size: 7, colors: 5, moves: 20, targetScore: 650, collect: [{ color: 0, count: 10 }], frost: [] },
-    { size: 7, colors: 5, moves: 22, targetScore: 950, collect: [{ color: 1, count: 12 }, { color: 2, count: 12 }], frost: [] },
-    { size: 7, colors: 5, moves: 22, targetScore: 1100, collect: [], frost: [[2,2],[2,3],[2,4],[3,2],[3,3],[3,4],[4,2],[4,3],[4,4]] },
-    { size: 8, colors: 5, moves: 24, targetScore: 1500, collect: [{ color: 3, count: 16 }, { color: 4, count: 16 }], frost: [] },
-    { size: 8, colors: 6, moves: 25, targetScore: 1800, collect: [], frost: [[1,1],[1,6],[2,2],[2,5],[3,3],[3,4],[4,3],[4,4],[5,2],[5,5],[6,1],[6,6]] },
-    { size: 8, colors: 6, moves: 25, targetScore: 2200, collect: [{ color: 0, count: 18 }, { color: 5, count: 18 }], frost: [[3,3],[3,4],[4,3],[4,4]] },
-    { size: 8, colors: 6, moves: 26, targetScore: 2600, collect: [{ color: 2, count: 20 }], frost: [[2,1],[2,2],[2,5],[2,6],[5,1],[5,2],[5,5],[5,6],[3,3],[3,4],[4,3],[4,4]] },
-    { size: 8, colors: 6, moves: 28, targetScore: 3200, collect: [{ color: 1, count: 22 }, { color: 3, count: 22 }], frost: [[1,3],[1,4],[3,1],[4,1],[3,6],[4,6],[6,3],[6,4]] }
+    { cols: 7, colors: 5, moves: 20, targetScore: 700, collect: [{ color: 0, count: 12 }], frost: "none" },
+    { cols: 7, colors: 5, moves: 22, targetScore: 1000, collect: [{ color: 1, count: 14 }, { color: 2, count: 14 }], frost: "none" },
+    { cols: 7, colors: 5, moves: 22, targetScore: 1200, collect: [], frost: "center9" },
+    { cols: 7, colors: 6, moves: 24, targetScore: 1600, collect: [{ color: 3, count: 16 }, { color: 4, count: 16 }], frost: "none" },
+    { cols: 8, colors: 6, moves: 25, targetScore: 2000, collect: [], frost: "diamond" },
+    { cols: 8, colors: 6, moves: 26, targetScore: 2400, collect: [{ color: 0, count: 18 }, { color: 5, count: 18 }], frost: "center4" },
+    { cols: 8, colors: 6, moves: 27, targetScore: 2800, collect: [{ color: 2, count: 20 }], frost: "corners" },
+    { cols: 8, colors: 6, moves: 28, targetScore: 3400, collect: [{ color: 1, count: 22 }, { color: 3, count: 22 }], frost: "diamond" }
   ];
   function getLevelConfig(lv) {
     if (lv <= LEVELS.length) return LEVELS[lv - 1];
-    const base = LEVELS[(lv - 1) % LEVELS.length];
+    const patterns = ["none", "center9", "diamond", "corners"];
     return {
-      size: 8,
+      cols: 8,
       colors: 6,
-      moves: Math.max(22, 27 - Math.floor((lv - 8) * 0.5)),
-      targetScore: 2800 + (lv - 8) * 500,
+      moves: Math.max(22, 27 - Math.floor((lv - 8) * 0.4)),
+      targetScore: 3000 + (lv - 8) * 500,
       collect: [{ color: lv % 6, count: 20 + (lv - 8) * 2 }, { color: (lv + 2) % 6, count: 18 + (lv - 8) * 2 }],
-      frost: base.frost
+      frost: patterns[lv % patterns.length]
     };
   }
 
-  // --- Web Audio 柔和可愛糖果合成音效 ---
+  // =========================================================================
+  // 復古可愛掌機晶片背景音樂 (Retro Cute Chiptune BGM) ＋ 獨立消除音效引擎
+  // 128 步 16 分音符（A - A' - B - C 四段落變化，128 BPM，首尾無縫循環）
+  // =========================================================================
+  let bgmOn = localStorage.getItem("candy_bgm_on") !== "0";
+  let sfxOn = localStorage.getItem("candy_sfx_on") !== "0";
   let ac = null;
-  let soundOn = true;
-  function getAC() {
-    if (!soundOn) return null;
+  let masterBgmGain = null;
+  let masterSfxGain = null;
+  let bgmFilter = null;
+  let bgmAnalyser = null;
+  let bgmPcm = null;
+  let bgmTimer = null;
+  let bgmRunning = false;
+  let bgmStep = 0;
+  let bgmNextTime = 0;
+  let bgmLoopCount = 0;
+  let audioUnlocked = false;
+
+  const NOTE_HZ = {
+    C3:130.81, D3:146.83, E3:164.81, F3:174.61, G3:196.00, A3:220.00, B3:246.94,
+    C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88,
+    C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880.00, B5:987.77, C6:1046.50
+  };
+  // 4 段 × 32 步 = 128 步（每 2 步為 1 個八分音符，輕快圓潤掌機糖果旋律）
+  const BGM_LEAD = [
+    // A 段：活潑上行糖果盒主題 (C -> Am -> F -> G7)
+    "E5",0,"G5",0,"C6",0,"A5",0, "G5",0,"E5",0,"D5","E5","C5",0,
+    "A4",0,"C5",0,"E5",0,"D5",0, "C5",0,"A4",0,"G4",0,0,0,
+    // A' 段：甜美跳躍變奏 (F -> C -> Dm -> G7)
+    "F5",0,"A5",0,"G5",0,"F5",0, "E5",0,"G5",0,"C5",0,"E5",0,
+    "D5",0,"F5",0,"A5",0,"G5",0, "G5",0,"E5",0,"D5",0,0,0,
+    // B 段：輕巧木琴副歌 (Em -> Am -> F -> G)
+    "G5",0,"E5","G5","B5",0,"G5",0, "A5",0,"E5","A5","C6",0,"A5",0,
+    "F5",0,"A5","F5","C6",0,"A5",0, "G5",0,"F5",0,"E5",0,"D5",0,
+    // C 段：收尾可愛回旋銜接 A 段 (C -> F -> G7 -> C)
+    "E5",0,"G5",0,"A5",0,"C6",0, "A5",0,"F5",0,"D5",0,"F5",0,
+    "E5",0,"D5",0,"C5",0,"D5",0, "C5",0,0,0,"G4",0,0,0
+  ];
+  const BGM_BASS = [
+    "C3",0,0,0,"G3",0,0,0, "C3",0,0,0,"G3",0,0,0,
+    "A3",0,0,0,"E3",0,0,0, "A3",0,0,0,"G3",0,0,0,
+    "F3",0,0,0,"C4",0,0,0, "C3",0,0,0,"G3",0,0,0,
+    "D3",0,0,0,"A3",0,0,0, "G3",0,0,0,"D3",0,0,0,
+    "E3",0,0,0,"B3",0,0,0, "A3",0,0,0,"E3",0,0,0,
+    "F3",0,0,0,"C4",0,0,0, "G3",0,0,0,"D3",0,0,0,
+    "C3",0,0,0,"G3",0,0,0, "F3",0,0,0,"C4",0,0,0,
+    "G3",0,0,0,"D3",0,0,0, "C3",0,0,0,"G3",0,0,0
+  ];
+  const BGM_ARP = [
+    "C5","E5","G5","E5", "C5","E5","G5","E5", "A4","C5","E5","C5", "A4","C5","E5","C5",
+    "F4","A4","C5","A4", "C5","E5","G5","E5", "D5","F5","A5","F5", "G4","B4","D5","B4"
+  ];
+
+  function ensureAudio() {
     if (!ac) {
       const C = window.AudioContext || window.webkitAudioContext;
-      if (C) ac = new C();
+      if (!C) return null;
+      ac = new C();
+      bgmFilter = ac.createBiquadFilter();
+      bgmFilter.type = "lowpass";
+      bgmFilter.frequency.setValueAtTime(2500, ac.currentTime);
+
+      masterBgmGain = ac.createGain();
+      masterBgmGain.gain.setValueAtTime(bgmOn ? 0.55 : 0, ac.currentTime);
+
+      bgmAnalyser = ac.createAnalyser();
+      bgmAnalyser.fftSize = 256;
+      bgmPcm = new Float32Array(bgmAnalyser.fftSize);
+
+      bgmFilter.connect(masterBgmGain);
+      masterBgmGain.connect(bgmAnalyser);
+      bgmAnalyser.connect(ac.destination);
+
+      masterSfxGain = ac.createGain();
+      masterSfxGain.gain.setValueAtTime(sfxOn ? 0.85 : 0, ac.currentTime);
+      masterSfxGain.connect(ac.destination);
     }
-    if (ac && ac.state === "suspended") ac.resume().catch(() => {});
     return ac;
   }
-  function playTone(freq, dur = 0.11, type = "sine", vol = 0.11, slideTo = null) {
-    const a = getAC();
+
+  function scheduleBgmStep(a, step, when) {
+    // 1. 柔和掌機主旋律（圓潤三角＋微方波混合）
+    const leadNote = BGM_LEAD[step];
+    if (leadNote && NOTE_HZ[leadNote]) {
+      const hz = NOTE_HZ[leadNote];
+      const o = a.createOscillator();
+      const g = a.createGain();
+      o.type = "triangle";
+      o.frequency.setValueAtTime(hz, when);
+      g.gain.setValueAtTime(0.001, when);
+      g.gain.linearRampToValueAtTime(0.16, when + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.001, when + 0.21);
+      o.connect(g).connect(bgmFilter);
+      o.start(when); o.stop(when + 0.22);
+
+      // 疊一層極輕柔的玩具方波泛音，營造復古掌機可愛質感
+      const o2 = a.createOscillator();
+      const g2 = a.createGain();
+      o2.type = "square";
+      o2.frequency.setValueAtTime(hz, when);
+      g2.gain.setValueAtTime(0.001, when);
+      g2.gain.linearRampToValueAtTime(0.032, when + 0.01);
+      g2.gain.exponentialRampToValueAtTime(0.001, when + 0.14);
+      o2.connect(g2).connect(bgmFilter);
+      o2.start(when); o2.stop(when + 0.15);
+    }
+
+    // 2. 玩具木琴伴奏分解和弦（每偶數拍輕點）
+    if (step % 2 === 1) {
+      const arpNote = BGM_ARP[Math.floor(step / 4) % BGM_ARP.length];
+      if (arpNote && NOTE_HZ[arpNote]) {
+        const oa = a.createOscillator();
+        const ga = a.createGain();
+        oa.type = "sine";
+        oa.frequency.setValueAtTime(NOTE_HZ[arpNote], when);
+        ga.gain.setValueAtTime(0.001, when);
+        ga.gain.linearRampToValueAtTime(0.055, when + 0.008);
+        ga.gain.exponentialRampToValueAtTime(0.001, when + 0.11);
+        oa.connect(ga).connect(bgmFilter);
+        oa.start(when); oa.stop(when + 0.12);
+      }
+    }
+
+    // 3. 彈性低音貝斯
+    const bassNote = BGM_BASS[step];
+    if (bassNote && NOTE_HZ[bassNote]) {
+      const ob = a.createOscillator();
+      const gb = a.createGain();
+      ob.type = "triangle";
+      ob.frequency.setValueAtTime(NOTE_HZ[bassNote], when);
+      gb.gain.setValueAtTime(0.001, when);
+      gb.gain.linearRampToValueAtTime(0.14, when + 0.012);
+      gb.gain.exponentialRampToValueAtTime(0.001, when + 0.24);
+      ob.connect(gb).connect(bgmFilter);
+      ob.start(when); ob.stop(when + 0.25);
+    }
+
+    // 4. 輕巧復古節奏點綴（每 4 步一顆泡泡底鼓）
+    if (step % 4 === 0) {
+      const ok = a.createOscillator();
+      const gk = a.createGain();
+      ok.type = "sine";
+      ok.frequency.setValueAtTime(145, when);
+      ok.frequency.exponentialRampToValueAtTime(52, when + 0.06);
+      gk.gain.setValueAtTime(0.09, when);
+      gk.gain.exponentialRampToValueAtTime(0.001, when + 0.07);
+      ok.connect(gk).connect(bgmFilter);
+      ok.start(when); ok.stop(when + 0.08);
+    }
+  }
+
+  function startBgm() {
+    if (!bgmOn || document.hidden || bgmRunning) return;
+    const a = ensureAudio();
     if (!a) return;
+    if (a.state === "suspended") {
+      a.resume().then(() => { if (bgmOn && !document.hidden) startBgm(); }).catch(() => {});
+      return;
+    }
+    if (masterBgmGain) masterBgmGain.gain.setValueAtTime(0.55, a.currentTime);
+    bgmRunning = true;
+    bgmNextTime = a.currentTime + 0.03;
+    const stepDur = 60 / 128 / 4; // 128 BPM, 16th note
+    if (bgmTimer) clearInterval(bgmTimer);
+    bgmTimer = setInterval(() => {
+      if (!bgmRunning || !ac || ac.state !== "running" || document.hidden) return;
+      if (bgmNextTime < ac.currentTime - 0.25) bgmNextTime = ac.currentTime + 0.02;
+      while (bgmNextTime < ac.currentTime + 0.14) {
+        scheduleBgmStep(ac, bgmStep, bgmNextTime);
+        bgmNextTime += stepDur;
+        bgmStep = (bgmStep + 1) % BGM_LEAD.length;
+        if (bgmStep === 0) bgmLoopCount++;
+      }
+    }, 35);
+  }
+
+  function stopBgm() {
+    bgmRunning = false;
+    if (bgmTimer) { clearInterval(bgmTimer); bgmTimer = null; }
+  }
+
+  function unlockAudio() {
+    const a = ensureAudio();
+    if (!a) return;
+    audioUnlocked = true;
+    if (a.state === "suspended") {
+      a.resume().then(() => {
+        if (bgmOn && !document.hidden) startBgm();
+      }).catch(() => {});
+    } else if (bgmOn && !document.hidden) {
+      startBgm();
+    }
+  }
+
+  function pauseAllAudioOnLeave() {
+    stopBgm();
+    if (ac && ac.state === "running") ac.suspend().catch(() => {});
+  }
+  function resumeAudioOnReturn() {
+    if (document.hidden || !audioUnlocked) return;
+    if (ac && ac.state === "suspended") {
+      ac.resume().then(() => { if (bgmOn && !document.hidden) startBgm(); }).catch(() => {});
+    } else if (bgmOn) {
+      startBgm();
+    }
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) pauseAllAudioOnLeave();
+    else resumeAudioOnReturn();
+  });
+  window.addEventListener("pagehide", pauseAllAudioOnLeave);
+  window.addEventListener("blur", pauseAllAudioOnLeave);
+  window.addEventListener("focus", resumeAudioOnReturn);
+
+  function playSfx(freq, dur = 0.11, type = "sine", vol = 0.13, slideTo = null) {
+    if (!sfxOn) return;
+    const a = ensureAudio();
+    if (!a) return;
+    if (a.state === "suspended") a.resume().catch(() => {});
     const now = a.currentTime;
     const o = a.createOscillator();
     const g = a.createGain();
@@ -189,257 +423,104 @@
     if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, now + dur);
     g.gain.setValueAtTime(vol, now);
     g.gain.exponentialRampToValueAtTime(0.001, now + dur);
-    o.connect(g).connect(a.destination);
-    o.start(now);
-    o.stop(now + dur + 0.015);
+    o.connect(g).connect(masterSfxGain || a.destination);
+    o.start(now); o.stop(now + dur + 0.015);
   }
-  const SCALE = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.5];
-  function sfxSwap() { playTone(380, 0.075, "triangle", 0.09, 540); }
-  function sfxInvalid() { playTone(260, 0.12, "sine", 0.10, 175); }
+  const POP_SCALE = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.5];
+  function sfxSwap() { playSfx(390, 0.075, "triangle", 0.11, 560); }
+  function sfxInvalid() { playSfx(260, 0.12, "sine", 0.12, 170); }
   function sfxPop(comboIdx) {
-    const f = SCALE[Math.min(SCALE.length - 1, Math.max(0, comboIdx))];
-    playTone(f, 0.13, "sine", 0.13, f * 1.18);
-    playTone(f * 1.5, 0.09, "triangle", 0.06);
+    const f = POP_SCALE[Math.min(POP_SCALE.length - 1, Math.max(0, comboIdx))];
+    playSfx(f, 0.13, "sine", 0.14, f * 1.18);
+    playSfx(f * 1.5, 0.08, "triangle", 0.07);
   }
   function sfxSpecial() {
-    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
-      setTimeout(() => playTone(f, 0.14, "triangle", 0.11), i * 42);
-    });
+    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => setTimeout(() => playSfx(f, 0.14, "triangle", 0.12), i * 40));
   }
   function sfxWin() {
-    [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => {
-      setTimeout(() => playTone(f, 0.22, "triangle", 0.13), i * 80);
-    });
+    [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => setTimeout(() => playSfx(f, 0.22, "triangle", 0.14), i * 78));
   }
 
-  // --- 超取樣離屏高解析糖果精靈快取（每個造型鮮明可愛、零鋸齒） ---
-  const SPRITE_SZ = 128;
-  const candySprites = [];
-  let colorBombSprite = null;
-
-  function buildCandySprites() {
-    candySprites.length = 0;
-    for (const st of CANDY_STYLES) {
-      const c = document.createElement("canvas");
-      c.width = SPRITE_SZ;
-      c.height = SPRITE_SZ;
-      const g = c.getContext("2d");
-      const cx = SPRITE_SZ * 0.5, cy = SPRITE_SZ * 0.5, r = SPRITE_SZ * 0.39;
-
-      g.save();
-      g.translate(cx, cy);
-      // 柔和底影
-      g.fillStyle = "rgba(74, 35, 64, 0.16)";
-      g.beginPath();
-      g.ellipse(0, r * 0.92, r * 0.72, r * 0.20, 0, 0, Math.PI * 2);
-      g.fill();
-
-      const grad = g.createRadialGradient(-r * 0.32, -r * 0.36, r * 0.1, 0, 0, r * 1.15);
-      grad.addColorStop(0, st.light);
-      grad.addColorStop(0.55, st.main);
-      grad.addColorStop(1, st.dark);
-
-      g.fillStyle = grad;
-      g.strokeStyle = st.rim;
-      g.lineWidth = 4.5;
-      g.lineJoin = "round";
-
-      if (st.name === "heart") {
-        // 紅草莓愛心
-        g.beginPath();
-        g.moveTo(0, r * 0.88);
-        g.bezierCurveTo(-r * 1.15, r * 0.22, -r * 1.05, -r * 0.88, 0, -r * 0.36);
-        g.bezierCurveTo(r * 1.05, -r * 0.88, r * 1.15, r * 0.22, 0, r * 0.88);
-        g.closePath();
-        g.fill();
-        g.stroke();
-        // 可愛小草莓籽與小綠葉
-        g.fillStyle = "#ffe6ec";
-        [[-16, -2], [14, -4], [0, 18], [-10, 26], [12, 24]].forEach(([sx, sy]) => {
-          g.beginPath(); g.ellipse(sx, sy, 3.2, 4.8, 0.2, 0, Math.PI * 2); g.fill();
-        });
-        g.fillStyle = "#34d399";
-        g.beginPath(); g.ellipse(-10, -r * 0.62, 11, 5.5, -0.35, 0, Math.PI * 2); g.fill();
-        g.beginPath(); g.ellipse(10, -r * 0.62, 11, 5.5, 0.35, 0, Math.PI * 2); g.fill();
-      } else if (st.name === "star") {
-        // 黃檸檬五角胖星星
-        g.beginPath();
-        const spikes = 5, outer = r * 1.04, inner = r * 0.56;
-        for (let i = 0; i < spikes * 2; i++) {
-          const ang = -Math.PI / 2 + (Math.PI * i) / spikes;
-          const rad = i % 2 === 0 ? outer : inner;
-          const x = Math.cos(ang) * rad, y = Math.sin(ang) * rad;
-          if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
-        }
-        g.closePath();
-        g.fill();
-        g.stroke();
-      } else if (st.name === "diamond") {
-        // 藍莓圓角水晶菱鑽
-        g.beginPath();
-        g.moveTo(0, -r * 1.02);
-        g.quadraticCurveTo(r * 0.98, -r * 0.12, r * 0.94, 0);
-        g.quadraticCurveTo(r * 0.98, r * 0.12, 0, r * 1.02);
-        g.quadraticCurveTo(-r * 0.98, r * 0.12, -r * 0.94, 0);
-        g.quadraticCurveTo(-r * 0.98, -r * 0.12, 0, -r * 1.02);
-        g.closePath();
-        g.fill();
-        g.stroke();
-        // 內菱形切面亮光
-        g.strokeStyle = "rgba(255,255,255,0.52)";
-        g.lineWidth = 3;
-        g.beginPath();
-        g.moveTo(0, -r * 0.56); g.lineTo(r * 0.52, 0); g.lineTo(0, r * 0.56); g.lineTo(-r * 0.52, 0); g.closePath();
-        g.stroke();
-      } else if (st.name === "drop") {
-        // 薄荷圓潤水滴糖
-        g.beginPath();
-        g.moveTo(0, -r * 1.02);
-        g.bezierCurveTo(r * 0.92, -r * 0.15, r * 1.02, r * 0.96, 0, r * 0.96);
-        g.bezierCurveTo(-r * 1.02, r * 0.96, -r * 0.92, -r * 0.15, 0, -r * 1.02);
-        g.closePath();
-        g.fill();
-        g.stroke();
-      } else if (st.name === "grape") {
-        // 紫葡萄軟糖六角枕頭
-        g.beginPath();
-        for (let i = 0; i < 6; i++) {
-          const a = -Math.PI / 6 + (Math.PI * 2 * i) / 6;
-          const x = Math.cos(a) * r * 0.95, y = Math.sin(a) * r * 0.95;
-          if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
-        }
-        g.closePath();
-        g.fill();
-        g.stroke();
-        // 內層果凍亮框
-        g.strokeStyle = "rgba(255,255,255,0.35)";
-        g.lineWidth = 3.5;
-        g.beginPath();
-        g.arc(0, 0, r * 0.54, 0, Math.PI * 2);
-        g.stroke();
-      } else {
-        // 橘子旋渦棒棒糖果
-        g.beginPath();
-        g.arc(0, 0, r * 0.94, 0, Math.PI * 2);
-        g.fill();
-        g.stroke();
-        g.strokeStyle = "rgba(255, 250, 235, 0.85)";
-        g.lineWidth = 6.5;
-        g.lineCap = "round";
-        g.beginPath();
-        for (let t = 0; t < Math.PI * 3.1; t += 0.18) {
-          const sr = t * 3.6;
-          const sx = Math.cos(t) * sr, sy = Math.sin(t) * sr;
-          if (t === 0) g.moveTo(sx, sy); else g.lineTo(sx, sy);
-        }
-        g.stroke();
-      }
-
-      // 統一果凍高光點（Q 彈晶透感）
-      g.fillStyle = "rgba(255, 255, 255, 0.72)";
-      g.beginPath();
-      g.ellipse(-r * 0.28, -r * 0.34, r * 0.25, r * 0.13, -0.55, 0, Math.PI * 2);
-      g.fill();
-      g.fillStyle = "rgba(255, 255, 255, 0.45)";
-      g.beginPath();
-      g.arc(-r * 0.44, -r * 0.14, r * 0.08, 0, Math.PI * 2);
-      g.fill();
-      g.restore();
-
-      candySprites.push(c);
-    }
-
-    // 彩虹彩球精靈（五連線超級糖果）
-    const bc = document.createElement("canvas");
-    bc.width = SPRITE_SZ; bc.height = SPRITE_SZ;
-    const bg = bc.getContext("2d");
-    bg.save();
-    bg.translate(SPRITE_SZ * 0.5, SPRITE_SZ * 0.5);
-    const rr = SPRITE_SZ * 0.40;
-    const g2 = bg.createRadialGradient(-14, -16, 4, 0, 0, rr);
-    g2.addColorStop(0, "#8d5524");
-    g2.addColorStop(0.55, "#4a2511");
-    g2.addColorStop(1, "#261006");
-    bg.fillStyle = g2;
-    bg.strokeStyle = "#fff5d6";
-    bg.lineWidth = 4;
-    bg.beginPath();
-    bg.arc(0, 0, rr, 0, Math.PI * 2);
-    bg.fill();
-    bg.stroke();
-    const sprCols = ["#ff3b6b", "#ffc414", "#2596ff", "#16c978", "#c084fc", "#ff7b1c", "#ffffff"];
-    for (let i = 0; i < 14; i++) {
-      const ang = (Math.PI * 2 * i) / 14 + (i % 2) * 0.22;
-      const dist = (i % 3 === 0 ? 0.28 : 0.62) * rr;
-      bg.fillStyle = sprCols[i % sprCols.length];
-      bg.beginPath();
-      bg.arc(Math.cos(ang) * dist, Math.sin(ang) * dist, 6.2, 0, Math.PI * 2);
-      bg.fill();
-    }
-    bg.fillStyle = "rgba(255,255,255,0.65)";
-    bg.beginPath();
-    bg.ellipse(-15, -18, 12, 6, -0.5, 0, Math.PI * 2);
-    bg.fill();
-    bg.restore();
-    colorBombSprite = bc;
-  }
-  buildCandySprites();
-
-  // --- 遊戲核心狀態 ---
+  // --- 遊戲核心狀態（動態 COLS × ROWS，真滿版且格子嚴格為 1:1 正方形） ---
   let currentLevel = 1;
   let bestScore = Number(localStorage.getItem("candy_match1_best") || "0") || 0;
   let cfg = getLevelConfig(1);
-  let N = cfg.size;
-  let grid = [];        // N x N of { color, special: null|'stripeH'|'stripeV'|'wrapped'|'color', x, y, scale, alpha }
-  let frostGrid = [];   // N x N of 0 | 1 (糖霜格)
+  let COLS = cfg.cols;
+  let ROWS = 8;
+  let grid = [];        // ROWS x COLS
+  let frostGrid = [];   // ROWS x COLS
   let movesLeft = cfg.moves;
   let score = 0;
-  let collected = {};   // color -> count
+  let collected = {};
   let frostLeft = 0;
+  let frostTotal = 0;
 
-  // 狀態機："idle" | "swapping" | "reverting" | "resolving" | "falling" | "shuffling" | "win" | "lose"
   let phase = "idle";
   let animT = 0;
-  let swapCtx = null;   // { r1, c1, r2, c2, dur }
-  let selected = null;  // { r, c }
-  let hintPair = null;  // [{r,c},{r,c}]
+  let swapCtx = null;
+  let selected = null;
+  let pressedCell = null;
+  let hintPair = null;
   let idleTime = 0;
   let comboCount = 0;
   let tipResetTimer = 0;
+  let tipDismissed = false;
 
   const particles = [];
-  const beams = [];     // { x1, y1, x2, y2, color, life, maxLife, width }
+  const beams = [];
   const floatTexts = [];
   let boardShake = 0;
 
-  let boardPx = 320;
-  let cellPx = 40;
+  let boardW = 320;
+  let boardH = 400;
+  let cellPx = 44;
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-  function setTip(text, isCombo = false, holdSec = 2.4) {
+  function setTip(text, isCombo = false, holdSec = 2.2) {
     tipBanner.textContent = text;
+    tipBanner.classList.remove("collapsed");
     tipBanner.classList.toggle("combo", isCombo);
     tipResetTimer = holdSec;
   }
 
-  function resizeBoard() {
-    const availW = boardStage.clientWidth || window.innerWidth - 16;
-    const availH = boardStage.clientHeight || 340;
-    const raw = Math.floor(Math.min(availW - 14, availH - 12, 480));
-    boardPx = Math.max(210, raw);
-    cellPx = boardPx / N;
+  // 計算當前視窗最適合的列數（直式手機自動長高填滿畫面，不留上下大空洞，且糖果保持 1:1 正方不變形）
+  function computeIdealGridSize() {
+    syncPortalFsSafeZone();
+    const availW = Math.max(220, (boardStage.clientWidth || window.innerWidth - 12) - 12);
+    const availH = Math.max(220, (boardStage.clientHeight || 360) - 12);
+    const cols = cfg.cols;
+    const maxCellByW = availW / cols;
+    const idealRows = Math.floor(availH / maxCellByW);
+    const rows = Math.max(7, Math.min(13, idealRows));
+    const cell = Math.floor(Math.min(availW / cols, availH / rows));
+    return { cols, rows, cell, bw: cell * cols, bh: cell * rows };
+  }
+
+  function resizeBoard(allowRebuildRows = false) {
+    syncPortalFsSafeZone();
+    const availW = Math.max(220, (boardStage.clientWidth || window.innerWidth - 12) - 12);
+    const availH = Math.max(220, (boardStage.clientHeight || 360) - 12);
+
+    if (allowRebuildRows) {
+      const ideal = computeIdealGridSize();
+      COLS = ideal.cols;
+      ROWS = ideal.rows;
+    }
+    cellPx = Math.max(26, Math.floor(Math.min(availW / COLS, availH / ROWS)));
+    boardW = cellPx * COLS;
+    boardH = cellPx * ROWS;
     dpr = Math.min(window.devicePixelRatio || 1, 3);
-    canvas.style.width = `${boardPx}px`;
-    canvas.style.height = `${boardPx}px`;
-    canvas.width = Math.round(boardPx * dpr);
-    canvas.height = Math.round(boardPx * dpr);
+    canvas.style.width = `${boardW}px`;
+    canvas.style.height = `${boardH}px`;
+    canvas.width = Math.round(boardW * dpr);
+    canvas.height = Math.round(boardH * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
-    // 同步靜止糖果座標
+
     if (phase === "idle") {
-      for (let r = 0; r < N; r++) {
-        for (let c = 0; c < N; c++) {
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
           if (grid[r] && grid[r][c]) {
             grid[r][c].x = c;
             grid[r][c].y = r;
@@ -448,37 +529,50 @@
       }
     }
   }
-  window.addEventListener("resize", resizeBoard);
+  window.addEventListener("resize", () => resizeBoard(false));
   if (typeof ResizeObserver !== "undefined") {
-    new ResizeObserver(resizeBoard).observe(boardStage);
+    new ResizeObserver(() => resizeBoard(false)).observe(boardStage);
   }
 
-  function randColor() {
-    return Math.floor(Math.random() * cfg.colors);
-  }
+  function randColor() { return Math.floor(Math.random() * cfg.colors); }
   function makeCandy(r, c, color = randColor(), special = null) {
-    return { color, special, x: c, y: r, scale: 1, alpha: 1 };
+    return { color, special, x: c, y: r, sx: 1, sy: 1, alpha: 1, bobSeed: Math.random() * 6.28 };
+  }
+
+  function buildFrostPattern(pattern) {
+    frostGrid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    frostLeft = 0;
+    const mr = Math.floor(ROWS / 2), mc = Math.floor(COLS / 2);
+    const mark = (r, c) => {
+      if (r >= 0 && r < ROWS && c >= 0 && c < COLS && !frostGrid[r][c]) {
+        frostGrid[r][c] = 1; frostLeft++;
+      }
+    };
+    if (pattern === "center9") {
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) mark(mr + dr, mc + dc);
+    } else if (pattern === "center4") {
+      mark(mr - 1, mc - 1); mark(mr - 1, mc); mark(mr, mc - 1); mark(mr, mc);
+    } else if (pattern === "diamond") {
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+        if (Math.abs(r - mr) + Math.abs(c - mc) === 2) mark(r, c);
+      }
+    } else if (pattern === "corners") {
+      [[1,1],[1,COLS-2],[ROWS-2,1],[ROWS-2,COLS-2],[mr,mc],[mr-1,mc],[mr+1,mc],[mr,mc-1],[mr,mc+1]].forEach(([r,c]) => mark(r,c));
+    }
+    frostTotal = frostLeft;
   }
 
   function createInitialBoard() {
-    grid = Array.from({ length: N }, () => Array(N).fill(null));
-    frostGrid = Array.from({ length: N }, () => Array(N).fill(0));
-    frostLeft = 0;
-    for (const [fr, fc] of cfg.frost) {
-      if (fr < N && fc < N) {
-        frostGrid[fr][fc] = 1;
-        frostLeft++;
-      }
-    }
-    for (let r = 0; r < N; r++) {
-      for (let c = 0; c < N; c++) {
-        let col;
-        let tries = 0;
+    grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+    buildFrostPattern(cfg.frost);
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        let col, tries = 0;
         do {
           col = randColor();
           tries++;
         } while (
-          tries < 20 &&
+          tries < 24 &&
           ((c >= 2 && grid[r][c - 1].color === col && grid[r][c - 2].color === col) ||
            (r >= 2 && grid[r - 1][c].color === col && grid[r - 2][c].color === col))
         );
@@ -491,12 +585,12 @@
   function startLevel(lv) {
     currentLevel = lv;
     cfg = getLevelConfig(lv);
-    N = cfg.size;
     movesLeft = cfg.moves;
     score = 0;
     collected = {};
     cfg.collect.forEach(item => { collected[item.color] = 0; });
     selected = null;
+    pressedCell = null;
     hintPair = null;
     idleTime = 0;
     comboCount = 0;
@@ -506,10 +600,17 @@
     beams.length = 0;
     floatTexts.length = 0;
     resultModal.classList.add("hidden");
+
+    // 先依目前是否顯示首次提示來測量真實高度，決定最適列數
+    if (lv === 1 && !tipDismissed) {
+      setTip(T().tipStart, false, 999);
+    } else {
+      tipBanner.classList.add("collapsed");
+    }
+    resizeBoard(true);
     createInitialBoard();
-    resizeBoard();
+    resizeBoard(false);
     updateHud();
-    setTip(T().tipStart, false, 999);
   }
 
   function updateHud() {
@@ -522,30 +623,30 @@
     movesPill.classList.toggle("low", movesLeft <= 5 && phase !== "win");
 
     btnHint.textContent = t.hint;
-    btnSound.textContent = soundOn ? t.soundOn : t.soundOff;
-    btnSound.classList.toggle("muted", !soundOn);
+    btnBgm.textContent = bgmOn ? t.bgmOn : t.bgmOff;
+    btnBgm.classList.toggle("muted", !bgmOn);
+    btnSound.textContent = sfxOn ? t.soundOn : t.soundOff;
+    btnSound.classList.toggle("muted", !sfxOn);
     btnRestart.textContent = t.restart;
     if (btnFs) btnFs.textContent = document.fullscreenElement ? t.fsExit : t.fsEnter;
 
-    // 渲染過關目標列
+    // 過關目標列（使用實際可愛甜點角色圖示！）
     goalStrip.innerHTML = "";
     for (const item of cfg.collect) {
       const cur = Math.min(item.count, collected[item.color] || 0);
       const done = cur >= item.count;
       const chip = document.createElement("div");
       chip.className = "goal-chip" + (done ? " done" : "");
-      const st = CANDY_STYLES[item.color];
       const cname = t.candyNames[item.color] || "";
-      chip.innerHTML = `<span class="goal-dot" style="background:${st.main}"></span><span>${cname} ${cur}/${item.count}</span>`;
+      chip.innerHTML = `<img class="goal-icon" src="${CANDY_META[item.color].src}" alt="${cname}"><span>${cname} ${cur}/${item.count}</span>`;
       goalStrip.appendChild(chip);
     }
-    if (cfg.frost.length > 0) {
-      const totalF = cfg.frost.length;
-      const clearedF = totalF - frostLeft;
+    if (frostTotal > 0) {
+      const cleared = frostTotal - frostLeft;
       const done = frostLeft <= 0;
       const chip = document.createElement("div");
       chip.className = "goal-chip" + (done ? " done" : "");
-      chip.innerHTML = `<span class="goal-dot" style="background:#f9a8d4"></span><span>${t.goalFrost(`${clearedF}/${totalF}`)}</span>`;
+      chip.innerHTML = `<span class="goal-frost-dot"></span><span>${t.goalFrost(`${cleared}/${frostTotal}`)}</span>`;
       goalStrip.appendChild(chip);
     }
     if (cfg.targetScore > 0) {
@@ -566,18 +667,16 @@
     return true;
   }
 
-  // --- 尋找所有連線群組（支援 3/4/5/L/T 特殊糖果合成） ---
+  // --- 連線判定（支援 3/4/5/L/T 特殊甜點合成） ---
   function findMatchGroups() {
-    const hRuns = [];
-    const vRuns = [];
-
-    for (let r = 0; r < N; r++) {
+    const hRuns = [], vRuns = [];
+    for (let r = 0; r < ROWS; r++) {
       let c = 0;
-      while (c < N) {
+      while (c < COLS) {
         const cell = grid[r][c];
         if (!cell || cell.special === "color") { c++; continue; }
         let end = c + 1;
-        while (end < N && grid[r][end] && grid[r][end].special !== "color" && grid[r][end].color === cell.color) end++;
+        while (end < COLS && grid[r][end] && grid[r][end].special !== "color" && grid[r][end].color === cell.color) end++;
         if (end - c >= 3) {
           const cells = [];
           for (let k = c; k < end; k++) cells.push({ r, c: k });
@@ -586,13 +685,13 @@
         c = end;
       }
     }
-    for (let c = 0; c < N; c++) {
+    for (let c = 0; c < COLS; c++) {
       let r = 0;
-      while (r < N) {
+      while (r < ROWS) {
         const cell = grid[r][c];
         if (!cell || cell.special === "color") { r++; continue; }
         let end = r + 1;
-        while (end < N && grid[end][c] && grid[end][c].special !== "color" && grid[end][c].color === cell.color) end++;
+        while (end < ROWS && grid[end][c] && grid[end][c].special !== "color" && grid[end][c].color === cell.color) end++;
         if (end - r >= 3) {
           const cells = [];
           for (let k = r; k < end; k++) cells.push({ r: k, c });
@@ -602,7 +701,6 @@
       }
     }
 
-    // 合併相交且同色的水平／垂直連線（判斷 L/T 包裝糖或 5 連線彩虹球）
     const allRuns = [...hRuns, ...vRuns];
     const used = new Array(allRuns.length).fill(false);
     const groups = [];
@@ -624,10 +722,7 @@
           }
         }
       }
-      const uniqueCells = [...keySet].map(s => {
-        const [r, c] = s.split(",").map(Number);
-        return { r, c };
-      });
+      const uniqueCells = [...keySet].map(s => { const [r, c] = s.split(",").map(Number); return { r, c }; });
       const maxLen = Math.max(...comp.map(x => x.cells.length));
       const hasH = comp.some(x => x.dir === "h");
       const hasV = comp.some(x => x.dir === "v");
@@ -653,10 +748,10 @@
       grid[r1][c1] = a; grid[r2][c2] = b;
       return ok;
     };
-    for (let r = 0; r < N; r++) {
-      for (let c = 0; c < N; c++) {
-        if (c + 1 < N && testSwap(r, c, r, c + 1)) moves.push([{ r, c }, { r, c: c + 1 }]);
-        if (r + 1 < N && testSwap(r, c, r + 1, c)) moves.push([{ r, c }, { r: r + 1, c }]);
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (c + 1 < COLS && testSwap(r, c, r, c + 1)) moves.push([{ r, c }, { r, c: c + 1 }]);
+        if (r + 1 < ROWS && testSwap(r, c, r + 1, c)) moves.push([{ r, c }, { r: r + 1, c }]);
       }
     }
     return moves;
@@ -664,76 +759,66 @@
 
   function shuffleBoardImmediate() {
     const flat = [];
-    for (let r = 0; r < N; r++) {
-      for (let c = 0; c < N; c++) {
-        if (grid[r][c]) flat.push(grid[r][c]);
-      }
-    }
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (grid[r][c]) flat.push(grid[r][c]);
     for (let attempt = 0; attempt < 25; attempt++) {
       for (let i = flat.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [flat[i], flat[j]] = [flat[j], flat[i]];
       }
       let idx = 0;
-      for (let r = 0; r < N; r++) {
-        for (let c = 0; c < N; c++) {
-          const item = flat[idx++];
-          item.x = c; item.y = r; item.scale = 1; item.alpha = 1;
-          grid[r][c] = item;
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const it = flat[idx++];
+          it.x = c; it.y = r; it.sx = 1; it.sy = 1; it.alpha = 1;
+          grid[r][c] = it;
         }
       }
       if (findMatchGroups().length === 0 && findValidMoves().length > 0) return;
     }
-    // 保底直接重產一組有解盤面
     createInitialBoard();
   }
 
-  // --- 粒子與特效 ---
-  function spawnBurst(r, c, colorHex, count = 9) {
+  // --- 可愛糖霜星屑與粒子回饋 ---
+  function spawnBurst(r, c, colorHex, count = 10) {
     const cx = (c + 0.5) * cellPx;
     const cy = (r + 0.5) * cellPx;
     for (let i = 0; i < count; i++) {
       const a = (Math.PI * 2 * i) / count + Math.random() * 0.5;
-      const spd = 75 + Math.random() * 145;
+      const spd = 70 + Math.random() * 145;
       particles.push({
         x: cx, y: cy,
         vx: Math.cos(a) * spd,
-        vy: Math.sin(a) * spd - 25,
-        r: 3 + Math.random() * 4,
-        color: i % 3 === 0 ? "#ffffff" : colorHex,
-        life: 0.36 + Math.random() * 0.24,
-        maxLife: 0.6
+        vy: Math.sin(a) * spd - 30,
+        r: 3 + Math.random() * 3.8,
+        star: i % 3 === 0,
+        color: i % 4 === 0 ? "#ffffff" : colorHex,
+        life: 0.36 + Math.random() * 0.25,
+        maxLife: 0.62
       });
     }
   }
-  function spawnBeam(r1, c1, r2, c2, color = "#ffffff", width = 12) {
+  function spawnBeam(r1, c1, r2, c2, color = "#ffffff", width = 14) {
     beams.push({
-      x1: (c1 + 0.5) * cellPx,
-      y1: (r1 + 0.5) * cellPx,
-      x2: (c2 + 0.5) * cellPx,
-      y2: (r2 + 0.5) * cellPx,
-      color, width, life: 0.28, maxLife: 0.28
+      x1: (c1 + 0.5) * cellPx, y1: (r1 + 0.5) * cellPx,
+      x2: (c2 + 0.5) * cellPx, y2: (r2 + 0.5) * cellPx,
+      color, width, life: 0.30, maxLife: 0.30
     });
   }
   function spawnFloat(r, c, text, color = "#fff6b0") {
     floatTexts.push({
-      x: Math.max(36, Math.min(boardPx - 36, (c + 0.5) * cellPx)),
+      x: Math.max(40, Math.min(boardW - 40, (c + 0.5) * cellPx)),
       y: Math.max(24, (r + 0.3) * cellPx),
-      text, color, life: 0.85, maxLife: 0.85
+      text, color, life: 0.9, maxLife: 0.9
     });
   }
 
-  // --- 觸發消除與連鎖特殊糖果 ---
   function collectClearSet(initialList) {
     const toClear = new Set();
     const queue = [];
     const addCell = (r, c) => {
-      if (r < 0 || r >= N || c < 0 || c >= N || !grid[r][c]) return;
+      if (r < 0 || r >= ROWS || c < 0 || c >= COLS || !grid[r][c]) return;
       const k = `${r},${c}`;
-      if (!toClear.has(k)) {
-        toClear.add(k);
-        queue.push({ r, c });
-      }
+      if (!toClear.has(k)) { toClear.add(k); queue.push({ r, c }); }
     };
     initialList.forEach(p => addCell(p.r, p.c));
 
@@ -742,66 +827,63 @@
       const cell = grid[r][c];
       if (!cell || !cell.special) continue;
       if (cell.special === "stripeH") {
-        spawnBeam(r, 0, r, N - 1, CANDY_STYLES[cell.color].light, cellPx * 0.42);
-        for (let cc = 0; cc < N; cc++) addCell(r, cc);
+        spawnBeam(r, 0, r, COLS - 1, CANDY_META[cell.color].light, cellPx * 0.44);
+        for (let cc = 0; cc < COLS; cc++) addCell(r, cc);
         boardShake = Math.max(boardShake, 6);
       } else if (cell.special === "stripeV") {
-        spawnBeam(0, c, N - 1, c, CANDY_STYLES[cell.color].light, cellPx * 0.42);
-        for (let rr = 0; rr < N; rr++) addCell(rr, c);
+        spawnBeam(0, c, ROWS - 1, c, CANDY_META[cell.color].light, cellPx * 0.44);
+        for (let rr = 0; rr < ROWS; rr++) addCell(rr, c);
         boardShake = Math.max(boardShake, 6);
       } else if (cell.special === "wrapped") {
-        for (let dr = -1; dr <= 1; dr++) {
-          for (let dc = -1; dc <= 1; dc++) addCell(r + dr, c + dc);
-        }
+        for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) addCell(r + dr, c + dc);
         spawnBurst(r, c, "#ffd166", 18);
         boardShake = Math.max(boardShake, 9);
       } else if (cell.special === "color") {
         const targetCol = randColor();
-        for (let rr = 0; rr < N; rr++) {
-          for (let cc = 0; cc < N; cc++) {
-            if (grid[rr][cc] && grid[rr][cc].color === targetCol) {
-              spawnBeam(r, c, rr, cc, CANDY_STYLES[targetCol].light, 7);
-              addCell(rr, cc);
-            }
+        for (let rr = 0; rr < ROWS; rr++) for (let cc = 0; cc < COLS; cc++) {
+          if (grid[rr][cc] && grid[rr][cc].color === targetCol) {
+            spawnBeam(r, c, rr, cc, CANDY_META[targetCol].light, 7);
+            addCell(rr, cc);
           }
         }
         boardShake = Math.max(boardShake, 11);
       }
     }
-    return [...toClear].map(k => {
-      const [r, c] = k.split(",").map(Number);
-      return { r, c };
-    });
+    return [...toClear].map(k => { const [r, c] = k.split(",").map(Number); return { r, c }; });
   }
 
   function applyClearAndGravity(cellsToClear, spawns = []) {
+    if (!tipDismissed) {
+      tipDismissed = true;
+      tipBanner.classList.add("collapsed");
+      resizeBoard(false);
+    }
     comboCount++;
     const mult = 1 + (comboCount - 1) * 0.5;
-    let gained = 0;
-    let sumR = 0, sumC = 0;
+    let gained = 0, sumR = 0, sumC = 0;
 
     for (const { r, c } of cellsToClear) {
       const cell = grid[r][c];
       if (!cell) continue;
-      const colStyle = CANDY_STYLES[cell.color] || CANDY_STYLES[0];
-      spawnBurst(r, c, colStyle.main, cell.special ? 14 : 8);
+      const meta = CANDY_META[cell.color] || CANDY_META[0];
+      spawnBurst(r, c, meta.main, cell.special ? 15 : 9);
       if (collected[cell.color] !== undefined) collected[cell.color]++;
       if (frostGrid[r][c] > 0) {
         frostGrid[r][c] = 0;
         frostLeft = Math.max(0, frostLeft - 1);
-        spawnBurst(r, c, "#fbcfe8", 10);
+        spawnBurst(r, c, "#fbcfe8", 12);
         gained += 50;
       }
-      gained += Math.round((cell.special ? 60 : 25) * mult);
+      gained += Math.round((cell.special ? 65 : 25) * mult);
       sumR += r; sumC += c;
       grid[r][c] = null;
     }
 
-    // 生成新合成的特殊糖果
     for (const sp of spawns) {
-      grid[sp.r][sp.c] = makeCandy(sp.r, sp.c, sp.color, sp.special);
-      grid[sp.r][sp.c].scale = 1.32;
-      spawnBurst(sp.r, sp.c, "#fff5a5", 14);
+      const nc = makeCandy(sp.r, sp.c, sp.color, sp.special);
+      nc.sx = 1.36; nc.sy = 1.36;
+      grid[sp.r][sp.c] = nc;
+      spawnBurst(sp.r, sp.c, "#fff5a5", 16);
     }
 
     score += gained;
@@ -812,38 +894,30 @@
     if (cellsToClear.length > 0) {
       const avgR = sumR / cellsToClear.length;
       const avgC = sumC / cellsToClear.length;
-      spawnFloat(avgR, avgC, comboCount > 1 ? `+${gained} ×${comboCount}` : `+${gained}`, comboCount > 1 ? "#ffe66d" : "#ffffff");
+      const label = comboCount >= 2 ? `${T().cheers[Math.min(T().cheers.length - 1, comboCount - 2)]} +${gained}` : `+${gained}`;
+      spawnFloat(avgR, avgC, label, comboCount > 1 ? "#ffe66d" : "#ffffff");
     }
 
     if (spawns.length > 0) {
       sfxSpecial();
-      const sType = spawns[0].special;
-      setTip(sType === "color" ? T().tipSpecialBomb : sType === "wrapped" ? T().tipSpecialWrap : T().tipSpecialStripe, true, 2.6);
     } else {
       sfxPop(comboCount - 1);
-      if (comboCount >= 2) {
-        const cheers = T().cheers;
-        setTip(`${cheers[Math.min(cheers.length - 1, comboCount - 2)]} 連鎖 ×${comboCount}`, true, 2.0);
-      }
     }
 
-    // 自然重力掉落補位
-    for (let c = 0; c < N; c++) {
-      let writeR = N - 1;
-      for (let r = N - 1; r >= 0; r--) {
+    // 自然重力掉落
+    for (let c = 0; c < COLS; c++) {
+      let writeR = ROWS - 1;
+      for (let r = ROWS - 1; r >= 0; r--) {
         if (grid[r][c]) {
           const item = grid[r][c];
-          if (writeR !== r) {
-            grid[writeR][c] = item;
-            grid[r][c] = null;
-          }
+          if (writeR !== r) { grid[writeR][c] = item; grid[r][c] = null; }
           writeR--;
         }
       }
       let dropIdx = 1;
       for (let r = writeR; r >= 0; r--) {
         const nc = makeCandy(r, c, randColor(), null);
-        nc.y = -dropIdx * 1.05;
+        nc.y = -dropIdx * 1.08;
         dropIdx++;
         grid[r][c] = nc;
       }
@@ -857,75 +931,61 @@
   function handleSpecialSwapCombo(r1, c1, r2, c2) {
     const a = grid[r1][c1], b = grid[r2][c2];
     if (!a || !b) return false;
-    const isColorA = a.special === "color";
-    const isColorB = b.special === "color";
+    const isColorA = a.special === "color", isColorB = b.special === "color";
 
     if (isColorA && isColorB) {
-      // 雙彩虹彩球：全盤清空！
       const all = [];
-      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (grid[r][c]) all.push({ r, c });
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (grid[r][c]) all.push({ r, c });
       spawnBeam(r1, c1, 0, 0, "#ffe066", 14);
-      spawnBeam(r1, c1, N - 1, N - 1, "#ff7eb3", 14);
-      boardShake = 14;
-      sfxSpecial();
+      spawnBeam(r1, c1, ROWS - 1, COLS - 1, "#ff7eb3", 14);
+      boardShake = 14; sfxSpecial();
       applyClearAndGravity(all, []);
       return true;
     }
     if (isColorA || isColorB) {
       const bombPos = isColorA ? { r: r1, c: c1 } : { r: r2, c: c2 };
       const other = isColorA ? b : a;
-      const targetColor = other.color;
-      const extraSpecial = other.special;
+      const targetColor = other.color, extraSpecial = other.special;
       const seeds = [{ r: r1, c: c1 }, { r: r2, c: c2 }];
-      for (let r = 0; r < N; r++) {
-        for (let c = 0; c < N; c++) {
-          const cell = grid[r][c];
-          if (cell && cell.color === targetColor) {
-            if (extraSpecial === "stripeH" || extraSpecial === "stripeV") {
-              cell.special = (r + c) % 2 === 0 ? "stripeH" : "stripeV";
-            } else if (extraSpecial === "wrapped") {
-              cell.special = "wrapped";
-            }
-            spawnBeam(bombPos.r, bombPos.c, r, c, CANDY_STYLES[targetColor].light, 7);
-            seeds.push({ r, c });
-          }
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+        const cell = grid[r][c];
+        if (cell && cell.color === targetColor) {
+          if (extraSpecial === "stripeH" || extraSpecial === "stripeV") cell.special = (r + c) % 2 === 0 ? "stripeH" : "stripeV";
+          else if (extraSpecial === "wrapped") cell.special = "wrapped";
+          spawnBeam(bombPos.r, bombPos.c, r, c, CANDY_META[targetColor].light, 7);
+          seeds.push({ r, c });
         }
       }
-      grid[bombPos.r][bombPos.c].special = null; // 避免遞迴再隨機觸發
-      sfxSpecial();
-      boardShake = 12;
+      grid[bombPos.r][bombPos.c].special = null;
+      sfxSpecial(); boardShake = 12;
       applyClearAndGravity(collectClearSet(seeds), []);
       return true;
     }
     if (a.special && b.special) {
       const seeds = [{ r: r1, c: c1 }, { r: r2, c: c2 }];
-      const isWrapA = a.special === "wrapped";
-      const isWrapB = b.special === "wrapped";
+      const isWrapA = a.special === "wrapped", isWrapB = b.special === "wrapped";
       if (isWrapA && isWrapB) {
-        // 5×5 超級爆炸
         for (let dr = -2; dr <= 2; dr++) for (let dc = -2; dc <= 2; dc++) {
-          if (r2 + dr >= 0 && r2 + dr < N && c2 + dc >= 0 && c2 + dc < N) seeds.push({ r: r2 + dr, c: c2 + dc });
+          if (r2 + dr >= 0 && r2 + dr < ROWS && c2 + dc >= 0 && c2 + dc < COLS) seeds.push({ r: r2 + dr, c: c2 + dc });
         }
       } else if (isWrapA || isWrapB) {
-        // 巨型三排＋三列十字雷射
         for (let d = -1; d <= 1; d++) {
-          if (r2 + d >= 0 && r2 + d < N) {
-            spawnBeam(r2 + d, 0, r2 + d, N - 1, "#ffd166", cellPx * 0.42);
-            for (let cc = 0; cc < N; cc++) seeds.push({ r: r2 + d, c: cc });
+          if (r2 + d >= 0 && r2 + d < ROWS) {
+            spawnBeam(r2 + d, 0, r2 + d, COLS - 1, "#ffd166", cellPx * 0.42);
+            for (let cc = 0; cc < COLS; cc++) seeds.push({ r: r2 + d, c: cc });
           }
-          if (c2 + d >= 0 && c2 + d < N) {
-            spawnBeam(0, c2 + d, N - 1, c2 + d, "#ffd166", cellPx * 0.42);
-            for (let rr = 0; rr < N; rr++) seeds.push({ r: rr, c: c2 + d });
+          if (c2 + d >= 0 && c2 + d < COLS) {
+            spawnBeam(0, c2 + d, ROWS - 1, c2 + d, "#ffd166", cellPx * 0.42);
+            for (let rr = 0; rr < ROWS; rr++) seeds.push({ r: rr, c: c2 + d });
           }
         }
       } else {
-        // 雙條紋：十字整排＋整列
-        spawnBeam(r2, 0, r2, N - 1, "#ffffff", cellPx * 0.45);
-        spawnBeam(0, c2, N - 1, c2, "#ffffff", cellPx * 0.45);
-        for (let i = 0; i < N; i++) { seeds.push({ r: r2, c: i }); seeds.push({ r: i, c: c2 }); }
+        spawnBeam(r2, 0, r2, COLS - 1, "#ffffff", cellPx * 0.45);
+        spawnBeam(0, c2, ROWS - 1, c2, "#ffffff", cellPx * 0.45);
+        for (let cc = 0; cc < COLS; cc++) seeds.push({ r: r2, c: cc });
+        for (let rr = 0; rr < ROWS; rr++) seeds.push({ r: rr, c: c2 });
       }
-      sfxSpecial();
-      boardShake = 12;
+      sfxSpecial(); boardShake = 12;
       applyClearAndGravity(collectClearSet(seeds), []);
       return true;
     }
@@ -935,8 +995,7 @@
   function resolveCurrentMatches(pivotA = null, pivotB = null) {
     const groups = findMatchGroups();
     if (groups.length === 0) return false;
-    const seeds = [];
-    const spawns = [];
+    const seeds = [], spawns = [];
     for (const g of groups) {
       g.cells.forEach(p => seeds.push(p));
       if (g.spawnSpecial) {
@@ -946,21 +1005,22 @@
         spawns.push({ r: pos.r, c: pos.c, color: g.color, special: g.spawnSpecial });
       }
     }
-    const expanded = collectClearSet(seeds);
-    applyClearAndGravity(expanded, spawns);
+    applyClearAndGravity(collectClearSet(seeds), spawns);
     return true;
   }
 
   function trySwap(r1, c1, r2, c2) {
     if (phase !== "idle") return;
-    if (r2 < 0 || r2 >= N || c2 < 0 || c2 >= N) return;
+    if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) return;
     if (Math.abs(r1 - r2) + Math.abs(c1 - c2) !== 1) return;
+    unlockAudio();
     selected = null;
+    pressedCell = null;
     hintPair = null;
     idleTime = 0;
     comboCount = 0;
     sfxSwap();
-    swapCtx = { r1, c1, r2, c2, dur: 0.14 };
+    swapCtx = { r1, c1, r2, c2, dur: 0.135 };
     phase = "swapping";
     animT = 0;
   }
@@ -969,16 +1029,14 @@
     const t = T();
     phase = won ? "win" : "lose";
     if (won) {
-      const bonus = movesLeft * 60;
-      score += bonus;
+      score += movesLeft * 60;
       if (score > bestScore) {
         bestScore = score;
         localStorage.setItem("candy_match1_best", String(bestScore));
       }
       updateHud();
       sfxWin();
-      const stars = movesLeft >= 8 ? "★★★" : movesLeft >= 3 ? "★★☆" : "★☆☆";
-      modalStars.textContent = stars;
+      modalStars.textContent = movesLeft >= 8 ? "★★★" : movesLeft >= 3 ? "★★☆" : "★☆☆";
       modalTitle.textContent = t.winTitle(currentLevel);
       modalDesc.textContent = t.winDesc;
       btnNextLevel.classList.remove("hidden");
@@ -994,82 +1052,90 @@
     resultModal.classList.remove("hidden");
   }
 
-  // --- 單指滑動＋點兩顆交換（靈敏防誤觸） ---
+  // --- 單指滑動＋點兩顆交換（按壓微縮 Q 彈手感） ---
   let dragStart = null;
   function getCellFromPointer(e) {
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const c = Math.floor(x / (rect.width / N));
-    const r = Math.floor(y / (rect.height / N));
-    if (r < 0 || r >= N || c < 0 || c >= N) return null;
-    return { r, c, x, y };
+    const c = Math.floor((e.clientX - rect.left) / (rect.width / COLS));
+    const r = Math.floor((e.clientY - rect.top) / (rect.height / ROWS));
+    if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return null;
+    return { r, c };
   }
 
   canvas.addEventListener("pointerdown", e => {
-    getAC();
+    unlockAudio();
     if (phase !== "idle") return;
     const hit = getCellFromPointer(e);
     if (!hit) return;
+    pressedCell = { r: hit.r, c: hit.c };
     dragStart = { r: hit.r, c: hit.c, x: e.clientX, y: e.clientY, swiped: false };
     try { canvas.setPointerCapture(e.pointerId); } catch {}
   });
-
   canvas.addEventListener("pointermove", e => {
     if (!dragStart || dragStart.swiped || phase !== "idle") return;
     const dx = e.clientX - dragStart.x;
     const dy = e.clientY - dragStart.y;
-    const thresh = Math.max(15, cellPx * 0.28);
+    const thresh = Math.max(14, cellPx * 0.27);
     if (Math.hypot(dx, dy) >= thresh) {
       dragStart.swiped = true;
+      pressedCell = null;
       let nr = dragStart.r, nc = dragStart.c;
       if (Math.abs(dx) > Math.abs(dy)) nc += dx > 0 ? 1 : -1;
       else nr += dy > 0 ? 1 : -1;
-      if (nr >= 0 && nr < N && nc >= 0 && nc < N) {
-        trySwap(dragStart.r, dragStart.c, nr, nc);
-      }
+      if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) trySwap(dragStart.r, dragStart.c, nr, nc);
       dragStart = null;
     }
   });
-
-  canvas.addEventListener("pointerup", e => {
+  canvas.addEventListener("pointerup", () => {
+    pressedCell = null;
     if (!dragStart) return;
     const start = dragStart;
     dragStart = null;
     if (start.swiped || phase !== "idle") return;
     if (!selected) {
       selected = { r: start.r, c: start.c };
-      playTone(460, 0.05, "sine", 0.06);
+      playSfx(470, 0.05, "sine", 0.07);
     } else if (selected.r === start.r && selected.c === start.c) {
       selected = null;
     } else if (Math.abs(selected.r - start.r) + Math.abs(selected.c - start.c) === 1) {
       trySwap(selected.r, selected.c, start.r, start.c);
     } else {
       selected = { r: start.r, c: start.c };
-      playTone(460, 0.05, "sine", 0.06);
+      playSfx(470, 0.05, "sine", 0.07);
     }
   });
-  canvas.addEventListener("pointercancel", () => { dragStart = null; });
+  canvas.addEventListener("pointercancel", () => { dragStart = null; pressedCell = null; });
 
-  // --- 按鈕事件 ---
+  // --- 按鈕事件（獨立音樂與音效開關並記住設定） ---
   btnHint.addEventListener("click", () => {
-    getAC();
+    unlockAudio();
     if (phase !== "idle") return;
     const moves = findValidMoves();
     if (moves.length > 0) {
       hintPair = moves[0];
-      playTone(720, 0.09, "triangle", 0.08, 920);
+      playSfx(740, 0.09, "triangle", 0.09, 940);
     }
   });
-  btnSound.addEventListener("click", () => {
-    soundOn = !soundOn;
+  btnBgm.addEventListener("click", () => {
+    bgmOn = !bgmOn;
+    localStorage.setItem("candy_bgm_on", bgmOn ? "1" : "0");
+    if (bgmOn) {
+      unlockAudio();
+      startBgm();
+    } else {
+      stopBgm();
+      if (masterBgmGain && ac) masterBgmGain.gain.setValueAtTime(0, ac.currentTime);
+    }
     updateHud();
-    if (soundOn) playTone(660, 0.08, "sine", 0.08);
   });
-  btnRestart.addEventListener("click", () => {
-    getAC();
-    startLevel(currentLevel);
+  btnSound.addEventListener("click", () => {
+    sfxOn = !sfxOn;
+    localStorage.setItem("candy_sfx_on", sfxOn ? "1" : "0");
+    if (masterSfxGain && ac) masterSfxGain.gain.setValueAtTime(sfxOn ? 0.85 : 0, ac.currentTime);
+    updateHud();
+    if (sfxOn) playSfx(660, 0.08, "sine", 0.09);
   });
+  btnRestart.addEventListener("click", () => { unlockAudio(); startLevel(currentLevel); });
   btnNextLevel.addEventListener("click", () => startLevel(currentLevel + 1));
   btnRetryLevel.addEventListener("click", () => startLevel(currentLevel));
   if (btnFs) {
@@ -1077,57 +1143,94 @@
       if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
       else document.exitFullscreen?.().catch(() => {});
     });
-    document.addEventListener("fullscreenchange", () => { updateHud(); setTimeout(resizeBoard, 60); });
+    document.addEventListener("fullscreenchange", () => { updateHud(); setTimeout(() => resizeBoard(false), 60); });
   }
   window.addEventListener("arcade-lang-change", () => updateHud());
 
-  // --- 繪製糖果與特殊效果 ---
-  function drawCandyCell(cell, now) {
+  // --- 繪製可愛角色甜點與特殊效果 ---
+  function drawCandyCell(cell, r, c, now) {
     const cx = (cell.x + 0.5) * cellPx;
     const cy = (cell.y + 0.5) * cellPx;
-    const sz = cellPx * 0.88 * cell.scale;
+    const isPressed = pressedCell && pressedCell.r === r && pressedCell.c === c && phase === "idle";
+    const isSel = selected && selected.r === r && selected.c === c && phase === "idle";
+    const idleBob = phase === "idle" ? Math.sin(now * 0.0032 + cell.bobSeed) * 1.1 : 0;
+    const pressScale = isPressed ? 0.90 : isSel ? 1.07 : 1.0;
+    const sz = cellPx * 0.92;
 
     ctx.save();
-    ctx.translate(cx, cy);
+    ctx.translate(cx, cy + idleBob);
+    ctx.scale(cell.sx * pressScale, cell.sy * pressScale);
     ctx.globalAlpha = cell.alpha;
 
+    // 包裝炸彈：閃亮金粉糖紙雙耳＋外框光環
     if (cell.special === "wrapped") {
-      // 包裝糖外光暈＋閃爍方包
       const p = 1 + Math.sin(now * 0.01) * 0.06;
-      ctx.fillStyle = "rgba(255, 245, 195, 0.52)";
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = 2.5;
+      ctx.save();
+      ctx.scale(p, p);
+      ctx.fillStyle = "rgba(255, 224, 130, 0.55)";
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 2;
+      // 左右可愛糖紙蝴蝶結耳
       ctx.beginPath();
-      ctx.roundRect(-sz * 0.52 * p, -sz * 0.52 * p, sz * 1.04 * p, sz * 1.04 * p, 9);
-      ctx.fill();
-      ctx.stroke();
+      ctx.moveTo(-sz * 0.36, 0); ctx.lineTo(-sz * 0.54, -sz * 0.24); ctx.lineTo(-sz * 0.54, sz * 0.24); ctx.closePath();
+      ctx.moveTo(sz * 0.36, 0); ctx.lineTo(sz * 0.54, -sz * 0.24); ctx.lineTo(sz * 0.54, sz * 0.24); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      ctx.beginPath();
+      ctx.roundRect(-sz * 0.44, -sz * 0.44, sz * 0.88, sz * 0.88, 10);
+      ctx.fill(); ctx.stroke();
+      ctx.restore();
+    }
+
+    // 條紋甜點：發光薄荷白金外框＋動態方向箭頭
+    if (cell.special === "stripeH" || cell.special === "stripeV") {
+      const pulse = 0.65 + Math.sin(now * 0.012) * 0.28;
+      ctx.save();
+      ctx.strokeStyle = CANDY_META[cell.color].main;
+      ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.roundRect(-sz * 0.46, -sz * 0.46, sz * 0.92, sz * 0.92, 11);
+      ctx.fill(); ctx.stroke();
+      ctx.restore();
+      // 方向閃爍箭頭於角色畫完後疊加在邊緣
+      ctx._stripeArrow = { dir: cell.special, pulse };
     }
 
     if (cell.special === "color") {
-      const pulse = 1 + Math.sin(now * 0.008) * 0.05;
-      ctx.rotate(Math.sin(now * 0.003) * 0.16);
-      ctx.drawImage(colorBombSprite, -sz * 0.52 * pulse, -sz * 0.52 * pulse, sz * 1.04 * pulse, sz * 1.04 * pulse);
+      const pulse = 1 + Math.sin(now * 0.008) * 0.055;
+      // 彩虹外光環
+      const rg = ctx.createRadialGradient(0, 0, sz * 0.15, 0, 0, sz * 0.56);
+      rg.addColorStop(0, "rgba(255,245,170,0.6)");
+      rg.addColorStop(0.65, "rgba(255,140,210,0.35)");
+      rg.addColorStop(1, "rgba(120,210,255,0)");
+      ctx.fillStyle = rg;
+      ctx.beginPath(); ctx.arc(0, 0, sz * 0.56 * pulse, 0, Math.PI * 2); ctx.fill();
+      if (bombImg.complete && bombImg.naturalWidth > 0) {
+        ctx.drawImage(bombImg, -sz * 0.52 * pulse, -sz * 0.52 * pulse, sz * 1.04 * pulse, sz * 1.04 * pulse);
+      }
     } else {
-      const sp = candySprites[cell.color] || candySprites[0];
-      ctx.drawImage(sp, -sz * 0.5, -sz * 0.5, sz, sz);
-
+      const im = candyImgs[cell.color];
+      if (im && im.complete && im.naturalWidth > 0) {
+        ctx.drawImage(im, -sz * 0.5, -sz * 0.5, sz, sz);
+      } else {
+        ctx.fillStyle = CANDY_META[cell.color].main;
+        ctx.beginPath(); ctx.arc(0, 0, sz * 0.4, 0, Math.PI * 2); ctx.fill();
+      }
       if (cell.special === "stripeH" || cell.special === "stripeV") {
-        ctx.save();
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.92)";
-        ctx.lineWidth = Math.max(2.6, cellPx * 0.085);
-        ctx.lineCap = "round";
-        for (const off of [-0.22, 0, 0.22]) {
-          ctx.beginPath();
-          if (cell.special === "stripeH") {
-            ctx.moveTo(-sz * 0.34, off * sz);
-            ctx.lineTo(sz * 0.34, off * sz);
-          } else {
-            ctx.moveTo(off * sz, -sz * 0.34);
-            ctx.lineTo(off * sz, sz * 0.34);
-          }
-          ctx.stroke();
+        const a = 0.72 + Math.sin(now * 0.012) * 0.25;
+        ctx.fillStyle = `rgba(255, 255, 255, ${a})`;
+        ctx.strokeStyle = CANDY_META[cell.color].main;
+        ctx.lineWidth = 1.6;
+        const d = sz * 0.42, s = sz * 0.11;
+        if (cell.special === "stripeH") {
+          // 左右箭頭
+          ctx.beginPath(); ctx.moveTo(-d - s, 0); ctx.lineTo(-d + s * 0.7, -s); ctx.lineTo(-d + s * 0.7, s); ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(d + s, 0); ctx.lineTo(d - s * 0.7, -s); ctx.lineTo(d - s * 0.7, s); ctx.closePath(); ctx.fill(); ctx.stroke();
+        } else {
+          // 上下箭頭
+          ctx.beginPath(); ctx.moveTo(0, -d - s); ctx.lineTo(-s, -d + s * 0.7); ctx.lineTo(s, -d + s * 0.7); ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0, d + s); ctx.lineTo(-s, d - s * 0.7); ctx.lineTo(s, d - s * 0.7); ctx.closePath(); ctx.fill(); ctx.stroke();
         }
-        ctx.restore();
       }
     }
     ctx.restore();
@@ -1142,24 +1245,21 @@
     if (boardShake > 0) boardShake = Math.max(0, boardShake - dt * 36);
     if (tipResetTimer > 0 && tipResetTimer < 900) {
       tipResetTimer -= dt;
-      if (tipResetTimer <= 0 && phase === "idle") {
-        tipBanner.textContent = T().tipStart;
-        tipBanner.classList.remove("combo");
+      if (tipResetTimer <= 0 && tipDismissed) {
+        tipBanner.classList.add("collapsed");
+        resizeBoard(false);
       }
     }
 
-    // 狀態更新
     if (phase === "swapping" && swapCtx) {
       animT += dt;
       const t = Math.min(1, animT / swapCtx.dur);
-      const ease = 1 - Math.pow(1 - t, 2);
+      const ease = 1 - Math.pow(1 - t, 2.2);
       const { r1, c1, r2, c2 } = swapCtx;
       const a = grid[r1][c1], b = grid[r2][c2];
       if (a && b) {
-        a.x = c1 + (c2 - c1) * ease;
-        a.y = r1 + (r2 - r1) * ease;
-        b.x = c2 + (c1 - c2) * ease;
-        b.y = r2 + (r1 - r2) * ease;
+        a.x = c1 + (c2 - c1) * ease; a.y = r1 + (r2 - r1) * ease;
+        b.x = c2 + (c1 - c2) * ease; b.y = r2 + (r1 - r2) * ease;
       }
       if (t >= 1) {
         grid[r1][c1] = b; grid[r2][c2] = a;
@@ -1173,9 +1273,7 @@
           movesLeft = Math.max(0, movesLeft - 1);
           updateHud();
         } else {
-          // 無效交換：回彈且不扣步數！
           sfxInvalid();
-          setTip(T().tipInvalid, false, 1.8);
           phase = "reverting";
           animT = 0;
         }
@@ -1186,10 +1284,8 @@
       const { r1, c1, r2, c2 } = swapCtx;
       const a = grid[r2][c2], b = grid[r1][c1];
       if (a && b) {
-        a.x = c2 + (c1 - c2) * t;
-        a.y = r2 + (r1 - r2) * t;
-        b.x = c1 + (c2 - c1) * t;
-        b.y = r1 + (r2 - r1) * t;
+        a.x = c2 + (c1 - c2) * t; a.y = r2 + (r1 - r2) * t;
+        b.x = c1 + (c2 - c1) * t; b.y = r1 + (r2 - r1) * t;
       }
       if (t >= 1) {
         grid[r1][c1] = a; grid[r2][c2] = b;
@@ -1200,31 +1296,28 @@
       }
     } else if (phase === "falling") {
       let moving = false;
-      const fallSpd = 12.5;
-      for (let r = 0; r < N; r++) {
-        for (let c = 0; c < N; c++) {
+      const fallSpd = 13.5;
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
           const cell = grid[r][c];
           if (!cell) continue;
           cell.x = c;
           if (cell.y < r) {
             cell.y = Math.min(r, cell.y + fallSpd * dt);
             if (cell.y < r) moving = true;
-            else cell.scale = 1.12; // 落地微 Q 彈
+            else { cell.sx = 1.14; cell.sy = 0.87; } // Q 彈著地擠壓
           }
-          if (cell.scale > 1) cell.scale = Math.max(1, cell.scale - dt * 2.2);
+          cell.sx += (1 - cell.sx) * Math.min(1, dt * 14);
+          cell.sy += (1 - cell.sy) * Math.min(1, dt * 14);
         }
       }
       if (!moving) {
         if (!resolveCurrentMatches()) {
-          // 盤面穩定 → 判斷勝負或自動洗牌
-          if (isGoalComplete()) {
-            showEndModal(true);
-          } else if (movesLeft <= 0) {
-            showEndModal(false);
-          } else if (findValidMoves().length === 0) {
-            phase = "shuffling";
-            animT = 0;
-            setTip(T().tipShuffle, true, 2.2);
+          if (isGoalComplete()) showEndModal(true);
+          else if (movesLeft <= 0) showEndModal(false);
+          else if (findValidMoves().length === 0) {
+            phase = "shuffling"; animT = 0;
+            setTip(T().tipShuffle, true, 1.8);
             sfxSwap();
           } else {
             phase = "idle";
@@ -1234,7 +1327,7 @@
       }
     } else if (phase === "shuffling") {
       animT += dt;
-      if (animT >= 0.45) {
+      if (animT >= 0.42) {
         shuffleBoardImmediate();
         phase = "idle";
         idleTime = 0;
@@ -1245,22 +1338,18 @@
         const moves = findValidMoves();
         if (moves.length > 0) hintPair = moves[0];
       }
-      for (let r = 0; r < N; r++) {
-        for (let c = 0; c < N; c++) {
-          if (grid[r][c] && grid[r][c].scale > 1) {
-            grid[r][c].scale = Math.max(1, grid[r][c].scale - dt * 2.4);
-          }
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+        const cell = grid[r][c];
+        if (cell) {
+          cell.sx += (1 - cell.sx) * Math.min(1, dt * 12);
+          cell.sy += (1 - cell.sy) * Math.min(1, dt * 12);
         }
       }
     }
 
-    // 粒子／光束／飄字更新
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
-      p.life -= dt;
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
-      p.vy += 260 * dt;
+      p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 260 * dt;
       if (p.life <= 0) particles.splice(i, 1);
     }
     for (let i = beams.length - 1; i >= 0; i--) {
@@ -1268,105 +1357,90 @@
       if (beams[i].life <= 0) beams.splice(i, 1);
     }
     for (let i = floatTexts.length - 1; i >= 0; i--) {
-      floatTexts[i].life -= dt;
-      floatTexts[i].y -= 34 * dt;
-      if (floatTexts[i].life <= 0) floatTexts.splice(i, 1);
+      const f = floatTexts[i];
+      f.life -= dt; f.y -= 36 * dt;
+      if (f.life <= 0) floatTexts.splice(i, 1);
     }
 
     // === 繪製 ===
     ctx.save();
-    ctx.clearRect(0, 0, boardPx, boardPx);
-    if (boardShake > 0) {
-      ctx.translate((Math.random() - 0.5) * boardShake, (Math.random() - 0.5) * boardShake);
-    }
+    ctx.clearRect(0, 0, boardW, boardH);
+    if (boardShake > 0) ctx.translate((Math.random() - 0.5) * boardShake, (Math.random() - 0.5) * boardShake);
 
-    // 1. 雙色粉彩棋盤格＋糖霜層
-    for (let r = 0; r < N; r++) {
-      for (let c = 0; c < N; c++) {
+    // 1. 柔和粉彩棋盤格＋糖霜層
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
         const x = c * cellPx, y = r * cellPx;
-        ctx.fillStyle = (r + c) % 2 === 0 ? "rgba(255, 241, 248, 0.94)" : "rgba(248, 224, 238, 0.92)";
+        ctx.fillStyle = (r + c) % 2 === 0 ? "rgba(255, 243, 249, 0.93)" : "rgba(247, 226, 239, 0.91)";
         ctx.fillRect(x, y, cellPx, cellPx);
         if (frostGrid[r][c] > 0) {
-          ctx.fillStyle = "rgba(255, 180, 218, 0.72)";
-          ctx.beginPath();
-          ctx.roundRect(x + 2, y + 2, cellPx - 4, cellPx - 4, 7);
-          ctx.fill();
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
-          ctx.lineWidth = 2;
-          ctx.stroke();
+          ctx.fillStyle = "rgba(255, 178, 218, 0.72)";
+          ctx.beginPath(); ctx.roundRect(x + 2, y + 2, cellPx - 4, cellPx - 4, 8); ctx.fill();
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.9)"; ctx.lineWidth = 2; ctx.stroke();
         }
       }
     }
 
-    // 2. 選中框與提示脈衝框
+    // 2. 選中框與提示框
     if (selected && phase === "idle") {
-      ctx.strokeStyle = "#ec4899";
-      ctx.lineWidth = 3;
-      ctx.fillStyle = "rgba(255, 192, 224, 0.35)";
-      ctx.beginPath();
-      ctx.roundRect(selected.c * cellPx + 2, selected.r * cellPx + 2, cellPx - 4, cellPx - 4, 8);
-      ctx.fill();
-      ctx.stroke();
+      ctx.strokeStyle = "#ec4899"; ctx.lineWidth = 3;
+      ctx.fillStyle = "rgba(255, 192, 224, 0.38)";
+      ctx.beginPath(); ctx.roundRect(selected.c * cellPx + 2, selected.r * cellPx + 2, cellPx - 4, cellPx - 4, 9);
+      ctx.fill(); ctx.stroke();
     }
     if (hintPair && phase === "idle") {
       const pulse = 0.45 + Math.sin(now * 0.009) * 0.35;
-      ctx.strokeStyle = `rgba(245, 158, 11, ${pulse + 0.2})`;
-      ctx.lineWidth = 3;
+      ctx.strokeStyle = `rgba(245, 158, 11, ${pulse + 0.25})`; ctx.lineWidth = 3;
       for (const p of hintPair) {
-        ctx.beginPath();
-        ctx.roundRect(p.c * cellPx + 3, p.r * cellPx + 3, cellPx - 6, cellPx - 6, 8);
-        ctx.stroke();
+        ctx.beginPath(); ctx.roundRect(p.c * cellPx + 3, p.r * cellPx + 3, cellPx - 6, cellPx - 6, 9); ctx.stroke();
       }
     }
 
-    // 3. 糖果精靈
-    for (let r = 0; r < N; r++) {
-      for (let c = 0; c < N; c++) {
-        if (grid[r][c]) drawCandyCell(grid[r][c], now);
+    // 3. 可愛甜點角色
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (grid[r][c]) drawCandyCell(grid[r][c], r, c, now);
       }
     }
 
-    // 4. 條紋／彩虹光束
+    // 4. 光束特效
     for (const b of beams) {
       const a = Math.max(0, b.life / b.maxLife);
-      ctx.save();
-      ctx.globalAlpha = a;
-      ctx.strokeStyle = b.color;
-      ctx.lineWidth = b.width * a;
-      ctx.lineCap = "round";
-      ctx.beginPath();
-      ctx.moveTo(b.x1, b.y1);
-      ctx.lineTo(b.x2, b.y2);
-      ctx.stroke();
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = b.width * a * 0.42;
-      ctx.stroke();
+      ctx.save(); ctx.globalAlpha = a;
+      ctx.strokeStyle = b.color; ctx.lineWidth = b.width * a; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(b.x1, b.y1); ctx.lineTo(b.x2, b.y2); ctx.stroke();
+      ctx.strokeStyle = "#ffffff"; ctx.lineWidth = b.width * a * 0.42; ctx.stroke();
       ctx.restore();
     }
 
-    // 5. 糖果爆破粒子
+    // 5. 星屑與糖霜粒子
     for (const p of particles) {
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+      ctx.save(); ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
       ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
+      if (p.star) {
+        ctx.translate(p.x, p.y);
+        ctx.beginPath();
+        for (let k = 0; k < 8; k++) {
+          const ang = (Math.PI * k) / 4;
+          const rad = k % 2 === 0 ? p.r * 1.4 : p.r * 0.55;
+          if (k === 0) ctx.moveTo(Math.cos(ang) * rad, Math.sin(ang) * rad);
+          else ctx.lineTo(Math.cos(ang) * rad, Math.sin(ang) * rad);
+        }
+        ctx.closePath(); ctx.fill();
+      } else {
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+      }
       ctx.restore();
     }
 
-    // 6. 飄分與連擊字
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+    // 6. 飄字
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
     for (const f of floatTexts) {
-      ctx.save();
-      ctx.globalAlpha = Math.min(1, f.life / 0.35);
+      ctx.save(); ctx.globalAlpha = Math.min(1, f.life / 0.35);
       ctx.font = "900 16px sans-serif";
-      ctx.strokeStyle = "#5b1a42";
-      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = "#5b1a42"; ctx.lineWidth = 3.5;
       ctx.strokeText(f.text, f.x, f.y);
-      ctx.fillStyle = f.color;
-      ctx.fillText(f.text, f.x, f.y);
+      ctx.fillStyle = f.color; ctx.fillText(f.text, f.x, f.y);
       ctx.restore();
     }
 
@@ -1378,22 +1452,27 @@
   window.__CANDY_QA__ = {
     version: VERSION_STAMP,
     getState() {
+      let bgmRms = 0;
+      if (bgmAnalyser && bgmPcm && ac && ac.state === "running") {
+        bgmAnalyser.getFloatTimeDomainData(bgmPcm);
+        let s = 0; for (let i = 0; i < bgmPcm.length; i++) s += bgmPcm[i] * bgmPcm[i];
+        bgmRms = Math.sqrt(s / bgmPcm.length);
+      }
       return {
         version: VERSION_STAMP,
         level: currentLevel,
-        size: N,
-        movesLeft,
-        score,
-        phase,
-        validMoves: findValidMoves(),
-        boardPx,
-        cellPx
+        cols: COLS, rows: ROWS,
+        boardW, boardH, cellPx,
+        movesLeft, score, phase,
+        bgmOn, sfxOn, bgmRunning, bgmStep, bgmLoopCount, bgmRms,
+        spritesLoaded: candyImgs.every(i => i.complete && i.naturalWidth > 0) && bombImg.complete && bombImg.naturalWidth > 0,
+        validMoves: findValidMoves()
       };
     },
     swap(r1, c1, r2, c2) { trySwap(r1, c1, r2, c2); },
-    forceShuffle() { phase = "shuffling"; animT = 0; setTip(T().tipShuffle, true, 2.0); },
+    forceShuffle() { phase = "shuffling"; animT = 0; setTip(T().tipShuffle, true, 1.8); },
     spawnDemoSpecials() {
-      if (N >= 5) {
+      if (ROWS >= 5 && COLS >= 5) {
         grid[2][2].special = "stripeH";
         grid[2][3].special = "wrapped";
         grid[3][3].special = "color";
