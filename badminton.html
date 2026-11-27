@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-Hant" data-arcade-portal>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#193d37">
+  <title>羽球-1</title>
+  <link rel="icon" href="assets/badminton-cover.svg">
+  <link rel="stylesheet" href="badminton.css?v=20261127-1">
+</head>
+<body>
+  <main>
+    <header><h1 data-copy="title">羽球-1</h1><div class="score" aria-live="polite"><span data-copy="you">你</span><b id="playerScore">0</b><i>:</i><b id="cpuScore">0</b><span>CPU</span></div><button id="pause" data-copy="menu">暫停</button></header>
+    <section id="arena"><canvas id="court" tabindex="0" aria-label="羽球場"></canvas><div id="call" aria-live="polite"></div>
+      <div id="prompt"><span class="eyebrow">MAPLE HALL &nbsp; / &nbsp; 01</span><h2 id="headline"></h2><p id="detail"></p><button id="serve"></button></div>
+    </section>
+    <nav><button data-step="-1" aria-label="向左">◀</button><button data-step="1" aria-label="向右">▶</button><button data-shot="clear"></button><button data-shot="drop"></button><button data-shot="smash"></button></nav>
+  </main>
+  <dialog id="settings"><form method="dialog"><span class="eyebrow">MAPLE HALL &nbsp; / &nbsp; 01</span><h2 data-copy="break">場邊休息</h2><label><span data-copy="opponent">對手</span><select id="level"><option value="0"></option><option value="1"></option><option value="2"></option></select></label><p id="records"></p><button type="button" id="audio"></button><button type="button" id="restart" data-copy="again">再來一局</button><button value="resume" data-copy="resume">繼續</button><small>v_20261127_badminton_1</small></form></dialog>
+  <script src="arcade-i18n.js"></script><script src="badminton-engine.js?v=20261127-1"></script><script src="badminton-art.js?v=20261127-1"></script><script src="badminton.js?v=20261127-1"></script>
+</body></html>

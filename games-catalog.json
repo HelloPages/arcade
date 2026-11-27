@@ -1,13 +1,30 @@
 {
   "portalTitle": "經典街機遊戲館",
-  "version": "v_20261124_tennis_1",
-  "updatedAt": "2026-11-24T09:45:00+08:00",
+  "version": "v_20261127_badminton_1",
+  "updatedAt": "2026-11-27T15:28:00+08:00",
   "visualPolicy": "各款必須具有獨立、清晰且專業的美術方向與原創在地化命名（禁用真實版權遊戲名稱），並全面支援 TW / EN / KO 本土化語系切換。",
   "dailySchedule": {
     "generateCron": "每日04:00產出可單人對戰CPU的原創運動或街機競技遊戲",
     "lineNotifyCron": "每日 07:00 自動透過 LINE 推播說明當日新增遊戲"
   },
   "games": [
+    {
+      "id": "badminton",
+      "title": "羽球-1",
+      "shortTab": "羽球-1",
+      "path": "./badminton.html",
+      "addedDate": "2026-11-27",
+      "thumbnail": "assets/badminton-cover.svg",
+      "genre": "單人羽球對戰",
+      "reaSource": "取材自羽球的長短調動、羽球減速急墜與高點跳殺，以原創室內木地板球館呈現。",
+      "highlights": ["高遠球逼退對手，再用小球調到網前。", "挑戰三階CPU，搶7分、平手須領先2分。"],
+      "artDirection": "楓木地板、深綠地膠、暖色窗光與手繪線條；直式底線視角，橫式側看台視角。",
+      "i18n": {
+        "tw": {"title":"羽球-1","shortTab":"羽球-1","genre":"單人羽球對戰","reaSource":"以羽球的長短調動、空阻急墜與高點跳殺為原型。","highlights":["高遠球逼退對手，再用小球調到網前。","挑戰三階CPU，搶7分、平手須領先2分。"]},
+        "en": {"title":"Badminton 1","shortTab":"Badminton 1","genre":"Singles badminton","reaSource":"An original maple-floor gym built around shuttle drag, deep clears and steep jump smashes.","highlights":["Push your opponent back with a clear, then drop the shuttle short.","Challenge three CPU levels. First to seven, win by two."]},
+        "ko": {"title":"배드민턴-1","shortTab":"배드민턴-1","genre":"배드민턴 단식","reaSource":"공기 저항으로 급격히 떨어지는 셔틀콕과 점프 스매시를 단풍나무 바닥 체육관에 담았어요.","highlights":["클리어로 상대를 뒤로 보낸 뒤 드롭으로 네트 앞을 노리세요.","세 단계 CPU에 도전하세요. 7점 선취, 듀스에서는 2점 차로 승리해요."]}
+      }
+    },
     {
       "id": "tennis",
       "title": "網球-1",
