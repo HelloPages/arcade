@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION_STAMP = "v_02:15";
+  const VERSION_STAMP = "v_14:45";
   const appEl = document.getElementById("candy-app");
   const canvas = document.getElementById("candyCanvas");
   const ctx = canvas.getContext("2d");
@@ -144,8 +144,8 @@
     appEl.classList.toggle("portal-fs-pad", inPortalFs);
   }
 
-  // --- 全套統一 32x32 半立體像素真透明台味甜點＋禮物雨精靈 ---
-  const PX_VER = "v=20261128_v4";
+  // --- 全套統一高密度超精緻半立體像素真透明台味甜點＋禮物雨精靈 ---
+  const PX_VER = "v=20261128_v5";
   const CANDY_META = [
     { id: 0, main: "#ff3b63", light: "#ff9cb2", src: `./assets/px-tw0.webp?${PX_VER}` }, // 糖葫蘆
     { id: 1, main: "#ffc414", light: "#fff099", src: `./assets/px-tw1.webp?${PX_VER}` }, // 雞蛋糕小雞
@@ -183,7 +183,8 @@
       cv.width = Math.round(fxW * d);
       cv.height = Math.round(fxH * d);
       g.setTransform(d, 0, 0, d, 0, 0);
-      g.imageSmoothingEnabled = false;
+      g.imageSmoothingEnabled = true;
+      g.imageSmoothingQuality = "high";
     }
   }
   window.addEventListener("resize", resizeFxCanvases);
@@ -597,7 +598,8 @@
     canvas.width = Math.round(boardW * dpr);
     canvas.height = Math.round(boardH * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
     if (phase === "idle") {
       for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
         if (grid[r] && grid[r][c]) { grid[r][c].x = c; grid[r][c].y = r; }

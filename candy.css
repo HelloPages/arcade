@@ -177,26 +177,23 @@ html, body {
 }
 
 .goal-icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
-  image-rendering: pixelated;
   flex-shrink: 0;
 }
 
 .px-btn-ico {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
-  image-rendering: pixelated;
   flex-shrink: 0;
 }
 
 .modal-star-ico {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
-  image-rendering: pixelated;
 }
 
 /* 首次短提示（首步消除後自動收合） */
@@ -253,7 +250,6 @@ html, body {
   border-radius: 9px;
   touch-action: none;
   cursor: pointer;
-  image-rendering: pixelated;
 }
 
 /* 底部主要操作列 */
