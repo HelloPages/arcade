@@ -1,0 +1,29 @@
+*{box-sizing:border-box}
+:root{color-scheme:light;--ink:#133b45;--ivory:#fff5dc;--red:#ba452b;--paper:#f7ecd2;font-family:"Trebuchet MS","Microsoft JhengHei","Malgun Gothic",sans-serif}
+html,body,main{width:100%;height:100%;margin:0;overflow:hidden}
+body{background:#163d45;color:var(--ink)}
+main{height:100dvh;display:grid;grid-template-rows:48px minmax(0,1fr) 39px}
+header,footer{display:flex;align-items:center;gap:12px;padding:0 clamp(9px,2.5vw,36px)}
+header{justify-content:space-between;background:var(--paper);border-bottom:3px solid var(--ink);position:relative}
+.brand{display:flex;align-items:center;gap:9px}.brand img{width:33px;height:auto}
+.brand small{display:block;font:900 9px/1.2 "Trebuchet MS",sans-serif;letter-spacing:.24em;color:#8f4929}
+h1{font-size:clamp(15px,2.2vw,24px);line-height:1.18;letter-spacing:-.035em;margin:0}
+.score{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800}
+.score b{font:700 30px/1 Georgia,serif;font-variant-numeric:tabular-nums}.score b:first-of-type{color:#9b371d}.score i{font:bold 18px/1 Georgia,serif;color:#907c57}.score span{font-size:12px}
+button,select{min-height:32px;border:1px solid #627d79;border-radius:6px;font-size:14px;line-height:1.1;font-family:inherit;font-weight:800;color:var(--ink);background:var(--ivory);cursor:pointer}
+button{padding:5px 13px}button:focus-visible,select:focus-visible,input:focus-visible,canvas:focus-visible{outline:3px solid #f8ae38;outline-offset:-3px}
+.tool{display:flex;align-items:center;gap:7px;background:transparent}.sliders{width:16px;height:14px;position:relative;background:linear-gradient(to bottom,transparent 2px,#24505a 2px 4px,transparent 4px 9px,#24505a 9px 11px,transparent 11px)}
+.sliders:before,.sliders:after{content:"";position:absolute;background:var(--ivory);border:1.5px solid var(--ink);width:3px;height:4px;border-radius:1px;left:3px;top:0}.sliders:after{left:9px;top:7px}
+#arena{position:relative;min-height:0}canvas{width:100%;height:100%;display:block;touch-action:none;user-select:none;cursor:crosshair}
+#notice{position:absolute;pointer-events:none;left:50%;top:52%;transform:translate(-50%,-50%);color:var(--ivory);background:#143c46f5;border:1px solid #f6cc78;border-radius:8px;text-align:center;padding:9px 22px;font-size:clamp(16px,2vw,25px);font-weight:800;white-space:nowrap}
+footer{justify-content:space-between;background:var(--ink);color:var(--ivory);gap:6px}
+.tip{display:flex;gap:9px;align-items:center;font-size:clamp(11px,1.4vw,15px);font-weight:650;line-height:1.25}.lamp{width:7px;height:7px;background:#f1af59;border-radius:50%;flex:none}
+#action,#back{background:#f5b765;color:#342c22;border-color:#ffe1a3;white-space:nowrap}
+dialog{width:min(360px,92vw);max-height:90dvh;padding:0;border:2px solid var(--ink);border-radius:10px;background:var(--paper);color:var(--ink)}dialog::backdrop{background:#0f343ec2}
+.sheet{padding:0 18px 17px}.sheet-art{height:78px;margin:0 -18px 11px;background:#b1dcd3 url('./assets/airhockey/fjord.webp') center 63%/cover;display:flex;align-items:end;justify-content:center;gap:12px;border-bottom:2px solid #235460}.sheet-art img{height:70px}
+h2{margin:0 0 10px;font-size:22px;line-height:1.2;font-weight:800;font-family:inherit}.sheet label{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;font-weight:bold}.sheet select{padding:6px;min-width:135px}.sheet input{width:23px;height:23px;accent-color:#a54629}
+.sheet p{line-height:1.55;font-size:14px;margin:9px 0}.record{border-top:1px solid #98aca6;padding-top:7px;font-weight:700}.buttons{display:flex;gap:9px;margin-top:12px}.buttons>*{flex:1;min-height:40px}
+@media(min-width:650px){.score{position:absolute;left:50%;transform:translateX(-50%)}}
+@media(max-width:520px){header{gap:4px;padding:0 8px}.brand{gap:5px}.brand img{width:24px}.score{gap:4px}.score b{font-size:25px}.score span{font-size:10px}.tool{padding:4px 8px}.tip{font-size:11px;gap:5px}footer{padding:0 7px}.brand small{font-size:8px}}
+@media(max-height:700px){main{grid-template-rows:44px minmax(0,1fr) 37px}}
+@media(max-height:480px){main{grid-template-rows:36px minmax(0,1fr) 32px}.sheet-art{height:42px}.sheet-art img{height:40px}}

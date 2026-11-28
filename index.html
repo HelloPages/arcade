@@ -169,7 +169,7 @@
       <select id="mobile-game-select" class="portal-select" aria-label="切換遊戲"></select>
       <button type="button" class="catalog-btn" id="btn-catalog" onclick="toggleCatalog(true)">遊戲總覽</button>
       <button type="button" class="fs-btn" id="standalone-link" onclick="togglePortalFullscreen()">⛶ <span class="fs-label">全螢幕</span></button>
-      <span class="ver-pill" id="portal-version">11.28</span>
+      <span class="ver-pill" id="portal-version">11.29</span>
     </div>
   </header>
 
@@ -189,7 +189,7 @@
   </div>
 
   <script>
-    const VERSION_STAMP = "v_20261128_tabletennis_1";
+    const VERSION_STAMP = "v_20261129_airhockey_1";
     const frame = document.getElementById("game-frame");
     const tabsEl = document.getElementById("portal-tabs");
     const mobileSelect = document.getElementById("mobile-game-select");
@@ -243,6 +243,7 @@
 
     // 內建即時備援清單（確保首幀無閃爍；games-catalog.json 載入後會自動同步最新與未來新增遊戲）
     let catalogGames = [
+      {"id": "airhockey", "path": "./airhockey.html", "title": "空氣曲棍球-1", "shortTab": "空氣曲棍球-1", "thumbnail": "assets/airhockey-cover.webp", "i18n": {"tw": {"title": "空氣曲棍球-1", "shortTab": "空氣曲棍球-1"}, "en": {"title": "Air Hockey 1", "shortTab": "Air Hockey 1"}, "ko": {"title": "에어하키-1", "shortTab": "에어하키-1"}}},
       {"id": "tabletennis", "path": "./tabletennis.html", "title": "桌球-1", "shortTab": "桌球-1", "thumbnail": "assets/tabletennis-cover.webp", "i18n": {"tw": {"title": "桌球-1", "shortTab": "桌球-1"}, "en": {"title": "Table Tennis 1", "shortTab": "Table Tennis 1"}, "ko": {"title": "탁구-1", "shortTab": "탁구-1"}}},
       { id: "candy", path: "./candy.html", title: "糖果三消-1", shortTab: "糖果三消-1", thumbnail: "assets/candy-cover.webp", i18n: { tw: { title: "糖果三消-1", shortTab: "糖果三消-1" }, en: { title: "Candy Match 1", shortTab: "Candy Match 1" }, ko: { title: "캔디 매치-1", shortTab: "캔디 매치-1" } } },
       { id: "badminton", path: "./badminton.html", title: "羽球-1", thumbnail: "assets/badminton-cover.svg", i18n: { tw: { title: "羽球-1", shortTab: "羽球-1" }, en: { title: "Badminton 1", shortTab: "Badminton 1" }, ko: { title: "배드민턴-1", shortTab: "배드민턴-1" } } },
