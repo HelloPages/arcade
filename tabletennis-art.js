@@ -20,6 +20,7 @@
     constructor(canvas) {
       this.canvas=canvas; this.ctx=canvas.getContext("2d",{alpha:false});
       this.scene=document.createElement("canvas"); this.trail=[]; this.rings=[];
+      this.chargeUi = null; // { x, y, power }
       this.observer=new ResizeObserver(()=>this.resize()); this.observer.observe(canvas);
       this.resize();
     }
@@ -27,6 +28,17 @@
       const d=(1-y)/(1+.72*y);
       const half=this.w*(.41+.095*d);
       return [this.w/2+x*half,this.h*(.106+.844*d)-z*Math.min(this.h*.48,this.w*.48)*(.70+.46*d)];
+    }
+    unproject(clientX, clientY) {
+      const r = this.canvas.getBoundingClientRect();
+      const px = clientX - r.left;
+      const py = clientY - r.top;
+      const d = (py / this.h - .106) / .844;
+      const y = (1 - d) / (1 + .72 * d);
+      const half = this.w * (.41 + .095 * d);
+      const x = (px - this.w / 2) / half;
+      const legal = y <= .50 && y >= -.18 && Math.abs(x) <= 1.22;
+      return { x, y, legal };
     }
     resize() {
       const box=this.canvas.getBoundingClientRect();
@@ -45,7 +57,6 @@
     background() {
       const c=this.scene.getContext("2d"),w=this.w,h=this.h;
       c.fillStyle=paper;c.fillRect(0,0,w,h);
-      // Oversized printed sun and speed lines on the club's end wall.
       ellipse(c,w*.24,h*.045,h*.245,h*.245,red);
       for(let i=-4;i<17;i++){
         const x=w*.46+i*w*.042;
@@ -61,7 +72,6 @@
       blue.addColorStop(0,"#3c76b0");blue.addColorStop(.45,"#195594");blue.addColorStop(1,"#164787");
       polygon(c,surface,blue,paper,Math.max(2,w*.0035));
       c.save();c.clip();
-      // Offset registration and very fine screen-print dots in the diagonal of the playing surface.
       c.save();
       polygon(c,[[w*.82,0],[w,0],[w,h],[w*.31,h]],"#ffffff08");
       c.clip();
@@ -69,7 +79,6 @@
       c.restore();
       stroke(c,...p(0,1),...p(0,0),"#e1e6d9",Math.max(1.3,w*.0018));
       c.restore();
-      // Inlaid depth markers flank the playing surface.
       for(let i=0;i<12;i++){
         const [x,y]=p(-1,i/12); stroke(c,x-8,y,x-3,y,"#a9a896",1.5);
       }
@@ -96,18 +105,20 @@
       stroke(c,-.65,.43,.59,.43,rival?"#c3bda1":"#f0a56f",.034);
       c.restore();c.restore();
     }
-    bounce(b) {this.rings.push({x:b.x,y:b.y,t:0});}
+    bounce(b) {this.rings.push({x:b.x,y:b.y,t:0,kind:"bounce"});}
+    markHit(x,y) {this.rings.push({x,y,t:0,kind:"hit"});}
+    markWhiff(x,y) {this.rings.push({x,y,t:0,kind:"whiff"});}
     draw(m,dt) {
       const c=this.ctx,w=this.w,h=this.h;if(!w)return;
       this.latestMatch=m;
       c.save();
-      if(m.swing>.86){const k=(m.swing-.86)*6;c.translate(k,-k);}
+      if(m.swing>.86 && m.lastContact){const k=(m.swing-.86)*6;c.translate(k,-k);}
       c.drawImage(this.scene,0,0,w,h);
       const size=Math.min(w*.125,h*.14);
       const [cx,cy]=this.project(m.cpuX,.965,.17);
       this.paddle(c,cx+size*.12,cy,size*.54,-2.65+m.cpuSwing*.95,true);
       const ball=m.phase==="flight"?m.ball:{
-        x:m.server==="player"?m.playerX:m.cpuX,y:m.server==="player"?.08:.92,z:.25+.022*Math.sin(m.clock*3)};
+        x:m.server==="player"?m.playerX:m.cpuX,y:m.server==="player"?m.playerY:.92,z:.23+.02*Math.sin(m.clock*3)};
       const [bx,by]=this.project(ball.x,ball.y,ball.z),[gx,gy]=this.project(ball.x,ball.y);
       const depth=Math.max(0,1-ball.y),radius=Math.max(4,Math.min(w,h)*(.009+.007*depth));
       ellipse(c,gx+radius*.5,gy,radius*(1.15+ball.z),radius*.34,"#0c2b4888");
@@ -121,14 +132,49 @@
         ellipse(c,bx-radius*.16,by-radius*.2,radius*.79,radius*.74,"#fff6ca");
         ellipse(c,bx-radius*.32,by-radius*.40,radius*.24,radius*.18,"#fff");
       };
-      this.rings=this.rings.filter(r=>r.t<.36);
-      for(const r of this.rings){r.t+=dt;const [x,y]=this.project(r.x,r.y);
-        c.strokeStyle="rgba(255,234,167,"+(1-r.t/.37)+")";c.lineWidth=2;c.beginPath();
-        c.ellipse(x,y,5+r.t*70,2+r.t*21,0,0,2*Math.PI);c.stroke();}
+      this.rings=this.rings.filter(r=>r.t<.42);
+      for(const r of this.rings){
+        r.t+=dt;
+        const [x,y]=this.project(r.x,r.y);
+        if(r.kind==="whiff"){
+          const a=Math.max(0,1-r.t/.42);
+          c.strokeStyle=`rgba(255,95,86,${a})`; c.lineWidth=2.6;
+          c.beginPath(); c.moveTo(x-9,y-9); c.lineTo(x+9,y+9); c.moveTo(x+9,y-9); c.lineTo(x-9,y+9); c.stroke();
+        } else if(r.kind==="hit"){
+          const a=Math.max(0,1-r.t/.36);
+          c.strokeStyle=`rgba(110,255,175,${a})`; c.lineWidth=2.5;
+          c.beginPath(); c.ellipse(x,y,8+r.t*65,4+r.t*26,0,0,2*Math.PI); c.stroke();
+        } else {
+          c.strokeStyle="rgba(255,234,167,"+Math.max(0,1-r.t/.37)+")";c.lineWidth=2;c.beginPath();
+          c.ellipse(x,y,5+r.t*70,2+r.t*21,0,0,2*Math.PI);c.stroke();
+        }
+      }
       if(ball.y>.5)drawBall();
       this.net(c);
-      const [px,py]=this.project(m.playerX,.02,.12);
-      this.paddle(c,px+size*.38,py,size*.85,.53-m.swing*1.2,false);
+
+      // 球拍直接對位到玩家點擊的 (playerX, playerY)
+      const [px,py]=this.project(m.playerX, m.playerY, .11);
+      const pScale = .72 + (1 - Math.min(.5, Math.max(0, m.playerY))) * .24;
+      this.paddle(c, px + size*.18, py, size * pScale, .46 - m.swing * 1.15, false);
+
+      // 即時虛擬力道回饋條（依按壓時間＋短滑動映射）
+      if (this.chargeUi) {
+        const [tx, ty] = this.project(this.chargeUi.x, this.chargeUi.y, 0);
+        const pwr = this.chargeUi.power;
+        const pct = Math.min(1, Math.max(0, (pwr - .2) / 1.15));
+        const over = pwr > 1.02;
+        c.save();
+        c.strokeStyle = over ? "#ff5a52" : pwr > .8 ? "#fbbf24" : "#4ade80";
+        c.lineWidth = 2.4;
+        c.beginPath(); c.ellipse(tx, ty, 18, 9, 0, 0, Math.PI * 2); c.stroke();
+        const bw = 54, bh = 7, bx0 = Math.max(8, Math.min(w - bw - 8, tx - bw / 2)), by0 = Math.max(16, ty - 34);
+        c.fillStyle = "rgba(18, 28, 38, 0.82)";
+        c.fillRect(bx0 - 1, by0 - 1, bw + 2, bh + 2);
+        c.fillStyle = over ? "#ef4444" : pwr > .8 ? "#f59e0b" : "#22c55e";
+        c.fillRect(bx0, by0, bw * pct, bh);
+        c.restore();
+      }
+
       if(ball.y<=.5)drawBall();
       c.restore();
     }
